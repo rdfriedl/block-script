@@ -49,10 +49,6 @@ var Stone = CollisionBlock.extend(function Stone(){
 var Grass = CollisionBlock.extend(function Grass(){
 	CollisionBlock.prototype.constructor.apply(this,arguments);
 },{
-	_collision: new CollisionEntity({
-		box: new THREE.Box3(new THREE.Vector3(-0.1,-0.1,-0.1), new THREE.Vector3(map.blockSize,map.blockSize/2,map.blockSize)),
-		group: 'block'
-	}),
 	material: [ //x,y,z | +/-
 		[
 			blocks.util.basicMaterial('grass_side.png'),
