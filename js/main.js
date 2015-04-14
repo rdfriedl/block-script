@@ -1,9 +1,7 @@
 var container, stats;
-var camera, controls, scene, renderer;
-var mesh;
+var scene, renderer;
 var sun, ambient, lightGroup;
-var viewDistance = 5;
-var moveRight, moveLeft, moveForward, moveBackward, moveUp, moveDown, movementSpeed = 6;
+var viewDistance = 3;
 
 function positionToIndex(position,size){
 	return (position.z*size*size)+(position.y*size)+position.x;
@@ -23,16 +21,13 @@ function init() {
 	scene = new THREE.Scene();
 	scene.fog = new THREE.FogExp2(0xbfd1e5,viewDistance * map.chunkSize / 100000);
 
-	camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 0.1, 20000 );
-
-	controls = new THREE.PointerLockControls( camera );
-	scene.add(controls.getObject());
+	player.init();
 
 	//light
 	lightGroup = new THREE.Group();
 	scene.add(lightGroup);
 
-	ambient = new THREE.AmbientLight( 0xbfd1e5 );
+	ambient = new THREE.AmbientLight( 0x888888 );
     lightGroup.add(ambient);
 
     var shadowNear = 1200;
@@ -43,12 +38,13 @@ function init() {
     sun.position.multiplyScalar(5000);
 
     sun.castShadow = true;
+    // sun.onlyShadow = true;
 
     sun.shadowCameraNear = shadowNear;
     sun.shadowCameraFar = shadowFar;
 
     sun.shadowBias = 0.0001;
-    sun.shadowMapDarkness = 0.5;
+    sun.shadowMapDarkness = 0.8;
     sun.shadowMapWidth = 2048 * 2;
     sun.shadowMapHeight = 2048 * 2;
 
@@ -62,42 +58,6 @@ function init() {
 
     lightGroup.add(sun);
     lightGroup.add(sun.target);
-
-    createSideLight = function(x,z,top){
-    	var light = new THREE.DirectionalLight(0xffffff, 1);
-	    light.position.set(x,0,z);
-	    light.position.multiplyScalar(size*2);
-	    light.position.y = sun.position.y;
-
-	    light.target.position.set(light.position.x,0,light.position.z);
-
-	    light.castShadow = true;
-
-	    light.onlyShadow = true;
-	    light.shadowCameraNear = shadowNear;
-	    light.shadowCameraFar = shadowFar;
-
-	    light.shadowMapBias = 0.01;
-	    light.shadowMapDarkness = 0.5;
-	    light.shadowMapWidth = 1280;
-	    light.shadowMapHeight = 1280;
-
-	    light.shadowCameraLeft = -size * ((top)? 2 : 1);
-	    light.shadowCameraRight = size * ((top)? 2 : 1);
-	    light.shadowCameraTop = size * ((top)? 1 : 2);
-	    light.shadowCameraBottom = -size * ((top)? 1 : 2);
-
-	    // light.shadowCameraVisible = true;
-
-	    lightGroup.add(light);
-	    lightGroup.add(light.target);
-    }
-
-    // createSideLight(-0.5,1,false)
-    // createSideLight(0.5,-1,false)
-
-    // createSideLight(1,0.5,true)
-    // createSideLight(-1,-0.5,true)
 
     lightGroup.rotateX(THREE.Math.degToRad(20));
     lightGroup.rotateZ(THREE.Math.degToRad(40));
@@ -115,12 +75,12 @@ function init() {
 
 	container.innerHTML = "";
 
-	container.appendChild( renderer.domElement );
+	container.appendChild(renderer.domElement);
 
 	stats = new Stats();
 	stats.domElement.style.position = 'absolute';
 	stats.domElement.style.top = '0px';
-	container.appendChild( stats.domElement );
+	container.appendChild(stats.domElement);
 }
 
 function update(){
@@ -133,40 +93,13 @@ function update(){
 function animate() {
 	stats.update();
 
-	//move
-	var rotation = controls.getDirection(new THREE.Vector3());
-	var oldPos = controls.getObject().position.clone();
+	player.update();
 
-	//y
-	if(moveUp) controls.getObject().translateY(movementSpeed)
-	if(moveDown) controls.getObject().translateY(-movementSpeed)
-
-	var pos = controls.getObject().position.clone()
-	if(moveUp) pos.y += 15;
-	if(moveDown) pos.y -= 15;
-	pos.divideScalar(map.blockSize).floor();
-	if(map.getBlock(pos) instanceof SolidBlock) controls.getObject().position.y = oldPos.y;
-
-	//z
-	if(moveForward) controls.getObject().translateZ(-movementSpeed)
-	if(moveBackward) controls.getObject().translateZ(movementSpeed * 0.6)
-
-	//x
-	if(moveRight) controls.getObject().translateX(movementSpeed * 0.6)
-	if(moveLeft) controls.getObject().translateX(-movementSpeed * 0.6)
-
-	var pos = controls.getObject().position.clone()
-	pos.divideScalar(map.blockSize).floor();
-	if(map.getBlock(pos) instanceof SolidBlock){
-		controls.getObject().position.x = oldPos.x;
-		controls.getObject().position.z = oldPos.z;
-	}
-
-	lightGroup.position.copy(controls.getObject().position);
+	lightGroup.position.copy(player.position);
 }
 
 function render() {
-	renderer.render( scene, camera );
+	renderer.render( scene, player.camera );
 }
 
 function loadChunkLoop(){
@@ -174,7 +107,7 @@ function loadChunkLoop(){
 	var func = function(x,z,dist,cb){
 		var loaded = true;
 		for (var y = -depth; y <= depth; y++) {
-			var position = controls.getObject().position.clone();
+			var position = player.position.clone();
 			position.x = Math.floor(position.x / (map.chunkSize*map.blockSize)) + x;
 			position.y = Math.floor(position.y / (map.chunkSize*map.blockSize)) + y;
 			position.z = Math.floor(position.z / (map.chunkSize*map.blockSize)) + z;
@@ -186,7 +119,7 @@ function loadChunkLoop(){
 			// cb = _.after(depth*2+1,cb);
 			//load
 			for (var y = -depth; y <= depth; y++) {
-				var position = controls.getObject().position.clone();
+				var position = player.position.clone();
 				position.x = Math.floor(position.x / (map.chunkSize*map.blockSize)) + x;
 				position.y = Math.floor(position.y / (map.chunkSize*map.blockSize)) + y;
 				position.z = Math.floor(position.z / (map.chunkSize*map.blockSize)) + z;
@@ -218,7 +151,7 @@ function loadChunkLoop(){
 }
 
 function unloadChunkLoop(){
-	var position = controls.getObject().position.clone();
+	var position = player.position.clone();
 	position.x = Math.floor(position.x / (map.chunkSize*map.blockSize));
 	position.y = Math.floor(position.y / (map.chunkSize*map.blockSize));
 	position.z = Math.floor(position.z / (map.chunkSize*map.blockSize));
@@ -308,17 +241,18 @@ $(document).ready(function() {
 	map.setChunkGenerator(chunkGenerator);
 
 	//set cameras position
-	controls.getObject().position.x = (map.chunkGenerator.options.width*map.blockSize) / 2;
-	controls.getObject().position.z = (map.chunkGenerator.options.height*map.blockSize) / 2;
+	player.position.x = (map.chunkGenerator.options.width*map.blockSize) / 2;
+	player.position.z = (map.chunkGenerator.options.height*map.blockSize) / 2;
 	var y = map.chunkGenerator.getY(
-			Math.floor(controls.getObject().position.x/map.blockSize),
-			Math.floor(controls.getObject().position.z/map.blockSize)
+			Math.floor(player.position.x/map.blockSize),
+			Math.floor(player.position.z/map.blockSize)
 		);
-	controls.getObject().position.y = (Math.max(y[0],y[1],y[2],y[3]) + 4) * map.blockSize;
+	player.position.y = (Math.max(y[0],y[1],y[2],y[3]) + 4) * map.blockSize;
+	// player.position.set(64,64,64);
 
 	$(window).resize(function(event) {
-		camera.aspect = window.innerWidth / window.innerHeight;
-		camera.updateProjectionMatrix();
+		player.camera.aspect = window.innerWidth / window.innerHeight;
+		player.camera.updateProjectionMatrix();
 
 		renderer.setSize( window.innerWidth, window.innerHeight );
 	});
@@ -330,73 +264,10 @@ $(document).ready(function() {
 	//movement
 	$('body').keydown(function(event) {
 		event.preventDefault();
-		switch ( event.keyCode ) {
-			case 38: // up
-			case 87: // w
-				moveForward = true;
-				break;
-
-			case 37: // left
-			case 65: // a
-				moveLeft = true; break;
-
-			case 40: // down
-			case 83: // s
-				moveBackward = true;
-				break;
-
-			case 39: // right
-			case 68: // d
-				moveRight = true;
-				break;
-
-			case 32: // space
-				moveUp = true;
-				break;
-
-			case 18: // ctrl
-				moveDown = true;
-				break;
-
-			case 16: // shift
-				movementSpeed = 10;
-				break;
-		}
+		player.keydown(event);
 	}).keyup(function(event) {
 		event.preventDefault();
-		switch ( event.keyCode ) {
-			case 38: // up
-			case 87: // w
-				moveForward = false;
-				break;
-
-			case 37: // left
-			case 65: // a
-				moveLeft = false; 
-				break;
-
-			case 40: // down
-			case 83: // s
-				moveBackward = false;
-				break;
-
-			case 39: // right
-			case 68: // d
-				moveRight = false;
-				break;
-
-			case 32: // space
-				moveUp = false;
-				break;
-
-			case 18: // ctrl
-				moveDown = false;
-				break;
-
-			case 16: // shift
-				movementSpeed = 6;
-				break;
-		}
+		player.keyup(event);
 	});
 
 	//pointer lock
@@ -404,12 +275,12 @@ $(document).ready(function() {
 
 	var pointerlockchange = function ( event ) {
 		if ( document.pointerLockElement === element || document.mozPointerLockElement === element || document.webkitPointerLockElement === element ) {
-			controls.enabled = true;
+			player.controls.enabled = true;
 
 			$('#pointer-lock').hide();
 		} 
 		else {
-			controls.enabled = false;
+			player.controls.enabled = false;
 
 			$('#pointer-lock').css('display','-webkit-box');
 			$('#pointer-lock').css('display','-moz-box');

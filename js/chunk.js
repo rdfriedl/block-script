@@ -96,6 +96,7 @@ Chunk.prototype = {
         this.map.removeChunk(this.position,cb);
     },
     _remove: function(){
+        this.mesh.geometry.dispose();
         this.map.group.remove(this.mesh);
     },
     getNeighbor: function(dir){

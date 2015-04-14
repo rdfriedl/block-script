@@ -30,6 +30,7 @@ map = {
 		}
 	},
 	loadChunk: function(position,cb){
+		if(!this.mapLoader) return;
 		var id = position.x+'|'+position.y+'|'+position.z;
 		var chunk = new Chunk(position,this);
 		chunk.loading = true;

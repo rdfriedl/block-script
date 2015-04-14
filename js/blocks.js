@@ -227,11 +227,6 @@ Block.prototype = {
 	}
 }
 Object.defineProperties(Block.prototype,{
-	id: {
-		get: function(){
-			return map.blocks.indexOf(this.prototype.constructor);
-		}
-	},
 	worldPosition: {
 		get: function(){
 			return this.chunk.position.clone().multiplyScalar(map.chunkSize).add(this.position);
