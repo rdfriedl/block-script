@@ -32,7 +32,7 @@ MapLoaderIndexeddb.prototype = {
 		// 	console.log(data);
 		// 	if(cb) cb(data);
 		// })
-		this.db.chunks.get(position.x+'|'+position.y+'|'+position.z,function(data){
+		this.db.chunks.get(position.toString(),function(data){
 			if(data){
 				data = data.data;
 			}
@@ -41,7 +41,7 @@ MapLoaderIndexeddb.prototype = {
 	},
 	saveChunk: function(chunk,cb){
 		this.db.chunks.put({
-			id: chunk.position.x+'|'+chunk.position.y+'|'+chunk.position.z,
+			id: chunk.position.toString(),
 			data: chunk.exportData()
 		})
 		if(cb) cb();

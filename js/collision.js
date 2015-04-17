@@ -220,7 +220,21 @@ collisions = {
                 normal.z = (to.z < 0)? 1 : -1;
             }
             else{ //looks like two sides collided at the same time
-            	
+                if(Math.abs(to.y) < Math.abs(to.x) && Math.abs(to.y) < Math.abs(to.z)){
+                    normal.x = 0;
+                    normal.y = (to.y < 0)? 1 : -1;
+                    normal.z = 0;
+                }
+                else if(Math.abs(to.x) < Math.abs(to.y) && Math.abs(to.x) < Math.abs(to.z)){
+                    normal.x = (to.x < 0)? 1 : -1;
+                    normal.y = 0;
+                    normal.z = 0;
+                }
+                else if(Math.abs(to.z) < Math.abs(to.x) && Math.abs(to.z) < Math.abs(to.y)){
+                    normal.x = 0;
+                    normal.y = 0;
+                    normal.z = (to.z < 0)? 1 : -1;
+                }
             }
 
             // return the time of collision

@@ -127,6 +127,7 @@ $(document).ready(function() {
 	states.update();
 
 	//show menu
+	$('body').fadeIn(500);
 	states.enableState('menu');
 	$(document).on('contextmenu',function(event){
 		event.preventDefault();
