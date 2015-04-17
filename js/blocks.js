@@ -11,6 +11,8 @@ blocks = {
 		for (var i in this.blocks) {
 			var block = this.blocks[i].prototype;
 
+			if(!(block instanceof SolidBlock)) continue;
+
 			if(_.isArray(block.material)){
 				for (var k = 0; k < 3; k++) {
 					if(!block.material[k]) block.material[k] = [];
@@ -37,56 +39,37 @@ blocks = {
 		};
 		this.blockMaterial = new THREE.MeshFaceMaterial(materials);
 	},
-	createBlockFromName: function(name,position,data,chunk){
-		if(this.blocks[name]){
-			return new this.blocks[name](position,data,chunk);
+	createBlock: function(id,position,data,chunk){
+		var block = this.getBlock(id);
+		if(block){
+			return new block(position,data,chunk);
 		}
 		else{
-			console.error('missing block: '+name);
-			return new this.createBlockFromName('Air',position,data,chunk);
+			console.error('missing block: '+id);
+			return this.createBlock('air',position,data,chunk);
 		}
-	},
-	createBlockFromID: function(id,position,data,chunk){
-		var k = 0;
-		for(var i in this.blocks){
-			if(k++ == id){
-				return new this.blocks[i](position,data,chunk);
-			}
-		}
-		console.error('missing block with ID: '+id);
-		return new this.createBlockFromName('Air',position,data,chunk);
-	},
-	nameToID: function(name){
-		var k = 0;
-		for(var i in this.blocks){
-			if(i.toLowerCase() == name || i == name){
-				return k;
-			}
-			k++;
-		}
-		console.error('missing block: '+name)
-		return this.nameToID('air')
-	},
-	IDToName: function(id){
-		var k = 0;
-		for(var i in this.blocks){
-			if(k++ == id){
-				return i;
-			}
-		}
-		console.error('missing block with ID: '+id)
-		return 'Air';
 	},
 
+	getBlock: function(id){
+		return this.blocks[id.toLowerCase()];
+	},
 	addBlock: function(block){
-		//block is the init function for the block
-		this.blocks[block.name] = block;
+		var id = block.name;
+		if(this.getBlock(id)){
+			console.error('block with id: '+id.toLowerCase()+' already exists');
+			return;
+		}
+		this.blocks[id.toLowerCase()] = block;
 	},
 	removeBlock: function(block){
-		if(this.blocks[block.name]){
-			delete this.blocks[block.name];
+		if(typeof block == 'string') block = this.getBlock(block);
+		if(block){
+			if(this.blocks[block.name]){
+				delete this.blocks[block.name.toLowerCase()];
+			}
 		}
 	},
+
 	extend: function(init,proto,extend){
 		extend = extend || this.Block;
 		init = init || function(){};
@@ -176,80 +159,76 @@ Block.prototype = {
 	chunk: undefined,
 	position: new THREE.Vector3(0,0,0),
 	visible: true,
+	placeSound: [],
+	breakSound: [],
 
 	inportData: function(data){
 		//nothing for now
 	},
 	exportData: function(){
 		return {
-			id: this.id
+			id: this.__proto__.constructor.name //get the name of the class
 		};
 	},
-	getNeighbor: function(dir){
-        var x = this.position.x,
-            y = this.position.y,
-            z = this.position.z;
-        switch(dir){
-            case 'x':
-                x += 1;
-                break;
-            case '-x':
-                x -= 1;
-                break;
-            case 'y':
-                y += 1;
-                break;
-            case '-y':
-                y -= 1;
-                break;
-            case 'z':
-                z += 1;
-                break;
-            case '-z':
-                z -= 1;
-                break;
-        }
+	replace: function(block,dontBuild){
+		if(!_.isString(block)) console.error('first argument needs to be a block id');
+
+		var newBlock = this.chunk.setBlock(this.position,block,true);
+		if(!dontBuild){
+			this.chunk.build()
+			var v = this.edge;
+			if(!v.empty()){
+				v = v.split();
+				for (var i = 0; i < v.length; i++) {
+					var chunk = this.chunk.getNeighbor(v[i]);
+					if(chunk) chunk.build();
+				};
+			}
+		}
+
+		return newBlock;
+	},
+	getNeighbor: function(v){
+        if(_.isArray(v)) v = new THREE.Vector3().fromArray(v);
+		v.sign();
+		var pos = v.clone().add(this.position);
 
        	var chunk = this.chunk;
-        if(x < 0 || y < 0 || z < 0 || x >= map.chunkSize || y >= map.chunkSize || z >= map.chunkSize){
-        	chunk = chunk.getNeighbor(dir);
+        if(pos.x < 0 || pos.y < 0 || pos.z < 0 || pos.x >= settings.chunkSize || pos.y >= settings.chunkSize || pos.z >= settings.chunkSize){
+        	chunk = chunk.getNeighbor(v.clone());
         	if(!chunk) return; //dont go any futher if we can find the chunk
         }
 
-        if(x < 0) x=9;
-        if(y < 0) y=9;
-        if(z < 0) z=9;
-        if(x >= map.chunkSize) x=0;
-		if(y >= map.chunkSize) y=0;
-		if(z >= map.chunkSize) z=0;
+        if(this.edge){
+	        if(pos.x < 0) pos.x=9;
+	        if(pos.y < 0) pos.y=9;
+	        if(pos.z < 0) pos.z=9;
+	        if(pos.x >= settings.chunkSize) pos.x=0;
+			if(pos.y >= settings.chunkSize) pos.y=0;
+			if(pos.z >= settings.chunkSize) pos.z=0;
+        }
 
-        return chunk.blocks[positionToIndex(new THREE.Vector3(x,y,z),map.chunkSize)];
+        return chunk.getBlock(pos);
 	}
 }
 Object.defineProperties(Block.prototype,{
 	worldPosition: {
 		get: function(){
-			return this.chunk.position.clone().multiplyScalar(map.chunkSize).add(this.position);
+			return this.chunk.position.clone().multiplyScalar(settings.chunkSize).add(this.position);
 		}
 	},
-    blockUp: {
-        get: function(){ return this.getNeighbor('y') },
-    },
-    blockDown: {
-        get: function(){ return this.getNeighbor('-y') },
-    },
-    blockRight: {
-        get: function(){ return this.getNeighbor('x') },
-    },
-    blockLeft: {
-        get: function(){ return this.getNeighbor('-x') },
-    },
-    blockFoward: {
-        get: function(){ return this.getNeighbor('z') },
-    },
-    blockBack: {
-        get: function(){ return this.getNeighbor('-z') },
-    },
+	edge: {
+		get: function(){
+			if(!(this.position.x > 0 && this.position.y > 0 && this.position.z > 0 && this.position.x < settings.chunkSize-1 && this.position.y < settings.chunkSize-1 && this.position.z < settings.chunkSize-1)){
+				return new THREE.Vector3(
+					this.position.x == 0? -1 : (this.position.x == settings.chunkSize-1)? 1 : 0, 
+					this.position.y == 0? -1 : (this.position.y == settings.chunkSize-1)? 1 : 0, 
+					this.position.z == 0? -1 : (this.position.z == settings.chunkSize-1)? 1 : 0
+					);
+			}
+			return new THREE.Vector3();
+		}
+	}
 })
 Block.prototype.constructor = Block;
 

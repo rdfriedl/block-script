@@ -2,37 +2,46 @@ Chunk = function(position,map){
     this.blocks = [];
     this.position = position;
     this.map = map;
+
+    this.group = new THREE.Group();
+    this.group.position.copy(this.worldPosition.multiplyScalar(settings.blockSize));
+    this.map.group.add(this.group);
 }
 Chunk.prototype = {
     blocks: [],
     position: new THREE.Vector3(),
-    loading: false,
-    mesh: undefined,
-    map: undefined,
-    worker: undefined,
-    setBlock: function(position,data){
-        //data is the export of a block or an id from the genorator
-        if(_.isNumber(data)) data = {id: data};
-        if(_.isString(data)) data = {id: blocks.nameToID(data)};
 
-        var block = blocks.createBlockFromID(data.id,position,data,this);
-        if(block){
-            this.blocks[positionToIndex(position,map.chunkSize)] = block;
+    loading: false,
+    saving: false,
+    saved: true,
+    
+    mesh: undefined,
+    group: undefined,
+    map: undefined,
+    setBlock: function(position,data,dontBuild){
+        //data is the export of a block or an id from the genorator
+        if(_.isString(data)) data = {id: data};
+
+        var block = blocks.createBlock(data.id,position,data,this);
+        this.blocks[positionToIndex(position,settings.chunkSize)] = block;
+
+        if(!dontBuild){
+            this.build()
         }
+
+        return block;
+    },
+    getBlock: function(position){
+        return this.blocks[positionToIndex(position,settings.chunkSize)];
     },
     inportData: function(data){ //data is a array of blocks
         // this.blocks = data;
         data = data || [];
 
         for (var i = 0; i < data.length; i++) {
-            this.setBlock(indexToPosition(i,map.chunkSize),data[i]);
+            this.setBlock(indexToPosition(i,settings.chunkSize),data[i],true);
         };
-        try{
-            this.build();
-        }
-        catch(err){
-            console.log(err)
-        }
+        this.build();
     },
     exportData: function(){
         //going to have to loop through block array and export each one
@@ -42,9 +51,10 @@ Chunk.prototype = {
         };
         return data;
     },
-    build: function(cb){
+    build: function(){
         if(this.mesh){
-            this.map.group.remove(this.mesh);
+            this.mesh.geometry.dispose();
+            this.group.remove(this.mesh);
         }
 
         var meshed = CulledMesh(this.blocks);
@@ -81,73 +91,41 @@ Chunk.prototype = {
         this.mesh.castShadow = true;
         this.mesh.receiveShadow = true;
 
-        this.mesh.position.copy(this.position);
-        this.mesh.position.multiplyScalar(map.chunkSize).multiplyScalar(map.blockSize);
-        this.mesh.scale.set(map.blockSize,map.blockSize,map.blockSize);
+        this.mesh.scale.set(settings.blockSize,settings.blockSize,settings.blockSize);
 
-        this.map.group.add(this.mesh);
-
-        if(cb) cb();
+        this.group.add(this.mesh);
     },
+    dispose: function(){
+        this.mesh.geometry.dispose();
+        this.map.group.remove(this.group);
+    },
+    getNeighbor: function(v){
+        if(_.isArray(v)) v = new THREE.Vector3().fromArray(v);
+        v.sign();
+        v.add(this.position);
+
+        var id = v.toString();
+        if(this.map.chunks[id]){
+            return this.map.chunks[id];
+        }
+    },
+
     save: function(cb){
         this.map.saveChunk(this.position,cb);
     },
     remove: function(cb){
         this.map.removeChunk(this.position,cb);
     },
-    _remove: function(){
-        this.mesh.geometry.dispose();
-        this.map.group.remove(this.mesh);
-    },
-    getNeighbor: function(dir){
-        var x = this.position.x,
-            y = this.position.y,
-            z = this.position.z;
-        switch(dir){
-            case 'x':
-                x+=1;
-                break;
-            case '-x':
-                x-=1;
-                break;
-            case 'y':
-                y+=1;
-                break;
-            case '-y':
-                y-=1;
-                break;
-            case 'z':
-                z+=1;
-                break;
-            case '-z':
-                z-=1;
-                break;
-        }
-        var id = x+'|'+y+'|'+z;
-        if(this.map.chunks[id]){
-            return this.map.chunks[id];
-        }
+    unload: function(cb){
+        this.map.unloadChunk(this.position,cb);
     }
 }
 Chunk.prototype.constructor = Chunk;
 Object.defineProperties(Chunk.prototype,{
-    chunkUp: {
-        get: function(){ return this.getNeighbor('y') },
-    },
-    chunkDown: {
-        get: function(){ return this.getNeighbor('-y') },
-    },
-    chunkRight: {
-        get: function(){ return this.getNeighbor('x') },
-    },
-    chunkLeft: {
-        get: function(){ return this.getNeighbor('-x') },
-    },
-    chunkFoward: {
-        get: function(){ return this.getNeighbor('z') },
-    },
-    chunkBack: {
-        get: function(){ return this.getNeighbor('-z') },
+    worldPosition: {
+        get: function(){
+            return this.position.clone().multiplyScalar(settings.chunkSize);
+        }
     },
 })
 
@@ -301,21 +279,21 @@ function CulledMesh(blocks) {
     var vertices = [];
     var verticeCache = {};
     var faces = [];
-    for(var index = 0; index < map.chunkSize*map.chunkSize*map.chunkSize; index++){
+    for(var index = 0; index < settings.chunkSize*settings.chunkSize*settings.chunkSize; index++){
         var block = blocks[index];
 
         //if its not a block skip it
         if(!(block instanceof Block)) continue;
 
         var otherBlocks = [
-            [block.getNeighbor('x'),0],
-            [block.getNeighbor('y'),1],
-            [block.getNeighbor('z'),2],
+            [block.getNeighbor([1,0,0]),0],
+            [block.getNeighbor([0,1,0]),1],
+            [block.getNeighbor([0,0,1]),2],
         ];
         //if we are at the edge then check all 6 blocks
-        if(block.position.x == 0) otherBlocks.push([block.getNeighbor('-x'),0]);
-        if(block.position.y == 0) otherBlocks.push([block.getNeighbor('-y'),1]);
-        if(block.position.z == 0) otherBlocks.push([block.getNeighbor('-z'),2]);
+        if(block.position.x == 0) otherBlocks.push([block.getNeighbor([-1,0,0]),0]);
+        if(block.position.y == 0) otherBlocks.push([block.getNeighbor([0,-1,0]),1]);
+        if(block.position.z == 0) otherBlocks.push([block.getNeighbor([0,0,-1]),2]);
 
         //Generate faces
         for(var d=0; d<otherBlocks.length; ++d){

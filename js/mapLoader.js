@@ -44,5 +44,6 @@ MapLoaderIndexeddb.prototype = {
 			id: chunk.position.x+'|'+chunk.position.y+'|'+chunk.position.z,
 			data: chunk.exportData()
 		})
+		if(cb) cb();
 	}
 };

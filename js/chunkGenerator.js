@@ -32,8 +32,8 @@ ChunkGeneratorHills.prototype = {
 	generateChunk: function(position,cb){
 		var data = [];
 
-		for (var i = 0; i < map.chunkSize*map.chunkSize*map.chunkSize; i++) {
-			var pos = indexToPosition(i,map.chunkSize).add(position.clone().multiplyScalar(map.chunkSize));
+		for (var i = 0; i < settings.chunkSize*settings.chunkSize*settings.chunkSize; i++) {
+			var pos = indexToPosition(i,settings.chunkSize).add(position.clone().multiplyScalar(settings.chunkSize));
 			var lvls = this.getY(pos.x,pos.z);
 
 			var f = false;
@@ -74,8 +74,8 @@ RoomGenerator.prototype = {
 	generateChunk: function(position,cb){
 		var data = [];
 
-		for (var i = 0; i < map.chunkSize*map.chunkSize*map.chunkSize; i++) {
-			var pos = indexToPosition(i,map.chunkSize)//.add(position.clone().multiplyScalar(map.chunkSize));
+		for (var i = 0; i < settings.chunkSize*settings.chunkSize*settings.chunkSize; i++) {
+			var pos = indexToPosition(i,settings.chunkSize)//.add(position.clone().multiplyScalar(settings.chunkSize));
 
 			if(pos.x == 0 || pos.y == 0 || pos.z == 0){
 				if(pos.y < 3 && pos.y > 0 && (pos.x == 5 || pos.z == 5)){
@@ -101,8 +101,8 @@ FladGenerator.prototype = {
 	generateChunk: function(position,cb){
 		var data = [];
 
-		for (var i = 0; i < map.chunkSize*map.chunkSize*map.chunkSize; i++) {
-			var pos = indexToPosition(i,map.chunkSize).add(position.clone().multiplyScalar(map.chunkSize));
+		for (var i = 0; i < settings.chunkSize*settings.chunkSize*settings.chunkSize; i++) {
+			var pos = indexToPosition(i,settings.chunkSize).add(position.clone().multiplyScalar(settings.chunkSize));
 
 			if(pos.y < 10){
 				data.push('stone');

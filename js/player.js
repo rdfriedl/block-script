@@ -1,51 +1,101 @@
-player = {
+function Player(state,scene,camera){
+	this.state = state;
+	this.scene = scene;
+	this.camera = camera;
+	this.rayCaster = new THREE.Raycaster();
+	this.rayCaster.far = settings.blockSize * 5;
+
+	this.controls = new THREE.PointerLockControls(this.camera);
+	this.controls.enabled = false;
+	this.object = this.controls.getObject();
+	this.velocity = this.velocity.clone();;
+	this.collision = this.collision.clone();
+	this.movement = Object.create(this.movement);
+	this.selection = Object.create(this.selection);
+	this.selection.position = new THREE.Vector3();
+	this.selection.normal = new THREE.Vector3();
+
+	this.scene.add(this.object);
+
+	//selection
+	this.selectionObject = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), new THREE.MeshBasicMaterial({
+		color: 0x990000,
+		transparent: true,
+		opacity: 0.2,
+		shading: THREE.NoShading
+	}));
+	// this.selectionObject.visible = false;
+	this.scene.add(this.selectionObject);
+
+	//movement events
+	$(document).keydown(this.keydown.bind(this)).keyup(this.keyup.bind(this));
+	$(document).mousedown(function(event){
+		if(!this.enabled) return;
+
+		switch(event.originalEvent.button){
+			case THREE.MOUSE.LEFT:
+				this.placeBlock()
+				break;
+			case THREE.MOUSE.RIGHT:
+				this.removeBlock()
+				break;
+		}
+	}.bind(this))
+}
+Player.prototype = {
+	_enabled: false,
+	scene: undefined,
+	camera: undefined,
 	controls: undefined,
 	object: undefined,
-	camera: undefined,
+	selectionObject: undefined,
 	movement: {
 		walkSpeed: 2.5,
-		runSpeed: 4,
+		sprintSpeed: 4,
 
-		speed: 3,
-		yspeed: 0,
+		up: false,
+		left: false,
+		down: false,
+		right: false,
 		jump: false,
-		zspeed: 0,
-		xspeed: 0,
+		crouch: false,
+		sprint: false,
 
 		gravity: 0.45,
+		fallSpeed: 0,
 		onGround: false
 	},
+	selection: {
+		block: undefined,
+		position: new THREE.Vector3(),
+		normal: new THREE.Vector3()
+	},
+	velocity: new THREE.Vector3(),
 	collision: new CollisionEntity({
 		box: new THREE.Box3(new THREE.Vector3(-11,-48,-11), new THREE.Vector3(11,8,11)),
 		group: 'player'
 	}),
-	init: function(){
-		this.camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 20000);
-
-		this.controls = new THREE.PointerLockControls(this.camera);
-		this.object = this.controls.getObject();
-		scene.add(this.object);
-	},
 	keydown: function(event){
+		if(!this.enabled) return;
 		switch ( event.keyCode ) {
 			case 38: // up
 			case 87: // w
-				this.movement.zspeed = 1;
+				this.movement.up = true;
 				break;
 
 			case 37: // left
 			case 65: // a
-				this.movement.xspeed = -1;
+				this.movement.left = true;
 				break;
 
 			case 40: // down
 			case 83: // s
-				this.movement.zspeed = -1;
+				this.movement.down = true;
 				break;
 
 			case 39: // right
 			case 68: // d
-				this.movement.xspeed = 1;
+				this.movement.right = true;
 				break;
 
 			case 32: // space
@@ -53,33 +103,35 @@ player = {
 				break;
 
 			case 18: // ctrl
+				this.movement.crouch = true;
 				break;
 
 			case 16: // shift
-				this.movement.speed = this.movement.runSpeed;
+				this.movement.sprint = true;
 				break;
 		}
 	},
 	keyup: function(event){
+		if(!this.enabled) return;
 		switch ( event.keyCode ) {
 			case 38: // up
 			case 87: // w
-				this.movement.zspeed = 0;
+				this.movement.up = false;
 				break;
 
 			case 37: // left
 			case 65: // a
-				this.movement.xspeed = 0;
+				this.movement.left = false;
 				break;
 
 			case 40: // down
 			case 83: // s
-				this.movement.zspeed = 0;
+				this.movement.down = false;
 				break;
 
 			case 39: // right
 			case 68: // d
-				this.movement.xspeed = 0;
+				this.movement.right = false;
 				break;
 
 			case 32: // space
@@ -87,154 +139,148 @@ player = {
 				break;
 
 			case 18: // ctrl
+				this.movement.crouch = false;
 				break;
 
 			case 16: // shift
-				this.movement.speed = this.movement.walkSpeed;
+				this.movement.sprint = false;
 				break;
 		}
 	},
 	update: function(){
-		var oldPos = this.position.clone(), dir, col;
-
-		//jump
-		if(this.movement.onGround && this.movement.jump) this.movement.yspeed = 6;
-		this.movement.onGround = false;
+		if(!this.enabled) return;
+		var oldPos = this.position.clone(), col;
 
 		//fall
-		this.movement.yspeed -= this.movement.gravity;
+		this.movement.fallSpeed -= this.movement.gravity;
 
-		this.object.translateX(this.movement.speed * 0.6 * this.movement.xspeed);
-		this.object.translateY(this.movement.yspeed);
-		this.object.translateZ(this.movement.speed * -this.movement.zspeed);
-		to = this.position.clone();
+		//move
+		speed = (this.movement.sprint)? this.movement.sprintSpeed : this.movement.walkSpeed;
+
+		if(this.movement.onGround && this.movement.jump) this.movement.fallSpeed = 6;
+		this.object.translateY(this.movement.fallSpeed);
+		this.movement.onGround = false;
+
+		if(this.movement.up) this.object.translateZ(-speed);
+		if(this.movement.down) this.object.translateZ(speed);
+		if(this.movement.right) this.object.translateX(speed * 0.6);
+		if(this.movement.left) this.object.translateX(-speed * 0.6);
+
+		this.velocity = this.position.clone();
 		this.position.copy(oldPos);
-		to.sub(this.position);
+		this.velocity.sub(this.position);
 
-		col = this.checkCollision(to);
-		this.position.x += to.x * col.entryTime;
-		this.position.y += to.y * col.entryTime;
-		this.position.z += to.z * col.entryTime;
+		col = collisions.collideWithBlocks(this,this.state.map);
+		this.position.x += this.velocity.x * col.entryTime;
+		this.position.y += this.velocity.y * col.entryTime;
+		this.position.z += this.velocity.z * col.entryTime;
 		this.collision.position.copy(this.position);
-		
+
 		if(col.normal.y !== 0){
-			this.movement.yspeed = 0;
+			this.movement.fallSpeed = 0;
 		}
 		if(col.normal.y == 1){
 			this.movement.onGround = true;
 		}
 
 		//slide
-		to.x = (col.normal.x !== 0)? 0 : to.x - (to.x * col.entryTime);
-		to.y = (col.normal.y !== 0)? 0 : to.y - (to.y * col.entryTime);
-		to.z = (col.normal.z !== 0)? 0 : to.z - (to.z * col.entryTime);
-		col = this.checkCollision(to);
-		this.position.x += to.x * col.entryTime;
-		this.position.y += to.y * col.entryTime;
-		this.position.z += to.z * col.entryTime;
+		this.velocity.x = (col.normal.x !== 0)? 0 : this.velocity.x - (this.velocity.x * col.entryTime);
+		this.velocity.y = (col.normal.y !== 0)? 0 : this.velocity.y - (this.velocity.y * col.entryTime);
+		this.velocity.z = (col.normal.z !== 0)? 0 : this.velocity.z - (this.velocity.z * col.entryTime);
+		col = collisions.collideWithBlocks(this,this.state.map);
+		this.position.x += this.velocity.x * col.entryTime;
+		this.position.y += this.velocity.y * col.entryTime;
+		this.position.z += this.velocity.z * col.entryTime;
 		this.collision.position.copy(this.position);
 
 		//slide
-		to.x = (col.normal.x !== 0)? 0 : to.x - (to.x * col.entryTime);
-		to.y = (col.normal.y !== 0)? 0 : to.y - (to.y * col.entryTime);
-		to.z = (col.normal.z !== 0)? 0 : to.z - (to.z * col.entryTime);
-		col = this.checkCollision(to);
-		this.position.x += to.x * col.entryTime;
-		this.position.y += to.y * col.entryTime;
-		this.position.z += to.z * col.entryTime;
+		this.velocity.x = (col.normal.x !== 0)? 0 : this.velocity.x - (this.velocity.x * col.entryTime);
+		this.velocity.y = (col.normal.y !== 0)? 0 : this.velocity.y - (this.velocity.y * col.entryTime);
+		this.velocity.z = (col.normal.z !== 0)? 0 : this.velocity.z - (this.velocity.z * col.entryTime);
+		col = collisions.collideWithBlocks(this,this.state.map);
+		this.position.x += this.velocity.x * col.entryTime;
+		this.position.y += this.velocity.y * col.entryTime;
+		this.position.z += this.velocity.z * col.entryTime;
 		this.collision.position.copy(this.position);
+
+		// pick block
+		this.pickBlock();
 	},
-	checkCollision: function(velocity){
-		var toGrid = function(vec){
-			return vec.divideScalar(map.blockSize).floor();
+	pickBlock: function(){
+		//cast ray to find block data
+		this.rayCaster.set(this.position, this.controls.getDirection(new THREE.Vector3()));
+		// this.rayCaster.setFromCamera(new THREE.Vector2(), this.camera);
+
+		var pos = this.position.clone().divideScalar(settings.blockSize).floor().divideScalar(settings.chunkSize).floor();
+		var chunk = this.state.map.getChunk(pos);
+		if(chunk){
+			// var chunks = [chunk.mesh];
+			var intersects = this.rayCaster.intersectObject(this.state.map.group,true);
+			for (var i = 0; i < intersects.length; i++) {
+				var pos = new THREE.Vector3().add(intersects[i].point).sub(intersects[i].face.normal);
+				pos.divideScalar(settings.blockSize).floor();
+
+				var block = this.state.map.getBlock(pos);
+
+				//see if its a solid block
+				if(block instanceof SolidBlock){
+					this.selection.position.copy(block.worldPosition);
+					this.selection.block = block;
+					this.selection.normal.copy(intersects[i].face.normal);
+
+					this.selectionObject.visible = true;
+					this.selectionObject.position.copy(this.selection.block.worldPosition).multiplyScalar(settings.blockSize);
+					this.selectionObject.position.add(new THREE.Vector3(0.5,0.5,0.5).multiplyScalar(settings.blockSize));
+					this.selectionObject.scale.copy(new THREE.Vector3(1,1,1).multiplyScalar(settings.blockSize + 0.1))
+					return;
+				}
+			};
+
+			//if we made it to this point it means there are not intersections
+			this.selectionObject.visible = false;
+			this.selection.block = undefined;
+			this.selection.position.set(0,0,0);
+			this.selection.normal.set(0,0,0);
 		}
-
-		var colInfo = {
-        	entryTime: 1,
-        	exitTime: Infinity,
-        	normal: new THREE.Vector3(),
-        	invEntry: new THREE.Vector3(),
-        	invExit: new THREE.Vector3(),
-        	entry: new THREE.Vector3(1,1,1),
-        	exit: new THREE.Vector3(Infinity,Infinity,Infinity)
-		};
-		var dist = velocity.length();
-		var loops = (dist > 20)? dist / 10 : 1;
-		var done = false;
-
-		//test for blocks
-		for (var i = 0; i <= loops && done == false; i++) {
-			var pos = this.position.clone().add(velocity.clone().divideScalar(loops).multiplyScalar(i));
-			//check corners
-			var box = this.collision._box.clone().translate(pos);
-			var corners = [];
-
-			var v = [];
-			if(velocity.y !== 0){
-				v.push(toGrid( new THREE.Vector3(box.max.x, box[velocity.y < 0? 'min' : 'max'].y, box.max.z) ));
-				v.push(toGrid( new THREE.Vector3(box.max.x, box[velocity.y < 0? 'min' : 'max'].y, box.min.z) ));
-				v.push(toGrid( new THREE.Vector3(box.min.x, box[velocity.y < 0? 'min' : 'max'].y, box.max.z) ));
-				v.push(toGrid( new THREE.Vector3(box.min.x, box[velocity.y < 0? 'min' : 'max'].y, box.min.z) ));
-			}
-			if(velocity.x !== 0){
-				v.push(toGrid( new THREE.Vector3(box[velocity.x < 0? 'min' : 'max'].x, box.max.y, box.max.z) ));
-				v.push(toGrid( new THREE.Vector3(box[velocity.x < 0? 'min' : 'max'].x, box.max.y, box.min.z) ));
-				v.push(toGrid( new THREE.Vector3(box[velocity.x < 0? 'min' : 'max'].x, box.min.y, box.max.z) ));
-				v.push(toGrid( new THREE.Vector3(box[velocity.x < 0? 'min' : 'max'].x, box.min.y, box.min.z) ));
-			}
-			if(velocity.z !== 0){
-				v.push(toGrid( new THREE.Vector3(box.max.x, box.max.y, box[velocity.z < 0? 'min' : 'max'].z) ));
-				v.push(toGrid( new THREE.Vector3(box.min.x, box.max.y, box[velocity.z < 0? 'min' : 'max'].z) ));
-				v.push(toGrid( new THREE.Vector3(box.max.x, box.min.y, box[velocity.z < 0? 'min' : 'max'].z) ));
-				v.push(toGrid( new THREE.Vector3(box.min.x, box.min.y, box[velocity.z < 0? 'min' : 'max'].z) ));
-			}
-			for (var k = 0; k < v.length; k++) {
-				var id = v[k].x+'|'+v[k].y+'|'+v[k].z;
-				if(corners[id]){
-					corners[id][0]++;
+	},
+	placeBlock: function(){
+		if(this.selection.block){
+			block = this.selection.block.getNeighbor(this.selection.normal);
+			if(block){
+				var newBlock = block.replace('stone');
+				block.chunk.saved = false;
+				//play sound
+				if(newBlock.placeSound.length){
+					createjs.Sound.play(newBlock.placeSound[Math.floor(Math.random() * newBlock.placeSound.length)]);
 				}
-				else{
-					corners[id] = [0,v[k]];
-				}
-			};
-			var c = [];
-			for (var k in corners) {
-				var index = 0;
-
-				for (var j = 0; j < c.length; j++) {
-					if(c[j][0] >= corners[k][0]){
-						index = j;
-						break;
-					}
-				};
-				
-				c.splice(j,0,corners[k]);
-			};
-			corners = c;
-
-			//check for collisions
-			for (var k in corners) {
-				if(done == true) break;
-
-				var block = map.getBlock(corners[k][1]);
-				if(!block) continue;
-
-				if(block instanceof CollisionBlock){
-					var a = collisions.SweptAABB(this.collision,block.collision,velocity);
-					colInfo = a;
-					//had a collision so break out of the loop
-					done = true;
-					break;
-				}
-			};
-		};
-		return colInfo;
+			}
+		}
+	},
+	removeBlock: function(){
+		if(this.selection.block){
+			var block = this.selection.block;
+			block.replace('air');
+			block.chunk.saved = false;
+			//play sound
+			if(block.breakSound.length){
+				createjs.Sound.play(block.breakSound[Math.floor(Math.random() * block.breakSound.length)]);
+			}
+		}
 	}
 }
-Object.defineProperties(player,{
+Object.defineProperties(Player.prototype,{
 	position: {
 		get: function(){
 			return this.object.position;
+		}
+	},
+	enabled: {
+		get: function(){
+			return this._enabled;
+		},
+		set: function(val){
+			this._enabled = val;
+			this.controls.enabled = val;
 		}
 	}
 })
