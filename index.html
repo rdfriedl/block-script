@@ -7,14 +7,14 @@
 
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
-		<link rel="stylesheet" type="text/css" href="css/style.css">
+		<link rel="stylesheet" type="text/css" href="style.css">
 		
 		<script src="https://code.jquery.com/jquery-2.1.3.min.js" defer></script>
 		<script src="js/lib/three.min.js" defer></script>
 		<script src="js/lib/knockout.js" defer></script>
 		<script src="js/lib/knockout-mapping.js" defer></script>
 		<script src="js/lib/underscore-min.js" defer></script>
-		<script src="js/lib/parallel.js" defer></script>
+		<script src="js/lib/minivents.js" defer></script>
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js" defer></script>
 		<script src="https://code.createjs.com/soundjs-0.6.0.min.js" defer></script>
 		
@@ -25,7 +25,7 @@
 
 		<script src="js/lib/functions.js" defer></script>
 		<script src="js/lib/dexie.min.js" defer></script>
-		<script src="js/lib/sortedArray.js" defer></script>
+		<script src="js/util.js" defer></script>
 
 		<!-- custom lib -->
 		<script src="js/collision.js" defer></script>
@@ -36,17 +36,18 @@
 		<!-- states -->
 		<script src="js/states.js" defer></script>
 		<script src="js/states/menu.js" defer></script>
-		<script src="js/states/settings.js" defer></script>
 		<script src="js/states/game.js" defer></script>
 		
 		<!-- blocks -->
 		<script src="js/blocks.js" defer></script>
+		<script src="js/baseBlocks.js" defer></script>
 		<script src="js/defineBlocks.js" defer></script>
 
 		<!-- map -->
 		<script src="js/mapLoader.js" defer></script>
 		<script src="js/chunkGenerator.js" defer></script>
 
+		<script src="js/sound.js" defer></script>
 		<script src="js/main.js" defer></script>
 	</head>
 	<body>
@@ -55,7 +56,19 @@
 				<!-- main -->
 				<div class="menu" data-bind="with: main, visible: menu() == 'main'">
 					<div class="col-xs-12">
-						<h1 style="text-align: center;">Block-Script</h1>
+						<h1 style="text-align: center;">
+							<div class="cube">
+							    <div class="_3dbox">
+							      	<div class="_3dface front"></div>
+							      	<div class="_3dface top"></div>
+							      	<div class="_3dface bottom"></div>
+							      	<div class="_3dface left"></div>
+							      	<div class="_3dface right"></div>
+							      	<div class="_3dface back"></div>
+							    </div>
+							</div>
+							Block-Script
+						</h1>
 					</div>
 					<div class="col-xs-4 col-xs-offset-4">
 						<button type="button" class="btn btn-lg btn-block btn-success" data-bind="click: play">Play</button>
@@ -105,62 +118,35 @@
 				</div>
 			</div>
 			<div id="game">
-				<div id="pointer-lock">
-					<span style="font-size: 30px;">Click to play</span>
-					<br>
-					<small>W,A,S,D or Arrow keys to move, Shift to increase speed, space/alt to go up/down</small>
-				</div>
-				<div id="menus">
-					<div id="menu">
-						
+				<div class="menus">
+					<div class="esc" data-bind="visible: menu() == 'esc'">
+						<div class="col-xs-4 col-xs-offset-4">
+							<button type="button" class="btn btn-lg btn-default btn-block" data-bind="click: back">Back To Game</button>
+						</div>
 					</div>
-					<div id="inventory">
-						
+					<div class="invt panel panel-default" data-bind="with: blocks, visible: menu() == 'invt'">
+						<div class="panel-body" data-bind="foreach: blocks">
+							<!-- ko if: type == 'block' -->
+							<div class="cube" data-bind="click: $root.set($parent.selectedBlock, name ), css: {'selected': name == $parent.selectedBlock() }">
+							    <div class="_3dbox">
+							      	<div class="_3dface front" data-bind="style: {'background': 'url('+ material[0][0] +')', 'background-size': '100%' }"></div>
+							      	<div class="_3dface back" data-bind="style: {'background': 'url('+ material[0][1] +')', 'background-size': '100%' }"></div>
+							      	<div class="_3dface top" data-bind="style: {'background': 'url('+ material[1][0] +')', 'background-size': '100%' }"></div>
+							      	<div class="_3dface bottom" data-bind="style: {'background': 'url('+ material[1][1] +')', 'background-size': '100%' }"></div>
+							      	<div class="_3dface right" data-bind="style: {'background': 'url('+ material[2][0] +')', 'background-size': '100%' }"></div>
+							      	<div class="_3dface left" data-bind="style: {'background': 'url('+ material[2][1] +')', 'background-size': '100%' }"></div>
+							    </div>
+							</div>
+							<!-- /ko -->
+							<!-- ko if: type == 'flat' -->
+							<div class="cube" data-bind="click: $root.set($parent.selectedBlock, name ), css: {'selected': name == $parent.selectedBlock() }">
+								<img style="width: 100%;" data-bind="attr: {'src': material}">
+							</div>
+							<!-- /ko -->
+						</div>
 					</div>
-				</div>
-			</div>
-			<div id="settings">
-				<div class="col-xs-12">
-					<h1 style="text-align: center;">Settings</h1>
-				</div>
-				<div class="col-xs-12">
-					<div role="tabpanel">
-					  	<!-- Nav tabs -->
-					  	<ul class="nav nav-tabs" role="tablist">
-					  	  	<li role="presentation"><a href="#genral" role="tab" data-toggle="tab">Genral</a></li>
-					  	  	<li role="presentation"><a href="#graphics" role="tab" data-toggle="tab">Graphics</a></li>
-					  	  	<li role="presentation"><a href="#sound" role="tab" data-toggle="tab">Sound</a></li>
-					  	  	<li role="presentation"><a href="#store" role="tab" data-toggle="tab">Store</a></li>
-					  	</ul>
-	
-					  	<!-- Tab panes -->
-					  	<div class="tab-content">
-					  	  	<div role="tabpanel" class="tab-pane active" id="genral">...</div>
-					  	  	<div role="tabpanel" class="tab-pane" id="graphics" data-bind="with: graphics">
-					  	  		<div class="row">
-						  	  		<div class="col-xs-4">
-							  	  		<div class="form-group">
-										 	<label class="control-label">View Range</label>
-										 	<input type="number" class="form-control" data-bind="value: viewRange, attr: {min: viewRangeRange()[0], max: viewRangeRange()[1]}">
-										</div>
-						  	  		</div>
-						  	  		<div class="col-xs-4">
-						  	  		</div>
-						  	  		<div class="col-xs-4">
-						  	  		</div>
-					  	  		</div>
-					  	  	</div>
-					  	  	<div role="tabpanel" class="tab-pane" id="sound">...</div>
-					  	  	<div role="tabpanel" class="tab-pane" id="store">...</div>
-					  	</div>
-					</div>
-				</div>
-				<div class="col-xs-4 col-xs-offset-4">
-					<button type="button" class="btn btn-lg btn-block btn-success" data-bind="click: back">Back</button>
 				</div>
 			</div>
 		</div>
-		<div id="container"></div>
-		
 	</body>
 </html>

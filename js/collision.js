@@ -252,7 +252,7 @@ collisions = {
     collideWithBlocks: function(a,map){
         var velocity = a.velocity;
         var toGrid = function(vec){
-            return vec.divideScalar(settings.blockSize).floor();
+            return vec.divideScalar(game.blockSize).floor();
         }
 
         var colInfo = {

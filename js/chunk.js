@@ -3,8 +3,9 @@ Chunk = function(position,map){
     this.position = position;
     this.map = map;
 
+    this.events = new Events();
     this.group = new THREE.Group();
-    this.group.position.copy(this.worldPosition.multiplyScalar(settings.blockSize));
+    this.group.position.copy(this.worldPosition.multiplyScalar(game.blockSize));
     this.map.group.add(this.group);
 }
 Chunk.prototype = {
@@ -18,29 +19,51 @@ Chunk.prototype = {
     mesh: undefined,
     group: undefined,
     map: undefined,
+    events: undefined,
+    /*
+    export
+    inport
+    build
+    blockChange
+    */
     setBlock: function(position,data,dontBuild){
         //data is the export of a block or an id from the genorator
         if(_.isString(data)) data = {id: data};
 
-        var block = blocks.createBlock(data.id,position,data,this);
-        this.blocks[positionToIndex(position,settings.chunkSize)] = block;
+        var oldBlock = '';
+        var pos = positionToIndex(position,game.chunkSize);
 
-        if(!dontBuild){
+        //dispose of the old block
+        if(this.blocks[pos]){
+            oldBlock = this.blocks[pos].__proto__.constructor.name;
+            this.blocks[pos].dispose();
+        }
+
+        var block = blocks.createBlock(data.id,position,data,this);
+        this.blocks[pos] = block;
+
+        if(!dontBuild && block instanceof SolidBlock){
             this.build()
         }
+
+        this.events.emit('blockChange',{
+            block: block,
+            from: oldBlock
+        })
 
         return block;
     },
     getBlock: function(position){
-        return this.blocks[positionToIndex(position,settings.chunkSize)];
+        return this.blocks[positionToIndex(position,game.chunkSize)];
     },
     inportData: function(data){ //data is a array of blocks
         // this.blocks = data;
         data = data || [];
 
         for (var i = 0; i < data.length; i++) {
-            this.setBlock(indexToPosition(i,settings.chunkSize),data[i],true);
+            this.setBlock(indexToPosition(i,game.chunkSize),data[i],true);
         };
+        this.events.emit('inport',data);
         this.build();
     },
     exportData: function(){
@@ -49,6 +72,7 @@ Chunk.prototype = {
         for (var i = 0; i < this.blocks.length; i++) {
             data.push(this.blocks[i].exportData());
         };
+        this.events.emit('export',data);
         return data;
     },
     build: function(){
@@ -91,9 +115,11 @@ Chunk.prototype = {
         this.mesh.castShadow = true;
         this.mesh.receiveShadow = true;
 
-        this.mesh.scale.set(settings.blockSize,settings.blockSize,settings.blockSize);
+        this.mesh.scale.set(game.blockSize,game.blockSize,game.blockSize);
 
         this.group.add(this.mesh);
+
+        this.events.emit('build');
     },
     dispose: function(){
         this.mesh.geometry.dispose();
@@ -124,7 +150,7 @@ Chunk.prototype.constructor = Chunk;
 Object.defineProperties(Chunk.prototype,{
     worldPosition: {
         get: function(){
-            return this.position.clone().multiplyScalar(settings.chunkSize);
+            return this.position.clone().multiplyScalar(game.chunkSize);
         }
     },
 })
@@ -279,7 +305,7 @@ function CulledMesh(blocks) {
     var vertices = [];
     var verticeCache = {};
     var faces = [];
-    for(var index = 0; index < settings.chunkSize*settings.chunkSize*settings.chunkSize; index++){
+    for(var index = 0; index < game.chunkSize*game.chunkSize*game.chunkSize; index++){
         var block = blocks[index];
 
         //if its not a block skip it

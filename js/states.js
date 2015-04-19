@@ -1,6 +1,7 @@
 //for handles game states, mainly menu, game, editor and maybe store
 states = {
 	states: {},
+	events: new Events(),
 	activeState: undefined,
 	baseModal: {
 		toggle: function(ob){
@@ -58,6 +59,7 @@ states = {
 		}
 		this.states[name].enable();
 		this.activeState = this.states[name];
+		this.events.emit('stateEnabled',this.states[name]);
 	},
 	disableState: function(name,dontFade){
 		this.states[name].enabled = false;
@@ -68,6 +70,7 @@ states = {
 			this.states[name].container.hide();
 		}
 		this.states[name].disable();
+		this.events.emit('stateDisabled',this.states[name]);
 	},
 	disableAllStates: function(dontFade){
 		for (var i in this.states) {
@@ -77,5 +80,6 @@ states = {
 	},
 	addState: function(name,state){
 		this.states[name] = state;
+		this.events.emit('stateAdded',this.states[name]);
 	}
 }

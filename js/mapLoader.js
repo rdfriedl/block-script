@@ -27,14 +27,16 @@ MapLoaderIndexeddb.prototype = {
 	db: undefined,
 	options: {},
 	loadChunk: function(position,cb){
-		//if we are booting bind an evnet listener
-		// this.db.chunks.where('id').equals(position.x+'|'+position.y+'|'+position.z).first(function(data){
-		// 	console.log(data);
-		// 	if(cb) cb(data);
-		// })
 		this.db.chunks.get(position.toString(),function(data){
 			if(data){
-				data = data.data;
+				data = (typeof data.data == 'string')? JSON.parse(data.data) : data.data;
+				
+				if(typeof data.data == 'object'){
+					this.db.chunks.put({
+						id: position.toString(),
+						data: JSON.stringify(data.data)
+					})
+				}
 			}
 			if(cb) cb(data);
 		})
@@ -42,8 +44,9 @@ MapLoaderIndexeddb.prototype = {
 	saveChunk: function(chunk,cb){
 		this.db.chunks.put({
 			id: chunk.position.toString(),
-			data: chunk.exportData()
-		})
-		if(cb) cb();
+			data: JSON.stringify(chunk.exportData())
+		}).finally(function(){
+			if(cb) cb();
+		});
 	}
 };

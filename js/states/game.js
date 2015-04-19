@@ -3,7 +3,7 @@ game = {
 	container: undefined,
 	enabled: false,
 	enable: function(){
-
+		this.modal.blocks.update();
 	},
 	disable: function(){
 
@@ -17,6 +17,8 @@ game = {
 	lightGroup: undefined,
 	player: undefined,
 	map: undefined,
+	chunkSize: 10,
+	blockSize: 32,
 	init: function(){
 		var width = window.innerWidth;
 		var height = window.innerHeight;
@@ -29,7 +31,7 @@ game = {
 		this.cameraHUD.position.z = 10;
 
 		this.scene = new THREE.Scene();
-		this.scene.fog = new THREE.FogExp2(0xbfd1e5,settings.viewRange * settings.chunkSize / 100000);
+		this.scene.fog = new THREE.FogExp2(0xbfd1e5,game.viewRange * game.chunkSize / 100000);
 		this.camera = new THREE.PerspectiveCamera(60, width / height, 0.1, 20000);
 
 		//renderer
@@ -46,7 +48,6 @@ game = {
 		//setup
 		this.setUpScene();
 		this.setUpHUD();
-		this.setUpPointerLock();
 
 		this.map = new Map(this,this.scene,{});
 		this.player = new Player(this,this.scene,this.camera);
@@ -55,8 +56,8 @@ game = {
 			dbName: 'map'
 		});
 		var chunkGenerator = new ChunkGeneratorHills({
-			width: 40*settings.chunkSize-1,
-			height: 40*settings.chunkSize-1,
+			width: 40*game.chunkSize-1,
+			height: 40*game.chunkSize-1,
 			levels: [
 				{
 					height: 1,
@@ -109,13 +110,13 @@ game = {
 		this.map.setChunkGenerator(chunkGenerator);
 
 		// set player position
-		this.player.position.x = (this.map.chunkGenerator.options.width*settings.blockSize) / 2;
-		this.player.position.z = (this.map.chunkGenerator.options.height*settings.blockSize) / 2;
+		this.player.position.x = (this.map.chunkGenerator.options.width*game.blockSize) / 2;
+		this.player.position.z = (this.map.chunkGenerator.options.height*game.blockSize) / 2;
 		var y = this.map.chunkGenerator.getY(
-				Math.floor(this.player.position.x/settings.blockSize),
-				Math.floor(this.player.position.z/settings.blockSize)
+				Math.floor(this.player.position.x/game.blockSize),
+				Math.floor(this.player.position.z/game.blockSize)
 			);
-		this.player.position.y = (Math.max(y[0],y[1],y[2],y[3]) + 4) * settings.blockSize;
+		this.player.position.y = (Math.max(y[0],y[1],y[2],y[3]) + 4) * game.blockSize;
 
 		this.loadChunkLoop();
 		this.saveChunkLoop();
@@ -135,6 +136,34 @@ game = {
 			this.cameraHUD.updateProjectionMatrix();
 
 			this.renderer.setSize(width,height );
+		}.bind(this));
+
+		// Hook pointer lock state change events
+		$(document).on('pointerlockchange mozpointerlockchange webkitpointerlockchange', this.pointerlockchange.bind(this));
+
+		$(document).keyup(function(event) {
+			switch(event.keyCode){
+				case 69: //e
+					if(this.modal.menu() == 'none'){
+						this.modal.menu('invt');
+						this.exitPointerLock();
+					}
+					else if(this.modal.menu() == 'invt'){
+						this.modal.menu('none');
+						this.requestPointerLock();
+					}
+					break;
+				case 27: //esc
+					if(this.modal.menu() == 'esc'){
+						this.modal.menu('none');
+						this.requestPointerLock();
+					}
+					else{
+						this.modal.menu('esc');
+						this.exitPointerLock();
+					}
+					break;
+			}
 		}.bind(this));
 	},
 	setUpScene: function(){
@@ -192,39 +221,6 @@ game = {
 	    sprite.scale.set(30,30,30);
 	    this.sceneHUD.add(sprite);
 	},
-	setUpPointerLock: function(){
-		// Hook pointer lock state change events
-		$(document).on('pointerlockchange mozpointerlockchange webkitpointerlockchange', this.pointerlockchange.bind(this));
-
-		$('#pointer-lock').click(function(event){
-			$('#pointer-lock').hide();
-
-			// Ask the browser to lock the pointer
-			document.body.requestPointerLock = document.body.requestPointerLock || document.body.mozRequestPointerLock || document.body.webkitRequestPointerLock;
-
-			if(/Firefox/i.test(navigator.userAgent)) {
-				var fullscreenchange = function(event) {
-					if ( document.fullscreenElement === document.body || document.mozFullscreenElement === document.body || document.mozFullScreenElement === document.body ) {
-
-						document.removeEventListener('fullscreenchange', fullscreenchange);
-						document.removeEventListener('mozfullscreenchange', fullscreenchange);
-
-						document.body.requestPointerLock();
-					}
-				}
-
-				document.addEventListener('fullscreenchange', fullscreenchange, false);
-				document.addEventListener('mozfullscreenchange', fullscreenchange, false);
-
-				document.body.requestFullscreen = document.body.requestFullscreen || document.body.mozRequestFullscreen || document.body.mozRequestFullScreen || document.body.webkitRequestFullscreen;
-
-				document.body.requestFullscreen();
-			} 
-			else {
-				document.body.requestPointerLock();
-			}
-		});
-	},
 	update: function(){
 		this.animate();
 		this.render();
@@ -243,70 +239,100 @@ game = {
 		this.renderer.render(this.sceneHUD, this.cameraHUD);
 	},
 
+	requestPointerLock: function(){
+		this.player.enabled = true;
+		// Ask the browser to lock the pointer
+		document.body.requestPointerLock = document.body.requestPointerLock || document.body.mozRequestPointerLock || document.body.webkitRequestPointerLock;
+
+		if(/Firefox/i.test(navigator.userAgent)) {
+			var fullscreenchange = function(event) {
+				if ( document.fullscreenElement === document.body || document.mozFullscreenElement === document.body || document.mozFullScreenElement === document.body ) {
+
+					document.removeEventListener('fullscreenchange', fullscreenchange);
+					document.removeEventListener('mozfullscreenchange', fullscreenchange);
+
+					document.body.requestPointerLock();
+				}
+			}
+
+			document.addEventListener('fullscreenchange', fullscreenchange, false);
+			document.addEventListener('mozfullscreenchange', fullscreenchange, false);
+
+			document.body.requestFullscreen = document.body.requestFullscreen || document.body.mozRequestFullscreen || document.body.mozRequestFullScreen || document.body.webkitRequestFullscreen;
+
+			document.body.requestFullscreen();
+		} 
+		else {
+			document.body.requestPointerLock();
+		}
+	},
+	exitPointerLock: function(){
+		this.player.enabled = false;
+		document.exitPointerLock = document.exitPointerLock || document.mozExitPointerLock || document.webkitExitPointerLock;
+	    document.exitPointerLock();
+	},
 	pointerlockchange: function (event) {
 		if ( document.pointerLockElement === document.body || document.mozPointerLockElement === document.body || document.webkitPointerLockElement === document.body ) {
 			this.player.enabled = true;
-
-			$('#pointer-lock').hide();
 		} 
 		else {
 			this.player.enabled = false;
-
-			$('#pointer-lock').css('display','-webkit-box');
-			$('#pointer-lock').css('display','-moz-box');
-			$('#pointer-lock').css('display','box');
 		}
 	},
 	loadChunkLoop: function(){
-		var depth = 2;
+		// var depth = 2;
 		if(this.enabled){
-			var func = function(x,z,dist,cb){
+			var func = function(x,y,z,dist,cb){
 				var loaded = true;
-				for (var y = -depth; y <= depth; y++) {
+				// for (var y = -depth; y <= depth; y++) {
 					var position = this.player.position.clone();
-					position.x = Math.floor(position.x / (settings.chunkSize*settings.blockSize)) + x;
-					position.y = Math.floor(position.y / (settings.chunkSize*settings.blockSize)) + y;
-					position.z = Math.floor(position.z / (settings.chunkSize*settings.blockSize)) + z;
+					position.x = Math.floor(position.x / (game.chunkSize*game.blockSize)) + x;
+					position.y = Math.floor(position.y / (game.chunkSize*game.blockSize)) + y;
+					position.z = Math.floor(position.z / (game.chunkSize*game.blockSize)) + z;
 					loaded = (!loaded)? loaded : this.map.chunkLoaded(position);
-				};
+				// };
 				loaded = !!loaded;
 
 				if(!loaded){
 					// cb = _.after(depth*2+1,cb);
 					//load
-					for (var y = -depth; y <= depth; y++) {
-						var position = this.player.position.clone();
-						position.x = Math.floor(position.x / (settings.chunkSize*settings.blockSize)) + x;
-						position.y = Math.floor(position.y / (settings.chunkSize*settings.blockSize)) + y;
-						position.z = Math.floor(position.z / (settings.chunkSize*settings.blockSize)) + z;
+					// for (var y = -depth; y <= depth; y++) {
+						// var position = this.player.position.clone();
+						// position.x = Math.floor(position.x / (game.chunkSize*game.blockSize)) + x;
+						// position.y = Math.floor(position.y / (game.chunkSize*game.blockSize)) + y;
+						// position.z = Math.floor(position.z / (game.chunkSize*game.blockSize)) + z;
 						
 						this.map.getChunk(position);
-					};
+					// };
 					cb();
 				}
 				else{
-					if(++x > dist){
+					if(++y > dist){
+						y = -dist;
+						x++;
+					}
+					if(x > dist){
 						x = -dist;
 						z++;
 					}
 					if(z > dist){
 						z = -dist;
-						dist += 1;
+						dist++;
 					}
-					if(dist > settings.viewRange){
+					if(dist > game.viewRange){
 						cb();
 						return;
 					}
 
-					func.bind(this)(x,z,dist,cb);
+					func.bind(this)(x,y,z,dist,cb);
 				}
 			}
-			func.bind(this)(0,0,0,function(){
-				setTimeout(this.loadChunkLoop.bind(this),50);
+			func.bind(this)(0,0,0,0,function(){
+				setTimeout(this.loadChunkLoop.bind(this),20);
 			}.bind(this));
 		}
 		else{
-			setTimeout(this.loadChunkLoop.bind(this),50);
+			setTimeout(this.loadChunkLoop.bind(this),20);
 		}
 	},
 	saveChunkLoop: function(i){
@@ -320,7 +346,7 @@ game = {
 			if(++i >= k){
 				i=0;
 			}
-			setTimeout(this.saveChunkLoop.bind(this,i),10);
+			setTimeout(this.saveChunkLoop.bind(this,i),50);
 		}.bind(this);
 
 		if(this.enabled){
@@ -328,7 +354,7 @@ game = {
 			for(var chunk in this.map.chunks){
 				if(k==i){
 					this.map.saveChunk(this.map.chunks[chunk].position,func);
-					break;
+					return;
 				}
 				k++;
 			}
@@ -343,14 +369,14 @@ game = {
 		var position = this.player.position.clone();
 
 		if(this.enabled){
-			position.x = Math.floor(position.x / (settings.chunkSize*settings.blockSize));
-			position.y = Math.floor(position.y / (settings.chunkSize*settings.blockSize));
-			position.z = Math.floor(position.z / (settings.chunkSize*settings.blockSize));
+			position.x = Math.floor(position.x / (game.chunkSize*game.blockSize));
+			position.y = Math.floor(position.y / (game.chunkSize*game.blockSize));
+			position.z = Math.floor(position.z / (game.chunkSize*game.blockSize));
 
 			for (var i in this.map.chunks) {
 				var chunk = this.map.chunks[i]
 				if(chunk.mesh){
-					if(Math.abs(this.map.chunks[i].position.x - position.x) > settings.viewRange || Math.abs(this.map.chunks[i].position.y - position.y) > settings.viewRange || Math.abs(this.map.chunks[i].position.z - position.z) > settings.viewRange){
+					if(Math.abs(this.map.chunks[i].position.x - position.x) > game.viewRange || Math.abs(this.map.chunks[i].position.y - position.y) > game.viewRange || Math.abs(this.map.chunks[i].position.z - position.z) > game.viewRange){
 						chunk.unload();
 					}
 				}
@@ -361,8 +387,62 @@ game = {
 	},
 
 	modal: {
-		menu: 'none'
+		menu: 'none',
+		back: function(){
+			game.requestPointerLock();
+			game.modal.menu('none');
+		},
+		blocks: {
+			selectedBlock: observable('stone',function(val){
+				game.player.selection.placeBlock = val;
+			}),
+			blocks: [],
+			update: function(){
+				var a = [];
+				game.modal.blocks.blocks([]);
+				for (var i in blocks.blocks) {
+					var block = blocks.blocks[i];
+					if(_.isArray(block.prototype.material)){
+						//build list of urls for sides of blocks
+						var mat = [];
+						for (var k = 0; k < block.prototype.material.length; k++) {
+							if(!mat[k]) mat[k] = [];
+
+							for (var j = 0; j < block.prototype.material[k].length; j++) {
+								var m = blocks.blockMaterial.materials[block.prototype.material[k][j]];
+								if(m.map){
+									mat[k].push(m.map.sourceFile);
+								}
+								else{
+									mat[k].push('');
+								}
+							};
+						};
+						a.push({
+							name: block.name.toLowerCase(),
+							type: 'block',
+							material: mat
+						})
+					}
+					else if(block.prototype.material instanceof THREE.Material){
+						a.push({
+							name: block.name.toLowerCase(),
+							type: 'flat',
+							material: block.prototype.material.map.sourceFile
+						})
+					}
+				};
+				game.modal.blocks.blocks(a);
+			}
+		}
 	}
 }
+Object.defineProperties(game,{
+	viewRange: {
+		get: function(){
+			return parseInt(menu.modal.settings.graphics.viewRange());
+		}
+	}
+})
 
 states.addState('game',game);

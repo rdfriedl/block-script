@@ -1,3 +1,4 @@
+var missingErrors = {};
 blocks = {
 	blocks: {},
 	textureFolder: 'res/img/blocks/',
@@ -44,7 +45,8 @@ blocks = {
 		if(block){
 			return new block(position,data,chunk);
 		}
-		else{
+		else if(!missingErrors[id]){
+			missingErrors[id] = true;
 			console.error('missing block: '+id);
 			return this.createBlock('air',position,data,chunk);
 		}
@@ -81,26 +83,28 @@ blocks = {
 		return init;
 	},
 	util: {
-		textureCache: {},
-		loadTexture: function(url,prop){ //texture image is not copied
+		// textureCache: {},
+		loadTexture: function(url,prop,dontmap){ //texture image is not copied
 			var tex;
-			if(this.textureCache[url]){
-				if(prop){
-					tex = this.textureCache[url].clone(this.textureCache[url]);
+			// if(this.textureCache[url]){
+			// 	if(prop){
+			// 		tex = this.textureCache[url].clone(this.textureCache[url]);
 
-			        //set the prop
-			        for(var i in prop){
-			        	tex[i] = prop[i];
-			        }
-				}
-				else{
-					tex = this.textureCache[url];
-				}
-			}
-			else{
+			//         //set the prop
+			//         for(var i in prop){
+			//         	tex[i] = prop[i];
+			//         }
+			// 	}
+			// 	else{
+			// 		tex = this.textureCache[url];
+			// 	}
+			// }
+			// else{
 		       	tex = new THREE.ImageUtils.loadTexture(blocks.textureFolder+url);
-		        tex.magFilter = THREE.NearestFilter;
-		        tex.minFilter = THREE.LinearMipMapLinearFilter;
+		       	if(!dontmap){
+			        tex.magFilter = THREE.NearestFilter;
+			        tex.minFilter = THREE.LinearMipMapLinearFilter;
+			    }
 
 		        if(prop){
 			        //set the prop
@@ -108,16 +112,16 @@ blocks = {
 			        	tex[i] = prop[i];
 			        }
 		        }
-			}
+			// }
 
 	        return tex;
 		},
-		basicMaterialCache: {},
+		materialCache: {},
 		basicMaterial: function(url,prop,texProp){
 			var mat;
-			if(this.basicMaterialCache[url]){
+			if(this.materialCache[url]){
 				if(prop){
-					mat = this.basicMaterialCache[url].clone();
+					mat = this.materialCache[url].clone();
 
 			        //set the prop
 			        for(var i in prop){
@@ -125,14 +129,45 @@ blocks = {
 			        }
 				}
 				else{
-					mat = this.basicMaterialCache[url];
+					mat = this.materialCache[url];
 				}
 			}
 			else{
-				mat = this.basicMaterialCache[url] = new THREE.MeshLambertMaterial({
+				mat = this.materialCache[url] = new THREE.MeshLambertMaterial({
 					map: this.loadTexture(url,texProp),
-					// wireframe: true,
-					// side: THREE.DoubleSide
+					reflectivity: 0
+				});
+
+				if(prop){
+			        //set the prop
+			        for(var i in prop){
+			        	mat[i] = prop[i];
+			        }
+				}
+			}
+
+			return mat;
+		},
+		advancedMaterial: function(url,prop,texProp){
+			var mat;
+			if(this.materialCache[url]){
+				if(prop){
+					mat = this.materialCache[url].clone();
+
+			        //set the prop
+			        for(var i in prop){
+			        	mat[i] = prop[i];
+			        }
+				}
+				else{
+					mat = this.materialCache[url];
+				}
+			}
+			else{
+				mat = this.materialCache[url] = new THREE.MeshPhongMaterial({
+					map: this.loadTexture(url,texProp),
+					bumpMap: this.loadTexture(url,texProp),
+					reflectivity: 0
 				});
 
 				if(prop){
@@ -148,9 +183,8 @@ blocks = {
 	}
 }
 
-
 var Block = function(position,data,chunk){
-	this.position = position;
+	this.position = position || new THREE.Vector3();
 	this.chunk = chunk;
 
 	this.inportData(data);
@@ -161,6 +195,7 @@ Block.prototype = {
 	visible: true,
 	placeSound: [],
 	breakSound: [],
+	stepSound: [],
 
 	inportData: function(data){
 		//nothing for now
@@ -188,13 +223,16 @@ Block.prototype = {
 
 		return newBlock;
 	},
+	dispose: function(){
+		
+	},
 	getNeighbor: function(v){
         if(_.isArray(v)) v = new THREE.Vector3().fromArray(v);
 		v.sign();
 		var pos = v.clone().add(this.position);
 
        	var chunk = this.chunk;
-        if(pos.x < 0 || pos.y < 0 || pos.z < 0 || pos.x >= settings.chunkSize || pos.y >= settings.chunkSize || pos.z >= settings.chunkSize){
+        if(pos.x < 0 || pos.y < 0 || pos.z < 0 || pos.x >= game.chunkSize || pos.y >= game.chunkSize || pos.z >= game.chunkSize){
         	chunk = chunk.getNeighbor(v.clone());
         	if(!chunk) return; //dont go any futher if we can find the chunk
         }
@@ -203,30 +241,35 @@ Block.prototype = {
 	        if(pos.x < 0) pos.x=9;
 	        if(pos.y < 0) pos.y=9;
 	        if(pos.z < 0) pos.z=9;
-	        if(pos.x >= settings.chunkSize) pos.x=0;
-			if(pos.y >= settings.chunkSize) pos.y=0;
-			if(pos.z >= settings.chunkSize) pos.z=0;
+	        if(pos.x >= game.chunkSize) pos.x=0;
+			if(pos.y >= game.chunkSize) pos.y=0;
+			if(pos.z >= game.chunkSize) pos.z=0;
         }
 
         return chunk.getBlock(pos);
-	}
+	},
 }
 Object.defineProperties(Block.prototype,{
 	worldPosition: {
 		get: function(){
-			return this.chunk.position.clone().multiplyScalar(settings.chunkSize).add(this.position);
+			return (this.chunk)? this.chunk.position.clone().multiplyScalar(game.chunkSize).add(this.position) : new THREE.Vector3();
 		}
 	},
 	edge: {
 		get: function(){
-			if(!(this.position.x > 0 && this.position.y > 0 && this.position.z > 0 && this.position.x < settings.chunkSize-1 && this.position.y < settings.chunkSize-1 && this.position.z < settings.chunkSize-1)){
+			if(!(this.position.x > 0 && this.position.y > 0 && this.position.z > 0 && this.position.x < game.chunkSize-1 && this.position.y < game.chunkSize-1 && this.position.z < game.chunkSize-1)){
 				return new THREE.Vector3(
-					this.position.x == 0? -1 : (this.position.x == settings.chunkSize-1)? 1 : 0, 
-					this.position.y == 0? -1 : (this.position.y == settings.chunkSize-1)? 1 : 0, 
-					this.position.z == 0? -1 : (this.position.z == settings.chunkSize-1)? 1 : 0
+					this.position.x == 0? -1 : (this.position.x == game.chunkSize-1)? 1 : 0, 
+					this.position.y == 0? -1 : (this.position.y == game.chunkSize-1)? 1 : 0, 
+					this.position.z == 0? -1 : (this.position.z == game.chunkSize-1)? 1 : 0
 					);
 			}
 			return new THREE.Vector3();
+		}
+	},
+	super: {
+		get: function(){
+			return (this.__proto__ === {}.__proto__)? this.__proto__ : this.__proto__.__proto__;
 		}
 	}
 })
@@ -251,5 +294,3 @@ Block.remove = function(){
 	blocks.removeBlock(this);
 	return this;
 }
-
-blocks.Block = Block;

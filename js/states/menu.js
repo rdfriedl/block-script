@@ -168,6 +168,7 @@ menu = {
 		main: {
 			play: function(){
 				states.enableState('game');
+				game.requestPointerLock();
 			},
 		},
 		settings: {

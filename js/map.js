@@ -2,6 +2,7 @@ function Map(state,options){
 	this.state = state;
 	fn.combindIn(this,options);
 	this.chunks = {};
+	this.events = new Events();
 
 	this.group = new THREE.Group();
 	this.state.scene.add(this.group);
@@ -11,6 +12,11 @@ Map.prototype = {
 	mapLoader: undefined,
 	chunkGenerator: undefined,
 	group: undefined,
+	events: undefined,
+	/*
+	chunkLoaded
+	chunkSaved
+	*/
 	getChunk: function(position,cb){
 		var id = position.toString();
 		if(this.chunks[id]){
@@ -24,14 +30,14 @@ Map.prototype = {
 	getBlock: function(position){
 		//has to be fast so we are not going to go through any other functions
 		var chunkPos = position.clone();
-		chunkPos.divideScalar(settings.chunkSize);
+		chunkPos.divideScalar(game.chunkSize);
 		chunkPos.floor();
 
 		var chunkID = chunkPos.x+'|'+chunkPos.y+'|'+chunkPos.z;
 		if(this.chunks[chunkID]){
 			var pos = position.clone();
-			pos.sub(chunkPos.multiplyScalar(settings.chunkSize));
-			return this.chunks[chunkID].blocks[positionToIndex(pos,settings.chunkSize)];
+			pos.sub(chunkPos.multiplyScalar(game.chunkSize));
+			return this.chunks[chunkID].blocks[positionToIndex(pos,game.chunkSize)];
 		}
 	},
 	loadChunk: function(position,cb){
@@ -48,12 +54,14 @@ Map.prototype = {
 				this.chunkGenerator.generateChunk(position,function(data){
 					chunk.loading = false;
 					chunk.inportData(data);
+					this.events.emit('chunkLoaded',chunk);
 					if(cb) cb(chunk);
-				})
+				}.bind(this))
 			}
 			else{
 				chunk.loading = false;
 				chunk.inportData(data);
+				this.events.emit('chunkLoaded',chunk);
 				if(cb) cb(chunk);
 			}
 		}.bind(this))
@@ -69,8 +77,9 @@ Map.prototype = {
 				this.mapLoader.saveChunk(chunk,function(){
 					chunk.saving = false;
 					chunk.saved = true;
-					if(cb) cb();	
-				});
+					this.events.emit('chunkSaved',chunk);
+					if(cb) cb();
+				}.bind(this));
 			}
 			else if(cb) cb();
 		}.bind(this))

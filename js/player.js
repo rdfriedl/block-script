@@ -3,14 +3,15 @@ function Player(state,scene,camera){
 	this.scene = scene;
 	this.camera = camera;
 	this.rayCaster = new THREE.Raycaster();
-	this.rayCaster.far = settings.blockSize * 5;
+	this.rayCaster.far = game.blockSize * 5;
 
 	this.controls = new THREE.PointerLockControls(this.camera);
 	this.controls.enabled = false;
 	this.object = this.controls.getObject();
-	this.velocity = this.velocity.clone();;
+	this.velocity = this.velocity.clone();
 	this.collision = this.collision.clone();
 	this.movement = Object.create(this.movement);
+	this.movement.velocity = new THREE.Vector3();
 	this.selection = Object.create(this.selection);
 	this.selection.position = new THREE.Vector3();
 	this.selection.normal = new THREE.Vector3();
@@ -33,10 +34,10 @@ function Player(state,scene,camera){
 		if(!this.enabled) return;
 
 		switch(event.originalEvent.button){
-			case THREE.MOUSE.LEFT:
+			case THREE.MOUSE.RIGHT:
 				this.placeBlock()
 				break;
-			case THREE.MOUSE.RIGHT:
+			case THREE.MOUSE.LEFT:
 				this.removeBlock()
 				break;
 		}
@@ -50,8 +51,9 @@ Player.prototype = {
 	object: undefined,
 	selectionObject: undefined,
 	movement: {
-		walkSpeed: 2.5,
-		sprintSpeed: 4,
+		walkSpeed: 2.29,
+		sprintSpeed: 3.5,
+		jumpSpeed: 4.8,
 
 		up: false,
 		left: false,
@@ -61,22 +63,28 @@ Player.prototype = {
 		crouch: false,
 		sprint: false,
 
-		gravity: 0.45,
-		fallSpeed: 0,
-		onGround: false
+		velocity: undefined,
+		acceleration: 1,
+		drag: 0.2,
+
+		gravity: 0.3,
+		onGround: false,
+		viewBobbing: 0,
+		viewBobbingDir: 1,
 	},
 	selection: {
 		block: undefined,
 		position: new THREE.Vector3(),
-		normal: new THREE.Vector3()
+		normal: new THREE.Vector3(),
+		placeBlock: 'stone',
+		removeBlock: 'air'
 	},
 	velocity: new THREE.Vector3(),
 	collision: new CollisionEntity({
-		box: new THREE.Box3(new THREE.Vector3(-11,-48,-11), new THREE.Vector3(11,8,11)),
+		box: new THREE.Box3(new THREE.Vector3(-10,-50,-10), new THREE.Vector3(10,8,10)),
 		group: 'player'
 	}),
 	keydown: function(event){
-		if(!this.enabled) return;
 		switch ( event.keyCode ) {
 			case 38: // up
 			case 87: // w
@@ -99,6 +107,7 @@ Player.prototype = {
 				break;
 
 			case 32: // space
+			case 96:
 				this.movement.jump = true;
 				break;
 
@@ -112,7 +121,6 @@ Player.prototype = {
 		}
 	},
 	keyup: function(event){
-		if(!this.enabled) return;
 		switch ( event.keyCode ) {
 			case 38: // up
 			case 87: // w
@@ -135,6 +143,7 @@ Player.prototype = {
 				break;
 
 			case 32: // space
+			case 96:
 				this.movement.jump = false;
 				break;
 
@@ -148,60 +157,120 @@ Player.prototype = {
 		}
 	},
 	update: function(){
-		if(!this.enabled) return;
-		var oldPos = this.position.clone(), col;
+		var speed = (this.movement.sprint)? this.movement.sprintSpeed : this.movement.walkSpeed;
 
-		//fall
-		this.movement.fallSpeed -= this.movement.gravity;
+		//y
+		if(this.movement.onGround && this.movement.jump && this.enabled)
+			this.movement.velocity.y = this.movement.jumpSpeed;
+		else
+			this.movement.velocity.y -= this.movement.gravity;
+
+		//z
+		if(this.movement.up && this.enabled)
+			this.movement.velocity.z -= this.movement.acceleration;
+		else if(this.movement.down && this.enabled)
+			this.movement.velocity.z += this.movement.acceleration;
+		else
+			if(Math.sign(this.movement.velocity.z) !== Math.sign(this.movement.velocity.z - this.movement.drag * Math.sign(this.movement.velocity.z))){
+				this.movement.velocity.z = 0;
+			}
+			else this.movement.velocity.z -= this.movement.drag * Math.sign(this.movement.velocity.z);
+
+		//x
+		if(this.movement.left && this.enabled)
+			this.movement.velocity.x -= this.movement.acceleration;
+		else if(this.movement.right && this.enabled)
+			this.movement.velocity.x += this.movement.acceleration;
+		else 
+			if(Math.sign(this.movement.velocity.x) !== Math.sign(this.movement.velocity.x - this.movement.drag * Math.sign(this.movement.velocity.x))){
+				this.movement.velocity.x = 0;
+			}
+			else this.movement.velocity.x -= this.movement.drag * Math.sign(this.movement.velocity.x);
+
+		//stop player from going faster them the speed
+		if(this.movement.velocity.z < 0){
+			if(Math.abs(this.movement.velocity.z) > speed)
+				this.movement.velocity.z = speed * Math.sign(this.movement.velocity.z);
+		}
+		else{
+			if(Math.abs(this.movement.velocity.z) > speed * 0.6)
+				this.movement.velocity.z = speed * 0.6 * Math.sign(this.movement.velocity.z);
+		}
+
+		if(Math.abs(this.movement.velocity.x) > speed * 0.6)
+			this.movement.velocity.x = speed * 0.6 * Math.sign(this.movement.velocity.x);
 
 		//move
-		speed = (this.movement.sprint)? this.movement.sprintSpeed : this.movement.walkSpeed;
+		var oldPos = this.position.clone()
 
-		if(this.movement.onGround && this.movement.jump) this.movement.fallSpeed = 6;
-		this.object.translateY(this.movement.fallSpeed);
-		this.movement.onGround = false;
-
-		if(this.movement.up) this.object.translateZ(-speed);
-		if(this.movement.down) this.object.translateZ(speed);
-		if(this.movement.right) this.object.translateX(speed * 0.6);
-		if(this.movement.left) this.object.translateX(-speed * 0.6);
+		this.object.translateY(this.movement.velocity.y);
+		this.object.translateX(this.movement.velocity.x);
+		this.object.translateZ(this.movement.velocity.z);
 
 		this.velocity = this.position.clone();
 		this.position.copy(oldPos);
 		this.velocity.sub(this.position);
 
+		//view
+		if(this.movement.onGround){ //this is going to need to be moved below the collisions so when we push against a wall we dont walk
+			this.movement.viewBobbing += (Math.sqrt(this.velocity.x*this.velocity.x + this.velocity.z*this.velocity.z) / 28) * this.movement.viewBobbingDir;
+
+			if(Math.abs(this.movement.viewBobbing) > 1){
+				this.movement.viewBobbing = Math.sign(this.movement.viewBobbing);
+				this.movement.viewBobbingDir = -this.movement.viewBobbingDir;
+
+				//play step sound
+				var v = new THREE.Vector3(this.position.x,this.collision.y1,this.position.z).divideScalar(game.blockSize).floor();
+				v.y--;
+				var block = this.state.map.getBlock(v);
+				if(block){
+					if(block.stepSound.length){
+						createjs.Sound.play(block.stepSound[Math.floor(Math.random() * block.stepSound.length)]);
+					}
+				}
+			}
+
+			this.camera.position.x = 1.8 * this.movement.viewBobbing;
+			this.camera.position.y = - 2 * Math.abs(this.movement.viewBobbing);
+		}
+
+		//collide
 		col = collisions.collideWithBlocks(this,this.state.map);
 		this.position.x += this.velocity.x * col.entryTime;
 		this.position.y += this.velocity.y * col.entryTime;
 		this.position.z += this.velocity.z * col.entryTime;
 		this.collision.position.copy(this.position);
+		this.velocity.x = (col.normal.x !== 0)? 0 : this.velocity.x - (this.velocity.x * col.entryTime);
+		this.velocity.y = (col.normal.y !== 0)? 0 : this.velocity.y - (this.velocity.y * col.entryTime);
+		this.velocity.z = (col.normal.z !== 0)? 0 : this.velocity.z - (this.velocity.z * col.entryTime);
 
 		if(col.normal.y !== 0){
-			this.movement.fallSpeed = 0;
+			this.movement.velocity.y = 0;
 		}
 		if(col.normal.y == 1){
 			this.movement.onGround = true;
 		}
-
-		//slide
-		this.velocity.x = (col.normal.x !== 0)? 0 : this.velocity.x - (this.velocity.x * col.entryTime);
-		this.velocity.y = (col.normal.y !== 0)? 0 : this.velocity.y - (this.velocity.y * col.entryTime);
-		this.velocity.z = (col.normal.z !== 0)? 0 : this.velocity.z - (this.velocity.z * col.entryTime);
+		else{
+			this.movement.onGround = false;
+		}
+		
 		col = collisions.collideWithBlocks(this,this.state.map);
 		this.position.x += this.velocity.x * col.entryTime;
 		this.position.y += this.velocity.y * col.entryTime;
 		this.position.z += this.velocity.z * col.entryTime;
 		this.collision.position.copy(this.position);
-
-		//slide
 		this.velocity.x = (col.normal.x !== 0)? 0 : this.velocity.x - (this.velocity.x * col.entryTime);
 		this.velocity.y = (col.normal.y !== 0)? 0 : this.velocity.y - (this.velocity.y * col.entryTime);
 		this.velocity.z = (col.normal.z !== 0)? 0 : this.velocity.z - (this.velocity.z * col.entryTime);
+
 		col = collisions.collideWithBlocks(this,this.state.map);
 		this.position.x += this.velocity.x * col.entryTime;
 		this.position.y += this.velocity.y * col.entryTime;
 		this.position.z += this.velocity.z * col.entryTime;
 		this.collision.position.copy(this.position);
+		this.velocity.x = (col.normal.x !== 0)? 0 : this.velocity.x - (this.velocity.x * col.entryTime);
+		this.velocity.y = (col.normal.y !== 0)? 0 : this.velocity.y - (this.velocity.y * col.entryTime);
+		this.velocity.z = (col.normal.z !== 0)? 0 : this.velocity.z - (this.velocity.z * col.entryTime);
 
 		// pick block
 		this.pickBlock();
@@ -211,14 +280,14 @@ Player.prototype = {
 		this.rayCaster.set(this.position, this.controls.getDirection(new THREE.Vector3()));
 		// this.rayCaster.setFromCamera(new THREE.Vector2(), this.camera);
 
-		var pos = this.position.clone().divideScalar(settings.blockSize).floor().divideScalar(settings.chunkSize).floor();
+		var pos = this.position.clone().divideScalar(game.blockSize).floor().divideScalar(game.chunkSize).floor();
 		var chunk = this.state.map.getChunk(pos);
 		if(chunk){
 			// var chunks = [chunk.mesh];
 			var intersects = this.rayCaster.intersectObject(this.state.map.group,true);
 			for (var i = 0; i < intersects.length; i++) {
 				var pos = new THREE.Vector3().add(intersects[i].point).sub(intersects[i].face.normal);
-				pos.divideScalar(settings.blockSize).floor();
+				pos.divideScalar(game.blockSize).floor();
 
 				var block = this.state.map.getBlock(pos);
 
@@ -229,9 +298,9 @@ Player.prototype = {
 					this.selection.normal.copy(intersects[i].face.normal);
 
 					this.selectionObject.visible = true;
-					this.selectionObject.position.copy(this.selection.block.worldPosition).multiplyScalar(settings.blockSize);
-					this.selectionObject.position.add(new THREE.Vector3(0.5,0.5,0.5).multiplyScalar(settings.blockSize));
-					this.selectionObject.scale.copy(new THREE.Vector3(1,1,1).multiplyScalar(settings.blockSize + 0.1))
+					this.selectionObject.position.copy(this.selection.block.worldPosition).multiplyScalar(game.blockSize);
+					this.selectionObject.position.add(new THREE.Vector3(0.5,0.5,0.5).multiplyScalar(game.blockSize));
+					this.selectionObject.scale.copy(new THREE.Vector3(1,1,1).multiplyScalar(game.blockSize + 0.1))
 					return;
 				}
 			};
@@ -247,7 +316,7 @@ Player.prototype = {
 		if(this.selection.block){
 			block = this.selection.block.getNeighbor(this.selection.normal);
 			if(block){
-				var newBlock = block.replace('stone');
+				var newBlock = block.replace(this.selection.placeBlock);
 				block.chunk.saved = false;
 				//play sound
 				if(newBlock.placeSound.length){
@@ -259,11 +328,11 @@ Player.prototype = {
 	removeBlock: function(){
 		if(this.selection.block){
 			var block = this.selection.block;
-			block.replace('air');
+			block.replace(this.selection.removeBlock);
 			block.chunk.saved = false;
 			//play sound
-			if(block.breakSound.length){
-				createjs.Sound.play(block.breakSound[Math.floor(Math.random() * block.breakSound.length)]);
+			if(block.removeSound.length){
+				createjs.Sound.play(block.removeSound[Math.floor(Math.random() * block.removeSound.length)]);
 			}
 		}
 	}
@@ -272,6 +341,12 @@ Object.defineProperties(Player.prototype,{
 	position: {
 		get: function(){
 			return this.object.position;
+		}
+	},
+	chunk: {
+		get: function(){
+			var id = this.position.clone().divideScalar(game.blockSize).floor().divideScalar(game.chunkSize).floor().toString();
+			return this.state.map.chunks[id];
 		}
 	},
 	enabled: {
