@@ -13,7 +13,6 @@ function Player(state,scene,camera){
 	this.movement = Object.create(this.movement);
 	this.movement.velocity = new THREE.Vector3();
 	this.selection = Object.create(this.selection);
-	this.selection.position = new THREE.Vector3();
 	this.selection.normal = new THREE.Vector3();
 
 	this.scene.add(this.object);
@@ -23,7 +22,8 @@ function Player(state,scene,camera){
 		color: 0x990000,
 		transparent: true,
 		opacity: 0.2,
-		shading: THREE.NoShading
+		shading: THREE.NoShading,
+		depthWrite: false
 	}));
 	// this.selectionObject.visible = false;
 	this.scene.add(this.selectionObject);
@@ -74,7 +74,6 @@ Player.prototype = {
 	},
 	selection: {
 		block: undefined,
-		position: new THREE.Vector3(),
 		normal: new THREE.Vector3(),
 		placeBlock: 'stone',
 		removeBlock: 'air'
@@ -272,13 +271,14 @@ Player.prototype = {
 		this.velocity.y = (col.normal.y !== 0)? 0 : this.velocity.y - (this.velocity.y * col.entryTime);
 		this.velocity.z = (col.normal.z !== 0)? 0 : this.velocity.z - (this.velocity.z * col.entryTime);
 
+		delete col, oldPos;
+
 		// pick block
 		this.pickBlock();
 	},
 	pickBlock: function(){
 		//cast ray to find block data
-		this.rayCaster.set(this.position, this.controls.getDirection(new THREE.Vector3()));
-		// this.rayCaster.setFromCamera(new THREE.Vector2(), this.camera);
+		this.rayCaster.set(this.camera.getWorldPosition(), this.controls.getDirection(new THREE.Vector3()));
 
 		var pos = this.position.clone().divideScalar(game.blockSize).floor().divideScalar(game.chunkSize).floor();
 		var chunk = this.state.map.getChunk(pos);
@@ -291,31 +291,40 @@ Player.prototype = {
 
 				var block = this.state.map.getBlock(pos);
 
-				//see if its a solid block
-				if(block instanceof SolidBlock){
-					this.selection.position.copy(block.worldPosition);
-					this.selection.block = block;
-					this.selection.normal.copy(intersects[i].face.normal);
+				this.selection.block = block;
+				// this.selection.normal.copy(intersects[i].face.normal);
+				//get normal
+				var box = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3(game.blockSize,game.blockSize,game.blockSize));
+				box.translate(block.scenePosition);
+				var n = this.rayCaster.ray.intersectBox(box) || block.sceneCenter, normal = new THREE.Vector3();
+				n.sub(block.sceneCenter);
+	            if(Math.abs(n.y) > Math.abs(n.x) && Math.abs(n.y) > Math.abs(n.z))
+	                normal.y = Math.sign(n.y);
+	            else if(Math.abs(n.x) > Math.abs(n.y) && Math.abs(n.x) > Math.abs(n.z))
+	                normal.x = Math.sign(n.x);
+	            else if(Math.abs(n.z) > Math.abs(n.x) && Math.abs(n.z) > Math.abs(n.y))
+	                normal.z = Math.sign(n.z);
+	            this.selection.normal = normal;
 
-					this.selectionObject.visible = true;
-					this.selectionObject.position.copy(this.selection.block.worldPosition).multiplyScalar(game.blockSize);
-					this.selectionObject.position.add(new THREE.Vector3(0.5,0.5,0.5).multiplyScalar(game.blockSize));
-					this.selectionObject.scale.copy(new THREE.Vector3(1,1,1).multiplyScalar(game.blockSize + 0.1))
-					return;
-				}
+	            delete n, box; //since this is a loop delete stuff to help the garbage collector
+
+				this.selectionObject.visible = true;
+				this.selectionObject.position.copy(this.selection.block.worldPosition).multiplyScalar(game.blockSize);
+				this.selectionObject.position.add(new THREE.Vector3(0.5,0.5,0.5).multiplyScalar(game.blockSize));
+				this.selectionObject.scale.copy(new THREE.Vector3(1,1,1).multiplyScalar(game.blockSize + 0.1))
+				return;
 			};
 
 			//if we made it to this point it means there are not intersections
 			this.selectionObject.visible = false;
 			this.selection.block = undefined;
-			this.selection.position.set(0,0,0);
 			this.selection.normal.set(0,0,0);
 		}
 	},
 	placeBlock: function(){
 		if(this.selection.block){
 			block = this.selection.block.getNeighbor(this.selection.normal);
-			if(block){
+			if(block && block instanceof blocks.getBlock('air')){
 				var newBlock = block.replace(this.selection.placeBlock);
 				block.chunk.saved = false;
 				//play sound

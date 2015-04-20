@@ -338,6 +338,7 @@ collisions = {
                 }
             };
         };
+        delete pos, corners, c, block, box;
         return colInfo;
     }
 }

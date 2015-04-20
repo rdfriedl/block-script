@@ -194,7 +194,7 @@ Block.prototype = {
 	position: new THREE.Vector3(0,0,0),
 	visible: true,
 	placeSound: [],
-	breakSound: [],
+	removeSound: [],
 	stepSound: [],
 
 	inportData: function(data){
@@ -224,7 +224,7 @@ Block.prototype = {
 		return newBlock;
 	},
 	dispose: function(){
-		
+		delete this; //free myself from memory
 	},
 	getNeighbor: function(v){
         if(_.isArray(v)) v = new THREE.Vector3().fromArray(v);
@@ -253,6 +253,21 @@ Object.defineProperties(Block.prototype,{
 	worldPosition: {
 		get: function(){
 			return (this.chunk)? this.chunk.position.clone().multiplyScalar(game.chunkSize).add(this.position) : new THREE.Vector3();
+		}
+	},
+	scenePosition: {
+		get: function(){
+			return this.worldPosition.multiplyScalar(game.blockSize);
+		}
+	},
+	sceneCenter: {
+		get: function(){
+			return this.scenePosition.add(this.center);
+		}
+	},
+	center: {
+		get: function(){
+			return new THREE.Vector3(0.5,0.5,0.5).multiplyScalar(game.blockSize);
 		}
 	},
 	edge: {

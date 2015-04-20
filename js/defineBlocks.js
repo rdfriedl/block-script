@@ -352,6 +352,16 @@ var FlowerTulipWhite = XMeshBlock.extend(function FlowerTulipWhite(){
 },{
 	material: blocks.util.basicMaterial('flower_tulip_white.png')
 }).add();
+var MushroomRed = XMeshBlock.extend(function MushroomRed(){
+	XMeshBlock.prototype.constructor.apply(this,arguments);
+},{
+	material: blocks.util.basicMaterial('mushroom_red.png')
+}).add();
+var MushroomBrown = XMeshBlock.extend(function MushroomBrown(){
+	XMeshBlock.prototype.constructor.apply(this,arguments);
+},{
+	material: blocks.util.basicMaterial('mushroom_brown.png')
+}).add();
 
 
 })();

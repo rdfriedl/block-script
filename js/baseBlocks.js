@@ -23,41 +23,15 @@ var MeshBlock = Block.extend(function MeshBlock(){
 })
 
 //XMesh
-var s = game.blockSize/2;
-var geo = new THREE.Geometry();
-geo.vertices.push(new THREE.Vector3(s,s,s));
-geo.vertices.push(new THREE.Vector3(s,-s,s));
-geo.vertices.push(new THREE.Vector3(-s,s,-s));
-geo.vertices.push(new THREE.Vector3(-s,-s,-s));
-geo.vertices.push(new THREE.Vector3(s,s,-s));
-geo.vertices.push(new THREE.Vector3(s,-s,-s));
-geo.vertices.push(new THREE.Vector3(-s,s,s));
-geo.vertices.push(new THREE.Vector3(-s,-s,s));
-geo.faces.push(new THREE.Face3(0,1,2));
-geo.faces.push(new THREE.Face3(1,2,3));
-geo.faces.push(new THREE.Face3(4,5,6));
-geo.faces.push(new THREE.Face3(5,6,7));
-s = 1;
-geo.faceVertexUvs[0].push([
-	new THREE.Vector2(0,s),
-	new THREE.Vector2(0,0),
-	new THREE.Vector2(s,s)
-]);
-geo.faceVertexUvs[0].push([
-	new THREE.Vector2(0,0),
-	new THREE.Vector2(s,s),
-	new THREE.Vector2(s,0)
-]);
-geo.faceVertexUvs[0].push([
-	new THREE.Vector2(0,s),
-	new THREE.Vector2(0,0),
-	new THREE.Vector2(s,s)
-]);
-geo.faceVertexUvs[0].push([
-	new THREE.Vector2(0,0),
-	new THREE.Vector2(s,s),
-	new THREE.Vector2(s,0)
-]);
+var matrix,s = game.blockSize;
+var geo = new THREE.PlaneGeometry(Math.sqrt(s*s+s*s), s);
+matrix = new THREE.Matrix4().makeRotationX(THREE.Math.degToRad(90)).makeRotationY(THREE.Math.degToRad(45));
+geo.applyMatrix(matrix);
+var geo2 = new THREE.PlaneGeometry(Math.sqrt(s*s+s*s), s);
+matrix = new THREE.Matrix4().makeRotationX(THREE.Math.degToRad(90)).makeRotationY(THREE.Math.degToRad(-45));
+geo2.applyMatrix(matrix);
+geo.merge(geo2);
+
 geo.verticesNeedUpdate = true;
 geo.elementsNeedUpdate = true;
 geo.uvsNeedUpdate = true;
