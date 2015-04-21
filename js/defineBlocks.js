@@ -293,72 +293,88 @@ var Hay = CollisionBlock.extend(function Hay(){
 var GrassMesh = XMeshBlock.extend(function GrassMesh(){
 	XMeshBlock.prototype.constructor.apply(this,arguments);
 },{
-	material: blocks.util.basicMaterial('double_plant_grass_top.png')
+	material: blocks.util.basicMaterial('double_plant_grass_top.png'),
+	placeSound: ['digGrass1','digGrass2','digGrass3','digGrass4'],
+	removeSound: ['digGrass1','digGrass2','digGrass3','digGrass4']
 }).add();
 
 //flowers
-var FlowerAllium = XMeshBlock.extend(function FlowerAllium(){
+var Flower = XMeshBlock.extend(function Flower(){
 	XMeshBlock.prototype.constructor.apply(this,arguments);
+},{
+	placeSound: ['digGrass1','digGrass2','digGrass3','digGrass4'],
+	removeSound: ['digGrass1','digGrass2','digGrass3','digGrass4']
+});
+var FlowerAllium = Flower.extend(function FlowerAllium(){
+	Flower.prototype.constructor.apply(this,arguments);
 },{
 	material: blocks.util.basicMaterial('flower_allium.png')
 }).add();
-var FlowerBlueOrchid = XMeshBlock.extend(function FlowerBlueOrchid(){
-	XMeshBlock.prototype.constructor.apply(this,arguments);
+var FlowerBlueOrchid = Flower.extend(function FlowerBlueOrchid(){
+	Flower.prototype.constructor.apply(this,arguments);
 },{
 	material: blocks.util.basicMaterial('flower_blue_orchid.png')
 }).add();
-var FlowerDandelion = XMeshBlock.extend(function FlowerDandelion(){
-	XMeshBlock.prototype.constructor.apply(this,arguments);
+var FlowerDandelion = Flower.extend(function FlowerDandelion(){
+	Flower.prototype.constructor.apply(this,arguments);
 },{
 	material: blocks.util.basicMaterial('flower_dandelion.png')
 }).add();
-var FlowerHoustonia = XMeshBlock.extend(function FlowerHoustonia(){
-	XMeshBlock.prototype.constructor.apply(this,arguments);
+var FlowerHoustonia = Flower.extend(function FlowerHoustonia(){
+	Flower.prototype.constructor.apply(this,arguments);
 },{
 	material: blocks.util.basicMaterial('flower_houstonia.png')
 }).add();
-var FlowerOxeyeDaisy = XMeshBlock.extend(function FlowerOxeyeDaisy(){
-	XMeshBlock.prototype.constructor.apply(this,arguments);
+var FlowerOxeyeDaisy = Flower.extend(function FlowerOxeyeDaisy(){
+	Flower.prototype.constructor.apply(this,arguments);
 },{
 	material: blocks.util.basicMaterial('flower_oxeye_daisy.png')
 }).add();
-var FlowerPaeonia = XMeshBlock.extend(function FlowerPaeonia(){
-	XMeshBlock.prototype.constructor.apply(this,arguments);
+var FlowerPaeonia = Flower.extend(function FlowerPaeonia(){
+	Flower.prototype.constructor.apply(this,arguments);
 },{
 	material: blocks.util.basicMaterial('flower_paeonia.png')
 }).add();
-var FlowerRose = XMeshBlock.extend(function FlowerRose(){
-	XMeshBlock.prototype.constructor.apply(this,arguments);
+var FlowerRose = Flower.extend(function FlowerRose(){
+	Flower.prototype.constructor.apply(this,arguments);
 },{
 	material: blocks.util.basicMaterial('flower_rose.png')
 }).add();
-var FlowerTulipOrange = XMeshBlock.extend(function FlowerTulipOrange(){
-	XMeshBlock.prototype.constructor.apply(this,arguments);
+var FlowerTulipOrange = Flower.extend(function FlowerTulipOrange(){
+	Flower.prototype.constructor.apply(this,arguments);
 },{
 	material: blocks.util.basicMaterial('flower_tulip_orange.png')
 }).add();
-var FlowerTulipPink = XMeshBlock.extend(function FlowerTulipPink(){
-	XMeshBlock.prototype.constructor.apply(this,arguments);
+var FlowerTulipPink = Flower.extend(function FlowerTulipPink(){
+	Flower.prototype.constructor.apply(this,arguments);
 },{
 	material: blocks.util.basicMaterial('flower_tulip_pink.png')
 }).add();
-var FlowerTulipRed = XMeshBlock.extend(function FlowerTulipRed(){
-	XMeshBlock.prototype.constructor.apply(this,arguments);
+var FlowerTulipRed = Flower.extend(function FlowerTulipRed(){
+	Flower.prototype.constructor.apply(this,arguments);
 },{
 	material: blocks.util.basicMaterial('flower_tulip_red.png')
 }).add();
-var FlowerTulipWhite = XMeshBlock.extend(function FlowerTulipWhite(){
-	XMeshBlock.prototype.constructor.apply(this,arguments);
+var FlowerTulipWhite = Flower.extend(function FlowerTulipWhite(){
+	Flower.prototype.constructor.apply(this,arguments);
 },{
 	material: blocks.util.basicMaterial('flower_tulip_white.png')
 }).add();
-var MushroomRed = XMeshBlock.extend(function MushroomRed(){
+
+//mushroom
+var Mushroom = XMeshBlock.extend(function Mushroom(){
 	XMeshBlock.prototype.constructor.apply(this,arguments);
+},{
+	placeSound: ['digCloth1','digCloth2','digCloth3','digCloth4'],
+	removeSound: ['digCloth1','digCloth2','digCloth3','digCloth4']
+})
+var MushroomRed = Mushroom.extend(function MushroomRed(){
+	Mushroom.prototype.constructor.apply(this,arguments);
 },{
 	material: blocks.util.basicMaterial('mushroom_red.png')
 }).add();
-var MushroomBrown = XMeshBlock.extend(function MushroomBrown(){
-	XMeshBlock.prototype.constructor.apply(this,arguments);
+var MushroomBrown = Mushroom.extend(function MushroomBrown(){
+	Mushroom.prototype.constructor.apply(this,arguments);
 },{
 	material: blocks.util.basicMaterial('mushroom_brown.png')
 }).add();

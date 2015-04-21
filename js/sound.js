@@ -98,19 +98,19 @@ var sounds = [
 		src: 'dig/snow4.ogg'
 	},
 	{
-		id: 'digcloth1',
+		id: 'digCloth1',
 		src: 'dig/cloth1.ogg'
 	},
 	{
-		id: 'digcloth2',
+		id: 'digCloth2',
 		src: 'dig/cloth2.ogg'
 	},
 	{
-		id: 'digcloth3',
+		id: 'digCloth3',
 		src: 'dig/cloth3.ogg'
 	},
 	{
-		id: 'digcloth4',
+		id: 'digCloth4',
 		src: 'dig/cloth4.ogg'
 	},
 	//step
@@ -211,19 +211,19 @@ var sounds = [
 		src: 'step/snow4.ogg'
 	},
 	{
-		id: 'stepcloth1',
+		id: 'stepCloth1',
 		src: 'step/cloth1.ogg'
 	},
 	{
-		id: 'stepcloth2',
+		id: 'stepCloth2',
 		src: 'step/cloth2.ogg'
 	},
 	{
-		id: 'stepcloth3',
+		id: 'stepCloth3',
 		src: 'step/cloth3.ogg'
 	},
 	{
-		id: 'stepcloth4',
+		id: 'stepCloth4',
 		src: 'step/cloth4.ogg'
 	}
 ]

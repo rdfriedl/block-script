@@ -52,8 +52,8 @@ menu = {
 
 		var context = canvas.getContext( '2d' );
 		var gradient = context.createRadialGradient( canvas.width / 2, canvas.height / 2, 0, canvas.width / 2, canvas.height / 2, canvas.width / 2 );
-		gradient.addColorStop( 0.1, 'rgba(210,210,210,1)' );
-		gradient.addColorStop( 1, 'rgba(255,255,255,1)' );
+		gradient.addColorStop( 0.1, 'rgba(0,0,0,0.5)' );
+		gradient.addColorStop( 1, 'rgba(0,0,0,0)' );
 
 		context.fillStyle = gradient;
 		context.fillRect( 0, 0, canvas.width, canvas.height );
@@ -145,8 +145,8 @@ menu = {
 		group3.rotation.x = 0;
 		this.scene.add( group3 );
 
-		this.renderer = new THREE.WebGLRenderer( { antialias: true } );
-		this.renderer.setClearColor( 0xffffff );
+		this.renderer = new THREE.WebGLRenderer( { antialias: true, alpha: true } );
+		this.renderer.setClearColor( 0x000000, 0 );
 		this.renderer.setPixelRatio( window.devicePixelRatio );
 		this.renderer.setSize( window.innerWidth, window.innerHeight );
 		this.container.append( this.renderer.domElement );

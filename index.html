@@ -6,7 +6,8 @@
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
-		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
+		<link rel="stylesheet" href="css/bootstrap-theme.min.css">
+		<link rel="stylesheet" href="css/font-awesome.min.css">
 		<link rel="stylesheet" type="text/css" href="style.css">
 		
 		<script src="https://code.jquery.com/jquery-2.1.3.min.js" defer></script>
@@ -81,28 +82,27 @@
 						</h1>
 					</div>
 					<div class="col-xs-4 col-xs-offset-4">
-						<button type="button" class="btn btn-lg btn-block btn-success" data-bind="click: play">Play</button>
-						<button type="button" class="btn btn-lg btn-block btn-success" data-bind="click: $root.set($root.menu,'settings')">Settings</button>
+						<button type="button" class="btn btn-lg btn-block btn-success" data-bind="click: play"><i class="fa fa-gamepad"></i> Play</button>
+						<button type="button" class="btn btn-lg btn-block btn-success" data-bind="click: $root.set($root.menu,'settings')"><i class="fa fa-cogs"></i> Settings</button>
 					</div>
 				</div>
 				<!-- settings -->
 				<div class="menu" data-bind="with: settings, visible: menu() == 'settings'">
 					<div class="col-xs-12">
-						<h1 style="text-align: center;">Settings</h1>
+						<h1 style="text-align: center;"><i class="fa fa-cogs"></i> Settings</h1>
 					</div>
 					<div class="col-xs-12">
 						<div role="tabpanel">
 						  	<!-- Nav tabs -->
 						  	<ul class="nav nav-tabs" role="tablist">
-						  	  	<li role="presentation"><a href="#genral" role="tab" data-toggle="tab">Genral</a></li>
-						  	  	<li role="presentation"><a href="#graphics" role="tab" data-toggle="tab">Graphics</a></li>
-						  	  	<li role="presentation"><a href="#sound" role="tab" data-toggle="tab">Sound</a></li>
-						  	  	<li role="presentation"><a href="#store" role="tab" data-toggle="tab">Store</a></li>
+						  	  	<li role="presentation"><a href="#genral" role="tab" data-toggle="tab"><i class="fa fa-wrench"></i> Genral</a></li>
+						  	  	<li role="presentation"><a href="#graphics" role="tab" data-toggle="tab"><i class="fa fa-cubes"></i> Graphics</a></li>
+						  	  	<li role="presentation"><a href="#sound" role="tab" data-toggle="tab"><i class="fa fa-volume-up"></i> Sound</a></li>
 						  	</ul>
 		
 						  	<!-- Tab panes -->
 						  	<div class="tab-content">
-						  	  	<div role="tabpanel" class="tab-pane active" id="genral">...</div>
+						  	  	<div role="tabpanel" class="tab-pane active" id="genral"></div>
 						  	  	<div role="tabpanel" class="tab-pane" id="graphics" data-bind="with: graphics">
 						  	  		<div class="row">
 							  	  		<div class="col-xs-4">
@@ -117,24 +117,26 @@
 							  	  		</div>
 						  	  		</div>
 						  	  	</div>
-						  	  	<div role="tabpanel" class="tab-pane" id="sound">...</div>
-						  	  	<div role="tabpanel" class="tab-pane" id="store">...</div>
+						  	  	<div role="tabpanel" class="tab-pane" id="sound"></div>
 						  	</div>
 						</div>
 					</div>
 					<div class="col-xs-4 col-xs-offset-4">
-						<button type="button" class="btn btn-lg btn-block btn-success" data-bind="click: $root.set($root.menu,'main')">Back</button>
+						<button type="button" class="btn btn-lg btn-block btn-success" data-bind="click: $root.set($root.menu,'main')">Back <i class="fa fa-arrow-right"></i></button>
 					</div>
 				</div>
 			</div>
 			<div id="game">
 				<div class="menus">
-					<div class="esc" data-bind="visible: menu() == 'esc'">
+					<div class="esc" data-bind="visible: menu() == 'esc', with: esc">
 						<div class="col-xs-4 col-xs-offset-4">
-							<button type="button" class="btn btn-lg btn-default btn-block" data-bind="click: back">Back To Game</button>
+							<button type="button" class="btn btn-lg btn-default btn-block" data-bind="click: back"><i class="fa fa-chevron-left"></i> Back To Game <i class="fa fa-chevron-right"></i></button>
+							<button type="button" class="btn btn-lg btn-default btn-block" data-bind="click: fullscreen"><i class="fa fa-desktop"></i> FullScreen</button>
+							<button type="button" class="btn btn-lg btn-default btn-block" data-bind="click: menu"><i class="fa fa-bars"></i> Menu</button>
 						</div>
 					</div>
 					<div class="invt panel panel-default" data-bind="with: blocks, visible: menu() == 'invt'">
+  						<div class="panel-heading">Inventory</div>
 						<div class="panel-body" data-bind="foreach: blocks">
 							<!-- ko if: type == 'block' -->
 							<div class="cube" data-bind="click: $root.set($parent.selectedBlock, name ), css: {'selected': name == $parent.selectedBlock() }">

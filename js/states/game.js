@@ -6,7 +6,7 @@ game = {
 		this.modal.blocks.update();
 	},
 	disable: function(){
-
+		this.modal.menu('none');
 	},
 
 	scene: undefined,
@@ -39,7 +39,7 @@ game = {
 		this.renderer.setClearColor( 0xbfd1e5 );
 		this.renderer.setPixelRatio( window.devicePixelRatio );
 		this.renderer.setSize( width, height );
-	    this.renderer.shadowMapEnabled = true;
+	    // this.renderer.shadowMapEnabled = true;
 	    this.renderer.shadowMapSoft = true;
 	    this.renderer.shadowMapType = THREE.PCFSoftShadowMap;
 	    this.renderer.autoClear = false;
@@ -140,6 +140,7 @@ game = {
 
 		// Hook pointer lock state change events
 		$(document).on('pointerlockchange mozpointerlockchange webkitpointerlockchange', this.pointerlockchange.bind(this));
+		$(document).on('fullscreenchange mozfullscreenchange webkitfullscreenchange', this.pointerlockchange.bind(this));
 
 		$(document).keyup(function(event) {
 			switch(event.keyCode){
@@ -154,6 +155,16 @@ game = {
 					}
 					break;
 				case 27: //esc
+					if(this.modal.menu() == 'esc'){
+						this.modal.menu('none');
+						this.requestPointerLock();
+					}
+					else{
+						this.modal.menu('esc');
+						this.exitPointerLock();
+					}
+					break;
+				case 192: // `
 					if(this.modal.menu() == 'esc'){
 						this.modal.menu('none');
 						this.requestPointerLock();
@@ -181,7 +192,7 @@ game = {
 		sun.position.set( 0, 1, 0 );
 	    sun.position.multiplyScalar(5000);
 
-	    // sun.castShadow = true;
+	    sun.castShadow = true;
 	    // sun.onlyShadow = true;
 
 	    sun.shadowCameraNear = shadowNear;
@@ -189,8 +200,8 @@ game = {
 
 	    sun.shadowBias = 0.0001;
 	    sun.shadowMapDarkness = 0.8;
-	    sun.shadowMapWidth = 1280;
-	    sun.shadowMapHeight = 1280;
+	    sun.shadowMapWidth = 1280 * 2;
+	    sun.shadowMapHeight = 1280 * 2;
 
 	    var size = 1500;
 	    sun.shadowCameraLeft = -size;
@@ -245,31 +256,21 @@ game = {
 		document.body.requestPointerLock = document.body.requestPointerLock || document.body.mozRequestPointerLock || document.body.webkitRequestPointerLock;
 
 		if(/Firefox/i.test(navigator.userAgent)) {
-			var fullscreenchange = function(event) {
-				if ( document.fullscreenElement === document.body || document.mozFullscreenElement === document.body || document.mozFullScreenElement === document.body ) {
 
-					document.removeEventListener('fullscreenchange', fullscreenchange);
-					document.removeEventListener('mozfullscreenchange', fullscreenchange);
-
-					document.body.requestPointerLock();
-				}
-			}
-
-			document.addEventListener('fullscreenchange', fullscreenchange, false);
-			document.addEventListener('mozfullscreenchange', fullscreenchange, false);
-
-			document.body.requestFullscreen = document.body.requestFullscreen || document.body.mozRequestFullscreen || document.body.mozRequestFullScreen || document.body.webkitRequestFullscreen;
-
-			document.body.requestFullscreen();
 		} 
-		else {
-			document.body.requestPointerLock();
-		}
+		document.body.requestPointerLock();
+	},
+	requestFullscreen: function(){
+		document.body.requestFullscreen = document.body.requestFullscreen || document.body.mozRequestFullscreen || document.body.mozRequestFullScreen || document.body.webkitRequestFullscreen;
+		document.body.requestFullscreen();
 	},
 	exitPointerLock: function(){
 		this.player.enabled = false;
 		document.exitPointerLock = document.exitPointerLock || document.mozExitPointerLock || document.webkitExitPointerLock;
 	    document.exitPointerLock();
+	},
+	exitFullscreen: function(){
+
 	},
 	pointerlockchange: function (event) {
 		if ( document.pointerLockElement === document.body || document.mozPointerLockElement === document.body || document.webkitPointerLockElement === document.body ) {
@@ -278,6 +279,9 @@ game = {
 		else {
 			this.player.enabled = false;
 		}
+	},
+	fullscreenchange: function(event){
+
 	},
 	loadChunkLoop: function(){
 		// var depth = 2;
@@ -388,9 +392,17 @@ game = {
 
 	modal: {
 		menu: 'none',
-		back: function(){
-			game.requestPointerLock();
-			game.modal.menu('none');
+		esc: {
+			back: function(){
+				game.requestPointerLock();
+				game.modal.menu('none');
+			},
+			fullscreen: function(){
+				game.requestFullscreen();
+			},
+			menu: function(){
+				states.enableState('menu');
+			},
 		},
 		blocks: {
 			selectedBlock: observable('stone',function(val){

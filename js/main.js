@@ -19,6 +19,12 @@ $(document).ready(function() {
 	$(document).on('contextmenu',function(event){
 		event.preventDefault();
 	})
+
+	//dont allow the user to drag images
+	$(document).on('dragstart','img',function(event){
+		event.preventDefault();
+		return false;
+	})
 });
 
 //list all indexedDBs
