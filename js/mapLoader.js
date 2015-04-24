@@ -9,7 +9,7 @@ MapLoaderIndexeddb = function(options,cb){
 	this.db.version(this.dbVersion)
 		.stores({
 			map: '',
-			chunks: 'id,position,data'
+			chunks: 'id,data'
 		});
 
 	this.db.open().then(function(){

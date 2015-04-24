@@ -232,18 +232,18 @@ game = {
 	    sprite.scale.set(30,30,30);
 	    this.sceneHUD.add(sprite);
 	},
-	update: function(){
-		this.animate();
-		this.render();
+	update: function(dtime){
+		this.animate(dtime);
+		this.render(dtime);
 	},
-	animate: function(){
+	animate: function(dtime){
 		this.stats.update();
 
-		this.player.update();
+		this.player.update(dtime);
 
 		this.lightGroup.position.copy(this.player.position);
 	},
-	render: function(){
+	render: function(dtime){
 		this.renderer.clear();
 		this.renderer.render(this.scene, this.camera);
 		this.renderer.clearDepth();
@@ -288,26 +288,15 @@ game = {
 		if(this.enabled){
 			var func = function(x,y,z,dist,cb){
 				var loaded = true;
-				// for (var y = -depth; y <= depth; y++) {
-					var position = this.player.position.clone();
-					position.x = Math.floor(position.x / (game.chunkSize*game.blockSize)) + x;
-					position.y = Math.floor(position.y / (game.chunkSize*game.blockSize)) + y;
-					position.z = Math.floor(position.z / (game.chunkSize*game.blockSize)) + z;
-					loaded = (!loaded)? loaded : this.map.chunkLoaded(position);
-				// };
-				loaded = !!loaded;
+				var position = this.player.position.clone();
+				position.x = Math.floor(position.x / (game.chunkSize*game.blockSize)) + x;
+				position.y = Math.floor(position.y / (game.chunkSize*game.blockSize)) + y;
+				position.z = Math.floor(position.z / (game.chunkSize*game.blockSize)) + z;
 
+				loaded = (!loaded)? loaded : this.map.chunkLoaded(position);
+				loaded = !!loaded;
 				if(!loaded){
-					// cb = _.after(depth*2+1,cb);
-					//load
-					// for (var y = -depth; y <= depth; y++) {
-						// var position = this.player.position.clone();
-						// position.x = Math.floor(position.x / (game.chunkSize*game.blockSize)) + x;
-						// position.y = Math.floor(position.y / (game.chunkSize*game.blockSize)) + y;
-						// position.z = Math.floor(position.z / (game.chunkSize*game.blockSize)) + z;
-						
-						this.map.getChunk(position);
-					// };
+					this.map.getChunk(position);
 					cb();
 				}
 				else{
@@ -328,7 +317,8 @@ game = {
 						return;
 					}
 
-					func.bind(this)(x,y,z,dist,cb);
+					delete position, loaded;
+					func.bind(this,x,y,z,dist,cb)();
 				}
 			}
 			func.bind(this)(0,0,0,0,function(){
@@ -387,6 +377,7 @@ game = {
 			};
 		}
 
+		delete position;
 		setTimeout(this.unloadChunkLoop.bind(this),500);
 	},
 

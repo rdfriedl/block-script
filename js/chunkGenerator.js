@@ -1,3 +1,19 @@
+ChunkGeneratorBlank = function(){
+}
+ChunkGeneratorBlank.prototype = {
+	levels: [],
+	generateChunk: function(position,cb){
+		var data = [];
+
+		for (var i = 0; i < game.chunkSize*game.chunkSize*game.chunkSize; i++) {
+			data.push('air');
+		};	
+
+		if(cb) cb(data);
+	}
+}
+ChunkGeneratorBlank.prototype.constructor = ChunkGeneratorBlank;
+
 ChunkGeneratorHills = function(options){
 	this.options = fn.combindOver({
 		width: 200,
@@ -5,7 +21,7 @@ ChunkGeneratorHills = function(options){
 		levels: [],
 	},options);
 
-	size = this.options.width * this.options.height;
+	var size = this.options.width * this.options.height;
 
 	var z = 0;
 	for (var k = 0; k < this.options.levels.length; k++) {

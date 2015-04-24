@@ -155,7 +155,7 @@ Player.prototype = {
 				break;
 		}
 	},
-	update: function(){
+	update: function(dtime){
 		var speed = (this.movement.sprint)? this.movement.sprintSpeed : this.movement.walkSpeed;
 
 		//y

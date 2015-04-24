@@ -1,11 +1,21 @@
 function positionToIndex(position,size){
-	return (position.z*size*size)+(position.y*size)+position.x;
+	if(size instanceof THREE.Vector3){
+		return (position.z*size.x*size.y)+(position.y*size.x)+position.x;
+	}
+	else return (position.z*size*size)+(position.y*size)+position.x;
 }
 function indexToPosition(index,size){
 	var position = new THREE.Vector3(0,0,0);
-	position.z = Math.floor(index/(size*size));
-	position.y = Math.floor((index-(position.z*(size*size)))/size);
-	position.x = index-(position.y*size)-(position.z*size*size);
+	if(size instanceof THREE.Vector3){
+		position.z = Math.floor(index/(size.x*size.y));
+		position.y = Math.floor((index-(position.z*(size.x*size.y)))/size.x);
+		position.x = index-(position.y*size.x)-(position.z*size.x*size.y);
+	}
+	else{
+		position.z = Math.floor(index/(size*size));
+		position.y = Math.floor((index-(position.z*(size*size)))/size);
+		position.x = index-(position.y*size)-(position.z*size*size);
+	}
 	return position;
 }
 function observable(val,cb){
