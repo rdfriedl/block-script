@@ -9,6 +9,7 @@ var Air = Block.extend(function Air(){
 var Dirt = CollisionBlock.extend(function Dirt(){
 	CollisionBlock.prototype.constructor.apply(this,arguments);
 },{
+	inventoryTab: 'default',
 	material: blocks.util.basicMaterial('dirt.png'),
 	removeSound: ['digGravel1','digGravel2','digGravel3','digGravel4'],
 	placeSound: ['digGravel1','digGravel2','digGravel3','digGravel4'],
@@ -19,6 +20,7 @@ var Dirt = CollisionBlock.extend(function Dirt(){
 var Grass = CollisionBlock.extend(function Grass(){
 	CollisionBlock.prototype.constructor.apply(this,arguments);
 },{
+	inventoryTab: 'default',
 	material: [ //x,y,z | +/-
 		[
 			blocks.util.basicMaterial('grass_side.png'),
@@ -42,6 +44,7 @@ var Grass = CollisionBlock.extend(function Grass(){
 var WoodPlanks = CollisionBlock.extend(function WoodPlanks(){
 	CollisionBlock.prototype.constructor.apply(this,arguments);
 },{
+	inventoryTab: 'default',
 	removeSound: ['digWood1','digWood2','digWood3','digWood4'],
 	placeSound: ['digWood1','digWood2','digWood3','digWood4'],
 	stepSound: ['stepWood1','stepWood2','stepWood3','stepWood4']
@@ -75,6 +78,7 @@ var WoodPlanksSpruce = WoodPlanks.extend(function WoodPlanksSpruce(){
 var Log = CollisionBlock.extend(function Log(){
 	CollisionBlock.prototype.constructor.apply(this,arguments);
 },{
+	inventoryTab: 'default',
 	removeSound: ['digWood1','digWood2','digWood3','digWood4'],
 	placeSound: ['digWood1','digWood2','digWood3','digWood4'],
 	stepSound: ['stepWood1','stepWood2','stepWood3','stepWood4']
@@ -160,6 +164,7 @@ var LogSpruce = Log.extend(function LogSpruce(){
 var Stone = CollisionBlock.extend(function Stone(){
 	CollisionBlock.prototype.constructor.apply(this,arguments);
 },{
+	inventoryTab: 'default',
 	material: blocks.util.basicMaterial('stone.png'),
 	removeSound: ['digStone1','digStone2','digStone3','digStone4'],
 	placeSound: ['digStone1','digStone2','digStone3','digStone4'],
@@ -169,6 +174,7 @@ var Stone = CollisionBlock.extend(function Stone(){
 var StoneBrick = CollisionBlock.extend(function StoneBrick(){
 	CollisionBlock.prototype.constructor.apply(this,arguments);
 },{
+	inventoryTab: 'default',
 	material: blocks.util.basicMaterial('stonebrick.png'),
 	removeSound: ['digStone1','digStone2','digStone3','digStone4'],
 	placeSound: ['digStone1','digStone2','digStone3','digStone4'],
@@ -178,6 +184,7 @@ var StoneBrick = CollisionBlock.extend(function StoneBrick(){
 var StoneBrickMossy = CollisionBlock.extend(function StoneBrickMossy(){
 	CollisionBlock.prototype.constructor.apply(this,arguments);
 },{
+	inventoryTab: 'default',
 	material: blocks.util.basicMaterial('stonebrick_mossy.png'),
 	removeSound: ['digStone1','digStone2','digStone3','digStone4'],
 	placeSound: ['digStone1','digStone2','digStone3','digStone4'],
@@ -187,6 +194,7 @@ var StoneBrickMossy = CollisionBlock.extend(function StoneBrickMossy(){
 var Bricks = CollisionBlock.extend(function Bricks(){
 	CollisionBlock.prototype.constructor.apply(this,arguments);
 },{
+	inventoryTab: 'default',
 	material: blocks.util.basicMaterial('brick.png'),
 	removeSound: ['digStone1','digStone2','digStone3','digStone4'],
 	placeSound: ['digStone1','digStone2','digStone3','digStone4'],
@@ -196,6 +204,7 @@ var Bricks = CollisionBlock.extend(function Bricks(){
 var EndStone = CollisionBlock.extend(function EndStone(){
 	CollisionBlock.prototype.constructor.apply(this,arguments);
 },{
+	inventoryTab: 'default',
 	material: blocks.util.basicMaterial('end_stone.png'),
 	removeSound: ['digStone1','digStone2','digStone3','digStone4'],
 	placeSound: ['digStone1','digStone2','digStone3','digStone4'],
@@ -205,18 +214,21 @@ var EndStone = CollisionBlock.extend(function EndStone(){
 var AnvilBase = CollisionBlock.extend(function AnvilBase(){
 	CollisionBlock.prototype.constructor.apply(this,arguments);
 },{
+	inventoryTab: 'default',
 	material: blocks.util.basicMaterial('anvil_base.png')
 }).add();
 
 var IronBrock = CollisionBlock.extend(function IronBrock(){
 	CollisionBlock.prototype.constructor.apply(this,arguments);
 },{
+	inventoryTab: 'default',
 	material: blocks.util.basicMaterial('iron_block.png')
 }).add();
 
 var quartz = CollisionBlock.extend(function quartz(){
 	CollisionBlock.prototype.constructor.apply(this,arguments);
 },{
+	inventoryTab: 'default',
 	material: blocks.util.basicMaterial('quartz_block_side.png'),
 	removeSound: ['digStone1','digStone2','digStone3','digStone4'],
 	placeSound: ['digStone1','digStone2','digStone3','digStone4'],
@@ -226,6 +238,7 @@ var quartz = CollisionBlock.extend(function quartz(){
 var BookShelf = CollisionBlock.extend(function BookShelf(){
 	CollisionBlock.prototype.constructor.apply(this,arguments);
 },{
+	inventoryTab: 'default',
 	material: [
 		[
 			blocks.util.basicMaterial('bookshelf.png'),
@@ -248,6 +261,7 @@ var BookShelf = CollisionBlock.extend(function BookShelf(){
 var SandStone = CollisionBlock.extend(function SandStone(){
 	CollisionBlock.prototype.constructor.apply(this,arguments);
 },{
+	inventoryTab: 'default',
 	material: [ //x,y,z | +/-
 		[
 			blocks.util.basicMaterial('sandstone_normal.png'),
@@ -270,6 +284,7 @@ var SandStone = CollisionBlock.extend(function SandStone(){
 var Hay = CollisionBlock.extend(function Hay(){
 	CollisionBlock.prototype.constructor.apply(this,arguments);
 },{
+	inventoryTab: 'default',
 	material: [ //x,y,z | +/-
 		[
 			blocks.util.basicMaterial('hay_block_side.png'),
@@ -290,20 +305,47 @@ var Hay = CollisionBlock.extend(function Hay(){
 }).add();
 
 //GrassMesh
-var GrassMesh = XMeshBlock.extend(function GrassMesh(){
-	XMeshBlock.prototype.constructor.apply(this,arguments);
+var GrassMesh = ModalBlock.extend(function GrassMesh(){
+	ModalBlock.prototype.constructor.apply(this,arguments);
 },{
-	material: blocks.util.basicMaterial('double_plant_grass_top.png'),
+	inventoryTab: 'default',
+	modal: blocks.util.loadModal('grass'),
 	placeSound: ['digGrass1','digGrass2','digGrass3','digGrass4'],
-	removeSound: ['digGrass1','digGrass2','digGrass3','digGrass4']
+	removeSound: ['digGrass1','digGrass2','digGrass3','digGrass4'],
+
+	onload: function(){
+		this.inventoryImage = this.modal.replace('.dae','.png');
+	}
+}).add();
+
+var Torch = ModalBlock.extend(function Torch(){
+	ModalBlock.prototype.constructor.apply(this,arguments);
+},{
+	inventoryTab: 'default',
+	modal: blocks.util.loadModal('torch'),
+	placeSound: ['wood1','wood2','wood3','wood4'],
+	removeSound: ['wood1','wood2','wood3','wood4'],
+
+	onload: function(){
+		this.inventoryImage = this.modal.replace('.dae','.png');
+
+		var mat = this.mesh.getMaterialByName('torch')
+		mat.side = THREE.DoubleSide
+		mat.transparent = true;
+	}
 }).add();
 
 //flowers
 var Flower = XMeshBlock.extend(function Flower(){
 	XMeshBlock.prototype.constructor.apply(this,arguments);
 },{
+	inventoryTab: 'default',
 	placeSound: ['digGrass1','digGrass2','digGrass3','digGrass4'],
-	removeSound: ['digGrass1','digGrass2','digGrass3','digGrass4']
+	removeSound: ['digGrass1','digGrass2','digGrass3','digGrass4'],
+
+	onload: function(){
+		this.inventoryImage = this.material.map.sourceFile;
+	}
 });
 var FlowerAllium = Flower.extend(function FlowerAllium(){
 	Flower.prototype.constructor.apply(this,arguments);
@@ -365,8 +407,13 @@ var FlowerTulipWhite = Flower.extend(function FlowerTulipWhite(){
 var Mushroom = XMeshBlock.extend(function Mushroom(){
 	XMeshBlock.prototype.constructor.apply(this,arguments);
 },{
+	inventoryTab: 'default',
 	placeSound: ['digCloth1','digCloth2','digCloth3','digCloth4'],
-	removeSound: ['digCloth1','digCloth2','digCloth3','digCloth4']
+	removeSound: ['digCloth1','digCloth2','digCloth3','digCloth4'],
+
+	onload: function(){
+		this.inventoryImage = this.material.map.sourceFile;
+	}
 })
 var MushroomRed = Mushroom.extend(function MushroomRed(){
 	Mushroom.prototype.constructor.apply(this,arguments);

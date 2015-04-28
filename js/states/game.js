@@ -13,12 +13,12 @@ game = {
 	camera: undefined,
 	sceneHUD: undefined,
 	cameraHUD: undefined,
-	renderer: undefined,
 	lightGroup: undefined,
 	player: undefined,
 	map: undefined,
 	chunkSize: 10,
 	blockSize: 32,
+	loadedMap: undefined,
 	init: function(){
 		var width = window.innerWidth;
 		var height = window.innerHeight;
@@ -34,17 +34,6 @@ game = {
 		this.scene.fog = new THREE.FogExp2(0xbfd1e5,game.viewRange * game.chunkSize / 100000);
 		this.camera = new THREE.PerspectiveCamera(60, width / height, 0.1, 20000);
 
-		//renderer
-		this.renderer = new THREE.WebGLRenderer();
-		this.renderer.setClearColor( 0xbfd1e5 );
-		this.renderer.setPixelRatio( window.devicePixelRatio );
-		this.renderer.setSize( width, height );
-	    // this.renderer.shadowMapEnabled = true;
-	    this.renderer.shadowMapSoft = true;
-	    this.renderer.shadowMapType = THREE.PCFSoftShadowMap;
-	    this.renderer.autoClear = false;
-		this.container.append(this.renderer.domElement);
-
 		//setup
 		this.setUpScene();
 		this.setUpHUD();
@@ -52,9 +41,6 @@ game = {
 		this.map = new Map(this,this.scene,{});
 		this.player = new Player(this,this.scene,this.camera);
 
-		var mapLoader = new MapLoaderIndexeddb({
-			dbName: 'map'
-		});
 		var chunkGenerator = new ChunkGeneratorHills({
 			width: 40*game.chunkSize-1,
 			height: 40*game.chunkSize-1,
@@ -106,7 +92,6 @@ game = {
 			]
 		})
 
-		this.map.setMapLoader(mapLoader);
 		this.map.setChunkGenerator(chunkGenerator);
 
 		// set player position
@@ -134,8 +119,6 @@ game = {
 			this.cameraHUD.top = height / 2;
 			this.cameraHUD.bottom = - height / 2;
 			this.cameraHUD.updateProjectionMatrix();
-
-			this.renderer.setSize(width,height );
 		}.bind(this));
 
 		// Hook pointer lock state change events
@@ -143,6 +126,7 @@ game = {
 		$(document).on('fullscreenchange mozfullscreenchange webkitfullscreenchange', this.pointerlockchange.bind(this));
 
 		$(document).keyup(function(event) {
+			if(!this.enabled) return;
 			switch(event.keyCode){
 				case 69: //e
 					if(this.modal.menu() == 'none'){
@@ -243,11 +227,17 @@ game = {
 
 		this.lightGroup.position.copy(this.player.position);
 	},
-	render: function(dtime){
-		this.renderer.clear();
-		this.renderer.render(this.scene, this.camera);
-		this.renderer.clearDepth();
-		this.renderer.render(this.sceneHUD, this.cameraHUD);
+
+	render: function(dtime,rtt){
+    	// renderer.shadowMapEnabled = true;
+		renderer.setClearColor( 0xbfd1e5, 1);
+	    renderer.shadowMapSoft = true;
+	    renderer.shadowMapType = THREE.PCFSoftShadowMap;
+
+	    renderer.clear();
+		renderer.render(this.scene, this.camera);
+		renderer.clearDepth();
+		renderer.render(this.sceneHUD, this.cameraHUD);
 	},
 
 	requestPointerLock: function(){
@@ -381,6 +371,16 @@ game = {
 		setTimeout(this.unloadChunkLoop.bind(this),500);
 	},
 
+	loadMap: function(map){
+		this.map.saveAllChunks(function(){
+			this.loadedMap = map;
+			this.map.removeAllChunks();
+			this.map.setMapLoader(new MapLoaderIndexeddb({
+				dbName: map.dbName
+			}))
+		}.bind(this))
+	},
+
 	modal: {
 		menu: 'none',
 		esc: {
@@ -405,6 +405,8 @@ game = {
 				game.modal.blocks.blocks([]);
 				for (var i in blocks.blocks) {
 					var block = blocks.blocks[i];
+					if(block.prototype.inventoryTab == '') continue;
+
 					if(_.isArray(block.prototype.material)){
 						//build list of urls for sides of blocks
 						var mat = [];
@@ -427,11 +429,11 @@ game = {
 							material: mat
 						})
 					}
-					else if(block.prototype.material instanceof THREE.Material){
+					else{
 						a.push({
 							name: block.name.toLowerCase(),
 							type: 'flat',
-							material: block.prototype.material.map.sourceFile
+							material: block.prototype.inventoryImage
 						})
 					}
 				};

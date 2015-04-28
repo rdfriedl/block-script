@@ -20,8 +20,6 @@ body {
 	font-family:Monospace;
 	font-size:13px;
 	text-align:center;
-
-	background-color: #bfd1e5;
 }
 
 #game #pointer-lock {
@@ -120,6 +118,10 @@ body {
 #menu .menu .cube .front, #menu .menu .cube .back, #menu .menu .cube .right, #menu .menu .cube .left{
 	background: url('res/img/blocks/grass_side.png');
   	background-size: 100%;
+}
+
+#menu .maps .list-group{
+	margin-bottom: 0px;
 }
 
 /*cube*/

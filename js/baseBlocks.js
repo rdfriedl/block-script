@@ -11,15 +11,30 @@ var SolidBlock = Block.extend(function SolidBlock(){
 var MeshBlock = Block.extend(function MeshBlock(){
 	Block.prototype.constructor.apply(this,arguments);
 
-	this.mesh = new THREE.Mesh(this.geometry,this.material);
-	this.mesh.position.copy(this.position).multiplyScalar(game.blockSize).add(new THREE.Vector3(game.blockSize,game.blockSize,game.blockSize).divideScalar(2));
+	this.mesh.position.copy(this.position).multiplyScalar(game.blockSize).add(new THREE.Vector3(1,1,1).multiplyScalar(game.blockSize/2));
 	this.chunk.group.add(this.mesh);
 },{
-	geometry: new THREE.BoxGeometry(game.blockSize,game.blockSize,game.blockSize),
-	material: blocks.nullMaterial,
 	dispose: function(){ //remove mesh
 		this.mesh.parent.remove(this.mesh);
 	}
+})
+
+var GeometryBlock = MeshBlock.extend(function GeometryBlock(){
+	this.mesh = new THREE.Mesh(this.geometry,this.material);
+
+	MeshBlock.prototype.constructor.apply(this,arguments);
+},{
+	geometry: new THREE.BoxGeometry(game.blockSize,game.blockSize,game.blockSize),
+	material: blocks.nullMaterial,
+	mesh: undefined
+})
+
+var ModalBlock = MeshBlock.extend(function ModalBlock(){
+	this.mesh = this.mesh.clone();
+	MeshBlock.prototype.constructor.apply(this,arguments);
+},{
+	modal: '',
+	mesh: undefined //this is set by the loadModals function of the blocks
 })
 
 //XMesh
@@ -36,8 +51,8 @@ geo.verticesNeedUpdate = true;
 geo.elementsNeedUpdate = true;
 geo.uvsNeedUpdate = true;
 geo.computeFaceNormals();
-var XMeshBlock = MeshBlock.extend(function XMeshBlock(){
-	MeshBlock.prototype.constructor.apply(this,arguments);
+var XMeshBlock = GeometryBlock.extend(function XMeshBlock(){
+	GeometryBlock.prototype.constructor.apply(this,arguments);
 
 	if(this.material !== blocks.nullMaterial){
 		this.material.transparent = true;

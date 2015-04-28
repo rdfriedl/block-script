@@ -2,9 +2,21 @@ var missingErrors = {};
 blocks = {
 	blocks: {},
 	textureFolder: 'res/img/blocks/',
+	modalFolder: 'res/modals/',
 	nullMaterial: new THREE.MeshNormalMaterial(),
 	blockMaterial: undefined,
-	init: function(){
+	init: function(cb){
+		done = _.after(2,function(){
+			for(var i in this.blocks){ //going to have to create a function that loops through the blocks and loads them
+				this.blocks[i].prototype.onload();
+			}
+
+			if(cb) cb();
+		}.bind(this));
+		this.loadTextures(done);
+		this.loadModals(done);
+	},
+	loadTextures: function(cb){
 		var materials = [
 			this.nullMaterial
 		];
@@ -39,6 +51,46 @@ blocks = {
 			}
 		};
 		this.blockMaterial = new THREE.MeshFaceMaterial(materials);
+		if(cb) cb();
+	},
+	loadModals: function(cb){
+		var blocks = [];
+		for (var i in this.blocks) {
+			var block = this.blocks[i].prototype;
+
+			if(block instanceof ModalBlock){
+				blocks.push(block);
+			}
+		}
+
+		cb = _.after(blocks.length +1,cb || function(){});
+		for (var i in blocks) {
+			if(blocks[i].modal !== ''){
+				var loader = new THREE.ColladaLoader();
+				loader.options.convertUpAxis = true;
+				loader.load(blocks[i].modal,function(modal){
+					modal = modal.scene;
+					this.mesh = modal;
+					this.mesh.scale.multiplyScalar(game.blockSize/2);
+
+					//fix the textures
+					this.mesh.traverse(function(obj){
+						if(obj.material){
+							if(obj.material.map){
+								obj.material.map.magFilter = THREE.NearestFilter;
+			       				obj.material.map.minFilter = THREE.LinearMipMapLinearFilter;
+							}
+						}
+					});
+
+					cb();
+				}.bind(blocks[i]))
+			}
+			else{
+				cb();
+			}
+		};
+		cb();
 	},
 	createBlock: function(id,position,data,chunk){
 		var block = this.getBlock(id);
@@ -179,6 +231,9 @@ blocks = {
 			}
 
 			return mat;
+		},
+		loadModal: function(url){
+			return blocks.modalFolder + url + '/' + url + '.dae';
 		}
 	}
 }
@@ -193,6 +248,8 @@ Block.prototype = {
 	chunk: undefined,
 	position: new THREE.Vector3(0,0,0),
 	visible: true,
+	inventoryTab: '',
+	inventoryImage: '',
 	placeSound: [],
 	removeSound: [],
 	stepSound: [],
@@ -248,6 +305,17 @@ Block.prototype = {
 
         return chunk.getBlock(pos);
 	},
+
+	//events
+	onload: function(){
+
+	},
+	onplace: function(){
+
+	},
+	onremove: function(){
+
+	}
 }
 Object.defineProperties(Block.prototype,{
 	worldPosition: {

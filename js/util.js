@@ -48,3 +48,41 @@ THREE.Vector3.prototype.split = function(dirs){
 THREE.Vector3.prototype.toString = function(){
 	return this.x+'|'+this.y+'|'+this.z;
 }
+
+THREE.Object3D.prototype.getMaterialById = function(a) {
+    return this.getMaterialByProperty("id", a)
+},
+THREE.Object3D.prototype.getMaterialByName = function(a) {
+    return this.getMaterialByProperty("name", a)
+},
+THREE.Object3D.prototype.getMaterialByProperty = function(a, b) {
+	if(this.material){
+	    if (this.material[a] === b){
+	        return this.material;
+	    }
+	}
+    for (var c = 0, d = this.children.length; c < d; c++) {
+        var e = this.children[c].getMaterialByProperty(a, b);
+        if (void 0 !== e)
+            return e
+    }
+}
+
+THREE.Object3D.prototype.getTextureById = function(a) {
+    return this.getTextureByProperty("id", a)
+},
+THREE.Object3D.prototype.getTextureByName = function(a) {
+    return this.getTextureByProperty("name", a)
+},
+THREE.Object3D.prototype.getTextureByProperty = function(a, b) {
+	if(this.material){
+	    if (this.material[a] === b){
+	        return this.material;
+	    }
+	}
+    for (var c = 0, d = this.children.length; c < d; c++) {
+        var e = this.children[c].getTextureByProperty(a, b);
+        if (void 0 !== e)
+            return e
+    }
+}
