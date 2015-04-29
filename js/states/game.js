@@ -392,6 +392,7 @@ game = {
 				game.requestFullscreen();
 			},
 			menu: function(){
+				game.map.saveAllChunks();
 				states.enableState('menu');
 			},
 		},

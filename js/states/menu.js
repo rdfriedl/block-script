@@ -107,10 +107,71 @@ menu = {
 					$('#edit-map-modal').modal('hide');
 				}
 			},
+			download: {
+				progress: 0,
+				downloadLink: '',
+				downloadName: '',
+				download: function(map){
+					var self = menu.modal.maps.download;
+					var mapLoader = new MapLoaderIndexeddb({
+						dbName: map.dbName
+					});
+
+					mapLoader.exportData(function(json){
+						json.name = map.name;
+						json.desc = map.desc;
+						var str = JSON.stringify(json);
+						self.downloadLink('data:text/json,'+str);
+						self.downloadName(map.name);
+					},function(val){
+						self.progress(val);
+					})
+				}
+			},
+			upload: {
+				progress: 0,
+				upload: function(self,event){
+					event.preventDefault();
+					readfiles(event.target.files,function(data){
+						try{
+							data = JSON.parse(data);
+
+							//put map in map list
+							var map = {
+								id: '',
+								name: data.name,
+								desc: data.desc,
+								dbName: '',
+								createDate: Date(),
+								settings: {}
+							}
+							map.id = Math.round(Math.random() * 1000000);
+							map.dbName = 'block-script-map:' + map.id;
+							settingsDB.maps.put(map);
+
+							//create map db and put data in
+							var mapLoader = new MapLoaderIndexeddb({
+								dbName: map.dbName
+							})
+							mapLoader.inportData(data);
+
+							menu.modal.maps.loadMaps();
+						}
+						catch(e){
+							console.log('failed to upload map')
+							console.log(e);
+						}
+
+						$('#upload-map-modal').modal('hide');
+					})
+					event.target.value = null;
+				}
+			},
 			createMap: function(data){
 				var map = {
 					id: '',
 					name: '',
+					desc: '',
 					dbName: '',
 					createDate: Date(),
 					settings: {}
@@ -153,13 +214,23 @@ menu = {
 				new Dexie(map.dbName).delete();
 				settingsDB.maps.delete(map.id);
 				this.loadMaps();
+				$('#delete-map-modal').modal('hide');
 			},
 			editMap: function(){
 				var self = menu.modal.maps;
-				var map = this.maps()[this.selected()];
+				var map = self.maps()[self.selected()];
 				self.edit.name(map.name);
 				self.edit.desc(map.desc);
 				$('#edit-map-modal').modal('show');
+			},
+			downloadMap: function(){
+				var self = menu.modal.maps;
+				var map = self.maps()[this.selected()];
+				self.download.download(map);
+				$('#download-map-modal').modal('show');
+			},
+			uploadMap: function(){
+				$('#upload-map-modal').modal('show');
 			},
 			loadMaps: function(cb){
 				settingsDB.maps.toArray(function(a){

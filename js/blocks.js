@@ -108,7 +108,7 @@ blocks = {
 		return this.blocks[id.toLowerCase()];
 	},
 	addBlock: function(block){
-		var id = block.name;
+		var id = block.name
 		if(this.getBlock(id)){
 			console.error('block with id: '+id.toLowerCase()+' already exists');
 			return;
@@ -118,8 +118,9 @@ blocks = {
 	removeBlock: function(block){
 		if(typeof block == 'string') block = this.getBlock(block);
 		if(block){
-			if(this.blocks[block.name]){
-				delete this.blocks[block.name.toLowerCase()];
+			var name = block.name
+			if(this.blocks[name]){
+				delete this.blocks[name.toLowerCase()];
 			}
 		}
 	},
