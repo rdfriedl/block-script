@@ -33,13 +33,14 @@ MapLoaderIndexeddb.prototype = {
 					data.data = JSON.parse(data.data);
 					this.db.chunks.put({
 						id: position.toString(),
+						position: position,
 						data: data.data
 					})
 				}
 				data = data.data;
 			}
 			if(cb) cb(data);
-		})
+		}.bind(this))
 	},
 	saveChunk: function(chunk,cb){
 		this.db.chunks.put({
