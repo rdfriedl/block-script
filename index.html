@@ -82,7 +82,7 @@
 						</h1>
 					</div>
 					<div class="col-xs-4 col-xs-offset-4">
-						<button type="button" class="btn btn-lg btn-block btn-success" data-bind="click: $root.combind($root.set($root.menu,'maps'),$root.maps.loadMaps)"><i class="fa fa-gamepad"></i> Play</button>
+						<button type="button" class="btn btn-lg btn-block btn-success" data-bind="click: $root.set($root.menu,'maps')"><i class="fa fa-gamepad"></i> Play</button>
 						<button type="button" class="btn btn-lg btn-block btn-success" data-bind="click: $root.set($root.menu,'settings')"><i class="fa fa-cogs"></i> Settings</button>
 					</div>
 				</div>
@@ -109,9 +109,9 @@
 						  	<div class="panel-body">
 								<div class="list-group" data-bind="foreach: maps">
 								  	<a href="#" class="list-group-item" data-bind="click: $root.set($parent.selected,$index()), event: {dblclick: $root.set($parent.playMap,$index())}, css: {'active': $index() == $parent.selected()}">
-								  		<span class="pull-right" data-bind="text: 'Created on: ' + createDate.toLocaleDateString()"></span>
-								    	<h4 class="list-group-item-heading" data-bind="text: name"></h4>
-								    	<p class="list-group-item-text" data-bind="text: desc"></p>
+								  		<span class="pull-right" data-bind="text: 'Created on: ' + settings.info.createDate.toLocaleDateString()"></span>
+								    	<h4 class="list-group-item-heading" data-bind="text: settings.info.name"></h4>
+								    	<p class="list-group-item-text" data-bind="text: settings.info.desc"></p>
 								  	</a>
 								</div>
 						  	</div>

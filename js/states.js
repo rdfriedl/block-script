@@ -39,6 +39,9 @@ states = {
 			fn.combindOver(state.modal,this.baseModal);
 			state.modal = ko.mapping.fromJS(state.modal);
 			ko.applyBindings(state.modal,state.container.get(0));
+
+			//tell the state its ko is loaded
+			state.events.emit('loaded');
 		};
 		this.disableAllStates(true);
 	},
@@ -63,7 +66,9 @@ states = {
 		}
 		this.states[name].enable();
 		this.activeState = this.states[name];
+
 		this.events.emit('stateEnabled',this.states[name]);
+		this.states[name].events.emit('enabled');
 	},
 	disableState: function(name,dontFade){
 		this.states[name].enabled = false;
@@ -74,7 +79,9 @@ states = {
 			this.states[name].container.hide();
 		}
 		this.states[name].disable();
+
 		this.events.emit('stateDisabled',this.states[name]);
+		this.states[name].events.emit('disabled');
 	},
 	disableAllStates: function(dontFade){
 		for (var i in this.states) {

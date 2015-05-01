@@ -4,9 +4,9 @@ var clock = new THREE.Clock();
 function initDB(cb){
 	//set up map settingsDB
 	settingsDB = new Dexie('block-script-settings');
-	settingsDB.version(1)
+	settingsDB.version(1.1)
 		.stores({
-			maps: 'id,name,desc,dbName,createDate,settings'
+			maps: 'id,dbName'
 		});
 
 	settingsDB.open().finally(function(){

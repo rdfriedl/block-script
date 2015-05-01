@@ -221,7 +221,7 @@ Player.prototype = {
 				//play step sound
 				var v = new THREE.Vector3(this.position.x,this.collision.y1,this.position.z).divideScalar(game.blockSize).floor();
 				v.y--;
-				var block = this.state.map.getBlock(v);
+				var block = this.state.voxelMap.getBlock(v);
 				if(block){
 					if(block.stepSound.length){
 						createjs.Sound.play(block.stepSound[Math.floor(Math.random() * block.stepSound.length)]);
@@ -237,7 +237,7 @@ Player.prototype = {
 
 		//collide
 		for(var i = 0; i < 3; i++){ //check for collision on each axis
-			col = collisions.collideWithBlocks(this,this.state.map);
+			col = collisions.collideWithBlocks(this,this.state.voxelMap);
 			this.position.x += this.velocity.x * col.entryTime;
 			this.position.y += this.velocity.y * col.entryTime;
 			this.position.z += this.velocity.z * col.entryTime;
@@ -264,15 +264,15 @@ Player.prototype = {
 		this.rayCaster.set(this.camera.getWorldPosition(), this.controls.getDirection(new THREE.Vector3()));
 
 		var pos = this.position.clone().divideScalar(game.blockSize).floor().divideScalar(game.chunkSize).floor();
-		var chunk = this.state.map.getChunk(pos);
+		var chunk = this.state.voxelMap.getChunk(pos);
 		if(chunk){
 			// var chunks = [chunk.mesh];
-			var intersects = this.rayCaster.intersectObject(this.state.map.group,true);
+			var intersects = this.rayCaster.intersectObject(this.state.voxelMap.group,true);
 			for (var i = 0; i < intersects.length; i++) {
 				var pos = new THREE.Vector3().add(intersects[i].point).sub(intersects[i].face.normal);
 				pos.divideScalar(game.blockSize).floor();
 
-				var block = this.state.map.getBlock(pos);
+				var block = this.state.voxelMap.getBlock(pos);
 
 				this.selection.block = block;
 				// this.selection.normal.copy(intersects[i].face.normal);
@@ -338,7 +338,7 @@ Object.defineProperties(Player.prototype,{
 	chunk: {
 		get: function(){
 			var id = this.position.clone().divideScalar(game.blockSize).floor().divideScalar(game.chunkSize).floor().toString();
-			return this.state.map.chunks[id];
+			return this.state.voxelMap.chunks[id];
 		}
 	},
 	enabled: {

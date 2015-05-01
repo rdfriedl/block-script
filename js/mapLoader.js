@@ -1,31 +1,52 @@
-function MapLoaderIndexeddb(options,cb){
+function MapLoader(settings,cb){
 	this.booting = true;
+	this.events = new Events();
 
-	this.options = fn.combindOver({
-		dbName: 'map-'+Math.round(Math.random()*1000),
-	},options);
+	this.settings = {
+		info: {
+			id: 0,
+			name: '',
+			desc: '',
+			createDate: new Date(),
+			lastSave: new Date(),
+			dbName: 'map'
+		},
+		player: {
+			position: new THREE.Vector3(),
+			velocity: new THREE.Vector3()
+		}
+	};
+	fn.combindOver(this.settings.info,settings);
 
-	this.db = new Dexie(this.options.dbName);
+	//set up db
+	this.db = new Dexie(this.settings.info.dbName);
 	this.db.version(this.dbVersion)
 		.stores({
-			map: '',
+			settings: 'id,data',
 			chunks: 'id,position,data'
-		});
+		})
 
 	this.db.open().finally(function(){
 		this.booting = false;
-		if(cb) cb();
+
+		this.loadSettings(function(){
+			//save the settings just in case its a new map
+			this.saveSettings(function(){
+				if(cb) cb(this);
+			}.bind(this));
+		}.bind(this));
 	}.bind(this));
 
 	this.db.on('error',function(err){
 		console.log(err);
 	});
 }
-MapLoaderIndexeddb.prototype = {
-	dbVersion: 1.1,
+MapLoader.prototype = {
+	dbVersion: 1.2,
 	booting: false,
 	db: undefined,
-	options: {},
+	settings: {},
+	events: undefined,
 	loadChunk: function(position,cb){
 		this.db.chunks.get(position.toString(),function(data){
 			if(data){
@@ -39,6 +60,7 @@ MapLoaderIndexeddb.prototype = {
 				}
 				data = data.data;
 			}
+			this.events.emit('loadChunk',data);
 			if(cb) cb(data);
 		}.bind(this))
 	},
@@ -48,15 +70,44 @@ MapLoaderIndexeddb.prototype = {
 			position: chunk.position,
 			data: chunk.exportData()
 		}).finally(function(){
+			this.events.emit('saveChunk',chunk);
 			if(cb) cb();
-		});
+		}.bind(this));
+	},
+	loadSettings: function(cb){
+		this.db.settings.toArray(function(a){
+			for(var i in a){
+				fn.combindOver(this.settings[a[i].id],a[i].data);
+			}
+
+			this.events.emit('loadSettings',this);
+			if(cb) cb();
+		}.bind(this))
+	},
+	saveSettings: function(cb){
+		var length = 0;
+		for(var i in this.settings){
+			length++;
+		}
+		cb = _.after(length+1,function(){
+			this.events.emit('saveSettings',this);
+			if(cb) cb();
+		}.bind(this));
+
+		for(var i in this.settings){
+			this.db.settings.put({
+				id: i,
+				data: this.settings[i]
+			}).finally(cb);
+		}
+		cb();
 	},
 	exportData: function(cb,progress){ //export the hole map as json
 		var json = {
-			name: 'error',
-			desc: 'error',
+			settings: this.settings,
 			chunks: []
 		}
+		//build chunks
 		var i = 0;
 		this.db.chunks.count(function(numberOfChunks){
 			this.db.chunks.each(function(chunk){
@@ -77,6 +128,15 @@ MapLoaderIndexeddb.prototype = {
 	},
 	inportData: function(data,cb,progress){
 		var json = (typeof data == 'string')? JSON.parse(data) : data;
+
+		//load settings
+		fn.combindOver(this.settings,json.settings || {});
+		//fix dates
+		this.settings.info.createDate = new Date(this.settings.info.createDate);
+		this.settings.info.lastSave = new Date(this.settings.info.lastSave);
+		this.saveSettings();
+
+		//load chunks
 		var func = function(i){
 			if(progress) progress((i/json.chunks.length) * 100);
 

@@ -7,15 +7,20 @@ game = {
 	},
 	disable: function(){
 		this.modal.menu('none');
+
+		if(this.loadedMap){
+			this.loadedMap.saveSettings();
+		}
 	},
 
+	events: new Events(),
 	scene: undefined,
 	camera: undefined,
 	sceneHUD: undefined,
 	cameraHUD: undefined,
 	lightGroup: undefined,
 	player: undefined,
-	map: undefined,
+	voxelMap: undefined,
 	chunkSize: 10,
 	blockSize: 32,
 	loadedMap: undefined,
@@ -38,7 +43,7 @@ game = {
 		this.setUpScene();
 		this.setUpHUD();
 
-		this.map = new VoxelMap(this,this.scene,{});
+		this.voxelMap = new VoxelMap(this,this.scene,{});
 		this.player = new Player(this,this.scene,this.camera);
 
 		var chunkGenerator = new ChunkGeneratorHills({
@@ -92,12 +97,12 @@ game = {
 			]
 		})
 
-		this.map.setChunkGenerator(chunkGenerator);
+		this.voxelMap.setChunkGenerator(chunkGenerator);
 
 		// set player position
-		this.player.position.x = (this.map.chunkGenerator.options.width*game.blockSize) / 2;
-		this.player.position.z = (this.map.chunkGenerator.options.height*game.blockSize) / 2;
-		var y = this.map.chunkGenerator.getY(
+		this.player.position.x = (this.voxelMap.chunkGenerator.options.width*game.blockSize) / 2;
+		this.player.position.z = (this.voxelMap.chunkGenerator.options.height*game.blockSize) / 2;
+		var y = this.voxelMap.chunkGenerator.getY(
 				Math.floor(this.player.position.x/game.blockSize),
 				Math.floor(this.player.position.z/game.blockSize)
 			);
@@ -219,6 +224,12 @@ game = {
 	update: function(dtime){
 		this.animate(dtime);
 		this.render(dtime);
+
+		//update player position
+		if(this.loadedMap){
+			this.loadedMap.settings.player.position.copy(this.player.position);
+			this.loadedMap.settings.player.velocity.copy(this.player.movement.velocity);
+		}
 	},
 	animate: function(dtime){
 		this.stats.update();
@@ -283,10 +294,10 @@ game = {
 				position.y = Math.floor(position.y / (game.chunkSize*game.blockSize)) + y;
 				position.z = Math.floor(position.z / (game.chunkSize*game.blockSize)) + z;
 
-				loaded = (!loaded)? loaded : this.map.chunkLoaded(position);
+				loaded = (!loaded)? loaded : this.voxelMap.chunkLoaded(position);
 				loaded = !!loaded;
 				if(!loaded){
-					this.map.getChunk(position);
+					this.voxelMap.getChunk(position);
 					cb();
 				}
 				else{
@@ -324,7 +335,7 @@ game = {
 
 		var func = function(){
 			var k = 0;
-			for(var chunk in this.map.chunks){
+			for(var chunk in this.voxelMap.chunks){
 				k++;
 			}
 			if(++i >= k){
@@ -335,9 +346,9 @@ game = {
 
 		if(this.enabled){
 			var k=0;
-			for(var chunk in this.map.chunks){
+			for(var chunk in this.voxelMap.chunks){
 				if(k==i){
-					this.map.saveChunk(this.map.chunks[chunk].position,func);
+					this.voxelMap.saveChunk(this.voxelMap.chunks[chunk].position,func);
 					return;
 				}
 				k++;
@@ -357,10 +368,10 @@ game = {
 			position.y = Math.floor(position.y / (game.chunkSize*game.blockSize));
 			position.z = Math.floor(position.z / (game.chunkSize*game.blockSize));
 
-			for (var i in this.map.chunks) {
-				var chunk = this.map.chunks[i]
+			for (var i in this.voxelMap.chunks) {
+				var chunk = this.voxelMap.chunks[i]
 				if(chunk.mesh){
-					if(Math.abs(this.map.chunks[i].position.x - position.x) > game.viewRange || Math.abs(this.map.chunks[i].position.y - position.y) > game.viewRange || Math.abs(this.map.chunks[i].position.z - position.z) > game.viewRange){
+					if(Math.abs(this.voxelMap.chunks[i].position.x - position.x) > game.viewRange || Math.abs(this.voxelMap.chunks[i].position.y - position.y) > game.viewRange || Math.abs(this.voxelMap.chunks[i].position.z - position.z) > game.viewRange){
 						chunk.unload();
 					}
 				}
@@ -372,12 +383,14 @@ game = {
 	},
 
 	loadMap: function(map){
-		this.map.saveAllChunks(function(){
+		this.voxelMap.saveAllChunks(function(){
 			this.loadedMap = map;
-			this.map.removeAllChunks();
-			this.map.setMapLoader(new MapLoaderIndexeddb({
-				dbName: map.dbName
-			}))
+			this.voxelMap.removeAllChunks();
+			this.voxelMap.setMapLoader(map);
+
+			//set player position
+			this.player.position.copy(this.loadedMap.settings.player.position);
+			this.player.movement.velocity.copy(this.loadedMap.settings.player.velocity);
 		}.bind(this))
 	},
 
@@ -392,7 +405,7 @@ game = {
 				game.requestFullscreen();
 			},
 			menu: function(){
-				game.map.saveAllChunks();
+				game.voxelMap.saveAllChunks();
 				states.enableState('menu');
 			},
 		},

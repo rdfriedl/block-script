@@ -10,6 +10,7 @@ menu = {
 
 	},
 
+	events: new Events(),
 	scene: undefined,
 	camera: undefined,
 	map: undefined,
@@ -30,7 +31,7 @@ menu = {
 		this.camera = new THREE.PerspectiveCamera( 20, window.innerWidth / window.innerHeight, 1, 10000 );
 		this.camera.position.z = 1800;
 
-		this.map = new VoxelMap(this,this.scene,{});
+		this.voxelMap = new VoxelMap(this,this.scene,{});
 
 		this.setUpScene();
 
@@ -38,6 +39,10 @@ menu = {
 			this.camera.aspect = window.innerWidth / window.innerHeight;
 			this.camera.updateProjectionMatrix();
 		}.bind(this));
+
+		this.events.once('loaded',function(){
+			this.modal.maps.loadMaps();
+		}.bind(this))
 	},
 	setUpScene: function(){
 		light = new THREE.DirectionalLight( 0xffffff );
@@ -52,7 +57,7 @@ menu = {
 		.done(function(data){
 			data.size = new THREE.Vector3().copy(data.size);
 			data.offset = new THREE.Vector3().copy(data.offset);
-			this.map.inportMapData(data);
+			this.voxelMap.inportMapData(data);
 		}.bind(this))
 	},
 	update: function(dtime){
@@ -97,12 +102,18 @@ menu = {
 					var self = menu.modal.maps;
 					var map = self.maps()[self.selected()];
 					if(map){
-						map.name = this.name();
-						map.desc = this.desc();
-						settingsDB.maps.update(map.id,map);
+						map.settings.info.name = this.name();
+						map.settings.info.desc = this.desc();
+						map.saveSettings();
 						this.name('');
 						this.desc('');
-						self.loadMaps();
+
+						//update map list
+						var a = self.maps();
+						self.maps([]);
+						self.maps(a);
+
+						self.saveMaps();
 					}
 					$('#edit-map-modal').modal('hide');
 				}
@@ -113,49 +124,42 @@ menu = {
 				downloadName: '',
 				download: function(map){
 					var self = menu.modal.maps.download;
-					var mapLoader = new MapLoaderIndexeddb({
-						dbName: map.dbName
-					});
 
-					mapLoader.exportData(function(json){
-						json.name = map.name;
-						json.desc = map.desc;
+					map.exportData(function(json){
+						json.settings = map.settings;
+
 						var str = JSON.stringify(json);
 						self.downloadLink('data:text/json,'+str);
-						self.downloadName(map.name);
+						self.downloadName(map.settings.info.name);
 					},function(val){
 						self.progress(val);
-					})
+					});
 				}
 			},
 			upload: {
 				progress: 0,
 				upload: function(self,event){
+					var self = menu.modal.maps;
 					event.preventDefault();
 					readfiles(event.target.files,function(data){
 						try{
 							data = JSON.parse(data);
 
-							//put map in map list
-							var map = {
-								id: '',
-								name: data.name,
-								desc: data.desc,
-								dbName: '',
-								createDate: Date(),
-								settings: {}
-							}
-							map.id = Math.round(Math.random() * 1000000);
-							map.dbName = 'block-script-map:' + map.id;
-							settingsDB.maps.put(map);
+							var id = Math.round(Math.random() * 1000000);
+							var dbName = 'block-script-map:' + id;
 
 							//create map db and put data in
-							var mapLoader = new MapLoaderIndexeddb({
-								dbName: map.dbName
+							var map = new MapLoader({
+								dbName: dbName
 							})
-							mapLoader.inportData(data);
+							map.inportData(data);
+							map.settings.info.id = id;
+							map.settings.info.dbName = dbName;
+							map.saveSettings();
 
-							menu.modal.maps.loadMaps();
+							self.maps.push(map);
+
+							self.saveMaps();
 						}
 						catch(e){
 							console.log('failed to upload map')
@@ -168,32 +172,18 @@ menu = {
 				}
 			},
 			createMap: function(data){
-				var map = {
-					id: '',
-					name: '',
-					desc: '',
-					dbName: '',
-					createDate: Date(),
-					settings: {}
-				}
+				var id = Math.round(Math.random() * 1000000);
+				var dbName = 'block-script-map:' + id;
 
-				for(var i in data){
-					if(i == 'submit') continue;
-					if(typeof data[i] == 'function'){
-						map[i] = data[i]();
-					}
-					else{
-						map[i] = data[i];
-					}
-				}
+				//add it to the array of maps
+				this.maps.push(new MapLoader({
+					id: id,
+					dbName: dbName,
+					name: this.create.name(),
+					desc: this.create.desc()
+				}));
 
-				map.id = Math.round(Math.random() * 1000000);
-				map.dbName = 'block-script-map:' + map.id;
-
-				//save it
-				settingsDB.maps.put(map);
-
-				menu.modal.maps.loadMaps();
+				this.saveMaps();
 
 				$('#new-map-modal').modal('hide');
 			},
@@ -207,20 +197,23 @@ menu = {
 				game.requestPointerLock();
 				game.loadMap(map);
 			},
-			deleteMap: function(){
-				var map = this.maps()[this.selected()];
+			deleteMap: function(index){
+				var self = menu.modal.maps;
+				var map = self.maps()[self.selected()];
+				if(_.isNumber(index)) map = self.maps()[index];
+
+				settingsDB.maps.delete(map.settings.info.id);
+				map.db.delete();
+				this.maps.splice(this.selected(),1);
+
 				this.selected(-1);
-				//remove the maps DB
-				new Dexie(map.dbName).delete();
-				settingsDB.maps.delete(map.id);
-				this.loadMaps();
 				$('#delete-map-modal').modal('hide');
 			},
 			editMap: function(){
 				var self = menu.modal.maps;
 				var map = self.maps()[self.selected()];
-				self.edit.name(map.name);
-				self.edit.desc(map.desc);
+				self.edit.name(map.settings.info.name);
+				self.edit.desc(map.settings.info.desc);
 				$('#edit-map-modal').modal('show');
 			},
 			downloadMap: function(){
@@ -232,14 +225,39 @@ menu = {
 			uploadMap: function(){
 				$('#upload-map-modal').modal('show');
 			},
+
 			loadMaps: function(cb){
+				var self = menu.modal.maps;
 				settingsDB.maps.toArray(function(a){
-					for(var i in a){
-						a[i].createDate = new Date(a[i].createDate);
+					self.maps([]);
+					var maps = [];
+					cb = _.after(a.length+1, cb || function(){});
+					for(var i = 0; i < a.length; i++){
+						var mapLoader = new MapLoader({
+							dbName: a[i].dbName
+						});
+
+						mapLoader.events.on('loadSettings',function(){
+							self.maps.push(this);
+							cb();
+						}.bind(mapLoader))
 					}
-					menu.modal.maps.maps(a);
-					if(cb) cb();
+					cb();
 				});
+			},
+			saveMaps: function(cb){
+				var length = 0;
+				for(var i in this.maps()){
+					length++;
+				}
+				cb = _.after(length+1, cb || function(){});
+				for(var i in this.maps()){
+					settingsDB.maps.put({
+						id: this.maps()[i].settings.info.id,
+						dbName: this.maps()[i].settings.info.dbName
+					}).finally(cb);
+				}
+				cb();
 			}
 		}
 	}
