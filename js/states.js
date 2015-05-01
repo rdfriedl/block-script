@@ -1,5 +1,4 @@
 //for handles game states, mainly menu, game, editor and maybe store
-var deltaTime = new Date();
 states = {
 	states: {},
 	events: new Events(),
@@ -46,9 +45,7 @@ states = {
 		this.disableAllStates(true);
 	},
 	update: function(){ //update loop for the active state
-		var dtime = deltaTime.getMilliseconds() - new Date().getMilliseconds();
-		dtime = dtime / (1000/60);
-		deltaTime = new Date();
+		var dtime = clock.getDelta() * 60;
 		requestAnimationFrame(this.update.bind(this));
 		if(this.activeState){
 			this.activeState.update(dtime);

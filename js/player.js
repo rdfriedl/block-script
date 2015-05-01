@@ -202,9 +202,9 @@ Player.prototype = {
 		//move
 		var oldPos = this.position.clone()
 
-		this.object.translateY(this.movement.velocity.y);
-		this.object.translateX(this.movement.velocity.x);
-		this.object.translateZ(this.movement.velocity.z);
+		this.object.translateY(this.movement.velocity.y * dtime);
+		this.object.translateX(this.movement.velocity.x * dtime);
+		this.object.translateZ(this.movement.velocity.z * dtime);
 
 		this.velocity = this.position.clone();
 		this.position.copy(oldPos);

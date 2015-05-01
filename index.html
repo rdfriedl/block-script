@@ -83,7 +83,8 @@
 					</div>
 					<div class="col-xs-4 col-xs-offset-4">
 						<button type="button" class="btn btn-lg btn-block btn-success" data-bind="click: $root.set($root.menu,'maps')"><i class="fa fa-gamepad"></i> Play</button>
-						<button type="button" class="btn btn-lg btn-block btn-success" data-bind="click: $root.set($root.menu,'settings')"><i class="fa fa-cogs"></i> Settings</button>
+						<button type="button" class="btn btn-lg btn-block btn-default" data-bind="click: $root.set($root.menu,'help')"><i class="fa fa-question"></i> Help</button>
+						<button type="button" class="btn btn-lg btn-block btn-default" data-bind="click: $root.set($root.menu,'settings')"><i class="fa fa-cogs"></i> Settings</button>
 					</div>
 				</div>
 				<!-- maps -->
@@ -118,7 +119,7 @@
 						</div>
 					</div>
 					<div class="col-xs-4 col-xs-offset-4">
-						<button type="button" class="btn btn-lg btn-block btn-success" data-bind="click: $root.set($root.menu,'main')"><i class="fa fa-arrow-left"></i> Back</button>
+						<button type="button" class="btn btn-lg btn-block btn-default" data-bind="click: $root.set($root.menu,'main')"><i class="fa fa-arrow-left"></i> Back</button>
 					</div>
 				</div>
 				<!-- settings -->
@@ -157,7 +158,92 @@
 						</div>
 					</div>
 					<div class="col-xs-4 col-xs-offset-4">
-						<button type="button" class="btn btn-lg btn-block btn-success" data-bind="click: $root.set($root.menu,'main')">Back <i class="fa fa-arrow-right"></i></button>
+						<button type="button" class="btn btn-lg btn-block btn-default" data-bind="click: $root.set($root.menu,'main')">Back <i class="fa fa-arrow-right"></i></button>
+					</div>
+				</div>
+				<!-- help -->
+				<div class="menu" data-bind="visible: menu() == 'help'">
+					<div class="col-xs-12">
+						<h1 style="text-align: center;"><i class="fa fa-question"></i> Help</h1>
+					</div>
+					<div class="col-xs-12">
+						<div role="tabpanel">
+						  	<!-- Nav tabs -->
+						  	<ul class="nav nav-tabs" role="tablist">
+						  	  	<li role="presentation"><a href="#help-genral" role="tab" data-toggle="tab"><i class="fa fa-question"></i> Genral</a></li>
+						  	  	<li role="presentation"><a href="#help-in-game" role="tab" data-toggle="tab"><i class="fa fa-gamepad"></i> In-Game</a></li>
+						  	  	<li role="presentation"><a href="#help-maps" role="tab" data-toggle="tab"><i class="fa fa-picture-o"></i> Maps</a></li>
+						  	</ul>
+		
+						  	<!-- Tab panes -->
+						  	<div class="tab-content">
+						  	  	<div role="tabpanel" class="tab-pane active" id="help-genral">
+						  	  		<div class="page-header">
+  										<h3>Genral</h3>
+									</div>
+						  	  	</div>
+						  	  	<div role="tabpanel" class="tab-pane" id="help-in-game">
+						  	  		<div class="page-header">
+  										<h3>In-Game</h3>
+									</div>
+
+						  	  		<div class="panel panel-default">
+									  	<div class="panel-heading">Controls</div>
+								  		<div class="panel-body">
+										  	<table class="table">
+										  		<thead>
+										  			<tr>
+										  				<td>Action</td>
+										  				<td>Primary Key</td>
+										  				<td>Secondary Key</td>
+										  			</tr>
+										  		</thead>
+										    	<tbody>
+										    		<tr>
+										    			<td>Move Forward / Backwards</td>
+										    			<td><kbd>W</kbd> / <kbd>S</kbd></td>
+										    			<td><kbd>Up</kbd> / <kbd>Down</kbd> Arrows</td>
+										    		</tr>
+										    		<tr>
+										    			<td>Move Left / Right</td>
+										    			<td><kbd>A</kbd> / <kbd>D</kbd></td>
+										    			<td><kbd>Left</kbd> / <kbd>Right</kbd> Arrows</td>
+										    		</tr>
+										    		<tr>
+										    			<td>Jump</td>
+										    			<td><kbd>Space</kbd></td>
+										    			<td><kbd>Num 0</kbd></td>
+										    		</tr>
+										    		<tr>
+										    			<td>Sprint</td>
+										    			<td><kbd>Shift</kbd></td>
+										    			<td></td>
+										    		</tr>
+										    		<tr>
+										    			<td>Open Inventory</td>
+										    			<td><kbd>E</kbd></td>
+										    			<td></td>
+										    		</tr>
+										    		<tr>
+										    			<td>Open Menu</td>
+										    			<td><kbd>Esc</kbd></td>
+										    			<td><kbd>`</kbd></td>
+										    		</tr>
+										    	</tbody>
+										  	</table>
+								  		</div>
+						  	  		</div>
+						  	  	</div>
+						  	  	<div role="tabpanel" class="tab-pane" id="help-maps">
+						  	  		<div class="page-header">
+  										<h3>Maps</h3>
+									</div>
+								</div>
+						  	</div>
+						</div>
+					</div>
+					<div class="col-xs-4 col-xs-offset-4">
+						<button type="button" class="btn btn-lg btn-block btn-default" data-bind="click: $root.set($root.menu,'main')">Back <i class="fa fa-arrow-right"></i></button>
 					</div>
 				</div>
 
@@ -285,6 +371,23 @@
 					      	</div>
 					      	<div class="modal-footer">
 					      		<button type="button" class="btn btn-primary" data-dismiss="modal" data-bind="attr: { disabled: progress() !== 0 }">Done</button>
+					      	</div>
+				    	</div>
+				  	</div>
+				</div>
+
+				<!-- help -->
+				<div class="modal fade" id="help-modal" tabindex="-1" role="dialog" data-backdrop="static" data-bind="with: maps.upload">
+				  	<div class="modal-dialog">
+				    	<div class="modal-content">
+				      		<div class="modal-header">
+				        		<h4 class="modal-title" id="myModalLabel">Help</h4>
+				      		</div>
+					      	<div class="modal-body">
+					      		
+					      	</div>
+					      	<div class="modal-footer">
+					      		<button type="button" class="btn btn-primary" data-dismiss="modal">Done</button>
 					      	</div>
 				    	</div>
 				  	</div>
