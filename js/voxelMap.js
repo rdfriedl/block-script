@@ -1,4 +1,4 @@
-function Map(state,options){
+function VoxelMap(state,options){
 	this.state = state;
 	fn.combindIn(this,options);
 	this.chunks = {};
@@ -9,7 +9,7 @@ function Map(state,options){
 
 	this.chunkGenerator = new ChunkGeneratorBlank();
 }
-Map.prototype = {
+VoxelMap.prototype = {
 	chunks: {},
 	mapLoader: undefined,
 	chunkGenerator: undefined,

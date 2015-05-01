@@ -81,6 +81,7 @@ MapLoaderIndexeddb.prototype = {
 			if(progress) progress((i/json.chunks.length) * 100);
 
 			var chunk = json.chunks[i];
+			if(!chunk.position) chunk.position = new THREE.Vector3().fromString(chunk.id);
 			var pos = new THREE.Vector3().set(chunk.position.x,chunk.position.y,chunk.position.z);
 			this.db.chunks.put({
 				id: pos.toString(),

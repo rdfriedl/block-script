@@ -30,7 +30,7 @@ menu = {
 		this.camera = new THREE.PerspectiveCamera( 20, window.innerWidth / window.innerHeight, 1, 10000 );
 		this.camera.position.z = 1800;
 
-		this.map = new Map(this,this.scene,{});
+		this.map = new VoxelMap(this,this.scene,{});
 
 		this.setUpScene();
 

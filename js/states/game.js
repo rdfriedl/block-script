@@ -38,7 +38,7 @@ game = {
 		this.setUpScene();
 		this.setUpHUD();
 
-		this.map = new Map(this,this.scene,{});
+		this.map = new VoxelMap(this,this.scene,{});
 		this.player = new Player(this,this.scene,this.camera);
 
 		var chunkGenerator = new ChunkGeneratorHills({

@@ -233,45 +233,28 @@ Player.prototype = {
 			this.camera.position.y = - 2 * Math.abs(this.movement.viewBobbing);
 		}
 
+		this.movement.onGround = false;
+
 		//collide
-		col = collisions.collideWithBlocks(this,this.state.map);
-		this.position.x += this.velocity.x * col.entryTime;
-		this.position.y += this.velocity.y * col.entryTime;
-		this.position.z += this.velocity.z * col.entryTime;
-		this.collision.position.copy(this.position);
-		this.velocity.x = (col.normal.x !== 0)? 0 : this.velocity.x - (this.velocity.x * col.entryTime);
-		this.velocity.y = (col.normal.y !== 0)? 0 : this.velocity.y - (this.velocity.y * col.entryTime);
-		this.velocity.z = (col.normal.z !== 0)? 0 : this.velocity.z - (this.velocity.z * col.entryTime);
+		for(var i = 0; i < 3; i++){ //check for collision on each axis
+			col = collisions.collideWithBlocks(this,this.state.map);
+			this.position.x += this.velocity.x * col.entryTime;
+			this.position.y += this.velocity.y * col.entryTime;
+			this.position.z += this.velocity.z * col.entryTime;
+			this.collision.position.copy(this.position);
+			this.velocity.x = (col.normal.x !== 0)? 0 : this.velocity.x - (this.velocity.x * col.entryTime);
+			this.velocity.y = (col.normal.y !== 0)? 0 : this.velocity.y - (this.velocity.y * col.entryTime);
+			this.velocity.z = (col.normal.z !== 0)? 0 : this.velocity.z - (this.velocity.z * col.entryTime);
 
-		if(col.normal.y !== 0){
-			this.movement.velocity.y = 0;
+			if(col.normal.y !== 0){
+				this.movement.velocity.y = 0;
+			}
+			if(col.normal.y == 1){
+				this.movement.onGround = true;
+			}
 		}
-		if(col.normal.y == 1){
-			this.movement.onGround = true;
-		}
-		else{
-			this.movement.onGround = false;
-		}
-		
-		col = collisions.collideWithBlocks(this,this.state.map);
-		this.position.x += this.velocity.x * col.entryTime;
-		this.position.y += this.velocity.y * col.entryTime;
-		this.position.z += this.velocity.z * col.entryTime;
-		this.collision.position.copy(this.position);
-		this.velocity.x = (col.normal.x !== 0)? 0 : this.velocity.x - (this.velocity.x * col.entryTime);
-		this.velocity.y = (col.normal.y !== 0)? 0 : this.velocity.y - (this.velocity.y * col.entryTime);
-		this.velocity.z = (col.normal.z !== 0)? 0 : this.velocity.z - (this.velocity.z * col.entryTime);
 
-		col = collisions.collideWithBlocks(this,this.state.map);
-		this.position.x += this.velocity.x * col.entryTime;
-		this.position.y += this.velocity.y * col.entryTime;
-		this.position.z += this.velocity.z * col.entryTime;
-		this.collision.position.copy(this.position);
-		this.velocity.x = (col.normal.x !== 0)? 0 : this.velocity.x - (this.velocity.x * col.entryTime);
-		this.velocity.y = (col.normal.y !== 0)? 0 : this.velocity.y - (this.velocity.y * col.entryTime);
-		this.velocity.z = (col.normal.z !== 0)? 0 : this.velocity.z - (this.velocity.z * col.entryTime);
-
-		delete col, oldPos;
+		delete col, oldPos, i;
 
 		// pick block
 		this.pickBlock();

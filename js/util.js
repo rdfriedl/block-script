@@ -48,6 +48,9 @@ THREE.Vector3.prototype.split = function(dirs){
 THREE.Vector3.prototype.toString = function(){
 	return this.x+'|'+this.y+'|'+this.z;
 }
+THREE.Vector3.prototype.fromString = function(str){
+	return this.fromArray(str.split('|'));
+}
 
 THREE.Object3D.prototype.getMaterialById = function(a) {
     return this.getMaterialByProperty("id", a)
