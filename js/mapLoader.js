@@ -142,6 +142,9 @@ MapLoader.prototype = {
 
 			var chunk = json.chunks[i];
 			if(!chunk.position) chunk.position = new THREE.Vector3().fromString(chunk.id);
+			chunk.position.x = parseInt(chunk.position.x);
+			chunk.position.y = parseInt(chunk.position.y);
+			chunk.position.z = parseInt(chunk.position.z);
 			var pos = new THREE.Vector3().set(chunk.position.x,chunk.position.y,chunk.position.z);
 			this.db.chunks.put({
 				id: pos.toString(),

@@ -61,6 +61,7 @@ Chunk.prototype = {
         data = data || [];
 
         for (var i = 0; i < data.length; i++) {
+            data[i] = data[i] || {};
             this.setBlock(indexToPosition(i,game.chunkSize),data[i],true);
         };
         this.events.emit('inport',data);
@@ -76,53 +77,59 @@ Chunk.prototype = {
         return data;
     },
     build: function(){
-        if(this.mesh){
-            this.mesh.geometry.dispose();
-            this.group.remove(this.mesh);
+        try{
+            if(this.mesh){
+                this.mesh.geometry.dispose();
+                this.group.remove(this.mesh);
+            }
+
+            var meshed = CulledMesh(this.blocks);
+            var geometry = new THREE.Geometry();
+
+            geometry.faces.length = 0
+            
+            geometry.vertices = meshed.vertices;
+            
+            for (var i in meshed.faces) {
+                var q = meshed.faces[i]
+
+                //repeate two times since we use two face3(s) to replace face4
+                var f = new THREE.Face3(q[0], q[1], q[2], new THREE.Vector3(), new THREE.Color(), q[4])
+                geometry.faceVertexUvs[0].push(faceVertexUv(meshed,i))
+                geometry.faces.push(f)
+
+                var f = new THREE.Face3(q[0], q[2], q[3], new THREE.Vector3(), new THREE.Color(), q[4])
+                geometry.faceVertexUvs[0].push(faceVertexUv2(meshed,i))
+                geometry.faces.push(f)
+            }
+            
+            geometry.computeFaceNormals()
+            
+            geometry.verticesNeedUpdate = true;
+            geometry.elementsNeedUpdate = true;
+            geometry.normalsNeedUpdate = true;
+            
+            geometry.computeBoundingBox()
+            geometry.computeBoundingSphere()
+
+            this.mesh = new THREE.Mesh(geometry, blocks.blockMaterial)
+
+            this.mesh.castShadow = true;
+            this.mesh.receiveShadow = true;
+
+            this.mesh.scale.set(game.blockSize,game.blockSize,game.blockSize);
+
+            this.group.add(this.mesh);
+
+            this.events.emit('build');
         }
-
-        var meshed = CulledMesh(this.blocks);
-        var geometry = new THREE.Geometry();
-
-        geometry.faces.length = 0
-        
-        geometry.vertices = meshed.vertices;
-        
-        for (var i in meshed.faces) {
-            var q = meshed.faces[i]
-
-            //repeate two times since we use two face3(s) to replace face4
-            var f = new THREE.Face3(q[0], q[1], q[2], new THREE.Vector3(), new THREE.Color(), q[4])
-            geometry.faceVertexUvs[0].push(faceVertexUv(meshed,i))
-            geometry.faces.push(f)
-
-            var f = new THREE.Face3(q[0], q[2], q[3], new THREE.Vector3(), new THREE.Color(), q[4])
-            geometry.faceVertexUvs[0].push(faceVertexUv2(meshed,i))
-            geometry.faces.push(f)
+        catch(e){
+            console.error('failed to build chunk: '+this.position.toString());
+            console.error(e);
         }
-        
-        geometry.computeFaceNormals()
-        
-        geometry.verticesNeedUpdate = true;
-        geometry.elementsNeedUpdate = true;
-        geometry.normalsNeedUpdate = true;
-        
-        geometry.computeBoundingBox()
-        geometry.computeBoundingSphere()
-
-        this.mesh = new THREE.Mesh(geometry, blocks.blockMaterial)
-
-        this.mesh.castShadow = true;
-        this.mesh.receiveShadow = true;
-
-        this.mesh.scale.set(game.blockSize,game.blockSize,game.blockSize);
-
-        this.group.add(this.mesh);
-
-        this.events.emit('build');
     },
     dispose: function(){
-        this.mesh.geometry.dispose();
+        if(this.mesh) this.mesh.geometry.dispose();
         this.map.group.remove(this.group);
     },
     getNeighbor: function(v){

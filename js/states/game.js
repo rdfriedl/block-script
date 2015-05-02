@@ -51,8 +51,9 @@ game = {
 			height: 40*game.chunkSize-1,
 			levels: [
 				{
-					height: 1,
-					quality: 5,
+					quality: 10,
+					fractal: 4,
+					stop: false,
 					blocks: [
 						{
 							block: 'grass',
@@ -65,8 +66,9 @@ game = {
 					]
 				},
 				{
-					height: 5,
-					quality: 5,
+					quality: 10,
+					fractal: 4,
+					stop: false,
 					blocks: [
 						{
 							block: 'dirt',
@@ -75,8 +77,9 @@ game = {
 					]
 				},
 				{
-					height: 2,
-					quality: 5,
+					quality: 4,
+					fractal: 4,
+					stop: true,
 					blocks: [
 						{
 							block: 'air',
@@ -85,8 +88,9 @@ game = {
 					]
 				},
 				{
-					height: 5,
-					quality: 5,
+					quality: 10,
+					fractal: 4,
+					stop: false,
 					blocks: [
 						{
 							block: 'stone',
@@ -98,15 +102,6 @@ game = {
 		})
 
 		this.voxelMap.setChunkGenerator(chunkGenerator);
-
-		// set player position
-		this.player.position.x = (this.voxelMap.chunkGenerator.options.width*game.blockSize) / 2;
-		this.player.position.z = (this.voxelMap.chunkGenerator.options.height*game.blockSize) / 2;
-		var y = this.voxelMap.chunkGenerator.getY(
-				Math.floor(this.player.position.x/game.blockSize),
-				Math.floor(this.player.position.z/game.blockSize)
-			);
-		this.player.position.y = (Math.max(y[0],y[1],y[2],y[3]) + 4) * game.blockSize;
 
 		this.loadChunkLoop();
 		this.saveChunkLoop();
@@ -391,6 +386,13 @@ game = {
 			//set player position
 			this.player.position.copy(this.loadedMap.settings.player.position);
 			this.player.movement.velocity.copy(this.loadedMap.settings.player.velocity);
+
+
+			if(this.player.position.empty()){
+				// set player position
+				var y = this.voxelMap.chunkGenerator.getHeight(0,0);
+				this.player.position.y = (_.max(y) + 4) * game.blockSize;
+			}
 		}.bind(this))
 	},
 

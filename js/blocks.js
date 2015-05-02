@@ -105,6 +105,7 @@ blocks = {
 	},
 
 	getBlock: function(id){
+		id = id || '';
 		return this.blocks[id.toLowerCase()];
 	},
 	addBlock: function(block){
