@@ -4,9 +4,11 @@ var clock = new THREE.Clock();
 function initDB(cb){
 	//set up map settingsDB
 	settingsDB = new Dexie('block-script-settings');
-	settingsDB.version(1.1)
+	settingsDB.version(1.3)
 		.stores({
-			maps: 'id,dbName'
+			maps: 'id',
+			scripts: 'id',
+			rooms: 'id'
 		});
 
 	settingsDB.open().finally(function(){
@@ -36,15 +38,17 @@ $(document).ready(function() {
 	}.bind(this));
 
 	initDB(function(){
-		blocks.init(function(){
-			states.init();
+		resources.init(function(){
+			blocks.init(function(){
+				states.init();
 
-			//start loop
-			states.update();
-			
-			$('body').fadeIn(500);
-			states.enableState('menu');
-		});
+				//start loop
+				states.update();
+				
+				$('body').fadeIn(500);
+				states.enableState('menu');
+			});
+		})
 	});
 
 	//load sound

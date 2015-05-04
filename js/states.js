@@ -48,7 +48,9 @@ states = {
 		var dtime = clock.getDelta() * 60;
 		requestAnimationFrame(this.update.bind(this));
 		if(this.activeState){
-			this.activeState.update(dtime);
+			if(this.activeState.update){
+				this.activeState.update(dtime);
+			}
 		}
 	},
 	enableState: function(name,dontFade){

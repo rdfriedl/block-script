@@ -9,7 +9,7 @@ game = {
 		this.modal.menu('none');
 
 		if(this.loadedMap){
-			this.loadedMap.saveSettings();
+			this.loadedMap.save();
 		}
 	},
 
@@ -222,8 +222,8 @@ game = {
 
 		//update player position
 		if(this.loadedMap){
-			this.loadedMap.settings.player.position.copy(this.player.position);
-			this.loadedMap.settings.player.velocity.copy(this.player.movement.velocity);
+			this.loadedMap.data.player.position.copy(this.player.position);
+			this.loadedMap.data.player.velocity.copy(this.player.movement.velocity);
 		}
 	},
 	animate: function(dtime){
@@ -234,7 +234,7 @@ game = {
 		this.lightGroup.position.copy(this.player.position);
 	},
 
-	render: function(dtime,rtt){
+	render: function(dtime){
     	// renderer.shadowMapEnabled = true;
 		renderer.setClearColor( 0xbfd1e5, 1);
 	    renderer.shadowMapSoft = true;
@@ -381,11 +381,11 @@ game = {
 		this.voxelMap.saveAllChunks(function(){
 			this.loadedMap = map;
 			this.voxelMap.removeAllChunks();
-			this.voxelMap.setMapLoader(map);
+			this.voxelMap.setMapLoader(map.mapLoader);
 
 			//set player position
-			this.player.position.copy(this.loadedMap.settings.player.position);
-			this.player.movement.velocity.copy(this.loadedMap.settings.player.velocity);
+			this.player.position.copy(this.loadedMap.data.player.position);
+			this.player.movement.velocity.copy(this.loadedMap.data.player.velocity);
 
 
 			if(this.player.position.empty()){

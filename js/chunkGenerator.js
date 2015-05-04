@@ -87,6 +87,7 @@ ChunkGeneratorHills.prototype = {
 			for (var k = 0; k < lvls.length; k++) {
 				if(pos.y < lvls[k]){
 					l = k;
+					break;
 				}
 			};
 

@@ -35,11 +35,18 @@
 		<script src="js/player.js" defer></script>
 		<script src="js/voxelMap.js" defer></script>
 		<script src="js/chunk.js" defer></script>
+
+		<!-- resources -->
+		<script src="js/resources.js" defer></script>
+		<script src="js/defineResources.js" defer></script>
 		
 		<!-- states -->
 		<script src="js/states.js" defer></script>
 		<script src="js/states/menu.js" defer></script>
 		<script src="js/states/game.js" defer></script>
+		<script src="js/states/mapEditor.js" defer></script>
+		<script src="js/states/roomEditor.js" defer></script>
+		<script src="js/states/scriptEditor.js" defer></script>
 		
 		<!-- blocks -->
 		<script src="js/blocks.js" defer></script>
@@ -111,9 +118,9 @@
 						  	<div class="panel-body">
 								<div class="list-group" data-bind="foreach: maps">
 								  	<a href="#" class="list-group-item" data-bind="click: $root.set($parent.selected,$index()), event: {dblclick: $root.set($parent.playMap,$index())}, css: {'active': $index() == $parent.selected()}">
-								  		<span class="pull-right" data-bind="text: 'Created on: ' + settings.info.createDate.toLocaleDateString()"></span>
-								    	<h4 class="list-group-item-heading" data-bind="text: settings.info.name"></h4>
-								    	<p class="list-group-item-text" data-bind="text: settings.info.desc"></p>
+								  		<span class="pull-right" data-bind="text: 'Created on: ' + data.createDate.toDateString()"></span>
+								    	<h4 class="list-group-item-heading" data-bind="text: data.name"></h4>
+								    	<p class="list-group-item-text" data-bind="text: data.desc"></p>
 								  	</a>
 								</div>
 						  	</div>
@@ -139,8 +146,15 @@
 		
 						  	<!-- Tab panes -->
 						  	<div class="tab-content">
-						  	  	<div role="tabpanel" class="tab-pane active" id="genral"></div>
+						  	  	<div role="tabpanel" class="tab-pane active" id="genral">
+						  	  		<div class="page-header">
+  										<h3>Genral</h3>
+									</div>
+								</div>
 						  	  	<div role="tabpanel" class="tab-pane" id="graphics" data-bind="with: graphics">
+						  	  		<div class="page-header">
+  										<h3>Graphics</h3>
+									</div>
 						  	  		<div class="row">
 							  	  		<div class="col-xs-4">
 								  	  		<div class="form-group">
@@ -154,7 +168,11 @@
 							  	  		</div>
 						  	  		</div>
 						  	  	</div>
-						  	  	<div role="tabpanel" class="tab-pane" id="sound"></div>
+						  	  	<div role="tabpanel" class="tab-pane" id="sound">
+						  	  		<div class="page-header">
+  										<h3>Sound</h3>
+									</div>
+								</div>
 						  	</div>
 						</div>
 					</div>
@@ -426,6 +444,53 @@
 						</div>
 					</div>
 				</div>
+			</div>
+			<div id="room-editor">
+				<nav class="navbar navbar-default">
+				  	<div class="container-fluid">
+				  	  	<!-- Brand and toggle get grouped for better mobile display -->
+				  	  	<div class="navbar-header">
+				  	  	  	<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+				  	  	  	  	<span class="sr-only">Toggle navigation</span>
+				  	  	  	  	<span class="icon-bar"></span>
+				  	  	  	  	<span class="icon-bar"></span>
+				  	  	  	  	<span class="icon-bar"></span>
+				  	  	  	</button>
+				  	  	  	<a class="navbar-brand" href="#" data-bind="click: goBack"><i class="fa fa-arrow-left"></i> Back</a>
+				  	  	</div>
+		
+				  	  	<!-- Collect the nav links, forms, and other content for toggling -->
+				  	  	<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+				  	  	  	<ul class="nav navbar-nav">
+				  	  	  	  	<li class="dropdown">
+				  	  	  	  	  	<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">File <span class="caret"></span></a>
+				  	  	  	  	  	<ul class="dropdown-menu" role="menu">
+				  	  	  	  	  	  	<li><a href="#"><i class="fa fa-folder-open"></i> Open</a></li>
+				  	  	  	  	  	  	<li><a href="#"><i class="fa fa-floppy-o"></i> Save</a></li>
+				  	  	  	  	  	</ul>
+				  	  	  	  	</li>
+				  	  	  	  	<li class="dropdown">
+				  	  	  	  	  	<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Edit <span class="caret"></span></a>
+				  	  	  	  	  	<ul class="dropdown-menu" role="menu">
+				  	  	  	  	  	</ul>
+				  	  	  	  	</li>
+				  	  	  	  	<li class="dropdown">
+				  	  	  	  	  	<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Selection <span class="caret"></span></a>
+				  	  	  	  	  	<ul class="dropdown-menu" role="menu">
+				  	  	  	  	  	  	<li><a href="#">Deselect <small class="pull-right">Esc</small></a></li>
+				  	  	  	  	  	  	<li><a href="#">Delete <small class="pull-right">Del</small></a></li>
+				  	  	  	  	  	</ul>
+				  	  	  	  	</li>
+				  	  	  	</ul>
+				  	  	</div>
+				  	</div>
+				</nav>
+			</div>
+			<div id="script-editor">
+				
+			</div>
+			<div id="map-editor">
+
 			</div>
 		</div>
 	</body>

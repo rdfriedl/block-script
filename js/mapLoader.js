@@ -4,16 +4,7 @@ function MapLoader(settings,cb){
 
 	this.settings = {
 		info: {
-			id: 0,
-			name: '',
-			desc: '',
-			createDate: new Date(),
-			lastSave: new Date(),
 			dbName: 'map'
-		},
-		player: {
-			position: new THREE.Vector3(),
-			velocity: new THREE.Vector3()
 		}
 	};
 	fn.combindOver(this.settings.info,settings);
@@ -102,16 +93,16 @@ MapLoader.prototype = {
 		}
 		cb();
 	},
-	exportData: function(cb,progress){ //export the hole map as json
+	exportData: function(cb,progress){ //NOTE: disabled settings
 		var json = {
 			settings: this.settings,
 			chunks: []
 		}
 		//build chunks
-		var i = 0;
+		var k = 0;
 		this.db.chunks.count(function(numberOfChunks){
 			this.db.chunks.each(function(chunk){
-				if(progress) progress((i/numberOfChunks)*100);
+				if(progress) progress((k/numberOfChunks)*100);
 
 				for(var i in chunk.data){
 					chunk.data[i] = chunk.data[i].id;
@@ -119,28 +110,30 @@ MapLoader.prototype = {
 
 				json.chunks.push(chunk);
 
-				i++;
+				k++;
 			}.bind(this)).finally(function(){
 				if(progress) progress(100);
-				if(cb) cb(json);
+				if(cb) cb(json.chunks);
 			})
 		}.bind(this));
 	},
-	inportData: function(data,cb,progress){
+	inportData: function(data,cb,progress){ //NOTE: disabled settings
 		var json = (typeof data == 'string')? JSON.parse(data) : data;
 
 		//load settings
-		fn.combindOver(this.settings,json.settings || {});
+		// fn.combindOver(this.settings,json.settings || {});
 		//fix dates
-		this.settings.info.createDate = new Date(this.settings.info.createDate);
-		this.settings.info.lastSave = new Date(this.settings.info.lastSave);
-		this.saveSettings();
+		// this.settings.info.createDate = new Date(this.settings.info.createDate);
+		// this.settings.info.lastSave = new Date(this.settings.info.lastSave);
+		// this.saveSettings();
 
 		//load chunks
 		var func = function(i){
-			if(progress) progress((i/json.chunks.length) * 100);
+			// if(progress) progress((i/json.chunks.length) * 100);
+			if(progress) progress((i/json.length) * 100);
 
-			var chunk = json.chunks[i];
+			// var chunk = json.chunks[i];
+			var chunk = json[i];
 			if(!chunk.position) chunk.position = new THREE.Vector3().fromString(chunk.id);
 			chunk.position.x = parseInt(chunk.position.x);
 			chunk.position.y = parseInt(chunk.position.y);
@@ -152,7 +145,8 @@ MapLoader.prototype = {
 				data: chunk.data
 			});
 
-			if(++i < json.chunks.length){
+			// if(++i < json.chunks.length){
+			if(++i < json.length){
 				setTimeout(func.bind(this,i),1);
 			}
 			else{

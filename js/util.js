@@ -30,7 +30,7 @@ THREE.Vector3.prototype.sign = function(){
 	return this;
 }
 THREE.Vector3.prototype.empty = function(){
-	return this.x === 0 && this.y === 0 && this.z === 0;
+	return !this.x && !this.y && !this.z;
 }
 THREE.Vector3.prototype.split = function(dirs){
 	if(!dirs){
