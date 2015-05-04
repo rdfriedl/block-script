@@ -162,29 +162,29 @@ Player.prototype = {
 		if(this.movement.onGround && this.movement.jump && this.enabled)
 			this.movement.velocity.y = this.movement.jumpSpeed;
 		else
-			this.movement.velocity.y -= this.movement.gravity;
+			this.movement.velocity.y -= this.movement.gravity * dtime;
 
 		//z
 		if(this.movement.up && this.enabled)
-			this.movement.velocity.z -= this.movement.acceleration;
+			this.movement.velocity.z -= this.movement.acceleration * dtime;
 		else if(this.movement.down && this.enabled)
-			this.movement.velocity.z += this.movement.acceleration;
+			this.movement.velocity.z += this.movement.acceleration * dtime;
 		else
 			if(Math.sign(this.movement.velocity.z) !== Math.sign(this.movement.velocity.z - this.movement.drag * Math.sign(this.movement.velocity.z))){
 				this.movement.velocity.z = 0;
 			}
-			else this.movement.velocity.z -= this.movement.drag * Math.sign(this.movement.velocity.z);
+			else this.movement.velocity.z -= this.movement.drag * Math.sign(this.movement.velocity.z) * dtime;
 
 		//x
 		if(this.movement.left && this.enabled)
-			this.movement.velocity.x -= this.movement.acceleration;
+			this.movement.velocity.x -= this.movement.acceleration * dtime;
 		else if(this.movement.right && this.enabled)
-			this.movement.velocity.x += this.movement.acceleration;
+			this.movement.velocity.x += this.movement.acceleration * dtime;
 		else 
 			if(Math.sign(this.movement.velocity.x) !== Math.sign(this.movement.velocity.x - this.movement.drag * Math.sign(this.movement.velocity.x))){
 				this.movement.velocity.x = 0;
 			}
-			else this.movement.velocity.x -= this.movement.drag * Math.sign(this.movement.velocity.x);
+			else this.movement.velocity.x -= this.movement.drag * Math.sign(this.movement.velocity.x) * dtime;
 
 		//stop player from going faster them the speed
 		if(this.movement.velocity.z < 0){
