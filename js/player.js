@@ -170,7 +170,7 @@ Player.prototype = {
 		else if(this.movement.down && this.enabled)
 			this.movement.velocity.z += this.movement.acceleration * dtime;
 		else
-			if(Math.sign(this.movement.velocity.z) !== Math.sign(this.movement.velocity.z - this.movement.drag * Math.sign(this.movement.velocity.z))){
+			if(Math.sign(this.movement.velocity.z) !== Math.sign(this.movement.velocity.z - this.movement.drag * Math.sign(this.movement.velocity.z)) * dtime){
 				this.movement.velocity.z = 0;
 			}
 			else this.movement.velocity.z -= this.movement.drag * Math.sign(this.movement.velocity.z) * dtime;
@@ -181,7 +181,7 @@ Player.prototype = {
 		else if(this.movement.right && this.enabled)
 			this.movement.velocity.x += this.movement.acceleration * dtime;
 		else 
-			if(Math.sign(this.movement.velocity.x) !== Math.sign(this.movement.velocity.x - this.movement.drag * Math.sign(this.movement.velocity.x))){
+			if(Math.sign(this.movement.velocity.x) !== Math.sign(this.movement.velocity.x - this.movement.drag * Math.sign(this.movement.velocity.x)) * dtime){
 				this.movement.velocity.x = 0;
 			}
 			else this.movement.velocity.x -= this.movement.drag * Math.sign(this.movement.velocity.x) * dtime;
