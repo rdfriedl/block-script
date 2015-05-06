@@ -3,6 +3,7 @@ states = {
 	states: {},
 	events: new Events(),
 	activeState: undefined,
+	lastActiveState: undefined,
 	baseModal: {
 		toggle: function(ob){
 			return _.partial(function(ob){
@@ -54,14 +55,28 @@ states = {
 		}
 	},
 	enableState: function(name,dontFade){
+		if(this.states[name].enabled) return;
+
+		//find the last states name
+		for(var i in this.states){
+			if(this.states[i] == this.lastActiveState){
+				$('#states').removeClass('active-'+i).removeClass('last-'+i);
+			}
+			if(this.states[i] == this.activeState){
+				$('#states').removeClass('active-'+i).addClass('last-'+i);
+			}
+		}
+		this.lastActiveState = this.activeState;
+		$('#states').addClass('active-'+name);
+
 		this.disableAllStates();
 
 		this.states[name].enabled = true;
 		if(!dontFade){
-			this.states[name].container.fadeIn() 
+			this.states[name].container.removeClass('disable').addClass('active').fadeIn();
 		}
 		else{
-			this.states[name].container.show();
+			this.states[name].container.removeClass('disable').addClass('active').show();
 		}
 		this.states[name].enable();
 		this.activeState = this.states[name];
@@ -72,10 +87,10 @@ states = {
 	disableState: function(name,dontFade){
 		this.states[name].enabled = false;
 		if(!dontFade){
-			this.states[name].container.fadeOut() 
+			this.states[name].container.removeClass('active').addClass('disable').fadeOut() 
 		}
 		else{
-			this.states[name].container.hide();
+			this.states[name].container.removeClass('active').addClass('disable').hide();
 		}
 		this.states[name].disable();
 

@@ -72,6 +72,8 @@
 	<body>
 		<div id="states">
 			<div id="menu">
+				<a type="button" class="btn btn-xs btn-default credits-button" data-bind="click: $root.set($root.menu,'credits'), visible: menu() == 'main'">Credits</a>
+				<a type="button" class="btn btn-md btn-default credits-back" data-bind="click: $root.set($root.menu,'main'), visible: menu() == 'credits'"><i class="fa fa-arrow-left"></i> Back</a>
 				<!-- main -->
 				<div class="menu" data-bind="visible: menu() == 'main'">
 					<div class="col-xs-12">
@@ -265,6 +267,22 @@
 						<button type="button" class="btn btn-lg btn-block btn-default" data-bind="click: $root.set($root.menu,'main')">Back <i class="fa fa-arrow-right"></i></button>
 					</div>
 				</div>
+				<!-- credits -->
+				<div class="menu credits" data-bind="visible: menu() == 'credits'">
+					<div class="col-xs-10 col-xs-offset-2">
+						<div class="page-header">
+						  	<center><h1>Sound</h1></center>
+						</div>
+						<div class="page-header">
+						  	<center><h1>Images</h1></center>
+						</div>
+						<center><h4>All block image are from: <a href="http://dokucraft.co.uk/" target="_blank">Dokucraft</a></h4></center>
+						<div class="page-header">
+						  	<center><h1>Block Script</h1></center>
+						</div>
+						<center><h4>Created by: <a href="https://github.com/rdfriedl" target="_blank">rdfriedl</a></h4></center>
+					</div>
+				</div>
 
 				<!-- new map -->
 				<div class="modal fade" id="new-map-modal" tabindex="-1" role="dialog" data-bind="with: maps">
@@ -390,23 +408,6 @@
 					      	</div>
 					      	<div class="modal-footer">
 					      		<button type="button" class="btn btn-primary" data-dismiss="modal" data-bind="attr: { disabled: progress() !== 0 }">Done</button>
-					      	</div>
-				    	</div>
-				  	</div>
-				</div>
-
-				<!-- help -->
-				<div class="modal fade" id="help-modal" tabindex="-1" role="dialog" data-backdrop="static" data-bind="with: maps.upload">
-				  	<div class="modal-dialog">
-				    	<div class="modal-content">
-				      		<div class="modal-header">
-				        		<h4 class="modal-title" id="myModalLabel">Help</h4>
-				      		</div>
-					      	<div class="modal-body">
-					      		
-					      	</div>
-					      	<div class="modal-footer">
-					      		<button type="button" class="btn btn-primary" data-dismiss="modal">Done</button>
 					      	</div>
 				    	</div>
 				  	</div>

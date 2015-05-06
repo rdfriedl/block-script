@@ -1,10 +1,5 @@
 (function(){
 
-//air
-var Air = Block.extend(function Air(){
-	Block.prototype.constructor.apply(this,arguments);
-}).add();
-
 //dirt
 var Dirt = CollisionBlock.extend(function Dirt(){
 	CollisionBlock.prototype.constructor.apply(this,arguments);
@@ -303,6 +298,120 @@ var Hay = CollisionBlock.extend(function Hay(){
 	placeSound: ['digGrass1','digGrass2','digGrass3','digGrass4'],
 	stepSound: ['stepGrass1','stepGrass2','stepGrass3','stepGrass4']
 }).add();
+
+// glass
+var GlassBlock = CollisionBlock.extend(function GlassBlock(){
+	CollisionBlock.prototype.constructor.apply(this,arguments);
+},{
+	inventoryTab: 'default',
+	transparent: true,
+	removeSound: ['digGlass1','digGlass2','digGlass3'],
+	placeSound: ['digStone1','digStone2','digStone3'],
+	stepSound: ['stepStone1','stepStone2','stepStone3']
+})
+
+var Glass = GlassBlock.extend(function Glass(){
+	GlassBlock.prototype.constructor.apply(this,arguments);
+},{
+	material: blocks.util.basicMaterial('glass.png',{transparent: true})
+}).add();
+
+var GlassBlack = GlassBlock.extend(function GlassBlack(){
+	GlassBlock.prototype.constructor.apply(this,arguments);
+},{
+	material: blocks.util.basicMaterial('glass_black.png',{transparent: true})
+}).add();
+
+var GlassBlue = GlassBlock.extend(function GlassBlue(){
+	GlassBlock.prototype.constructor.apply(this,arguments);
+},{
+	material: blocks.util.basicMaterial('glass_blue.png',{transparent: true})
+}).add();
+
+var GlassBrown = GlassBlock.extend(function GlassBrown(){
+	GlassBlock.prototype.constructor.apply(this,arguments);
+},{
+	material: blocks.util.basicMaterial('glass_brown.png',{transparent: true})
+}).add();
+
+var GlassCyan = GlassBlock.extend(function GlassCyan(){
+	GlassBlock.prototype.constructor.apply(this,arguments);
+},{
+	material: blocks.util.basicMaterial('glass_cyan.png',{transparent: true})
+}).add();
+
+var GlassGray = GlassBlock.extend(function GlassGray(){
+	GlassBlock.prototype.constructor.apply(this,arguments);
+},{
+	material: blocks.util.basicMaterial('glass_gray.png',{transparent: true})
+}).add();
+
+var GlassGreen = GlassBlock.extend(function GlassGreen(){
+	GlassBlock.prototype.constructor.apply(this,arguments);
+},{
+	material: blocks.util.basicMaterial('glass_green.png',{transparent: true})
+}).add();
+
+var GlassLight_blue = GlassBlock.extend(function GlassLight_blue(){
+	GlassBlock.prototype.constructor.apply(this,arguments);
+},{
+	material: blocks.util.basicMaterial('glass_light_blue.png',{transparent: true})
+}).add();
+
+var GlassLime = GlassBlock.extend(function GlassLime(){
+	GlassBlock.prototype.constructor.apply(this,arguments);
+},{
+	material: blocks.util.basicMaterial('glass_lime.png',{transparent: true})
+}).add();
+
+var GlassMagenta = GlassBlock.extend(function GlassMagenta(){
+	GlassBlock.prototype.constructor.apply(this,arguments);
+},{
+	material: blocks.util.basicMaterial('glass_magenta.png',{transparent: true})
+}).add();
+
+var GlassOrange = GlassBlock.extend(function GlassOrange(){
+	GlassBlock.prototype.constructor.apply(this,arguments);
+},{
+	material: blocks.util.basicMaterial('glass_orange.png',{transparent: true})
+}).add();
+
+var GlassPink = GlassBlock.extend(function GlassPink(){
+	GlassBlock.prototype.constructor.apply(this,arguments);
+},{
+	material: blocks.util.basicMaterial('glass_pink.png',{transparent: true})
+}).add();
+
+var GlassPurple = GlassBlock.extend(function GlassPurple(){
+	GlassBlock.prototype.constructor.apply(this,arguments);
+},{
+	material: blocks.util.basicMaterial('glass_purple.png',{transparent: true})
+}).add();
+
+var GlassRed = GlassBlock.extend(function GlassRed(){
+	GlassBlock.prototype.constructor.apply(this,arguments);
+},{
+	material: blocks.util.basicMaterial('glass_red.png',{transparent: true})
+}).add();
+
+var GlassSilver = GlassBlock.extend(function GlassSilver(){
+	GlassBlock.prototype.constructor.apply(this,arguments);
+},{
+	material: blocks.util.basicMaterial('glass_silver.png',{transparent: true})
+}).add();
+
+var GlassWhite = GlassBlock.extend(function GlassWhite(){
+	GlassBlock.prototype.constructor.apply(this,arguments);
+},{
+	material: blocks.util.basicMaterial('glass_white.png',{transparent: true})
+}).add();
+
+var GlassYellow = GlassBlock.extend(function GlassYellow(){
+	GlassBlock.prototype.constructor.apply(this,arguments);
+},{
+	material: blocks.util.basicMaterial('glass_yellow.png',{transparent: true})
+}).add();
+
 
 //GrassMesh
 var GrassMesh = ModalBlock.extend(function GrassMesh(){

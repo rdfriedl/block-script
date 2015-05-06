@@ -113,6 +113,18 @@ var sounds = [
 		id: 'digCloth4',
 		src: 'dig/cloth4.ogg'
 	},
+	{
+		id: 'digGlass1',
+		src: 'random/glass1.ogg'
+	},
+	{
+		id: 'digGlass2',
+		src: 'random/glass2.ogg'
+	},
+	{
+		id: 'digGlass3',
+		src: 'random/glass3.ogg'
+	},
 	//step
 	{
 		id: 'stepStone1',

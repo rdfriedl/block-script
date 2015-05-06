@@ -92,6 +92,25 @@ body {
 	margin-bottom: 0px;
 }
 
+#menu .credits{
+
+}
+.credits-button{
+	padding-right: 20px;
+	padding-left: 20px;
+	position: absolute;
+	top: 10px;
+	right: 10px;
+	transition: all 0.2s;
+}
+.credits-back{
+	padding-right: 50px;
+	padding-left: 50px;
+	position: absolute;
+	top: 10px;
+	left: 10px;
+}
+
 /*cube*/
 .cube {
   	perspective: 1000px;

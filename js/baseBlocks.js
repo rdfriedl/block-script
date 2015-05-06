@@ -2,11 +2,17 @@
 var SolidBlock = Block.extend(function SolidBlock(){
 	Block.prototype.constructor.apply(this,arguments);
 },{
+	transparent: false,
 	material: blocks.nullMaterial,
 	removeSound: ['digWood1','digWood2','digWood3','digWood4'],
 	placeSound: ['digWood1','digWood2','digWood3','digWood4'],
 	stepSound: ['stepWood1','stepWood2','stepWood3','stepWood4']
 });
+
+//air
+var Air = Block.extend(function Air(){
+	Block.prototype.constructor.apply(this,arguments);
+}).add();
 
 var MeshBlock = Block.extend(function MeshBlock(){
 	Block.prototype.constructor.apply(this,arguments);

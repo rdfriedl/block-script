@@ -335,9 +335,14 @@ function CulledMesh(blocks) {
 
             if(!(block instanceof Block && otherBlock instanceof Block)) continue;
 
-            if((block instanceof SolidBlock) !== (otherBlock instanceof SolidBlock)) {
-                var side = (block instanceof SolidBlock)? 0 : 1;
-                var mat = (block instanceof SolidBlock)? 0 : 1;
+            if((block instanceof SolidBlock) !== (otherBlock instanceof SolidBlock) || block.transparent !== otherBlock.transparent) {
+                var side = (block instanceof SolidBlock)? 0 : 1; //0 out | 1 in
+                //check for transparent blocks
+                if(block instanceof SolidBlock && otherBlock instanceof SolidBlock){
+                    side = (block.transparent)? 1 : 0;
+                }
+
+                var mat = side;
                 if(d >= 3) side = (side)? 0 : 1; //flip the face around if we are checking more then 3 blocks
                 var pos = block.position.clone();
                 var u = facePositions[faceSide][side];
