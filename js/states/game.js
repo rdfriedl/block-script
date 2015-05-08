@@ -3,9 +3,11 @@ game = {
 	container: undefined,
 	enabled: false,
 	enable: function(){
+		keyboard.enableState('game')
 		this.modal.blocks.update();
 	},
 	disable: function(){
+		keyboard.disableState('game')
 		this.modal.menu('none');
 
 		if(this.loadedMap){
@@ -43,8 +45,8 @@ game = {
 		this.setUpScene();
 		this.setUpHUD();
 
-		this.voxelMap = new VoxelMap(this,this.scene,{});
-		this.player = new Player(this,this.scene,this.camera);
+		this.voxelMap = new VoxelMap(this,{});
+		this.player = new Player(this,this.camera);
 
 		var chunkGenerator = new ChunkGeneratorHills({
 			width: 40*game.chunkSize-1,
@@ -128,35 +130,9 @@ game = {
 		$(document).keyup(function(event) {
 			if(!this.enabled) return;
 			switch(event.keyCode){
-				case 69: //e
-					if(this.modal.menu() == 'none'){
-						this.modal.menu('invt');
-						this.exitPointerLock();
-					}
-					else if(this.modal.menu() == 'invt'){
-						this.modal.menu('none');
-						this.requestPointerLock();
-					}
-					break;
-				case 27: //esc
-					if(this.modal.menu() == 'esc'){
-						this.modal.menu('none');
-						this.requestPointerLock();
-					}
-					else{
-						this.modal.menu('esc');
-						this.exitPointerLock();
-					}
-					break;
-				case 192: // `
-					if(this.modal.menu() == 'esc'){
-						this.modal.menu('none');
-						this.requestPointerLock();
-					}
-					else{
-						this.modal.menu('esc');
-						this.exitPointerLock();
-					}
+				case 192:
+				case 27:
+					this.keypress._registered_combos[0].on_keyup.call(this.keypress._registered_combos[0].this);
 					break;
 			}
 		}.bind(this));
@@ -467,3 +443,35 @@ Object.defineProperties(game,{
 })
 
 states.addState('game',game);
+
+//create the keypress object
+game.keypress = keyboard.createState([
+	{
+		keys: 'esc',
+		on_keyup: function(){
+			if(this.modal.menu() == 'esc'){
+				this.modal.menu('none');
+				this.requestPointerLock();
+			}
+			else{
+				this.modal.menu('esc');
+				this.exitPointerLock();
+			}
+		},
+		this: game
+	},
+	{
+		keys: 'e',
+		on_keyup: function(){
+			if(this.modal.menu() == 'none'){
+				this.modal.menu('invt');
+				this.exitPointerLock();
+			}
+			else if(this.modal.menu() == 'invt'){
+				this.modal.menu('none');
+				this.requestPointerLock();
+			}
+		},
+		this: game
+	},
+],'game');

@@ -164,6 +164,29 @@ VoxelMap.prototype = {
 		this.mapLoader = mapLoader;
 		this.removeAllChunks(cb);
 	},
+	buildAllChunks: function(cb){
+		var func = function(index){
+			var length = 0;
+			for (var i in this.chunks) {
+				length++;
+			};
+
+			var k = 0;
+			for (var i in this.chunks) {
+				if(k++ == index){
+					this.chunks[i].build();
+				}
+			};
+
+			if(index++ > length){
+				if(cb) cb();
+				return;
+			}
+
+			setTimeout(func.bind(this,index),10);
+		}
+		func.bind(this)(0);
+	},
 	setChunkGenerator: function(chunkGenerator,cb){
 		this.chunkGenerator = chunkGenerator;
 		this.removeAllChunks(cb);

@@ -102,7 +102,7 @@ Chunk.prototype = {
                 geometry.faceVertexUvs[0].push(faceVertexUv2(meshed,i))
                 geometry.faces.push(f)
             }
-            
+
             geometry.computeFaceNormals()
             
             geometry.verticesNeedUpdate = true;
@@ -122,6 +122,9 @@ Chunk.prototype = {
             this.group.add(this.mesh);
 
             this.events.emit('build');
+
+            //delete var to help with memory
+            delete meshed;
         }
         catch(e){
             console.error('failed to build chunk: '+this.position.toString());
@@ -308,6 +311,22 @@ function CulledMesh(blocks) {
         facePositions[i][1][ ['x','y','z'][(i+2)%3] ] = 1;
     }
 
+    var addFace = function(pos,side,materialIndex){
+        var u = facePositions[faceSide][side];
+        var v = facePositions[faceSide][side^1];
+        if(d < 3) ++pos[['x','y','z'][faceSide]];
+
+        var v1ID = (pos.x        )+'|'+(pos.y        )+'|'+(pos.z        );
+        var v2ID = (pos.x+u.x    )+'|'+(pos.y+u.y    )+'|'+(pos.z+u.z    );
+        var v3ID = (pos.x+u.x+v.x)+'|'+(pos.y+u.y+v.y)+'|'+(pos.z+u.z+v.z);
+        var v4ID = (pos.x    +v.x)+'|'+(pos.y    +v.y)+'|'+(pos.z    +v.z);
+        var v1 = (verticeCache[v1ID] !== undefined)? verticeCache[v1ID] : verticeCache[v1ID] = vertices.push( new THREE.Vector3( pos.x        , pos.y        , pos.z         ) ) -1;
+        var v2 = (verticeCache[v2ID] !== undefined)? verticeCache[v2ID] : verticeCache[v2ID] = vertices.push( new THREE.Vector3( pos.x+u.x    , pos.y+u.y    , pos.z+u.z     ) ) -1;
+        var v3 = (verticeCache[v3ID] !== undefined)? verticeCache[v3ID] : verticeCache[v3ID] = vertices.push( new THREE.Vector3( pos.x+u.x+v.x, pos.y+u.y+v.y, pos.z+u.z+v.z ) ) -1;
+        var v4 = (verticeCache[v4ID] !== undefined)? verticeCache[v4ID] : verticeCache[v4ID] = vertices.push( new THREE.Vector3( pos.x    +v.x, pos.y    +v.y, pos.z    +v.z ) ) -1;
+        faces.push([v1, v2, v3, v4, materialIndex]);
+    }
+
     //March over the blocks
     var vertices = [];
     var verticeCache = {};
@@ -336,7 +355,11 @@ function CulledMesh(blocks) {
             if(!(block instanceof Block && otherBlock instanceof Block)) continue;
 
             if((block instanceof SolidBlock) !== (otherBlock instanceof SolidBlock) || block.transparent !== otherBlock.transparent) {
+                var pos = block.position.clone();
+
+                //find the side
                 var side = (block instanceof SolidBlock)? 0 : 1; //0 out | 1 in
+
                 //check for transparent blocks
                 if(block instanceof SolidBlock && otherBlock instanceof SolidBlock){
                     side = (block.transparent)? 1 : 0;
@@ -344,20 +367,12 @@ function CulledMesh(blocks) {
 
                 var mat = side;
                 if(d >= 3) side = (side)? 0 : 1; //flip the face around if we are checking more then 3 blocks
-                var pos = block.position.clone();
-                var u = facePositions[faceSide][side];
-                var v = facePositions[faceSide][side^1];
-                if(d < 3) ++pos[['x','y','z'][faceSide]];
 
-                var v1ID = (pos.x        )+'|'+(pos.y        )+'|'+(pos.z        );
-                var v2ID = (pos.x+u.x    )+'|'+(pos.y+u.y    )+'|'+(pos.z+u.z    );
-                var v3ID = (pos.x+u.x+v.x)+'|'+(pos.y+u.y+v.y)+'|'+(pos.z+u.z+v.z);
-                var v4ID = (pos.x    +v.x)+'|'+(pos.y    +v.y)+'|'+(pos.z    +v.z);
-                var v1 = (verticeCache[v1ID] !== undefined)? verticeCache[v1ID] : verticeCache[v1ID] = vertices.push( new THREE.Vector3( pos.x        , pos.y        , pos.z         ) ) -1;
-                var v2 = (verticeCache[v2ID] !== undefined)? verticeCache[v2ID] : verticeCache[v2ID] = vertices.push( new THREE.Vector3( pos.x+u.x    , pos.y+u.y    , pos.z+u.z     ) ) -1;
-                var v3 = (verticeCache[v3ID] !== undefined)? verticeCache[v3ID] : verticeCache[v3ID] = vertices.push( new THREE.Vector3( pos.x+u.x+v.x, pos.y+u.y+v.y, pos.z+u.z+v.z ) ) -1;
-                var v4 = (verticeCache[v4ID] !== undefined)? verticeCache[v4ID] : verticeCache[v4ID] = vertices.push( new THREE.Vector3( pos.x    +v.x, pos.y    +v.y, pos.z    +v.z ) ) -1;
-                faces.push([v1, v2, v3, v4, mat ? otherBlock.material[faceSide][side] : block.material[faceSide][side]]);
+                //add the face
+                addFace(pos,side,mat ? otherBlock.material[faceSide][side] : block.material[faceSide][side]);
+
+                //clear var to help with memory
+                delete pos;
             }
         }
     }

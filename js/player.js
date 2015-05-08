@@ -1,6 +1,6 @@
-function Player(state,scene,camera){
+function Player(state,camera){
 	this.state = state;
-	this.scene = scene;
+	this.scene = state.scene;
 	this.camera = camera;
 	this.rayCaster = new THREE.Raycaster();
 	this.rayCaster.far = game.blockSize * 5;
@@ -29,7 +29,8 @@ function Player(state,scene,camera){
 	this.scene.add(this.selectionObject);
 
 	//movement events
-	$(document).keydown(this.keydown.bind(this)).keyup(this.keyup.bind(this));
+	// $(document).keydown(this.keydown.bind(this)).keyup(this.keyup.bind(this));
+	this.setUpKeys();
 	$(document).mousedown(function(event){
 		if(!this.enabled) return;
 
@@ -154,6 +155,147 @@ Player.prototype = {
 				this.movement.sprint = false;
 				break;
 		}
+	},
+	setUpKeys: function(){
+		this.state.keypress.register_many([
+			//up
+			{
+				keys: 'w',
+				on_keydown: function(){
+					this.movement.up = true;
+				},
+				on_keyup: function(){
+					this.movement.up = false;
+				},
+				this: this
+			},
+			{
+				keys: 'up',
+				on_keydown: function(){
+					this.movement.up = true;
+				},
+				on_keyup: function(){
+					this.movement.up = false;
+				},
+				this: this
+			},
+			//left
+			{
+				keys: 'a',
+				on_keydown: function(){
+					this.movement.left = true;
+				},
+				on_keyup: function(){
+					this.movement.left = false;
+				},
+				this: this
+			},
+			{
+				keys: 'left',
+				on_keydown: function(){
+					this.movement.left = true;
+				},
+				on_keyup: function(){
+					this.movement.left = false;
+				},
+				this: this
+			},
+			//down
+			{
+				keys: 's',
+				on_keydown: function(){
+					this.movement.down = true;
+				},
+				on_keyup: function(){
+					this.movement.down = false;
+				},
+				this: this
+			},
+			{
+				keys: 'down',
+				on_keydown: function(){
+					this.movement.down = true;
+				},
+				on_keyup: function(){
+					this.movement.down = false;
+				},
+				this: this
+			},
+			//right
+			{
+				keys: 'd',
+				on_keydown: function(){
+					this.movement.right = true;
+				},
+				on_keyup: function(){
+					this.movement.right = false;
+				},
+				this: this
+			},
+			{
+				keys: 'right',
+				on_keydown: function(){
+					this.movement.right = true;
+				},
+				on_keyup: function(){
+					this.movement.right = false;
+				},
+				this: this
+			},
+			// sprint
+			{
+				keys: 'shift',
+				on_keydown: function(){
+					this.movement.sprint = true;
+				},
+				on_keyup: function(){
+					this.movement.sprint = false;
+				},
+				this: this
+			},
+			// jump
+			{
+				keys: 'space',
+				on_keydown: function(){
+					this.movement.jump = true;
+				},
+				on_keyup: function(){
+					this.movement.jump = false;
+				},
+				this: this
+			},
+			{
+				keys: 'num_0',
+				on_keydown: function(){
+					this.movement.jump = true;
+				},
+				on_keyup: function(){
+					this.movement.jump = false;
+				},
+				this: this
+			},
+			{
+				keys: 'insert',
+				on_keydown: function(){
+					this.movement.jump = true;
+				},
+				on_keyup: function(){
+					this.movement.jump = false;
+				},
+				this: this
+			},
+			// crouch
+			{
+				keys: 'ctrl',
+				on_keydown: function(){
+					this.movement.crouch = true;
+				},
+				on_keyup: function(){
+					this.movement.crouch = false;
+				},
+				this: this
+			}
+		])	
 	},
 	update: function(dtime){
 		var speed = (this.movement.sprint)? this.movement.sprintSpeed : this.movement.walkSpeed;

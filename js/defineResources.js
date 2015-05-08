@@ -58,9 +58,46 @@
 
 	}).add('scripts')
 
-	Room = Resource.extend(function Room(){
+	Block = Resource.extend(function Block(){
 		Resource.prototype.constructor.apply(this,arguments);
 	},{
 
+	}).add('blocks')
+
+	Room = Resource.extend(function Room(){
+		Resource.prototype.constructor.apply(this,arguments);
+	},{
+		data: {
+			center: {x:0,y:0,z:0},
+			mapData: undefined,
+		},
+		inportData: function(data){
+			Resource.prototype.inportData.apply(this,arguments);
+			return data;
+		},
+		exportData: function(){
+			var data = Resource.prototype.exportData.apply(this,arguments);
+			return data;
+		},
+		toJSON: function(cb,progress){
+			var json = {
+				data: this.exportData(),
+				chunks: []
+			}
+			this.mapLoader.exportData(function(data){
+				json.chunks = data;
+				if(cb) cb(json);
+			},progress);
+		},
+		fromJSON: function(json,cb,progress){
+			var json = fn.combindOver({
+				data: {},
+				chunks: []
+			},json);
+
+			this.inportData(json.data);
+
+			this.mapLoader.inportData(json.chunks,cb,progress);
+		}
 	}).add('rooms')
 })()

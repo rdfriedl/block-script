@@ -4,11 +4,12 @@ var clock = new THREE.Clock();
 function initDB(cb){
 	//set up map settingsDB
 	settingsDB = new Dexie('block-script-settings');
-	settingsDB.version(1.3)
+	settingsDB.version(1.4)
 		.stores({
-			maps: 'id',
-			scripts: 'id',
-			rooms: 'id'
+			map: 'id,parent',
+			script: 'id,parent',
+			room: 'id,parent',
+			block: 'id,parent'
 		});
 
 	settingsDB.open().finally(function(){
@@ -22,8 +23,14 @@ function initDB(cb){
 }
 
 $(document).ready(function() {
+	Messenger({
+		maxMessages: 4,
+		extraClasses: 'messenger-fixed messenger-on-left messenger-on-top'
+	});
+
 	if(!Detector.webgl){
 		Detector.addGetWebGLMessage();
+		Messenger().error('webgl not supported')
 	}
 
 	//create renderer
@@ -83,6 +90,14 @@ $(document).ready(function() {
 	$(document).on('dragover',function(){
 		$('.drop-zone').removeClass('hover');
 		return false;
+	})
+
+	$(document).on('click','a[href="#"]',function(event){
+		event.preventDefault();
+	})
+
+	$(window).focus(function(){
+		clock.getDelta();
 	})
 });
 

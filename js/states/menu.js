@@ -45,6 +45,9 @@ menu = {
 		light = new THREE.DirectionalLight( 0xffffff );
 		light.position.set( 1, 1, 1 );
 		this.scene.add( light );
+		
+		var ambient = new THREE.AmbientLight( 0x666666 );
+	    this.scene.add(ambient);
 
 		$.ajax({
 			url: 'data/menuScene.json',
@@ -79,6 +82,9 @@ menu = {
 				viewRangeRange: [2,8],
 				viewRange: 3,
 			}
+		},
+		editor: function(){
+			states.enableState('roomEditor');
 		},
 		maps: {
 			maps: [],
@@ -177,7 +183,7 @@ menu = {
 				var map = self.maps()[self.selected()];
 				if(_.isNumber(index)) map = self.maps()[index];
 
-				resources.removeResource(map.id,map.type);
+				resources.deleteResource(map.id);
 				self.updateMaps();
 
 				this.selected(-1);
@@ -203,7 +209,7 @@ menu = {
 			updateMaps: function(cb){
 				var self = menu.modal.maps;
 				self.maps([]);
-				self.maps(resources.modal.maps());
+				self.maps(resources.modal.map());
 				if(cb) cb();
 			},
 			saveMaps: function(cb){

@@ -265,7 +265,7 @@ collisions = {
             exit: new THREE.Vector3(Infinity,Infinity,Infinity)
         };
         var dist = velocity.length();
-        var loops = (dist > 20)? dist / 10 : 1;
+        var loops = (dist > game.blockSize)? Math.ceil(dist / game.blockSize) : 1;
         var done = false;
 
         //test for blocks

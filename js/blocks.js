@@ -236,6 +236,16 @@ blocks = {
 		},
 		loadModal: function(url){
 			return blocks.modalFolder + url + '/' + url + '.dae';
+		},
+		debugMaterial: function(mat){
+			if(mat instanceof THREE.MeshFaceMaterial){
+				for (var i = 0; i < mat.materials.length; i++) {
+					mat.materials[i].wireframe = !mat.materials[i].wireframe;
+				};
+			}
+			else{
+				mat.wireframe = !mat.wireframe;
+			}
 		}
 	}
 }
