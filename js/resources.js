@@ -38,18 +38,19 @@ resources = {
 			l++;
 		};
 		var done = _.after(l+1,function(){
-			this.resources = _resources;
+			for (var i = 0; i < _resources.length; i++) {
+				_resources[i]._parent = _resources[i].parent;
+				this.addResource(_resources[i],true);
+			};
+
 			//attach all the parents
 			for (var i = 0; i < _resources.length; i++) {
-				var r = _resources[i]
-				var p = r.parent;
-				r.parent = this;
-
-				if(p){
-					r.addTo(p);
+				if(_resources[i]._parent){
+					_resources[i].addTo(_resources[i]._parent,true);
 				}
+				delete _resources[i]._parent;
 
-				r.events.emit('load');
+				_resources[i].events.emit('load');
 			};
 
 			if(cb) cb();
@@ -78,8 +79,10 @@ resources = {
 
 		done();
 	},
-	saveResource: function(id,cb){
-		var r = this.getResource(id);
+	saveResource: function(r,cb){
+		if(typeof r == 'string'){
+			r = this.getResource(r,true);
+		}
 		if(r){
 			//save it
 			settingsDB[r.type].put({
@@ -102,8 +105,10 @@ resources = {
 		}
 		cb();
 	},
-	deleteResource: function(id,cb){
-		var r = this.getResource(id);
+	deleteResource: function(r,cb){
+		if(typeof r == 'string'){
+			r = this.getResource(r,true);
+		}
 		if(r){
 			r.dispose(function(){
 				//delete from db
@@ -141,23 +146,39 @@ resources = {
 			}
 		};
 	},
-	addResource: function(resource){
+	findResource: function(data,children){
+		for (var i in this.resources) {
+			for (var k in this.resources[i].data) {
+				if(this.resources[i].data[k] == data[k]){
+					return this.resources[i];
+				}
+			};
+			
+			if(children){
+				var r = this.resources[i].findResource(data,children)
+				if(r) return r;
+			}
+		};
+	},
+	addResource: function(resource,dontSave){
 		if(!resource instanceof Resource) return this;
-		resource.remove();
+		resource.remove(dontSave);
 		this.resources.push(resource);
 		resource.parent = this;
 		resource.events.emit('add',this);
+		if(!dontSave) resource.save();
 		this.modal.update();
 		return this;
 	},
-	removeResource: function(id){
-		if(id instanceof Resource) id = id.id;
-
-		var r = this.getResource(id);
+	removeResource: function(r,dontSave){
+		if(typeof r == 'string'){
+			r = this.getResource(r,true);
+		}
 		if(r){
 			r.parent = undefined;
 			this.resources.splice(this.resources.indexOf(r),1);
 			r.events.emit('remove');
+			if(!dontSave) r.save();
 
 			this.modal.update();
 		}
@@ -172,13 +193,22 @@ resources = {
 		cb();
 	},
 
-	createResource: function(type,data){
-		var r = this.getResourceType(type);
+	createResource: function(type,data,parent){
+		var r = resources.getResourceType(type);
 		if(r){
-			var resource = new r(undefined,data);
+			var resource = new r(undefined,data,parent);
 			this.addResource(resource);
-			this.saveResource(resource.id);
 			return resource;
+		}
+	},
+	defineResource: function(type,data,parent){
+		var r = this.findResource(data,true);
+		if(r){
+			//maybe inport data here?
+			return r;
+		}
+		else{
+			return this.createResource(type,data,parent);
 		}
 	},
 
@@ -225,11 +255,13 @@ Resource.prototype = {
 	id: 0,
 	parent: undefined,
 	data: {
-		createDate: undefined
+		createDate: undefined,
+		name: ''
 	},
 	children: [],
 
 	inportData: function(data){
+		data = data || {};
 		fn.combindOver(this.data,data);
 		if(data.createDate) this.data.createDate = new Date(data.createDate);
 	},
@@ -239,8 +271,8 @@ Resource.prototype = {
 		return data;
 	},
 	getParent: function(){
-		if(this.parent !== ''){
-			return resources.getResource(this.parent);
+		if(this.parent){
+			return this.parent;
 		}
 	},
 	dispose: function(cb){
@@ -248,32 +280,49 @@ Resource.prototype = {
 	},
 
 	getResource: function(id,children){
-		for (var i in this.resources) {
-			if(this.resources[i].id == id){
-				return this.resources[i];
+		for (var i in this.children) {
+			if(this.children[i].id == id){
+				return this.children[i];
 			}
 			else if(children){
-				var r = this.resources[i].getResource(id,children)
+				var r = this.children[i].getResource(id,children)
 				if(r) return r;
 			}
 		};
 	},
-	addResource: function(resource){
+	findResource: function(data,children){
+		for (var i in this.children) {
+			for (var k in this.children[i].data) {
+				if(this.children[i].data[k] == data[k]){
+					return this.children[i];
+				}
+			};
+			
+			if(children){
+				var r = this.children[i].findResource(data,children)
+				if(r) return r;
+			}
+		};
+	},
+	addResource: function(resource,dontSave){
 		if(!resource instanceof Resource) return this;
-		resource.remove();
+		resource.remove(dontSave);
 		this.children.push(resource);
 		resource.parent = this;
 		resource.events.emit('add',this);
+		if(!dontSave) resource.save();
 		return this;
 	},
-	removeResource: function(id){
-		if(id instanceof Resource) id = id.id;
+	removeResource: function(r,dontSave){
+		if(typeof r == 'string'){
+			r = this.getResource(r,true)
+		}
 
-		var r = this.getResource(id);
 		if(r){
 			r.parent = undefined;
 			this.children.splice(this.children.indexOf(f),1);
 			r.events.emit('remove');
+			if(!dontSave) r.save();
 		}
 	},
 	removeAllResources: function(cb){
@@ -286,23 +335,42 @@ Resource.prototype = {
 		cb();
 	},
 
-	addTo: function(id){
-		if(id instanceof Resource) id = id.id;
-
-		var parent = resources.getResource(id,true);
-		if(parent instanceof Resource){
-			parent.addResource(this);
+	createResource: function(type,data,parent){
+		var r = resources.getResourceType(type);
+		if(r){
+			var resource = new r(undefined,data,parent);
+			this.addResource(resource);
+			return resource;
+		}
+	},
+	defineResource: function(type,data,parent){
+		var r = this.findResource(data,true);
+		if(r){
+			//maybe inport data here?
+			return r;
+		}
+		else{
+			return this.createResource(type,data,parent);
 		}
 	},
 
-	remove: function(cb){
-		if(this.parent){
-			this.parent.removeResource(this);
+	addTo: function(parent,dontSave){
+		if(typeof parent == 'string'){
+			parent = resources.getResource(parent,true)
+		}
+		if(parent){
+			parent.addResource(this,dontSave);
+		}
+	},
+
+	remove: function(dontSave){
+		if(this.parent instanceof Resource || this.parent === resources){
+			this.parent.removeResource(this,dontSave);
 		}
 	},
 
 	save: function(cb){
-		resources.saveResource(this.id,cb);
+		resources.saveResource(this,cb);
 	},
 	delete: function(cb){
 		resources.deleteResource(this.id,cb);

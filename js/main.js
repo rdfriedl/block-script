@@ -2,16 +2,6 @@ var renderer, settingsDB;
 var clock = new THREE.Clock();
 
 function initDB(cb){
-	//set up map settingsDB
-	settingsDB = new Dexie('block-script-settings');
-	settingsDB.version(1.4)
-		.stores({
-			map: 'id,parent',
-			script: 'id,parent',
-			room: 'id,parent',
-			block: 'id,parent'
-		});
-
 	settingsDB.open().finally(function(){
 		console.log('opened db')
 		if(cb) cb();
@@ -23,10 +13,11 @@ function initDB(cb){
 }
 
 $(document).ready(function() {
-	Messenger({
+	Messenger.options = {
 		maxMessages: 4,
-		extraClasses: 'messenger-fixed messenger-on-left messenger-on-top'
-	});
+    	extraClasses: 'messenger-fixed messenger-on-bottom messenger-on-right',
+    	theme: 'flat'
+	};
 
 	if(!Detector.webgl){
 		Detector.addGetWebGLMessage();
@@ -47,6 +38,7 @@ $(document).ready(function() {
 	initDB(function(){
 		resources.init(function(){
 			blocks.init(function(){
+				addDefaultResources();
 				states.init();
 
 				//start loop

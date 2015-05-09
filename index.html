@@ -10,7 +10,7 @@
 		<link rel="stylesheet" href="css/font-awesome.min.css">
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/messenger/1.4.0/css/messenger.css">
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/messenger/1.4.0/css/messenger-spinner.css">
-		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/messenger/1.4.0/css/messenger-theme-future.css">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/messenger/1.4.0/css/messenger-theme-flat.css">
 		<link rel="stylesheet" type="text/css" href="style.css">
 		
 		<script src="https://code.jquery.com/jquery-2.1.3.min.js" defer></script>
@@ -23,7 +23,7 @@
 		<script src="https://code.createjs.com/soundjs-0.6.0.min.js" defer></script>
 		<script src="js/lib/keypress-2.1.0.min.js" defer></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/messenger/1.4.0/js/messenger.min.js" defer></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/messenger/1.4.0/js/messenger-theme-future.js" defer></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/messenger/1.4.0/js/messenger-theme-flat.js" defer></script>
 		
 		<script src="js/lib/threejs/controls/PointerLockControls.js" defer></script>
 		<script src="js/lib/threejs/ImprovedNoise.js" defer></script>
@@ -43,6 +43,7 @@
 		<script src="js/voxelMap.js" defer></script>
 		<script src="js/chunk.js" defer></script>
 		<script src="js/keyboard.js" defer></script>
+		<script src="js/selectBlocks.js" defer></script>
 
 		<!-- resources -->
 		<script src="js/resources.js" defer></script>
@@ -66,6 +67,7 @@
 		<script src="js/chunkGenerator.js" defer></script>
 
 		<script src="js/sound.js" defer></script>
+		<script src="js/dataBaseVersions.js" defer></script>
 		<script src="js/main.js" defer></script>
 		<script>
 		  	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -99,7 +101,7 @@
 							Block-Script
 						</h1>
 					</div>
-					<div class="col-xs-4 col-xs-offset-4">
+					<div class="col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3 col-lg-4 col-lg-offset-4">
 						<button type="button" class="btn btn-lg btn-block btn-success" data-bind="click: $root.set($root.menu,'maps')"><i class="fa fa-gamepad"></i> Play</button>
 						<button type="button" class="btn btn-lg btn-block btn-default" data-bind="click: $root.set($root.menu,'help')"><i class="fa fa-question"></i> Help</button>
 						<button type="button" class="btn btn-lg btn-block btn-default" data-bind="click: $root.set($root.menu,'settings')"><i class="fa fa-cogs"></i> Settings</button>
@@ -289,7 +291,7 @@
 						<div class="page-header">
 						  	<center><h1>Block Script</h1></center>
 						</div>
-						<center><h4>Created by: <a href="https://github.com/rdfriedl" target="_blank">rdfriedl</a></h4></center>
+						<center><h4>Created by: <a href="https://rdfriedl.github.io/" target="_blank">rdfriedl</a></h4></center>
 					</div>
 				</div>
 
@@ -425,7 +427,7 @@
 			<div id="game">
 				<div class="menus">
 					<div class="esc" data-bind="visible: menu() == 'esc', with: esc">
-						<div class="col-xs-4 col-xs-offset-4">
+						<div class="col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3 col-lg-4 col-lg-offset-4">
 							<button type="button" class="btn btn-lg btn-default btn-block" data-bind="click: back"><i class="fa fa-chevron-left"></i> Back To Game <i class="fa fa-chevron-right"></i></button>
 							<button type="button" class="btn btn-lg btn-default btn-block" data-bind="click: fullscreen"><i class="fa fa-desktop"></i> FullScreen</button>
 							<button type="button" class="btn btn-lg btn-default btn-block" data-bind="click: menu"><i class="fa fa-bars"></i> Menu</button>
@@ -456,7 +458,7 @@
 				</div>
 			</div>
 			<div id="room-editor">
-				<nav class="navbar navbar-default" data-bind="with: toolbar">
+				<nav class="navbar navbar-default no-select" data-bind="with: toolbar">
 				  	<div class="container-fluid">
 				  	  	<!-- Brand and toggle get grouped for better mobile display -->
 				  	  	<div class="navbar-header">
@@ -497,10 +499,24 @@
 				  	  	  	  	  	  	<li><a href="#">Manage Resources</a></li>
 				  	  	  	  	  	</ul>
 				  	  	  	  	</li>
+				  	  	  	  	<li data-bind="css: {'active': $root.tool() == 'blocks'}, click: $root.set($root.tool,'blocks')" title="blocks">
+				  	  	  	  	  	<a href="#"><i class="fa fa-cube"></i></a>
+				  	  	  	  	</li>
+				  	  	  	  	<li data-bind="css: {'active': $root.tool() == 'objects'}, click: $root.set($root.tool,'objects')" title="objects">
+				  	  	  	  	  	<a href="#"><i class="fa fa-square"></i></a>
+				  	  	  	  	</li>
 				  	  	  	</ul>
 				  	  	</div>
 				  	</div>
 				</nav>
+				<div id="block-selection" class="panel panel-default side-panel">
+					<div class="panel-heading">
+					   Blocks
+					</div>
+					<div class="panel-body">
+					   Basic panel example
+					</div>
+				</div>
 			</div>
 			<div id="script-editor">
 				

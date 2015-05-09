@@ -41,7 +41,7 @@ states = {
 			ko.applyBindings(state.modal,state.container.get(0));
 
 			//tell the state its ko is loaded
-			state.events.emit('loaded');
+			state.events.emit('load');
 		};
 		this.disableAllStates(true);
 	},

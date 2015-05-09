@@ -29,7 +29,6 @@ function Player(state,camera){
 	this.scene.add(this.selectionObject);
 
 	//movement events
-	// $(document).keydown(this.keydown.bind(this)).keyup(this.keyup.bind(this));
 	this.setUpKeys();
 	$(document).mousedown(function(event){
 		if(!this.enabled) return;
@@ -84,78 +83,6 @@ Player.prototype = {
 		box: new THREE.Box3(new THREE.Vector3(-10,-50,-10), new THREE.Vector3(10,8,10)),
 		group: 'player'
 	}),
-	keydown: function(event){
-		switch ( event.keyCode ) {
-			case 38: // up
-			case 87: // w
-				this.movement.up = true;
-				break;
-
-			case 37: // left
-			case 65: // a
-				this.movement.left = true;
-				break;
-
-			case 40: // down
-			case 83: // s
-				this.movement.down = true;
-				break;
-
-			case 39: // right
-			case 68: // d
-				this.movement.right = true;
-				break;
-
-			case 32: // space
-			case 96:
-				this.movement.jump = true;
-				break;
-
-			case 18: // ctrl
-				this.movement.crouch = true;
-				break;
-
-			case 16: // shift
-				this.movement.sprint = true;
-				break;
-		}
-	},
-	keyup: function(event){
-		switch ( event.keyCode ) {
-			case 38: // up
-			case 87: // w
-				this.movement.up = false;
-				break;
-
-			case 37: // left
-			case 65: // a
-				this.movement.left = false;
-				break;
-
-			case 40: // down
-			case 83: // s
-				this.movement.down = false;
-				break;
-
-			case 39: // right
-			case 68: // d
-				this.movement.right = false;
-				break;
-
-			case 32: // space
-			case 96:
-				this.movement.jump = false;
-				break;
-
-			case 18: // ctrl
-				this.movement.crouch = false;
-				break;
-
-			case 16: // shift
-				this.movement.sprint = false;
-				break;
-		}
-	},
 	setUpKeys: function(){
 		this.state.keypress.register_many([
 			//up
@@ -434,8 +361,7 @@ Player.prototype = {
 	            delete n, box; //since this is a loop delete stuff to help the garbage collector
 
 				this.selectionObject.visible = true;
-				this.selectionObject.position.copy(this.selection.block.worldPosition).multiplyScalar(game.blockSize);
-				this.selectionObject.position.add(new THREE.Vector3(0.5,0.5,0.5).multiplyScalar(game.blockSize));
+				this.selectionObject.position.copy(this.selection.block.sceneCenter);
 				this.selectionObject.scale.copy(new THREE.Vector3(1,1,1).multiplyScalar(game.blockSize + 0.1))
 				return;
 			};

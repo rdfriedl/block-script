@@ -12,9 +12,12 @@ roomEditor = {
 	events: new Events(),
 	scene: undefined,
 	camera: undefined,
-	controls: undefined,
 	loadedRoom: undefined,
 	voxelMap: undefined,
+	// tools
+	tools: [],
+	controls: undefined,
+	voxelMapEditor: undefined,
 	init: function(){
 		//set up state
 		this.container = $('#room-editor');
@@ -25,10 +28,29 @@ roomEditor = {
 
 		this.controls = new THREE.OrbitControls(this.camera, this.container.get(0), renderer.domElement);
 		this.controls.damping = 0.2;
+		// this.tools.push({
+		// 	id: 'pan',
+		// 	object: this.controls
+		// });
+
+		this.voxelMapEditor = new SelectBlocks(this);
+		this.tools.push({
+			id: 'blocks',
+			object: this.voxelMapEditor
+		});
 		
 		this.setUpScene();
 
 		this.voxelMap = new VoxelMap(this,{});
+
+		$(window).resize(function(event) {
+			this.camera.aspect = window.innerWidth / window.innerHeight;
+			this.camera.updateProjectionMatrix();
+		}.bind(this));
+
+		this.events.once('load',function(){
+			this.modal.tool('blocks');
+		}.bind(this))
 	},
 	setUpScene: function(){
 		light = new THREE.DirectionalLight( 0xffffff );
@@ -66,7 +88,9 @@ roomEditor = {
 		this.render(dtime);
 	},
 	animate: function(dtime){
-		this.controls.update();
+		for (var i = 0; i < this.tools.length; i++) {
+			this.tools[i].object.update(dtime);
+		};
 	},
 	render: function(dtime){
 		renderer.setClearColor(0x2b3e50, 1);
@@ -93,6 +117,17 @@ roomEditor = {
 
 	modal: {
 		back: 'menu',
+		tool: observable('none',function(val){
+			var self = roomEditor;
+			for (var i = 0; i < self.tools.length; i++) {
+				if(self.tools[i].id == val){
+					self.tools[i].object.enabled = true;
+				}
+				else{
+					self.tools[i].object.enabled = false;
+				}
+			}
+		}),
 		toolbar: {
 			goBack: function(){
 				var self = roomEditor.modal;
@@ -110,6 +145,7 @@ roomEditor = {
 states.addState('roomEditor',roomEditor);
 
 //create the keypress object
+var lastTool;
 roomEditor.keypress = keyboard.createState([
 	{
 		keys: 'meta s',

@@ -1,4 +1,10 @@
 (function(){
+	Folder = Resource.extend(function Folder(){
+		Resource.prototype.constructor.apply(this,arguments);
+	},{
+
+	}).add()
+
 	Map = Resource.extend(function Map(){
 		Resource.prototype.constructor.apply(this,arguments);
 
@@ -50,19 +56,19 @@
 
 			this.mapLoader.inportData(json.chunks,cb,progress);
 		}
-	}).add('maps')
+	}).add()
 
 	Script = Resource.extend(function Script(){
 		Resource.prototype.constructor.apply(this,arguments);
 	},{
 
-	}).add('scripts')
+	}).add()
 
 	Block = Resource.extend(function Block(){
 		Resource.prototype.constructor.apply(this,arguments);
 	},{
 
-	}).add('blocks')
+	}).add()
 
 	Room = Resource.extend(function Room(){
 		Resource.prototype.constructor.apply(this,arguments);
@@ -99,5 +105,5 @@
 
 			this.mapLoader.inportData(json.chunks,cb,progress);
 		}
-	}).add('rooms')
+	}).add()
 })()

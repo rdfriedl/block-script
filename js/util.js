@@ -1,3 +1,12 @@
+function observable(val, cb) {
+	o = ko.observable(val);
+	o.subscribe(cb, o);
+	return o;
+}
+function namedFunction(name, fn) {
+    return (new Function("return function (call) { return function " + name +
+        " () { return call(this, arguments) }; };")())(Function.apply.bind(fn));
+}
 function positionToIndex(position,size){
 	if(size instanceof THREE.Vector3){
 		return (position.z*size.x*size.y)+(position.y*size.x)+position.x;

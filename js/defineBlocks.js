@@ -1,9 +1,9 @@
 (function(){
 
 //dirt
-var Dirt = CollisionBlock.extend(function Dirt(){
+var Dirt = CollisionBlock.extend(namedFunction('Dirt',function(){
 	CollisionBlock.prototype.constructor.apply(this,arguments);
-},{
+}),{
 	inventoryTab: 'default',
 	material: blocks.util.basicMaterial('dirt.png'),
 	removeSound: ['digGravel1','digGravel2','digGravel3','digGravel4'],
@@ -537,3 +537,24 @@ var MushroomBrown = Mushroom.extend(function MushroomBrown(){
 
 
 })();
+
+function addDefaultResources(){
+	var folder = resources.defineResource('folder',{
+		name: 'default'
+	});
+
+	//blocks
+	var blocksFolder = folder.defineResource('folder',{
+		name: 'blocks'
+	});
+
+	blocksFolder.defineResource('block',{
+		name: 'Stone'
+	})
+
+	blocksFolder.defineResource('block',{
+		name: 'Glass'
+	})
+
+	//rooms
+}

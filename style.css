@@ -2,6 +2,12 @@ body {
 	overflow: hidden;
 	display: none;
 }
+.no-select{
+	user-select: none;
+	-ms-user-select: none;
+	-moz-user-select: none;
+	-webkit-user-select: none;
+}
 
 /*states*/
 #states{
@@ -109,6 +115,21 @@ body {
 	position: absolute;
 	top: 10px;
 	left: 10px;
+}
+
+/*roomEditor*/
+#room-editor .side-panel{
+	position: absolute;
+	left: 100%;
+	top: 0px;
+	bottom: 0px;
+	width: 20%;
+	margin: 40px 0 0 0;
+	transition: all 0.2s;
+}
+#room-editor .side-panel.out{
+	right: 0px;
+	left: auto;
 }
 
 /*cube*/
