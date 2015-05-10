@@ -134,6 +134,10 @@ Chunk.prototype = {
     dispose: function(){
         if(this.mesh) this.mesh.geometry.dispose();
         this.map.group.remove(this.group);
+        //remove all my blocks
+        for (var i = 0; i < this.blocks.length; i++) {
+            this.blocks[i].dispose();
+        };
     },
     getNeighbor: function(v){
         if(_.isArray(v)) v = new THREE.Vector3().fromArray(v);

@@ -1,5 +1,6 @@
 var renderer, settingsDB;
 var clock = new THREE.Clock();
+var blockCache = {};
 
 function initDB(cb){
 	settingsDB.open().finally(function(){

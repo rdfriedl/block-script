@@ -548,12 +548,19 @@ function addDefaultResources(){
 		name: 'blocks'
 	});
 
-	blocksFolder.defineResource('block',{
-		name: 'Stone'
+	var air = blocksFolder.defineResource('block',{
+		name: 'Air',
+		blockID: 'air',
 	})
 
-	blocksFolder.defineResource('block',{
-		name: 'Glass'
+	var stone = blocksFolder.defineResource('block',{
+		name: 'Stone',
+		blockID: 'stone'
+	})
+
+	var glass = blocksFolder.defineResource('block',{
+		name: 'Glass',
+		blockID: 'glass'
 	})
 
 	//rooms

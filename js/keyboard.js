@@ -4,6 +4,7 @@ keyboard = {
 	activeState: undefined,
 
 	addState: function(listener,name){
+		listener.stop_listening();
 		this.states.push({
 			listener: listener,
 			name: name,

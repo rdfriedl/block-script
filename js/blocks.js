@@ -8,7 +8,7 @@ blocks = {
 	init: function(cb){
 		done = _.after(2,function(){
 			for(var i in this.blocks){ //going to have to create a function that loops through the blocks and loads them
-				this.blocks[i].prototype.onload();
+				this.blocks[i].prototype.onLoad();
 			}
 
 			if(cb) cb();
@@ -115,6 +115,10 @@ blocks = {
 			return;
 		}
 		this.blocks[id.toLowerCase()] = block;
+	},
+	updateBlock: function(id,block){
+		this.blocks[id] = block;
+		return this;
 	},
 	removeBlock: function(block){
 		if(typeof block == 'string') block = this.getBlock(block);
@@ -247,6 +251,13 @@ blocks = {
 				mat.wireframe = !mat.wireframe;
 			}
 		}
+	},
+
+	loadBlocks: function(){
+		var a = resources.searchResources({},true,'block');
+		for (var i = 0; i < a.length; i++) {
+			a[i].compileClass();
+		};
 	}
 }
 
@@ -259,12 +270,15 @@ var Block = function(position,data,chunk){
 Block.prototype = {
 	chunk: undefined,
 	position: new THREE.Vector3(0,0,0),
-	visible: true,
-	inventoryTab: '',
-	inventoryImage: '',
+	transparent: false,
+	collision: false,
+	collisionEntity: undefined,
 	placeSound: [],
 	removeSound: [],
 	stepSound: [],
+
+	inventoryTab: '',
+	inventoryImage: '',
 
 	inportData: function(data){
 		//nothing for now
@@ -319,13 +333,16 @@ Block.prototype = {
 	},
 
 	//events
-	onload: function(){
+	onCreate: function(){
 
 	},
-	onplace: function(){
+	onLoad: function(){
 
 	},
-	onremove: function(){
+	onPlace: function(){
+
+	},
+	onRemove: function(){
 
 	}
 }

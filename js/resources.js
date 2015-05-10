@@ -20,6 +20,7 @@ resources = {
 			return;
 		}
 		this.resourceTypes[resource.type] = resource;
+		this[resource.name] = resource;
 	},
 	extend: function(init,proto,extend){
 		extend = extend || Resource;
@@ -160,6 +161,34 @@ resources = {
 			}
 		};
 	},
+	searchResources: function(data,children,type){
+		var results = [];
+		for (var i in this.resources) {
+			if(type){
+				var r = resources.getResourceType(type)
+				if(_.isObject(r)){
+					if(this.resources[i] instanceof r){
+						results.push(this.resources[i]);
+					}
+				}
+			}
+			for (var k in this.resources[i].data) {
+				if(this.resources[i].data[k] == data[k]){
+					results.push(this.resources[i]);
+				}
+			};
+			
+			if(children){
+				var r = this.resources[i].searchResources(data,children,type);
+				if(r){
+					for (var i = 0; i < r.length; i++) {
+						results.push(r[i]);
+					};
+				};
+			}
+		};
+		return results;
+	},
 	addResource: function(resource,dontSave){
 		if(!resource instanceof Resource) return this;
 		resource.remove(dontSave);
@@ -204,7 +233,7 @@ resources = {
 	defineResource: function(type,data,parent){
 		var r = this.findResource(data,true);
 		if(r){
-			//maybe inport data here?
+			r.inportData(data);
 			return r;
 		}
 		else{
@@ -255,6 +284,8 @@ Resource.prototype = {
 	id: 0,
 	parent: undefined,
 	data: {
+		visible: true,
+		locked: false,
 		createDate: undefined,
 		name: ''
 	},
@@ -304,6 +335,34 @@ Resource.prototype = {
 			}
 		};
 	},
+	searchResources: function(data,children,type){
+		var results = [];
+		for (var i in this.children) {
+			if(type){
+				var r = resources.getResourceType(type)
+				if(_.isObject(r)){
+					if(this.children[i] instanceof r){
+						results.push(this.children[i]);
+					}
+				}
+			}
+			for (var k in this.children[i].data) {
+				if(this.children[i].data[k] == data[k]){
+					results.push(this.children[i]);
+				}
+			};
+			
+			if(children){
+				var r = this.children[i].searchResources(data,children,type);
+				if(r){
+					for (var i = 0; i < r.length; i++) {
+						results.push(r[i]);
+					};
+				};
+			}
+		};
+		return results;
+	},
 	addResource: function(resource,dontSave){
 		if(!resource instanceof Resource) return this;
 		resource.remove(dontSave);
@@ -346,7 +405,7 @@ Resource.prototype = {
 	defineResource: function(type,data,parent){
 		var r = this.findResource(data,true);
 		if(r){
-			//maybe inport data here?
+			r.inportData(data);
 			return r;
 		}
 		else{
@@ -389,6 +448,7 @@ Resource.extend = function(init,proto){
 	init.prototype = proto || init.prototype;
 	init.prototype.__proto__ = this.prototype;
 	init.prototype.constructor = init;
+	if(init.prototype.data !== this.prototype.data) init.prototype.data.__proto__ = this.prototype.data;
 
 	init.extend = this.extend;
 	init.add = this.add;

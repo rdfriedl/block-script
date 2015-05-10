@@ -67,7 +67,56 @@
 	Block = Resource.extend(function Block(){
 		Resource.prototype.constructor.apply(this,arguments);
 	},{
+		data: {
+			blockID: '', //id of this block, its used in creating the class
+			extend: '', //id of another block resource that this one extends
+			blockData: { //no functions
+				stepSound: [],
+				removeSound: [],
+				placeSound: []
+			}
+		},
+		compileClass: function(refreshCache){ //returns a javascript constructor for this block
+			if(this.data.blockID == '') return;
 
+			if(!blockCache[this.data.blockID] /*!blocks.getBlock(this.data.blockID)*/ || refreshCache){
+				//build class
+				var block = namedFunction(this.data.blockID,function(position,data,chunk){
+					this.position = position || new THREE.Vector3();
+					this.chunk = chunk;
+
+					this.inportData(data);
+					this.onCreate();
+				});
+
+				if(this.data.extend){
+					var r = resources.getResource(this.data.extend,true);
+					if(r instanceof resources.Block){
+						var parentBlock = r.compileClass();
+						var diff = fn.getDiff(parentBlock.prototype,this.data.blockData);
+						block.prototype = fn.buildDiff(diff);
+						block.prototype.__proto__ = parentBlock.prototype;
+					}
+				}
+
+				if(_.isEmpty(block.prototype)){
+					var diff = fn.getDiff(Block.prototype,this.data.blockData);
+					block.prototype = fn.buildDiff(diff);
+					block.prototype.__proto__ = Block.prototype;
+				}
+
+				block.prototype.constructor = block;
+
+				// blocks.updateBlock(this.data.blockID,block);
+				blockCache[this.data.blockID] = block;
+			}
+
+			// return blocks.getBlock(this.data.blockID);
+			return blockCache[this.data.blockID];
+		},
+		buildMesh: function(){ //returns a mesh that is the block
+			
+		}
 	}).add()
 
 	Room = Resource.extend(function Room(){
