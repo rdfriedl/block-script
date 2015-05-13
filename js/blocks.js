@@ -1,20 +1,22 @@
 var missingErrors = {};
 blocks = {
 	blocks: {},
+	shapes: {},
+	materials: {},
 	textureFolder: 'res/img/blocks/',
 	modalFolder: 'res/modals/',
 	nullMaterial: new THREE.MeshNormalMaterial(),
 	blockMaterial: undefined,
 	init: function(cb){
-		done = _.after(2,function(){
+		done = _.after(1,function(){
 			for(var i in this.blocks){ //going to have to create a function that loops through the blocks and loads them
 				this.blocks[i].prototype.onLoad();
 			}
 
 			if(cb) cb();
 		}.bind(this));
+		this.compileBlocks();
 		this.loadTextures(done);
-		this.loadModals(done);
 	},
 	loadTextures: function(cb){
 		var materials = [
@@ -24,7 +26,8 @@ blocks = {
 		for (var i in this.blocks) {
 			var block = this.blocks[i].prototype;
 
-			if(!(block instanceof SolidBlock)) continue;
+			// if(!(block instanceof SolidBlock)) continue;
+			if(!block.visible) continue;
 
 			if(_.isArray(block.material)){
 				for (var k = 0; k < 3; k++) {
@@ -100,7 +103,11 @@ blocks = {
 		else if(!missingErrors[id]){
 			missingErrors[id] = true;
 			console.error('missing block: '+id);
-			return this.createBlock('air',position,data,chunk);
+			//return a blank block with the id
+			var block = new Block(position,data,chunk);
+			block.id = id;
+			block.visible = false;
+			return block;
 		}
 	},
 
@@ -253,7 +260,7 @@ blocks = {
 		}
 	},
 
-	loadBlocks: function(){
+	compileBlocks: function(){
 		var a = resources.searchResources({},true,'block');
 		for (var i = 0; i < a.length; i++) {
 			a[i].compileClass();
@@ -261,24 +268,24 @@ blocks = {
 	}
 }
 
-var Block = function(position,data,chunk){
+function Block(position,data,chunk){
 	this.position = position || new THREE.Vector3();
 	this.chunk = chunk;
 
 	this.inportData(data);
 }
 Block.prototype = {
+	id: '', //blockID
 	chunk: undefined,
 	position: new THREE.Vector3(0,0,0),
+	visible: true,
 	transparent: false,
-	collision: false,
-	collisionEntity: undefined,
+	canCollide: false,
+	collider: undefined,
+	material: undefined,
 	placeSound: [],
 	removeSound: [],
 	stepSound: [],
-
-	inventoryTab: '',
-	inventoryImage: '',
 
 	inportData: function(data){
 		//nothing for now
@@ -347,6 +354,13 @@ Block.prototype = {
 	}
 }
 Object.defineProperties(Block.prototype,{
+	collisionEntity: {
+		get: function(){
+			var col = this.collider;
+			col.position.copy(this.worldPosition.multiplyScalar(game.blockSize));
+			return col;
+		}
+	},
 	worldPosition: {
 		get: function(){
 			return (this.chunk)? this.chunk.position.clone().multiplyScalar(game.chunkSize).add(this.position) : new THREE.Vector3();
@@ -377,11 +391,6 @@ Object.defineProperties(Block.prototype,{
 					);
 			}
 			return new THREE.Vector3();
-		}
-	},
-	super: {
-		get: function(){
-			return (this.__proto__ === {}.__proto__)? this.__proto__ : this.__proto__.__proto__;
 		}
 	}
 })

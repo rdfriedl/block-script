@@ -1,6 +1,6 @@
 var renderer, settingsDB;
 var clock = new THREE.Clock();
-var blockCache = {};
+var materialLoader = new THREE.MaterialLoader();
 
 function initDB(cb){
 	settingsDB.open().finally(function(){
@@ -38,8 +38,9 @@ $(document).ready(function() {
 
 	initDB(function(){
 		resources.init(function(){
+			addDefaultResources();
 			blocks.init(function(){
-				addDefaultResources();
+				// blocks.compileBlocks();
 				states.init();
 
 				//start loop
@@ -91,6 +92,10 @@ $(document).ready(function() {
 
 	$(window).focus(function(){
 		clock.getDelta();
+	})
+
+	$(window).on('error',function(event){
+		console.log(event)
 	})
 });
 

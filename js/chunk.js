@@ -42,7 +42,7 @@ Chunk.prototype = {
         var block = blocks.createBlock(data.id,position,data,this);
         this.blocks[pos] = block;
 
-        if(!dontBuild && block instanceof SolidBlock){
+        if(!dontBuild){
             this.build()
         }
 
@@ -358,14 +358,14 @@ function CulledMesh(blocks) {
 
             if(!(block instanceof Block && otherBlock instanceof Block)) continue;
 
-            if((block instanceof SolidBlock) !== (otherBlock instanceof SolidBlock) || block.transparent !== otherBlock.transparent) {
+            if(block.visible !== otherBlock.visible || block.transparent !== otherBlock.transparent) {
                 var pos = block.position.clone();
 
                 //find the side
-                var side = (block instanceof SolidBlock)? 0 : 1; //0 out | 1 in
+                var side = (block.visible)? 0 : 1; //0 out | 1 in
 
                 //check for transparent blocks
-                if(block instanceof SolidBlock && otherBlock instanceof SolidBlock){
+                if(block.visible && otherBlock.visible){
                     side = (block.transparent)? 1 : 0;
                 }
 

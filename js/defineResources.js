@@ -70,16 +70,13 @@
 		data: {
 			blockID: '', //id of this block, its used in creating the class
 			extend: '', //id of another block resource that this one extends
-			blockData: { //no functions
-				stepSound: [],
-				removeSound: [],
-				placeSound: []
+			blockData: { //data that gose into the block class
 			}
 		},
 		compileClass: function(refreshCache){ //returns a javascript constructor for this block
 			if(this.data.blockID == '') return;
 
-			if(!blockCache[this.data.blockID] /*!blocks.getBlock(this.data.blockID)*/ || refreshCache){
+			if(!blocks.getBlock(this.data.blockID) || refreshCache){
 				//build class
 				var block = namedFunction(this.data.blockID,function(position,data,chunk){
 					this.position = position || new THREE.Vector3();
@@ -105,14 +102,23 @@
 					block.prototype.__proto__ = Block.prototype;
 				}
 
+				block.prototype.id = this.data.blockID;
 				block.prototype.constructor = block;
 
-				// blocks.updateBlock(this.data.blockID,block);
-				blockCache[this.data.blockID] = block;
+				//parse material
+				if(block.prototype.material){
+					block.prototype.material = materialLoader.parse(block.prototype.material);
+
+					block.prototype.collider = new CollisionEntity({
+						box: new THREE.Box3(new THREE.Vector3(0,0,0), new THREE.Vector3(game.blockSize,game.blockSize,game.blockSize)),
+						group: 'block'
+					})
+				}
+
+				blocks.updateBlock(this.data.blockID,block);
 			}
 
-			// return blocks.getBlock(this.data.blockID);
-			return blockCache[this.data.blockID];
+			return blocks.getBlock(this.data.blockID);
 		},
 		buildMesh: function(){ //returns a mesh that is the block
 			

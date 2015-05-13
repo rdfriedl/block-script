@@ -393,11 +393,10 @@ game = {
 			}),
 			blocks: [],
 			update: function(){
-				var a = [];
-				game.modal.blocks.blocks([]);
-				for (var i in blocks.blocks) {
-					var block = blocks.blocks[i];
-					if(block.prototype.inventoryTab == '') continue;
+				var b = [];
+				var a = resources.searchResources({},true,'block');
+				for (var i = 0; i < a.length; i++) {
+					var block = a[i].compileClass();
 
 					if(_.isArray(block.prototype.material)){
 						//build list of urls for sides of blocks
@@ -415,21 +414,14 @@ game = {
 								}
 							};
 						};
-						a.push({
+						b.push({
 							name: block.name.toLowerCase(),
 							type: 'block',
 							material: mat
 						})
 					}
-					else{
-						a.push({
-							name: block.name.toLowerCase(),
-							type: 'flat',
-							material: block.prototype.inventoryImage
-						})
-					}
 				};
-				game.modal.blocks.blocks(a);
+				game.modal.blocks.blocks(b);
 			}
 		}
 	}

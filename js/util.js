@@ -98,3 +98,52 @@ THREE.Object3D.prototype.getTextureByProperty = function(a, b) {
             return e
     }
 }
+//export maps on materials
+THREE.Material.prototype._toJSON = THREE.Material.prototype.toJSON;
+THREE.Material.prototype.toJSON = function(){
+	var output = THREE.Material.prototype._toJSON.apply(this);
+	if(this.map) output.map = this.map.toJSON();
+	if(this.lightMap) output.lightMap = this.lightMap.toJSON();
+	if(this.specularMap) output.specularMap = this.specularMap.toJSON();
+	if(this.alphaMap) output.alphaMap = this.alphaMap.toJSON();
+	if(this.envMap) output.envMap = this.envMap.toJSON();
+	return output;
+}
+//inport materials with maps
+THREE.MaterialLoader.prototype._parse = THREE.MaterialLoader.prototype.parse;
+THREE.MaterialLoader.prototype.parse = function(a) {
+	var b = THREE.MaterialLoader.prototype._parse.apply(this,arguments);
+   	//texture
+   	if(a.map) b.map = THREE.Texture.fromJSON(a.map);
+	if(a.lightMap) b.lightMap = THREE.Texture.fromJSON(a.lightMap);
+	if(a.specularMap) b.specularMap = THREE.Texture.fromJSON(a.specularMap);
+	if(a.alphaMap) b.alphaMap = THREE.Texture.fromJSON(a.alphaMap);
+	if(a.envMap) b.envMap = THREE.Texture.fromJSON(a.envMap);
+    return b
+}
+THREE.Texture.prototype.toJSON = function(){
+	var output = {};
+
+	output.sourceFile = this.sourceFile;
+	if(this.mapping !== THREE.UVMapping) output.mapping = this.mapping;
+	if(this.warpS !== THREE.ClampToEdgeWrapping) output.warpS = this.warpS;
+	if(this.warpT !== THREE.ClampToEdgeWrapping) output.warpT = this.warpT;
+	if(this.magFilter !== THREE.LinearMipMapLinearFilter) output.magFilter = this.magFilter;
+	if(this.minFilter !== THREE.LinearMipMapLinearFilter) output.minFilter = this.minFilter;
+	if(this.format !== THREE.RGBAFormat) output.format = this.format;
+	if(this.type !== THREE.UnsignedByteType) output.type = this.type;
+	if(this.anisotropy !== 1) output.anisotropy = this.anisotropy;
+	//repeat
+	//offset
+	if(this.name !== '') output.name = this.name;
+	if(this.generateMipmaps !== true) output.generateMipmaps = this.generateMipmaps;
+	if(this.flipY !== true) output.flipY = this.flipY;
+	return output;
+}
+THREE.Texture.fromJSON = function(data){
+	var tex = THREE.ImageUtils.loadTexture(data.sourceFile);
+	for (var i in data) {
+		tex[i] = data[i];
+	};
+	return tex;
+}

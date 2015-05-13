@@ -14,7 +14,6 @@ menu = {
 	events: new Events(),
 	scene: undefined,
 	camera: undefined,
-	map: undefined,
 	mouse: {
 		x: 0,
 		y: 0

@@ -9,7 +9,7 @@ function Player(state,camera){
 	this.controls.enabled = false;
 	this.object = this.controls.getObject();
 	this.velocity = this.velocity.clone();
-	this.collision = this.collision.clone();
+	this.collisionEntity = this.collisionEntity.clone();
 	this.movement = Object.create(this.movement);
 	this.movement.velocity = new THREE.Vector3();
 	this.selection = Object.create(this.selection);
@@ -79,7 +79,7 @@ Player.prototype = {
 		removeBlock: 'air'
 	},
 	velocity: new THREE.Vector3(),
-	collision: new CollisionEntity({
+	collisionEntity: new CollisionEntity({
 		box: new THREE.Box3(new THREE.Vector3(-10,-50,-10), new THREE.Vector3(10,8,10)),
 		group: 'player'
 	}),
@@ -288,7 +288,7 @@ Player.prototype = {
 				this.movement.viewBobbingDir = -this.movement.viewBobbingDir;
 
 				//play step sound
-				var v = new THREE.Vector3(this.position.x,this.collision.y1,this.position.z).divideScalar(game.blockSize).floor();
+				var v = new THREE.Vector3(this.position.x,this.collisionEntity.y1,this.position.z).divideScalar(game.blockSize).floor();
 				v.y--;
 				var block = this.state.voxelMap.getBlock(v);
 				if(block){
@@ -310,7 +310,7 @@ Player.prototype = {
 			this.position.x += this.velocity.x * col.entryTime;
 			this.position.y += this.velocity.y * col.entryTime;
 			this.position.z += this.velocity.z * col.entryTime;
-			this.collision.position.copy(this.position);
+			this.collisionEntity.position.copy(this.position);
 			this.velocity.x = (col.normal.x !== 0)? 0 : this.velocity.x - (this.velocity.x * col.entryTime);
 			this.velocity.y = (col.normal.y !== 0)? 0 : this.velocity.y - (this.velocity.y * col.entryTime);
 			this.velocity.z = (col.normal.z !== 0)? 0 : this.velocity.z - (this.velocity.z * col.entryTime);
@@ -375,7 +375,7 @@ Player.prototype = {
 	placeBlock: function(){
 		if(this.selection.block){
 			block = this.selection.block.getNeighbor(this.selection.normal);
-			if(block && block instanceof blocks.getBlock('air')){
+			if(block){
 				var newBlock = block.replace(this.selection.placeBlock);
 				block.chunk.saved = false;
 				//play sound

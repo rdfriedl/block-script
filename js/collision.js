@@ -103,8 +103,8 @@ collisions = {
 		block: []
 	},
     checkCollision: function(a,b, velocity){
-        if(typeof a == "object" && !(a instanceof CollisionEntity)) a = a.collision;
-        if(typeof b == "object" && !(b instanceof CollisionEntity)) b = b.collision;
+        if(typeof a == "object" && !(a instanceof CollisionEntity)) a = a.collisionEntity;
+        if(typeof b == "object" && !(b instanceof CollisionEntity)) b = b.collisionEntity;
         if(!a || !b) return false;
         velocity = velocity || new THREE.Vector3();
         a.position.add(velocity);
@@ -113,8 +113,8 @@ collisions = {
         return col;
     },
 	canCollide: function(a,b){
-        if(typeof a == "object" && !(a instanceof CollisionEntity)) a = a.collision;
-        if(typeof b == "object" && !(b instanceof CollisionEntity)) b = b.collision;
+        if(typeof a == "object" && !(a instanceof CollisionEntity)) a = a.collisionEntity;
+        if(typeof b == "object" && !(b instanceof CollisionEntity)) b = b.collisionEntity;
         if(!a || !b) return false;
 
 		if(this.groups[a.group]){
@@ -272,7 +272,7 @@ collisions = {
         for (var i = 1; i <= loops && done == false; i++) {
             var pos = a.position.clone().add(velocity.clone().divideScalar(loops).multiplyScalar(i));
             //check corners
-            var box = a.collision._box.clone().translate(pos);
+            var box = a.collisionEntity._box.clone().translate(pos);
             var corners = [];
 
             var v = [];
@@ -325,10 +325,10 @@ collisions = {
                 var block = map.getBlock(corners[k][1]);
                 if(!block) continue;
 
-                if(block instanceof CollisionBlock){
-                    if(collisions.canCollide(a.collision,block.collision)){
-                        if(collisions.checkCollision(a.collision,block.collision,velocity)){
-                            var a = collisions.SweptAABB(a.collision,block.collision,velocity);
+                if(block.canCollide){
+                    if(collisions.canCollide(a.collisionEntity,block.collisionEntity)){
+                        if(collisions.checkCollision(a.collisionEntity,block.collisionEntity,velocity)){
+                            var a = collisions.SweptAABB(a.collisionEntity,block.collisionEntity,velocity);
                             colInfo = a;
                             //had a collision so break out of the loop
                             done = true;
