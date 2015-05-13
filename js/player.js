@@ -376,11 +376,17 @@ Player.prototype = {
 		if(this.selection.block){
 			block = this.selection.block.getNeighbor(this.selection.normal);
 			if(block && block instanceof blocks.getBlock('air')){
-				var newBlock = block.replace(this.selection.placeBlock);
-				block.chunk.saved = false;
-				//play sound
-				if(newBlock.placeSound.length){
-					createjs.Sound.play(newBlock.placeSound[Math.floor(Math.random() * newBlock.placeSound.length)]);
+				var newBlock = block.replace(this.selection.placeBlock, true);
+				
+				if (collisions.checkCollision(this, newBlock)){
+					newBlock.replace('air');
+				} else {
+					newBlock = block.replace(this.selection.placeBlock, false);
+					block.chunk.saved = false;
+					//play sound
+					if(newBlock.placeSound.length){
+						createjs.Sound.play(newBlock.placeSound[Math.floor(Math.random() * newBlock.placeSound.length)]);
+					}
 				}
 			}
 		}
