@@ -67,7 +67,7 @@ Player.prototype = {
 		acceleration: 1,
 		drag: 0.2,
 
-		gravity: 0.3,
+		gravity: 0,//0.3,
 		onGround: false,
 		viewBobbing: 0,
 		viewBobbingDir: 1,
@@ -75,7 +75,10 @@ Player.prototype = {
 	selection: {
 		block: undefined,
 		normal: new THREE.Vector3(),
-		placeBlock: 'stone',
+		place: {
+			material: 'stone',
+			shape: 'cube'
+		},
 		removeBlock: 'air'
 	},
 	velocity: new THREE.Vector3(),
@@ -343,6 +346,8 @@ Player.prototype = {
 
 				var block = this.state.voxelMap.getBlock(pos);
 
+				if(!(block instanceof Block)) continue;
+
 				this.selection.block = block;
 				// this.selection.normal.copy(intersects[i].face.normal);
 				//get normal
@@ -374,33 +379,34 @@ Player.prototype = {
 	},
 	placeBlock: function(){
 		if(this.selection.block){
-			block = this.selection.block.getNeighbor(this.selection.normal);
+			var pos = this.selection.block.worldPosition.add(this.selection.normal);
 
-			if(block && block instanceof blocks.getBlock('air')){
-				var newBlock = block.replace(this.selection.placeBlock, true);
-				
-				if(collisions.checkCollision(this, newBlock)){
-					newBlock.replace('air');
-				}
-				else{
-					newBlock = block.replace(this.selection.placeBlock, false);
-					block.chunk.saved = false;
-					//play sound
-					if(newBlock.placeSound.length){
-						createjs.Sound.play(newBlock.placeSound[Math.floor(Math.random() * newBlock.placeSound.length)]);
+			if(!(this.state.voxelMap.getBlock(pos) instanceof Block)){
+				this.state.voxelMap.setBlock(pos,this.selection.place,function(block){
+					if(collisions.checkCollision(this, block)){
+						this.state.voxelMap.removeBlock(pos,undefined,true);
 					}
-				}
+					else{
+						block.chunk.saved = false;
+						block.chunk.build();
+						//play sound
+						if(block.data.placeSound.length){
+							createjs.Sound.play(block.data.placeSound[Math.floor(Math.random() * block.data.placeSound.length)]);
+						}
+					}
+				}.bind(this),true)
 			}
 		}
 	},
 	removeBlock: function(){
 		if(this.selection.block){
 			var block = this.selection.block;
-			block.replace(this.selection.removeBlock);
+			var pos = block.worldPosition;
+			this.state.voxelMap.removeBlock(pos);
 			block.chunk.saved = false;
 			//play sound
-			if(block.removeSound.length){
-				createjs.Sound.play(block.removeSound[Math.floor(Math.random() * block.removeSound.length)]);
+			if(block.data.removeSound.length){
+				createjs.Sound.play(block.data.removeSound[Math.floor(Math.random() * block.data.removeSound.length)]);
 			}
 		}
 	}

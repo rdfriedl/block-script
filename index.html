@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="en">
 	<head>
 		<title>Block-Script</title>
@@ -14,7 +13,6 @@
 		<link rel="stylesheet" type="text/css" href="style.css">
 		
 		<script src="https://code.jquery.com/jquery-2.1.3.min.js" defer></script>
-		<script src="js/lib/three.min.js" defer></script>
 		<script src="js/lib/knockout.js" defer></script>
 		<script src="js/lib/knockout-mapping.js" defer></script>
 		<script src="js/lib/underscore-min.js" defer></script>
@@ -25,13 +23,20 @@
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/messenger/1.4.0/js/messenger.min.js" defer></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/messenger/1.4.0/js/messenger-theme-flat.js" defer></script>
 		
+		<script src="js/lib/three.min.js" defer></script>
 		<script src="js/lib/threejs/controls/PointerLockControls.js" defer></script>
 		<script src="js/lib/threejs/ImprovedNoise.js" defer></script>
 		<script src="js/lib/perlin.js" defer></script>
 		<script src="js/lib/threejs/Detector.js" defer></script>
 		<script src="js/lib/threejs/libs/stats.min.js" defer></script>
-		<script src="js/lib/threejs/loaders/ColladaLoader.js" defer></script>
 		<script src="js/lib/threejs/controls/OrbitControls.js" defer></script>
+		<script src='js/lib/threejs/loaders/STLLoader.js' defer></script>
+		<script src='js/lib/threejs/loaders/ColladaLoader.js' defer></script>
+		<script src='js/lib/threejs/loaders/OBJLoader.js' defer></script>
+		<script src='js/lib/threejs/loaders/MTLLoader.js' defer></script>
+		<script src='js/lib/threejs/loaders/OBJMTLLoader.js' defer></script>
+		<script src='js/lib/threejs/loaders/BinaryLoader.js' defer></script>
+		<script src='js/lib/threex.universalloader.js' defer></script>
 
 		<script src="js/lib/functions.js" defer></script>
 		<script src="js/lib/dexie.min.js" defer></script>
@@ -58,8 +63,12 @@
 		<script src="js/states/roomEditor.js" defer></script>
 		<script src="js/states/scriptEditor.js" defer></script>
 		
-		<!-- blocks -->
-		<script src="js/blocks.js" defer></script>
+		<!-- block -->
+		<script src="js/block.js" defer></script>
+
+		<!-- shapes/materials -->
+		<script src="js/shapes.js" defer></script>
+		<script src="js/materials.js" defer></script>
 
 		<!-- map -->
 		<script src="js/mapLoader.js" defer></script>
@@ -260,6 +269,10 @@
 										    			<td><kbd>Esc</kbd></td>
 										    			<td><kbd>`</kbd></td>
 										    		</tr>
+										    		<tr>
+										    			<td>Debug Mode</td>
+										    			<td><kbd>F8</kbd></td>
+										    		</tr>
 										    	</tbody>
 										  	</table>
 								  		</div>
@@ -434,24 +447,40 @@
 					</div>
 					<div class="invt panel panel-default" data-bind="with: blocks, visible: menu() == 'invt'">
   						<div class="panel-heading">Inventory</div>
-						<div class="panel-body" data-bind="foreach: blocks">
-							<!-- ko if: type == 'block' -->
-							<div class="cube" data-bind="click: $root.set($parent.selectedBlock, name ), css: {'selected': name == $parent.selectedBlock() }">
-							    <div class="_3dbox">
-							      	<div class="_3dface front" data-bind="style: {'background': 'url('+ material[0][0] +')', 'background-size': '100%' }"></div>
-							      	<div class="_3dface back" data-bind="style: {'background': 'url('+ material[0][1] +')', 'background-size': '100%' }"></div>
-							      	<div class="_3dface top" data-bind="style: {'background': 'url('+ material[1][0] +')', 'background-size': '100%' }"></div>
-							      	<div class="_3dface bottom" data-bind="style: {'background': 'url('+ material[1][1] +')', 'background-size': '100%' }"></div>
-							      	<div class="_3dface right" data-bind="style: {'background': 'url('+ material[2][0] +')', 'background-size': '100%' }"></div>
-							      	<div class="_3dface left" data-bind="style: {'background': 'url('+ material[2][1] +')', 'background-size': '100%' }"></div>
-							    </div>
+						<div class="panel-body">
+							<div role="tabpanel">
+							  	<!-- Nav tabs -->
+							  	<ul class="nav nav-tabs" role="tablist">
+							  	  <li role="presentation" class="active"><a href="#materials"role="tab" data-toggle="tab">Materials</a></li>
+							  	  <li role="presentation"><a href="#shapes" role="tab" data-toggle="tab">Shapes</a></li>
+							  	</ul>
+	
+							  	<!-- Tab panes -->
+							  	<div class="tab-content">
+							  	  	<div role="tabpanel" class="tab-pane active" id="materials" data-bind="foreach: materials">
+										<!-- ko if: type == 'block' -->
+										<div class="cube" data-bind="click: $root.set($parent.selectedBlock, id ), css: {'selected': id == $parent.selectedBlock() }">
+										    <div class="_3dbox">
+										      	<div class="_3dface front" data-bind="style: {'background': 'url('+ material +')', 'background-size': '100%' }"></div>
+										      	<div class="_3dface back" data-bind="style: {'background': 'url('+ material +')', 'background-size': '100%' }"></div>
+										      	<div class="_3dface top" data-bind="style: {'background': 'url('+ material +')', 'background-size': '100%' }"></div>
+										      	<div class="_3dface bottom" data-bind="style: {'background': 'url('+ material +')', 'background-size': '100%' }"></div>
+										      	<div class="_3dface right" data-bind="style: {'background': 'url('+ material +')', 'background-size': '100%' }"></div>
+										      	<div class="_3dface left" data-bind="style: {'background': 'url('+ material +')', 'background-size': '100%' }"></div>
+										    </div>
+										</div>
+										<!-- /ko -->
+										<!-- ko if: type == 'flat' -->
+										<div class="cube" data-bind="click: $root.set($parent.selectedBlock, id ), css: {'selected': id == $parent.selectedBlock() }">
+											<img style="width: 100%;" data-bind="attr: {'src': material}">
+										</div>
+										<!-- /ko -->
+							  	  	</div>
+							  	  	<div role="tabpanel" class="tab-pane" id="shapes" data-bind="foreach: shapes">
+							  	  		<button type="button" class="btn btn-default" data-bind="text: name, click: $root.set($parent.selectedShape,id), css: {'active': id == $parent.selectedShape() }"></button>
+							  	  	</div>
+							  	</div>
 							</div>
-							<!-- /ko -->
-							<!-- ko if: type == 'flat' -->
-							<div class="cube" data-bind="click: $root.set($parent.selectedBlock, name ), css: {'selected': name == $parent.selectedBlock() }">
-								<img style="width: 100%;" data-bind="attr: {'src': material}">
-							</div>
-							<!-- /ko -->
 						</div>
 					</div>
 				</div>

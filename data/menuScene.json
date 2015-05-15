@@ -1,25 +1,55 @@
 {
 	"size": {
-		"x": 3,
-		"y": 3,
-		"z": 3
+		"x": 6,
+		"y": 6,
+		"z": 6
 	},
 	"offset": {
-		"x": -1,
-		"y": -1,
-		"z": -1
+		"x": -3,
+		"y": -3,
+		"z": -3
 	},
 	"data": [
-		{"id":"Stone"},{"id":"Stone"},{"id":"Stone"},
-		{"id":"Stone"},{"id":"Stone"},{"id":"Stone"},
-		{"id":"Stone"},{"id":"Stone"},{"id":"Stone"},
+		{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},
+		{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},
+		{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},
+		{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},
+		{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},
+		{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},
 
-		{"id":"Stone"},{"id":"Stone"},{"id":"Stone"},
-		{"id":"Stone"},{"id":"Stone"},{"id":"Stone"},
-		{"id":"Stone"},{"id":"Stone"},{"id":"Stone"},
+		{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},
+		{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},
+		{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},
+		{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},
+		{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},
+		{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},
 
-		{"id":"Stone"},{"id":"Stone"},{"id":"Stone"},
-		{"id":"Stone"},{"id":"Stone"},{"id":"Stone"},
-		{"id":"Stone"},{"id":"Stone"},{"id":"Stone"}
+		{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},
+		{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},
+		{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},
+		{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},
+		{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},
+		{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},
+
+		{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},
+		{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},
+		{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},
+		{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},
+		{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},
+		{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},
+
+		{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},
+		{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},
+		{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},
+		{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},
+		{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},
+		{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},
+
+		{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},
+		{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},
+		{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},
+		{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},
+		{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},
+		{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"},{"shape":"cube","material":"stone"}
 	]
 }

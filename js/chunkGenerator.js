@@ -6,7 +6,7 @@ ChunkGeneratorBlank.prototype = {
 		var data = [];
 
 		for (var i = 0; i < game.chunkSize*game.chunkSize*game.chunkSize; i++) {
-			data.push('air');
+			data.push(undefined);
 		};	
 
 		if(cb) cb(data);
@@ -25,14 +25,17 @@ RoomGenerator.prototype = {
 
 			if(pos.x == 0 || pos.y == 0 || pos.z == 0){
 				if(pos.y < 3 && pos.y > 0 && (pos.x == 5 || pos.z == 5)){
-					data.push('air');
+					data.push(undefined);
 				}
 				else{
-					data.push('stone');
+					data.push({
+						shape: 'cube',
+						material: 'stone',
+					});
 				}
 			}
 			else{
-				data.push('air');
+				data.push(undefined);
 			}
 		};	
 
@@ -51,10 +54,13 @@ FladGenerator.prototype = {
 			var pos = indexToPosition(i,game.chunkSize).add(position.clone().multiplyScalar(game.chunkSize));
 
 			if(pos.y < 10){
-				data.push('stone');
+				data.push({
+					shape: 'cube',
+					material: 'stone',
+				});
 			}
 			else{
-				data.push('air');
+				data.push(undefined);
 			}
 		};	
 
@@ -97,14 +103,17 @@ ChunkGeneratorHills.prototype = {
 					a += this.options.levels[l].blocks[j].height;
 					if(lvls[l] - pos.y <= a){
 						f = true;
-						data.push(this.options.levels[l].blocks[j].block);
+						data.push({
+							shape: 'cube',
+							material: this.options.levels[l].blocks[j].block
+						});
 						break;
 					}
 				};
 			}
 
 			if(!f){
-				data.push('air');
+				data.push(undefined);
 			}
 		};	
 

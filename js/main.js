@@ -1,6 +1,7 @@
 var renderer, settingsDB;
 var clock = new THREE.Clock();
 var materialLoader = new THREE.MaterialLoader();
+var buildCache = {};
 
 function initDB(cb){
 	settingsDB.open().finally(function(){
@@ -39,16 +40,15 @@ $(document).ready(function() {
 	initDB(function(){
 		resources.init(function(){
 			addDefaultResources();
-			blocks.init(function(){
-				// blocks.compileBlocks();
-				states.init();
+			materials.compileMaterials();
 
-				//start loop
-				states.update();
-				
-				$('body').fadeIn(500);
-				states.enableState('menu');
-			});
+			states.init();
+
+			//start loop
+			states.update();
+			
+			$('body').fadeIn(500);
+			states.enableState('menu');
 		})
 	});
 
@@ -116,16 +116,4 @@ function previewfile(file, callback) {
 		}
 	};
 	reader.readAsText(file);
-}
-
-if (!(function f() {}).name) {
-    Object.defineProperty(Function.prototype, 'name', {
-        get: function() {
-            var name = this.toString().match(/^\s*function\s*(\S*)\s*\(/)[1];
-            // For better performance only parse once, and then cache the
-            // result through a new accessor for repeated access.
-            Object.defineProperty(this, 'name', { value: name });
-            return name;
-        }
-    });
 }

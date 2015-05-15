@@ -32,6 +32,58 @@ function observable(val,cb){
 	o.subscribe(cb);
 	return o;
 }
+function loadTexture(url,prop,dontmap){ //texture image is not copied
+	var tex = new THREE.ImageUtils.loadTexture(url);
+   	if(!dontmap){
+        tex.magFilter = THREE.NearestFilter;
+        tex.minFilter = THREE.LinearMipMapLinearFilter;
+    }
+
+    if(prop){
+        //set the prop
+        for(var i in prop){
+        	tex[i] = prop[i];
+        }
+    }
+
+    return tex;
+}
+function basicMaterial(url,prop,texProp){
+	var mat = new THREE.MeshLambertMaterial({
+		map: loadTexture(url,texProp),
+		reflectivity: 0
+	});
+
+	if(prop){
+        //set the prop
+        for(var i in prop){
+        	mat[i] = prop[i];
+        }
+	}
+
+	return mat;
+}
+function loadShape(url,name){
+	name = name || "SHAPE";
+	var geometry = new THREE.Geometry();
+	var loader = new THREEx.UniversalLoader()
+	loader.load(url, function(obj){
+		var obj = obj.getObjectByName(name);
+		var geo = obj.getGeometryByName('');
+
+		if(geo){
+			geometry.vertices = geo.vertices;
+			geometry.verticesNeedUpdate = true;
+
+			geometry.faces = geo.faces;
+			geometry.faceVertexUvs = geo.faceVertexUvs;
+
+			geometry.colors = geo.colors;
+			geometry.colorsNeedUpdate = true;
+		}
+	})
+	return geometry;
+}
 THREE.Vector3.prototype.sign = function(){
 	Math.sign(this.x);
 	Math.sign(this.y);
@@ -94,6 +146,25 @@ THREE.Object3D.prototype.getTextureByProperty = function(a, b) {
 	}
     for (var c = 0, d = this.children.length; c < d; c++) {
         var e = this.children[c].getTextureByProperty(a, b);
+        if (void 0 !== e)
+            return e
+    }
+}
+
+THREE.Object3D.prototype.getGeometryById = function(a) {
+    return this.getGeometryByProperty("id", a)
+},
+THREE.Object3D.prototype.getGeometryByName = function(a) {
+    return this.getGeometryByProperty("name", a)
+},
+THREE.Object3D.prototype.getGeometryByProperty = function(a, b) {
+	if(this.geometry){
+	    if (this.geometry[a] === b){
+	        return this.geometry;
+	    }
+	}
+    for (var c = 0, d = this.children.length; c < d; c++) {
+        var e = this.children[c].getGeometryByProperty(a, b);
         if (void 0 !== e)
             return e
     }

@@ -64,64 +64,22 @@
 
 	}).add()
 
-	Block = Resource.extend(function Block(){
+	Material = Resource.extend(function Material(){
 		Resource.prototype.constructor.apply(this,arguments);
 	},{
 		data: {
-			blockID: '', //id of this block, its used in creating the class
-			extend: '', //id of another block resource that this one extends
-			blockData: { //data that gose into the block class
+			materialID: '',
+			material: undefined, //exported from threejs material
+			blockData: {
+				canCollide: true,
+				transparent: false,
+				placeSound: [],
+				removeSound: [],
+				stepSound: [],
 			}
 		},
-		compileClass: function(refreshCache){ //returns a javascript constructor for this block
-			if(this.data.blockID == '') return;
-
-			if(!blocks.getBlock(this.data.blockID) || refreshCache){
-				//build class
-				var block = namedFunction(this.data.blockID,function(position,data,chunk){
-					this.position = position || new THREE.Vector3();
-					this.chunk = chunk;
-
-					this.inportData(data);
-					this.onCreate();
-				});
-
-				if(this.data.extend){
-					var r = resources.getResource(this.data.extend,true);
-					if(r instanceof resources.Block){
-						var parentBlock = r.compileClass();
-						var diff = fn.getDiff(parentBlock.prototype,this.data.blockData);
-						block.prototype = fn.buildDiff(diff);
-						block.prototype.__proto__ = parentBlock.prototype;
-					}
-				}
-
-				if(_.isEmpty(block.prototype)){
-					var diff = fn.getDiff(Block.prototype,this.data.blockData);
-					block.prototype = fn.buildDiff(diff);
-					block.prototype.__proto__ = Block.prototype;
-				}
-
-				block.prototype.id = this.data.blockID;
-				block.prototype.constructor = block;
-
-				//parse material
-				if(block.prototype.material){
-					block.prototype.material = materialLoader.parse(block.prototype.material);
-
-					block.prototype.collider = new CollisionEntity({
-						box: new THREE.Box3(new THREE.Vector3(0,0,0), new THREE.Vector3(game.blockSize,game.blockSize,game.blockSize)),
-						group: 'block'
-					})
-				}
-
-				blocks.updateBlock(this.data.blockID,block);
-			}
-
-			return blocks.getBlock(this.data.blockID);
-		},
-		buildMesh: function(){ //returns a mesh that is the block
-			
+		compile: function(refresh){
+			return materials.compileMaterial(this,refresh);
 		}
 	}).add()
 

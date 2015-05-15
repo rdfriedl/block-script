@@ -323,16 +323,18 @@ collisions = {
                 if(done == true) break;
 
                 var block = map.getBlock(corners[k][1]);
-                if(!block) continue;
-
-                if(block.canCollide){
-                    if(collisions.canCollide(a.collisionEntity,block.collisionEntity)){
-                        if(collisions.checkCollision(a.collisionEntity,block.collisionEntity,velocity)){
-                            var a = collisions.SweptAABB(a.collisionEntity,block.collisionEntity,velocity);
-                            colInfo = a;
-                            //had a collision so break out of the loop
-                            done = true;
-                            break;
+                if(!(block instanceof Block)) continue;
+                
+                if(block.material && block.shape){
+                    if(block.material.canCollide && block.shape){
+                        if(collisions.canCollide(a.collisionEntity,block.collisionEntity)){
+                            if(collisions.checkCollision(a.collisionEntity,block.collisionEntity,velocity)){
+                                var a = collisions.SweptAABB(a.collisionEntity,block.collisionEntity,velocity);
+                                colInfo = a;
+                                //had a collision so break out of the loop
+                                done = true;
+                                break;
+                            }
                         }
                     }
                 }

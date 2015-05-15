@@ -104,10 +104,6 @@ MapLoader.prototype = {
 			this.db.chunks.each(function(chunk){
 				if(progress) progress((k/numberOfChunks)*100);
 
-				for(var i in chunk.data){
-					chunk.data[i] = chunk.data[i].id;
-				}
-
 				json.chunks.push(chunk);
 
 				k++;

@@ -341,10 +341,8 @@ game = {
 
 			for (var i in this.voxelMap.chunks) {
 				var chunk = this.voxelMap.chunks[i]
-				if(chunk.mesh){
-					if(Math.abs(this.voxelMap.chunks[i].position.x - position.x) > game.viewRange || Math.abs(this.voxelMap.chunks[i].position.y - position.y) > game.viewRange || Math.abs(this.voxelMap.chunks[i].position.z - position.z) > game.viewRange){
-						chunk.unload();
-					}
+				if(Math.abs(this.voxelMap.chunks[i].position.x - position.x) > game.viewRange || Math.abs(this.voxelMap.chunks[i].position.y - position.y) > game.viewRange || Math.abs(this.voxelMap.chunks[i].position.z - position.z) > game.viewRange){
+					chunk.unload();
 				}
 			};
 		}
@@ -389,39 +387,38 @@ game = {
 		},
 		blocks: {
 			selectedBlock: observable('stone',function(val){
-				game.player.selection.placeBlock = val;
+				game.player.selection.place.material = val;
 			}),
-			blocks: [],
+			selectedShape: observable('cube',function(val){
+				game.player.selection.place.shape = val;
+			}),
+			materials: [],
+			shapes: [],
 			update: function(){
-				var b = [];
-				var a = resources.searchResources({},true,'block');
-				for (var i = 0; i < a.length; i++) {
-					var block = a[i].compileClass();
+				var self = game.modal.blocks;
 
-					if(_.isArray(block.prototype.material)){
-						//build list of urls for sides of blocks
-						var mat = [];
-						for (var k = 0; k < block.prototype.material.length; k++) {
-							if(!mat[k]) mat[k] = [];
-
-							for (var j = 0; j < block.prototype.material[k].length; j++) {
-								var m = blocks.blockMaterial.materials[block.prototype.material[k][j]];
-								if(m.map){
-									mat[k].push(m.map.sourceFile);
-								}
-								else{
-									mat[k].push('');
-								}
-							};
-						};
-						b.push({
-							name: block.name.toLowerCase(),
-							type: 'block',
-							material: mat
-						})
-					}
+				self.materials([]);
+				var a = materials.materials;
+				for (var i in a) {
+					var mat = a[i];
+					self.materials.push({
+						id: mat.id,
+						name: mat.name,
+						type: 'block',
+						material: mat.material.map.sourceFile
+					})
 				};
-				game.modal.blocks.blocks(b);
+
+				self.shapes([]);
+				var a = shapes.shapes;
+				for (var i in a) {
+					var shape = a[i];
+					self.shapes.push({
+						id: shape.id,
+						name: shape.name,
+						material: mat.material.map.sourceFile
+					})
+				};
 			}
 		}
 	}
@@ -463,6 +460,13 @@ game.keypress = keyboard.createState([
 				this.modal.menu('none');
 				this.requestPointerLock();
 			}
+		},
+		this: game
+	},
+	{
+		keys: 'f8',
+		on_keyup: function(){
+			this.voxelMap.debug = !this.voxelMap.debug;
 		},
 		this: game
 	},

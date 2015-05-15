@@ -47,28 +47,30 @@ SelectBlocks.prototype = {
 
 			var block = this.state.voxelMap.getBlock(pos);
 
-			this.selection.block = block;
+			if(block){
+				this.selection.block = block;
 
-			//get normal
-			var box = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3(game.blockSize,game.blockSize,game.blockSize));
-			box.translate(block.scenePosition);
-			var n = this.raycaster.ray.intersectBox(box) || block.sceneCenter, normal = new THREE.Vector3();
-			n.sub(block.sceneCenter);
-            if(Math.abs(n.y) > Math.abs(n.x) && Math.abs(n.y) > Math.abs(n.z))
-                normal.y = Math.sign(n.y);
-            else if(Math.abs(n.x) > Math.abs(n.y) && Math.abs(n.x) > Math.abs(n.z))
-                normal.x = Math.sign(n.x);
-            else if(Math.abs(n.z) > Math.abs(n.x) && Math.abs(n.z) > Math.abs(n.y))
-                normal.z = Math.sign(n.z);
-            this.selection.normal = normal;
+				//get normal
+				var box = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3(game.blockSize,game.blockSize,game.blockSize));
+				box.translate(block.scenePosition);
+				var n = this.raycaster.ray.intersectBox(box) || block.sceneCenter, normal = new THREE.Vector3();
+				n.sub(block.sceneCenter);
+	            if(Math.abs(n.y) > Math.abs(n.x) && Math.abs(n.y) > Math.abs(n.z))
+	                normal.y = Math.sign(n.y);
+	            else if(Math.abs(n.x) > Math.abs(n.y) && Math.abs(n.x) > Math.abs(n.z))
+	                normal.x = Math.sign(n.x);
+	            else if(Math.abs(n.z) > Math.abs(n.x) && Math.abs(n.z) > Math.abs(n.y))
+	                normal.z = Math.sign(n.z);
+	            this.selection.normal = normal;
 
-            //update mesh
-			this.selection.mesh.visible = true;
-			this.selection.mesh.position.copy(this.selection.block.sceneCenter);
-			this.selection.mesh.scale.copy(new THREE.Vector3(1,1,1).multiplyScalar(game.blockSize + 1));
+	            //update mesh
+				this.selection.mesh.visible = true;
+				this.selection.mesh.position.copy(this.selection.block.sceneCenter);
+				this.selection.mesh.scale.copy(new THREE.Vector3(1,1,1).multiplyScalar(game.blockSize + 1));
 
-            delete n, box, pos; //since this is a loop delete stuff to help the garbage collector
-			break;
+	            delete n, box, pos; //since this is a loop delete stuff to help the garbage collector
+				break;
+			}
 		}
 	}
 }

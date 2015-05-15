@@ -7,7 +7,12 @@ function VoxelMap(state,options){
 	this.group = new THREE.Group();
 	this.state.scene.add(this.group);
 
+	this.debugGroup = new THREE.Group();
+	this.state.scene.add(this.debugGroup);
+
 	this.chunkGenerator = new ChunkGeneratorBlank();
+
+	this.debug = false;
 }
 VoxelMap.prototype = {
 	chunks: {},
@@ -15,6 +20,7 @@ VoxelMap.prototype = {
 	chunkGenerator: undefined,
 	group: undefined,
 	events: undefined,
+	debugGroup: undefined,
 	/*
 	chunkLoaded
 	chunkSaved
@@ -42,9 +48,10 @@ VoxelMap.prototype = {
 
 		var chunkID = chunkPos.toString();
 		if(this.chunks[chunkID]){
+			var chunk = this.chunks[chunkID];
 			var pos = position.clone();
-			pos.sub(chunkPos.multiplyScalar(game.chunkSize));
-			return this.chunks[chunkID].blocks[positionToIndex(pos,game.chunkSize)];
+			pos.sub(chunk.worldPosition);
+			return chunk.blocks[positionToIndex(pos,game.chunkSize)];
 		}
 	},
 	setBlock: function(position,data,cb,dontBuild){
@@ -54,9 +61,21 @@ VoxelMap.prototype = {
 
 		this.getChunk(chunkPos,function(chunk){
 			var pos = position.clone();
-			pos.sub(chunkPos.multiplyScalar(game.chunkSize));
+			pos.sub(chunk.worldPosition);
 			var block = chunk.setBlock(pos,data,dontBuild);
-			if(cb) cb(chunk.setBlock(pos,data,dontBuild));
+			if(cb) cb(block);
+		}.bind(this));
+	},
+	removeBlock: function(position,cb,dontBuild){
+		var chunkPos = position.clone();
+		chunkPos.divideScalar(game.chunkSize);
+		chunkPos.floor();
+
+		this.getChunk(chunkPos,function(chunk){
+			var pos = position.clone();
+			pos.sub(chunk.worldPosition);
+			chunk.removeBlock(pos,dontBuild)
+			if(cb) cb();
 		}.bind(this));
 	},
 	loadChunk: function(position,cb){
@@ -244,3 +263,13 @@ VoxelMap.prototype = {
 		}
 	}
 }
+Object.defineProperties(VoxelMap.prototype,{
+    debug: {
+        get: function(){
+            return this.debugGroup.visible;
+        },
+        set: function(val){
+        	this.debugGroup.visible = val;
+        }
+    },
+})
