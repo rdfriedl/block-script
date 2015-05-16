@@ -233,14 +233,20 @@ Player.prototype = {
 			{
 				keys: 'MWU',
 				on_keydown: function(){
-					this.selection.place.blockRotation += THREE.Math.degToRad(90);
+					if(shapes.getShape(this.selection.place.shape).blockData.canRotate){
+						createjs.Sound.play('digStone1');
+						this.selection.place.blockRotation += THREE.Math.degToRad(90);
+					}
 				},
 				this: this
 			},
 			{
 				keys: 'MWD',
 				on_keydown: function(){
-					this.selection.place.blockRotation -= THREE.Math.degToRad(90);
+					if(shapes.getShape(this.selection.place.shape).blockData.canRotate){
+						createjs.Sound.play('digStone1');
+						this.selection.place.blockRotation -= THREE.Math.degToRad(90);
+					}
 				},
 				this: this
 			},
@@ -250,6 +256,7 @@ Player.prototype = {
 				prevent_default: true,
 				on_keydown: function(){
 					if(this.selection.block){
+						createjs.Sound.play('digStone1');
 						this.selection.place.material = this.selection.block.material.id;
 						this.selection.place.shape = this.selection.block.shape.id;
 						this.selection.place.rotation.copy(this.selection.block.rotation);
@@ -330,8 +337,8 @@ Player.prototype = {
 				v.y--;
 				var block = this.state.voxelMap.getBlock(v);
 				if(block){
-					if(block.stepSound.length){
-						createjs.Sound.play(block.stepSound[Math.floor(Math.random() * block.stepSound.length)]);
+					if(block.data.stepSound.length){
+						createjs.Sound.play(block.data.stepSound[Math.floor(Math.random() * block.data.stepSound.length)]);
 					}
 				}
 			}
@@ -417,13 +424,13 @@ Player.prototype = {
 	            //selection
 	            this.selectionObject.visible = true;
 				this.selectionObject.position.copy(this.selection.block.worldPosition).add(new THREE.Vector3(.5,.5,.5)).multiplyScalar(game.blockSize);
-	            if(shapes.getShape(this.selection.place.shape).canRotate){
+	            if(shapes.getShape(this.selection.place.shape).blockData.canRotate){
 	            	this.selectionObject.rotation.copy(this.selection.block.rotation);
 	            }
 	            //outline
 				this.placeOutLine.visible = !this.selection.block.getNeighbor(this.selection.normal);
 				this.placeOutLine.position.copy(this.selection.block.worldPosition).add(this.selection.normal).add(new THREE.Vector3(.5,.5,.5)).multiplyScalar(game.blockSize);
-				if(shapes.getShape(this.selection.place.shape).canRotate){
+				if(shapes.getShape(this.selection.place.shape).blockData.canRotate){
 					this.placeOutLine.lookAt(this.placeOutLine.position.clone().add(this.selection.normal));
 					this.placeOutLine.rotateX(THREE.Math.degToRad(90));
 					this.placeOutLine.rotateY(this.selection.place.blockRotation);
@@ -456,8 +463,8 @@ Player.prototype = {
 						block.chunk.saved = false;
 						block.chunk.build();
 						//play sound
-						if(block.materialData.placeSound.length){
-							createjs.Sound.play(block.materialData.placeSound[Math.floor(Math.random() * block.materialData.placeSound.length)]);
+						if(block.data.placeSound.length){
+							createjs.Sound.play(block.data.placeSound[Math.floor(Math.random() * block.data.placeSound.length)]);
 						}
 					}
 				}.bind(this),true)
@@ -471,8 +478,8 @@ Player.prototype = {
 			this.state.voxelMap.removeBlock(pos);
 			block.chunk.saved = false;
 			//play sound
-			if(block.materialData.removeSound.length){
-				createjs.Sound.play(block.materialData.removeSound[Math.floor(Math.random() * block.materialData.removeSound.length)]);
+			if(block.data.removeSound.length){
+				createjs.Sound.play(block.data.removeSound[Math.floor(Math.random() * block.data.removeSound.length)]);
 			}
 		}
 	}

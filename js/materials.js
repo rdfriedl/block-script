@@ -41,7 +41,8 @@ materials = {
 
 			var material = new Material(mat.data.materialID,{
 				name: mat.data.name,
-				resource: mat
+				resource: mat,
+				blockData: mat.data.blockData
 			});
 
 			//parse material
@@ -59,7 +60,6 @@ materials = {
 			}
 			//compile it
 			var _materials = [];
-			_materials.push(new THREE.MeshNormalMaterial()); //add the null mat
 			for (var i in this.materials) {
 				if(includeMaterials){
 					if(includeMaterials.indexOf(i) == -1){

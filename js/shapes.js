@@ -21,6 +21,8 @@ shapes = {
 }
 
 function Shape(id,data){
+	this.blockData = {};
+	this.blockData.__proto__ = Block.prototype.data;
 	for (var i in data) {
 		this[i] = data[i];
 	};
@@ -38,8 +40,7 @@ Shape.prototype = {
 	name: '',
 	collision: undefined,
 	geometry: undefined,
-	transparent: false,
-	canRotate: true
+	blockData:{}
 }
 Shape.prototype.constructor = Shape;
 
@@ -51,7 +52,9 @@ var cube = new Shape('cube',{
 	name: 'Cube',
 	geometry: new THREE.BoxGeometry(1, 1, 1),
 	collision: new THREE.BoxGeometry(1, 1, 1),
-	canRotate: false,
+	blockData: {
+		canRotate: false,
+	}
 });
 shapes.addShape(cube);
 
@@ -59,7 +62,9 @@ var halfCube = new Shape('halfCube',{
 	name: 'Half Cube',
 	geometry: loadShape(shapeFolder+'halfCube.dae'),
 	collision: loadShape(shapeFolder+'halfCube.dae'),
-	transparent: true
+	blockData: {
+		transparent: true
+	}
 });
 shapes.addShape(halfCube);
 
@@ -67,7 +72,9 @@ var slant = new Shape('slant',{
 	name: 'Slant',
 	geometry: loadShape(shapeFolder+'slant.dae'),
 	collision: loadShape(shapeFolder+'slant.dae'),
-	transparent: true
+	blockData: {
+		transparent: true
+	}
 });
 shapes.addShape(slant);
 
@@ -75,7 +82,9 @@ var slantCornerIn = new Shape('slantCornerIn',{
 	name: 'Slant Corner In',
 	geometry: loadShape(shapeFolder+'slantCornerIn.dae'),
 	collision: loadShape(shapeFolder+'slantCornerIn.dae'),
-	transparent: true
+	blockData: {
+		transparent: true
+	}
 });
 shapes.addShape(slantCornerIn);
 
@@ -83,7 +92,9 @@ var slantCornerOut = new Shape('slantCornerOut',{
 	name: 'Slant Corner Out',
 	geometry: loadShape(shapeFolder+'slantCornerOut.dae'),
 	collision: loadShape(shapeFolder+'slantCornerOut.dae'),
-	transparent: true
+	blockData: {
+		transparent: true
+	}
 });
 shapes.addShape(slantCornerOut);
 
@@ -99,7 +110,9 @@ var halfSlantCornerIn = new Shape('halfSlantCornerIn',{
 	name: 'Half Slant Corner In',
 	geometry: loadShape(shapeFolder+'halfSlantCornerIn.dae'),
 	collision: loadShape(shapeFolder+'halfSlantCornerIn.dae'),
-	transparent: true
+	blockData: {
+		transparent: true
+	}
 });
 shapes.addShape(halfSlantCornerIn);
 
@@ -107,9 +120,41 @@ var halfSlantCornerOut = new Shape('halfSlantCornerOut',{
 	name: 'Half Slant Corner Out',
 	geometry: loadShape(shapeFolder+'halfSlantCornerOut.dae'),
 	collision: loadShape(shapeFolder+'halfSlantCornerOut.dae'),
-	transparent: true
+	blockData: {
+		transparent: true
+	}
 });
 shapes.addShape(halfSlantCornerOut);
+
+var stairs = new Shape('stairs',{
+	name: 'Stairs',
+	geometry: loadShape(shapeFolder+'stairs.dae'),
+	collision: loadShape(shapeFolder+'stairs.dae'),
+	blockData: {
+		transparent: true
+	}
+});
+shapes.addShape(stairs);
+
+var stairsCornerIn = new Shape('stairsCornerIn',{
+	name: 'Stairs Corner In',
+	geometry: loadShape(shapeFolder+'stairsCornerIn.dae'),
+	collision: loadShape(shapeFolder+'stairsCornerIn.dae'),
+	blockData: {
+		transparent: true
+	}
+});
+shapes.addShape(stairsCornerIn);
+
+var stairsCornerOut = new Shape('stairsCornerOut',{
+	name: 'Stairs Corner Out',
+	geometry: loadShape(shapeFolder+'stairsCornerOut.dae'),
+	collision: loadShape(shapeFolder+'stairsCornerOut.dae'),
+	blockData: {
+		transparent: true
+	}
+});
+shapes.addShape(stairsCornerOut);
 
 
 })()

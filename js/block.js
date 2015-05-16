@@ -6,8 +6,14 @@ function Block(position,data,chunk){
 	data.shape = data.shape || shapes.blankShape;
 	this.inportData(data);
 
-	this.materialData = this.material.resource.data.blockData;
-	// this.shapeData = this.shape.blockData;
+	this.data = {};
+	this.data.__proto__ = Block.prototype.data;
+	for(var i in this.material.blockData){
+		this.data[i] = this.material.blockData[i];
+	}
+	for(var i in this.shape.blockData){
+		this.data[i] = this.shape.blockData[i];
+	}
 }
 Block.prototype = {
 	chunk: undefined,
@@ -18,7 +24,14 @@ Block.prototype = {
 	position: new THREE.Vector3(),
 	rotation: new THREE.Euler(0,0,0),
 
-	data: {},
+	data: {
+		transparent: false,
+		canRotate: true,
+		canCollide: true,
+		stepSound: [],
+		placeSound: [],
+		removeSound: []
+	},
 
 	inportData: function(data){
 		if(data.material){
@@ -27,7 +40,7 @@ Block.prototype = {
 		if(data.shape){
 			this.shape = shapes.getShape(data.shape);
 		}
-		if(data.rotation && this.shape.canRotate){
+		if(data.rotation && this.data.canRotate){
 			this.rotation = new THREE.Euler(data.rotation.x,data.rotation.y,data.rotation.z);
 		}
 	},
@@ -128,7 +141,7 @@ Object.defineProperties(Block.prototype,{
 			for (var i = 0; i < sides.length; i++) {
 				b = this.getNeighbor(sides[i]);
 				if(b instanceof Block){
-					if(b.data.transparent || b.shape.transparent){
+					if(b.data.transparent){
 						visible = true
 						continue;
 					}

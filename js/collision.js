@@ -325,11 +325,10 @@ collisions = {
                 var block = map.getBlock(corners[k][1]);
                 if(!(block instanceof Block)) continue;
                 
-                if(block.materialData.canCollide){
-                    blockCollisionEntity.position.copy(block.scenePosition);
-                    if(collisions.canCollide(a.collisionEntity,blockCollisionEntity)){
-                        if(collisions.checkCollision(a.collisionEntity,blockCollisionEntity,velocity)){
-                            var a = collisions.SweptAABB(a.collisionEntity,blockCollisionEntity,velocity);
+                if(block.data.canCollide){
+                    if(collisions.canCollide(a.collisionEntity,block.collisionEntity)){
+                        if(collisions.checkCollision(a.collisionEntity,block.collisionEntity,velocity)){
+                            var a = collisions.SweptAABB(a.collisionEntity,block.collisionEntity,velocity);
                             colInfo = a;
                             //had a collision so break out of the loop
                             done = true;

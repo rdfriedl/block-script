@@ -70,13 +70,7 @@
 		data: {
 			materialID: '',
 			material: undefined, //exported from threejs material
-			blockData: {
-				canCollide: true,
-				transparent: false,
-				placeSound: [],
-				removeSound: [],
-				stepSound: [],
-			}
+			blockData: {}
 		},
 		compile: function(refresh){
 			return materials.compileMaterial(this,refresh);
