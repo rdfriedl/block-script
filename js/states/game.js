@@ -386,7 +386,7 @@ game = {
 			},
 		},
 		blocks: {
-			selectedBlock: observable('stone',function(val){
+			selectedMaterial: observable('stone',function(val){
 				game.player.selection.place.material = val;
 			}),
 			selectedShape: observable('cube',function(val){

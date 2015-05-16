@@ -133,6 +133,7 @@ Chunk.prototype = {
                 if(block){
                     var pos = block.position.clone().add(new THREE.Vector3(0.5,0.5,0.5));
                     var matrix = new THREE.Matrix4();
+                    matrix.makeRotationFromEuler(block.rotation);
                     matrix.setPosition(pos);
 
                     //mesh

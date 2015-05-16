@@ -68,7 +68,6 @@ roomEditor = {
 		//big grid
 		var grid = new THREE.GridHelper( game.chunkSize * game.blockSize * 2, game.chunkSize * game.blockSize );
 		grid.setColors( 0x000000, 0x000000 );
-		grid.material.linewidth = 2
 		this.scene.add(grid);
 
 		$.ajax({

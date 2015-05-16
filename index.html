@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
 	<head>
 		<title>Block-Script</title>
@@ -22,6 +23,7 @@
 		<script src="js/lib/keypress-2.1.0.min.js" defer></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/messenger/1.4.0/js/messenger.min.js" defer></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/messenger/1.4.0/js/messenger-theme-flat.js" defer></script>
+		<script src="js/lib/jquery.mousewheel.min.js" defer></script>
 		
 		<script src="js/lib/three.min.js" defer></script>
 		<script src="js/lib/threejs/controls/PointerLockControls.js" defer></script>
@@ -40,6 +42,8 @@
 
 		<script src="js/lib/functions.js" defer></script>
 		<script src="js/lib/dexie.min.js" defer></script>
+
+		<!-- util(s) and pollyfill(s) -->
 		<script src="js/util.js" defer></script>
 
 		<!-- custom lib -->
@@ -270,6 +274,22 @@
 										    			<td><kbd>`</kbd></td>
 										    		</tr>
 										    		<tr>
+										    			<td>Place Block</td>
+										    			<td><kbd>Right Mouse Button</kbd></td>
+										    		</tr>
+										    		<tr>
+										    			<td>Remove Block</td>
+										    			<td><kbd>Left Mouse Button</kbd></td>
+										    		</tr>
+										    		<tr>
+										    			<td>Copy Block</td>
+										    			<td><kbd>Middle Mouse Button</kbd></td>
+										    		</tr>
+										    		<tr>
+										    			<td>Rotate Block</td>
+										    			<td><kbd>Mouse Wheel</kbd></td>
+										    		</tr>
+										    		<tr>
 										    			<td>Debug Mode</td>
 										    			<td><kbd>F8</kbd></td>
 										    		</tr>
@@ -451,7 +471,7 @@
 							<div role="tabpanel">
 							  	<!-- Nav tabs -->
 							  	<ul class="nav nav-tabs" role="tablist">
-							  	  <li role="presentation" class="active"><a href="#materials"role="tab" data-toggle="tab">Materials</a></li>
+							  	  <li role="presentation" class="active"><a href="#materials" role="tab" data-toggle="tab">Materials</a></li>
 							  	  <li role="presentation"><a href="#shapes" role="tab" data-toggle="tab">Shapes</a></li>
 							  	</ul>
 	
@@ -459,7 +479,7 @@
 							  	<div class="tab-content">
 							  	  	<div role="tabpanel" class="tab-pane active" id="materials" data-bind="foreach: materials">
 										<!-- ko if: type == 'block' -->
-										<div class="cube" data-bind="click: $root.set($parent.selectedBlock, id ), css: {'selected': id == $parent.selectedBlock() }">
+										<div class="cube" data-bind="click: $root.set($parent.selectedMaterial, id ), css: {'selected': id == $parent.selectedMaterial() }">
 										    <div class="_3dbox">
 										      	<div class="_3dface front" data-bind="style: {'background': 'url('+ material +')', 'background-size': '100%' }"></div>
 										      	<div class="_3dface back" data-bind="style: {'background': 'url('+ material +')', 'background-size': '100%' }"></div>
@@ -471,7 +491,7 @@
 										</div>
 										<!-- /ko -->
 										<!-- ko if: type == 'flat' -->
-										<div class="cube" data-bind="click: $root.set($parent.selectedBlock, id ), css: {'selected': id == $parent.selectedBlock() }">
+										<div class="cube" data-bind="click: $root.set($parent.selectedMaterial, id ), css: {'selected': id == $parent.selectedMaterial() }">
 											<img style="width: 100%;" data-bind="attr: {'src': material}">
 										</div>
 										<!-- /ko -->

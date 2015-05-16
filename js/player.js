@@ -14,18 +14,19 @@ function Player(state,camera){
 	this.movement.velocity = new THREE.Vector3();
 	this.selection = Object.create(this.selection);
 	this.selection.normal = new THREE.Vector3();
+	this.selection.place.rotation = new THREE.Euler();
 
 	this.scene.add(this.object);
 
 	//selection
 	this.selectionObject = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), new THREE.MeshBasicMaterial({
-		color: 0x990000,
+		color: 0xffff88,
 		transparent: true,
 		opacity: 0.2,
 		shading: THREE.NoShading,
 		depthWrite: false
 	}));
-	// this.selectionObject.visible = false;
+	this.selectionObject.scale.set(game.blockSize,game.blockSize,game.blockSize).multiplyScalar(1.01);
 	this.scene.add(this.selectionObject);
 
 	//movement events
@@ -49,7 +50,6 @@ Player.prototype = {
 	camera: undefined,
 	controls: undefined,
 	object: undefined,
-	selectionObject: undefined,
 	movement: {
 		walkSpeed: 2.29,
 		sprintSpeed: 3.5,
@@ -67,17 +67,21 @@ Player.prototype = {
 		acceleration: 1,
 		drag: 0.2,
 
-		gravity: 0,//0.3,
+		gravity: 0.3,
 		onGround: false,
 		viewBobbing: 0,
 		viewBobbingDir: 1,
 	},
+	selectionObject: undefined,
+	placeOutLine: {},
 	selection: {
 		block: undefined,
 		normal: new THREE.Vector3(),
 		place: {
 			material: 'stone',
-			shape: 'cube'
+			shape: 'cube',
+			rotation: new THREE.Euler(),
+			blockRotation: 0
 		},
 		removeBlock: 'air'
 	},
@@ -224,7 +228,38 @@ Player.prototype = {
 					this.movement.crouch = false;
 				},
 				this: this
-			}
+			},
+			//rotate placment
+			{
+				keys: 'MWU',
+				on_keydown: function(){
+					this.selection.place.blockRotation += THREE.Math.degToRad(90);
+				},
+				this: this
+			},
+			{
+				keys: 'MWD',
+				on_keydown: function(){
+					this.selection.place.blockRotation -= THREE.Math.degToRad(90);
+				},
+				this: this
+			},
+			//pick block
+			{
+				keys: 'MMB',
+				prevent_default: true,
+				on_keydown: function(){
+					if(this.selection.block){
+						this.selection.place.material = this.selection.block.material.id;
+						this.selection.place.shape = this.selection.block.shape.id;
+						this.selection.place.rotation.copy(this.selection.block.rotation);
+
+						game.modal.blocks.selectedMaterial(this.selection.place.material);
+						game.modal.blocks.selectedShape(this.selection.place.shape);
+					}
+				},
+				this: this
+			},
 		])	
 	},
 	update: function(dtime){
@@ -332,6 +367,20 @@ Player.prototype = {
 		this.pickBlock();
 	},
 	pickBlock: function(){
+		//update shape
+		if(this.selection.place.shape !== this.placeOutLine._shape){
+			var geo = shapes.getShape(this.selection.place.shape).geometry;
+			//remove
+			if(this.placeOutLine.parent) this.placeOutLine.parent.remove(this.placeOutLine);
+			this.placeOutLine = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({
+				color: 0xffff55,
+				wireframe: true
+			}));
+			this.placeOutLine.scale.multiplyScalar(game.blockSize);
+			this.scene.add(this.placeOutLine);
+			this.placeOutLine._shape = this.selection.place.shape;
+		}
+
 		//cast ray to find block data
 		this.rayCaster.set(this.camera.getWorldPosition(), this.controls.getDirection(new THREE.Vector3()));
 
@@ -349,7 +398,7 @@ Player.prototype = {
 				if(!(block instanceof Block)) continue;
 
 				this.selection.block = block;
-				// this.selection.normal.copy(intersects[i].face.normal);
+
 				//get normal
 				var box = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3(game.blockSize,game.blockSize,game.blockSize));
 				box.translate(block.scenePosition);
@@ -365,14 +414,27 @@ Player.prototype = {
 
 	            delete n, box; //since this is a loop delete stuff to help the garbage collector
 
-				this.selectionObject.visible = true;
-				this.selectionObject.position.copy(this.selection.block.sceneCenter);
-				this.selectionObject.scale.copy(new THREE.Vector3(1,1,1).multiplyScalar(game.blockSize + 0.1))
+	            //selection
+	            this.selectionObject.visible = true;
+				this.selectionObject.position.copy(this.selection.block.worldPosition).add(new THREE.Vector3(.5,.5,.5)).multiplyScalar(game.blockSize);
+	            if(shapes.getShape(this.selection.place.shape).canRotate){
+	            	this.selectionObject.rotation.copy(this.selection.block.rotation);
+	            }
+	            //outline
+				this.placeOutLine.visible = !this.selection.block.getNeighbor(this.selection.normal);
+				this.placeOutLine.position.copy(this.selection.block.worldPosition).add(this.selection.normal).add(new THREE.Vector3(.5,.5,.5)).multiplyScalar(game.blockSize);
+				if(shapes.getShape(this.selection.place.shape).canRotate){
+					this.placeOutLine.lookAt(this.placeOutLine.position.clone().add(this.selection.normal));
+					this.placeOutLine.rotateX(THREE.Math.degToRad(90));
+					this.placeOutLine.rotateY(this.selection.place.blockRotation);
+					this.selection.place.rotation.copy(this.placeOutLine.rotation);
+				}
 				return;
 			};
 
 			//if we made it to this point it means there are not intersections
 			this.selectionObject.visible = false;
+			this.placeOutLine.visible = false;
 			this.selection.block = undefined;
 			this.selection.normal.set(0,0,0);
 		}
@@ -382,7 +444,11 @@ Player.prototype = {
 			var pos = this.selection.block.worldPosition.add(this.selection.normal);
 
 			if(!(this.state.voxelMap.getBlock(pos) instanceof Block)){
-				this.state.voxelMap.setBlock(pos,this.selection.place,function(block){
+				this.state.voxelMap.setBlock(pos,{
+					material: this.selection.place.material,
+					shape: this.selection.place.shape,
+					rotation: this.selection.place.rotation
+				},function(block){
 					if(collisions.checkCollision(this, block)){
 						this.state.voxelMap.removeBlock(pos,undefined,true);
 					}
@@ -390,8 +456,8 @@ Player.prototype = {
 						block.chunk.saved = false;
 						block.chunk.build();
 						//play sound
-						if(block.data.placeSound.length){
-							createjs.Sound.play(block.data.placeSound[Math.floor(Math.random() * block.data.placeSound.length)]);
+						if(block.materialData.placeSound.length){
+							createjs.Sound.play(block.materialData.placeSound[Math.floor(Math.random() * block.materialData.placeSound.length)]);
 						}
 					}
 				}.bind(this),true)
@@ -405,8 +471,8 @@ Player.prototype = {
 			this.state.voxelMap.removeBlock(pos);
 			block.chunk.saved = false;
 			//play sound
-			if(block.data.removeSound.length){
-				createjs.Sound.play(block.data.removeSound[Math.floor(Math.random() * block.data.removeSound.length)]);
+			if(block.materialData.removeSound.length){
+				createjs.Sound.play(block.materialData.removeSound[Math.floor(Math.random() * block.materialData.removeSound.length)]);
 			}
 		}
 	}

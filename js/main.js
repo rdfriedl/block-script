@@ -3,6 +3,12 @@ var clock = new THREE.Clock();
 var materialLoader = new THREE.MaterialLoader();
 var buildCache = {};
 
+//temp collision entity for blocks
+var blockCollisionEntity = new CollisionEntity({
+    box: new THREE.Box3(new THREE.Vector3(0,0,0), new THREE.Vector3(game.blockSize,game.blockSize,game.blockSize)),
+    group: 'block'
+})
+
 function initDB(cb){
 	settingsDB.open().finally(function(){
 		console.log('opened db')

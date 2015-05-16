@@ -69,17 +69,21 @@ function loadShape(url,name){
 	var loader = new THREEx.UniversalLoader()
 	loader.load(url, function(obj){
 		var obj = obj.getObjectByName(name);
-		var geo = obj.getGeometryByName('');
+		if(obj){
+			var geo = obj.getGeometryByName('');
 
-		if(geo){
-			geometry.vertices = geo.vertices;
-			geometry.verticesNeedUpdate = true;
+			if(geo){
+				geometry.vertices = geo.vertices;
+				geometry.verticesNeedUpdate = true;
 
-			geometry.faces = geo.faces;
-			geometry.faceVertexUvs = geo.faceVertexUvs;
+				geometry.faces = geo.faces;
+				geometry.faceVertexUvs = geo.faceVertexUvs;
 
-			geometry.colors = geo.colors;
-			geometry.colorsNeedUpdate = true;
+				geometry.colors = geo.colors;
+				geometry.colorsNeedUpdate = true;
+
+				geometry.computeFaceNormals();
+			}
 		}
 	})
 	return geometry;
@@ -217,4 +221,17 @@ THREE.Texture.fromJSON = function(data){
 		tex[i] = data[i];
 	};
 	return tex;
+}
+
+//pollyfill for function names in IE
+if (!(function f() {}).name) {
+    Object.defineProperty(Function.prototype, 'name', {
+        get: function() {
+            var name = this.toString().match(/^\s*function\s*(\S*)\s*\(/)[1];
+            // For better performance only parse once, and then cache the
+            // result through a new accessor for repeated access.
+            Object.defineProperty(this, 'name', { value: name });
+            return name;
+        }
+    });
 }

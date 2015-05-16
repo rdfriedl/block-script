@@ -3,10 +3,11 @@ function Block(position,data,chunk){
 	this.chunk = chunk;
 
 	data.material = data.material || materials.getMaterial('stone');
-	data.shape = data.shape || shapes.getShape('cube');
+	data.shape = data.shape || shapes.blankShape;
 	this.inportData(data);
 
-	this.data = this.material.resource.data.blockData;
+	this.materialData = this.material.resource.data.blockData;
+	// this.shapeData = this.shape.blockData;
 }
 Block.prototype = {
 	chunk: undefined,
@@ -15,7 +16,7 @@ Block.prototype = {
 	material: undefined,
 
 	position: new THREE.Vector3(),
-	rotation: new THREE.Vector3(),
+	rotation: new THREE.Euler(0,0,0),
 
 	data: {},
 
@@ -26,15 +27,19 @@ Block.prototype = {
 		if(data.shape){
 			this.shape = shapes.getShape(data.shape);
 		}
-		if(data.rotation){
-			this.rotation = new THREE.Vector3(data.rotation.x,data.rotation.y,data.rotation.z);
+		if(data.rotation && this.shape.canRotate){
+			this.rotation = new THREE.Euler(data.rotation.x,data.rotation.y,data.rotation.z);
 		}
 	},
 	exportData: function(){
 		return {
 			material: this.material.id,
 			shape: this.shape.id,
-			rotation: this.rotation
+			rotation: {
+				x: this.rotation.x,
+				y: this.rotation.y,
+				z: this.rotation.z
+			}
 		};
 	},
 	dispose: function(){

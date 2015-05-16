@@ -82,6 +82,7 @@ ChunkGeneratorHills = function(options){
 ChunkGeneratorHills.prototype = {
 	levels: [],
 	noise: undefined,
+	cache: {},
 	generateChunk: function(position,cb){
 		var data = [];
 
@@ -120,20 +121,23 @@ ChunkGeneratorHills.prototype = {
 		if(cb) cb(data);
 	},
 	getHeight: function(x, y) {
-		var lvls = [];
-		for (var i = 0; i < this.levels.length; i++) {
+		if(!this.cache[x+'|'+y]){
+			var lvls = [];
+			for (var i = 0; i < this.levels.length; i++) {
 
-			var data = 0, q = this.options.levels.quality || 10, fractal = this.options.levels.fractal || 4;
-			for (var k = 0; k < fractal; k++) {
-				data += this.levels[i].simplex3(x / q, y / q, q) * Math.pow(q, 1/fractal);
-				// data += this.levels[i].simplex3(x / q, y / q, i) * Math.pow(q, 1/fractal);
+				var data = 0, q = this.options.levels.quality || 10, fractal = this.options.levels.fractal || 4;
+				for (var k = 0; k < fractal; k++) {
+					data += this.levels[i].simplex3(x / q, y / q, q) * Math.pow(q, 1/fractal);
+					// data += this.levels[i].simplex3(x / q, y / q, i) * Math.pow(q, 1/fractal);
 
-				q *= fractal;
+					q *= fractal;
+				};
+
+				lvls.push(data);
 			};
-
-			lvls.push(data);
-		};
-		return lvls;
+			this.cache[x+'|'+y] = lvls;
+		}
+		return this.cache[x+'|'+y];
 	}
 }
 ChunkGeneratorHills.prototype.constructor = ChunkGeneratorHills;
