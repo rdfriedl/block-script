@@ -42,7 +42,7 @@ materials = {
 			var material = new Material(mat.data.materialID,{
 				name: mat.data.name,
 				resource: mat,
-				blockData: mat.data.blockData
+				blockData: fn.duplicate(mat.data.blockData)
 			});
 
 			//parse material
@@ -78,14 +78,16 @@ materials = {
 }
 
 function Material(id,data){
+	this.blockData = {};
 	for (var i in data) {
 		this[i] = data[i];
 	};
 	this.id = id;
+	this.blockData.__proto__ = Block.prototype.data;
 }
 Material.prototype = {
 	id: '',
-	data: {},
+	blockData: {},
 	resource: undefined, //the resource that this was compiled from
 	material: undefined //threejs material
 }

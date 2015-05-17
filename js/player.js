@@ -233,7 +233,7 @@ Player.prototype = {
 			{
 				keys: 'MWU',
 				on_keydown: function(){
-					if(shapes.getShape(this.selection.place.shape).blockData.canRotate){
+					if(shapes.getShape(this.selection.place.shape).blockData.canRotate && this.selection.block){
 						createjs.Sound.play('digStone1');
 						this.selection.place.blockRotation += THREE.Math.degToRad(90);
 					}
@@ -243,7 +243,7 @@ Player.prototype = {
 			{
 				keys: 'MWD',
 				on_keydown: function(){
-					if(shapes.getShape(this.selection.place.shape).blockData.canRotate){
+					if(shapes.getShape(this.selection.place.shape).blockData.canRotate && this.selection.block){
 						createjs.Sound.play('digStone1');
 						this.selection.place.blockRotation -= THREE.Math.degToRad(90);
 					}
@@ -424,18 +424,14 @@ Player.prototype = {
 	            //selection
 	            this.selectionObject.visible = true;
 				this.selectionObject.position.copy(this.selection.block.worldPosition).add(new THREE.Vector3(.5,.5,.5)).multiplyScalar(game.blockSize);
-	            if(shapes.getShape(this.selection.place.shape).blockData.canRotate){
-	            	this.selectionObject.rotation.copy(this.selection.block.rotation);
-	            }
+            	this.selectionObject.rotation.copy(this.selection.block.rotation);
 	            //outline
 				this.placeOutLine.visible = !this.selection.block.getNeighbor(this.selection.normal);
 				this.placeOutLine.position.copy(this.selection.block.worldPosition).add(this.selection.normal).add(new THREE.Vector3(.5,.5,.5)).multiplyScalar(game.blockSize);
-				if(shapes.getShape(this.selection.place.shape).blockData.canRotate){
-					this.placeOutLine.lookAt(this.placeOutLine.position.clone().add(this.selection.normal));
-					this.placeOutLine.rotateX(THREE.Math.degToRad(90));
-					this.placeOutLine.rotateY(this.selection.place.blockRotation);
-					this.selection.place.rotation.copy(this.placeOutLine.rotation);
-				}
+				this.placeOutLine.lookAt(this.placeOutLine.position.clone().add(this.selection.normal));
+				this.placeOutLine.rotateX(THREE.Math.degToRad(90));
+				this.placeOutLine.rotateY(this.selection.place.blockRotation);
+				this.selection.place.rotation.copy(this.placeOutLine.rotation);
 				return;
 			};
 

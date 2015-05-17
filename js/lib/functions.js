@@ -3,7 +3,10 @@ fn = {
 	//cant use _.extend because it makes a shallow extend
 	combindOver: function(obj,obj2,exclude){ //obj2 gose over obj, values that are not in obj are added
 		exclude = exclude || [];
-		for (var val in obj2){
+		var props = Object.keys(obj2);
+		// for (var val in obj2){
+		for(var i = 0; i < props.length; i++){
+			var val = props[i];
 			if(typeof obj2[val] !== 'object' || exclude.indexOf(val) !== -1){ //if its not an object or weather to skip it
 				//see if we are on the client side and if theres ko
 				if(obj[val]){
@@ -15,7 +18,7 @@ fn = {
 				obj[val] = obj2[val];
 			}
 			else{
-				if(typeof obj[val] == 'object'){
+				if(typeof obj[val] == 'object' && obj.hasOwnProperty(val)){
 					obj[val] = fn.combindOver(obj[val],obj2[val])
 				}
 				else{

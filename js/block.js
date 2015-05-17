@@ -8,12 +8,14 @@ function Block(position,data,chunk){
 
 	this.data = {};
 	this.data.__proto__ = Block.prototype.data;
-	for(var i in this.material.blockData){
-		this.data[i] = this.material.blockData[i];
-	}
-	for(var i in this.shape.blockData){
-		this.data[i] = this.shape.blockData[i];
-	}
+	fn.combindOver(this.data,this.material.blockData);
+	fn.combindOver(this.data,this.shape.blockData);
+	// for(var i in this.material.blockData){
+	// 	if(this.data[i] !== this.material.blockData[i]) this.data[i] = this.material.blockData[i];
+	// }
+	// for(var i in this.shape.blockData){
+	// 	if(this.data[i] !== this.shape.blockData[i]) this.data[i] = this.shape.blockData[i];
+	// }
 }
 Block.prototype = {
 	chunk: undefined,

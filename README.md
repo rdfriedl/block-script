@@ -19,7 +19,6 @@ later on i plan to add support for the following browsers
  - [Internet Explorer](http://windows.microsoft.com/en-us/internet-explorer)
 
 
-
 ###creadits
 
 ----------

@@ -22,11 +22,11 @@ shapes = {
 
 function Shape(id,data){
 	this.blockData = {};
-	this.blockData.__proto__ = Block.prototype.data;
 	for (var i in data) {
 		this[i] = data[i];
 	};
 	this.id = id;
+	this.blockData.__proto__ = Block.prototype.data;
 	if(this.collider) this.collider.computeFaceNormals();
 	if(this.geometry){
 		for (var i = 0; i < this.geometry.faces.length; i++) {

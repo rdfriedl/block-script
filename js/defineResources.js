@@ -32,8 +32,9 @@
 			return data;
 		},
 		dispose: function(cb){
-			this.mapLoader.db.delete();
-			if(cb) cb();
+			this.mapLoader.db.delete().then(function(){
+				if(cb) cb();
+			});
 		},
 
 		toJSON: function(cb,progress){
