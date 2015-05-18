@@ -4,7 +4,6 @@ fn = {
 	combindOver: function(obj,obj2,exclude){ //obj2 gose over obj, values that are not in obj are added
 		exclude = exclude || [];
 		var props = Object.keys(obj2);
-		// for (var val in obj2){
 		for(var i = 0; i < props.length; i++){
 			var val = props[i];
 			if(typeof obj2[val] !== 'object' || exclude.indexOf(val) !== -1){ //if its not an object or weather to skip it
@@ -38,13 +37,15 @@ fn = {
 	//cant use _.extend because it makes a shallow extend
 	combindIn: function(obj,obj2,exclude){ //obj2 gose in obj, values that are not in obj are NOT added (works with arrays)
 		exclude = exclude || [];
-		for(var i in obj2){
-			if(obj[i] != undefined){
-				obj[i] = (_.isObject(obj2[i]))? fn.combindIn(obj[i],obj2[i]) : obj2[i];
+		var props = Object.keys(obj2);
+		for(var i = 0; i < props.length; i++){
+			var val = props[i];
+			if(obj[val] != undefined){
+				obj[val] = (_.isObject(obj2[val]))? fn.combindIn(obj[val],obj2[val]) : obj2[val];
 			}
 			//it may a index in a array
 			else if(!isNaN(i)){
-				obj[i] = (_.isObject(obj2[i]))? fn.duplicate(obj2[i]) : obj2[i];
+				obj[val] = (_.isObject(obj2[val]))? fn.duplicate(obj2[val]) : obj2[val];
 			}
 		}
 

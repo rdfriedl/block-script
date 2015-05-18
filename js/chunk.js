@@ -15,7 +15,6 @@ Chunk = function(position,map){
     this.wireframe.position.set(0.5,0.5,0.5).multiplyScalar(game.chunkSize).multiplyScalar(game.blockSize);
     this.wireframe.scale.multiplyScalar(game.chunkSize).multiplyScalar(game.blockSize);
     this.debugGroup.add(this.wireframe);
-    
 }
 Chunk.prototype = {
     blocks: [],
@@ -41,16 +40,17 @@ Chunk.prototype = {
         if(!data) return this.removeBlock(position,dontBuild);
 
         var oldBlock;
-        var pos = positionToIndex(position,game.chunkSize);
+        var index = (position instanceof THREE.Vector3)? positionToIndex(position,game.chunkSize) : position;
+        var pos = (position instanceof THREE.Vector3)? position : indexToPosition(position,game.chunkSize);
 
         //dispose of the old block
-        if(this.blocks[pos]){
-            oldBlock = this.blocks[pos];
-            this.blocks[pos].dispose();
+        if(this.blocks[index]){
+            oldBlock = this.blocks[index];
+            this.blocks[index].dispose();
         }
 
-        var block = new Block(position,data,this);
-        this.blocks[pos] = block;
+        var block = new Block(pos,data,this);
+        this.blocks[index] = block;
 
         if(!dontBuild){
             this.build()
@@ -65,15 +65,15 @@ Chunk.prototype = {
     },
     removeBlock: function(position,dontBuild){
         var oldBlock;
-        var pos = positionToIndex(position,game.chunkSize);
+        var index = (position instanceof THREE.Vector3)? positionToIndex(position,game.chunkSize) : position;
 
         //dispose of the old block
-        if(this.blocks[pos]){
-            oldBlock = this.blocks[pos];
-            this.blocks[pos].dispose();
+        if(this.blocks[index]){
+            oldBlock = this.blocks[index];
+            this.blocks[index].dispose();
         }
 
-        this.blocks[pos] = undefined;
+        this.blocks[index] = undefined;
 
         if(!dontBuild){
             this.build()
@@ -90,10 +90,14 @@ Chunk.prototype = {
         data = data || [];
 
         for (var i = 0; i < data.length; i++) {
-            this.setBlock(indexToPosition(i,game.chunkSize),data[i],true);
+            this.setBlock(i,data[i],true);
         };
         this.events.emit('inport',data);
         this.build();
+
+        if(this.blocks.length !== game.chunkSize * game.chunkSize * game.chunkSize){
+            console.error('not all blocks inported: '+this.position.toString()+' ('+this.blocks.length+')');
+        }
     },
     exportData: function(){
         //going to have to loop through block array and export each one
@@ -149,6 +153,7 @@ Chunk.prototype = {
             };
 
             geometry.mergeVertices();
+            geometry.computeFaceNormals();
 
             var mesh = new THREE.Mesh(geometry,material);
             mesh.scale.multiplyScalar(game.blockSize);

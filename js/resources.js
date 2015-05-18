@@ -113,7 +113,7 @@ resources = {
 		if(r){
 			r.dispose(function(){
 				//delete from db
-				settingsDB[r.type].delete(r.id);
+				settingsDB[r.type].delete(r.id); //dose not delete the map!!
 
 				//remove from array
 				r.remove();

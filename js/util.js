@@ -63,16 +63,34 @@ function basicMaterial(url,prop,texProp){
 
 	return mat;
 }
+loadShapeCache = {};
 function loadShape(url,name){
-	name = name || "SHAPE";
-	var geometry = new THREE.Geometry();
-	var loader = new THREEx.UniversalLoader()
-	loader.load(url, function(obj){
-		var obj = obj.getObjectByName(name);
+	name = name || "Shape";
+	var geometry;
+
+	var func = function(data,name){
+		//get the geometry
+		var obj = data.getObjectByName(name);
 		if(obj){
 			var geo = obj.getGeometryByName('');
 
-			if(geo){
+			if(geo) return geo;
+		}
+		return new THREE.Geometry();
+	}
+
+	//create loader
+	if(!loadShapeCache[url]){
+		var loader = new THREEx.UniversalLoader();
+		loadShapeCache[url] = {
+			loader: loader,
+			geometries: {}
+		}
+		loader.load(url, function(url,data){
+			for (var i in loadShapeCache[url].geometries) {
+				var geo = func(data,i);
+				var geometry = loadShapeCache[url].geometries[i];
+
 				geometry.vertices = geo.vertices;
 				geometry.verticesNeedUpdate = true;
 
@@ -83,9 +101,17 @@ function loadShape(url,name){
 				geometry.colorsNeedUpdate = true;
 
 				geometry.computeFaceNormals();
-			}
-		}
-	})
+			};
+		}.bind(this,url))
+	}
+	
+	//add geometry to the list
+	if(!loadShapeCache[url].geometries[name]){
+		geometry = loadShapeCache[url].geometries[name] = new THREE.Geometry();
+	}
+	else{
+		geometry = loadShapeCache[url].geometries[name];
+	}
 	return geometry;
 }
 THREE.Vector3.prototype.sign = function(){

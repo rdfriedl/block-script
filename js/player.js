@@ -18,17 +18,6 @@ function Player(state,camera){
 
 	this.scene.add(this.object);
 
-	//selection
-	this.selectionObject = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), new THREE.MeshBasicMaterial({
-		color: 0xffff88,
-		transparent: true,
-		opacity: 0.2,
-		shading: THREE.NoShading,
-		depthWrite: false
-	}));
-	this.selectionObject.scale.set(game.blockSize,game.blockSize,game.blockSize).multiplyScalar(1.01);
-	this.scene.add(this.selectionObject);
-
 	//movement events
 	this.setUpKeys();
 	$(document).mousedown(function(event){
@@ -72,7 +61,7 @@ Player.prototype = {
 		viewBobbing: 0,
 		viewBobbingDir: 1,
 	},
-	selectionObject: undefined,
+	selectionObject: {},
 	placeOutLine: {},
 	selection: {
 		block: undefined,
@@ -374,72 +363,100 @@ Player.prototype = {
 		this.pickBlock();
 	},
 	pickBlock: function(){
-		//update shape
-		if(this.selection.place.shape !== this.placeOutLine._shape){
-			var geo = shapes.getShape(this.selection.place.shape).geometry;
-			//remove
-			if(this.placeOutLine.parent) this.placeOutLine.parent.remove(this.placeOutLine);
-			this.placeOutLine = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({
-				color: 0xffff55,
-				wireframe: true
-			}));
-			this.placeOutLine.scale.multiplyScalar(game.blockSize);
-			this.scene.add(this.placeOutLine);
-			this.placeOutLine._shape = this.selection.place.shape;
-		}
+		this.selection.block = undefined;
+		this.selection.normal.set(0,0,0);
 
 		//cast ray to find block data
 		this.rayCaster.set(this.camera.getWorldPosition(), this.controls.getDirection(new THREE.Vector3()));
 
-		var pos = this.position.clone().divideScalar(game.blockSize).floor().divideScalar(game.chunkSize).floor();
-		var chunk = this.state.voxelMap.getChunk(pos);
-		if(chunk){
-			// var chunks = [chunk.mesh];
-			var intersects = this.rayCaster.intersectObject(this.state.voxelMap.group,true);
-			for (var i = 0; i < intersects.length; i++) {
-				var pos = new THREE.Vector3().add(intersects[i].point).sub(intersects[i].face.normal);
-				pos.divideScalar(game.blockSize).floor();
+		var intersects = this.rayCaster.intersectObject(this.state.voxelMap.group,true);
+		for (var i = 0; i < intersects.length; i++) {
+			var pos = new THREE.Vector3().add(intersects[i].point).sub(intersects[i].face.normal);
+			pos.divideScalar(game.blockSize).floor();
 
-				var block = this.state.voxelMap.getBlock(pos);
+			var block = this.state.voxelMap.getBlock(pos);
 
-				if(!(block instanceof Block)) continue;
-
+			if(block instanceof Block){
 				this.selection.block = block;
 
 				//get normal
-				var box = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3(game.blockSize,game.blockSize,game.blockSize));
-				box.translate(block.scenePosition);
-				var n = this.rayCaster.ray.intersectBox(box) || block.sceneCenter, normal = new THREE.Vector3();
-				n.sub(block.sceneCenter);
-	            if(Math.abs(n.y) > Math.abs(n.x) && Math.abs(n.y) > Math.abs(n.z))
-	                normal.y = Math.sign(n.y);
-	            else if(Math.abs(n.x) > Math.abs(n.y) && Math.abs(n.x) > Math.abs(n.z))
-	                normal.x = Math.sign(n.x);
-	            else if(Math.abs(n.z) > Math.abs(n.x) && Math.abs(n.z) > Math.abs(n.y))
-	                normal.z = Math.sign(n.z);
-	            this.selection.normal = normal;
+				var n = intersects[i].face.normal.clone().floor();
+				if(n.x + n.y + n.z == 1){
+		            this.selection.normal = intersects[i].face.normal.clone();
+				}
+				else{
+					//fall back to using a box
+					var box = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3(game.blockSize,game.blockSize,game.blockSize));
+					box.translate(block.scenePosition);
+					var n = this.rayCaster.ray.intersectBox(box) || block.sceneCenter, normal = new THREE.Vector3();
+					n.sub(block.sceneCenter);
+		            if(Math.abs(n.y) > Math.abs(n.x) && Math.abs(n.y) > Math.abs(n.z))
+		                normal.y = Math.sign(n.y);
+		            else if(Math.abs(n.x) > Math.abs(n.y) && Math.abs(n.x) > Math.abs(n.z))
+		                normal.x = Math.sign(n.x);
+		            else if(Math.abs(n.z) > Math.abs(n.x) && Math.abs(n.z) > Math.abs(n.y))
+		                normal.z = Math.sign(n.z);
+		            this.selection.normal = normal;
 
-	            delete n, box; //since this is a loop delete stuff to help the garbage collector
+	            	delete n, box;
+				}
 
-	            //selection
-	            this.selectionObject.visible = true;
-				this.selectionObject.position.copy(this.selection.block.worldPosition).add(new THREE.Vector3(.5,.5,.5)).multiplyScalar(game.blockSize);
-            	this.selectionObject.rotation.copy(this.selection.block.rotation);
-	            //outline
-				this.placeOutLine.visible = !this.selection.block.getNeighbor(this.selection.normal);
-				this.placeOutLine.position.copy(this.selection.block.worldPosition).add(this.selection.normal).add(new THREE.Vector3(.5,.5,.5)).multiplyScalar(game.blockSize);
-				this.placeOutLine.lookAt(this.placeOutLine.position.clone().add(this.selection.normal));
-				this.placeOutLine.rotateX(THREE.Math.degToRad(90));
-				this.placeOutLine.rotateY(this.selection.place.blockRotation);
-				this.selection.place.rotation.copy(this.placeOutLine.rotation);
-				return;
-			};
+	            break;
+			}
+			delete pos;
+		};
 
-			//if we made it to this point it means there are not intersections
-			this.selectionObject.visible = false;
+
+		//update shape
+		if(this.selection.block){
+			if(this.selection.place.shape !== this.placeOutLine._shape){
+				var geo = shapes.getShape(this.selection.place.shape).wireFrame;
+				//remove
+				if(this.placeOutLine.parent) this.placeOutLine.parent.remove(this.placeOutLine);
+				this.placeOutLine = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({
+					color: 0xffff55,
+					transparent: true,
+					opacity: 0.4
+				}));
+				this.placeOutLine.scale.multiplyScalar(game.blockSize);
+				this.scene.add(this.placeOutLine);
+				this.placeOutLine._shape = this.selection.place.shape;
+			}
+
+			this.placeOutLine.visible = !this.selection.block.getNeighbor(this.selection.normal);
+			this.placeOutLine.position.copy(this.selection.block.worldPosition).add(this.selection.normal).add(new THREE.Vector3(.5,.5,.5)).multiplyScalar(game.blockSize);
+			this.placeOutLine.lookAt(this.placeOutLine.position.clone().add(this.selection.normal));
+			this.placeOutLine.rotateX(THREE.Math.degToRad(90));
+			this.placeOutLine.rotateY(this.selection.place.blockRotation);
+			this.selection.place.rotation.copy(this.placeOutLine.rotation);
+		}
+		else{
 			this.placeOutLine.visible = false;
-			this.selection.block = undefined;
-			this.selection.normal.set(0,0,0);
+		}
+
+		//update selection
+		if(this.selection.block){
+			//update geo
+			if(this.selection.block.shape !== this.selectionObject._shape){
+				var geo = this.selection.block.shape.geometry;
+				//remove
+				if(this.selectionObject.parent) this.selectionObject.parent.remove(this.selectionObject);
+				this.selectionObject = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({
+					color: 0xffff55,
+					transparent: true,
+					opacity: 0.4
+				}));
+				this.selectionObject.scale.multiplyScalar(game.blockSize).multiplyScalar(1.02);
+				this.scene.add(this.selectionObject);
+				this.selectionObject._shape = this.selection.place.shape;
+			}
+
+			this.selectionObject.visible = true;
+			this.selectionObject.position.copy(this.selection.block.worldPosition).add(new THREE.Vector3(.501,.501,.501)).multiplyScalar(game.blockSize);
+        	this.selectionObject.rotation.copy(this.selection.block.rotation);
+		}
+		else{
+			this.selectionObject.visible = false;
 		}
 	},
 	placeBlock: function(){

@@ -2,20 +2,12 @@ function Block(position,data,chunk){
 	this.position = position || new THREE.Vector3();
 	this.chunk = chunk;
 
-	data.material = data.material || materials.getMaterial('stone');
-	data.shape = data.shape || shapes.blankShape;
 	this.inportData(data);
 
 	this.data = {};
 	this.data.__proto__ = Block.prototype.data;
 	fn.combindOver(this.data,this.material.blockData);
 	fn.combindOver(this.data,this.shape.blockData);
-	// for(var i in this.material.blockData){
-	// 	if(this.data[i] !== this.material.blockData[i]) this.data[i] = this.material.blockData[i];
-	// }
-	// for(var i in this.shape.blockData){
-	// 	if(this.data[i] !== this.shape.blockData[i]) this.data[i] = this.shape.blockData[i];
-	// }
 }
 Block.prototype = {
 	chunk: undefined,
@@ -36,12 +28,8 @@ Block.prototype = {
 	},
 
 	inportData: function(data){
-		if(data.material){
-			this.material = materials.getMaterial(data.material);
-		}
-		if(data.shape){
-			this.shape = shapes.getShape(data.shape);
-		}
+		this.material = materials.getMaterial(data.material);
+		this.shape = shapes.getShape(data.shape);
 		if(data.rotation && this.data.canRotate){
 			this.rotation = new THREE.Euler(data.rotation.x,data.rotation.y,data.rotation.z);
 		}
@@ -58,7 +46,7 @@ Block.prototype = {
 		};
 	},
 	dispose: function(){
-
+		delete this;
 	},
 	getNeighbor: function(v){
         if(_.isArray(v)) v = new THREE.Vector3().fromArray(v);
@@ -68,7 +56,7 @@ Block.prototype = {
        	var chunk = this.chunk;
         if(pos.x < 0 || pos.y < 0 || pos.z < 0 || pos.x >= game.chunkSize || pos.y >= game.chunkSize || pos.z >= game.chunkSize){
         	chunk = chunk.getNeighbor(v.clone());
-        	if(!chunk) return; //dont go any futher if we can find the chunk
+        	if(!chunk) return; //dont go any futher if we cant find the chunk
         }
 
         if(this.edge){

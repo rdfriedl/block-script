@@ -2,8 +2,9 @@
 materials = {
 	materials: {},
 	material: undefined,
+	nullMaterial: 'stone',
 	getMaterial: function(id){
-		return this.materials[id];
+		return this.materials[id] || this.getMaterial(this.nullMaterial);
 	},
 	getMaterialIndex: function(id){
 		var mat = this.getMaterial(id)
@@ -14,6 +15,9 @@ materials = {
 	},
 	addMaterial: function(id,mat){
 		this.updateMaterial(id,mat);
+	},
+	materialCompiled: function(id){
+		return !!this.materials[id];
 	},
 	updateMaterial: function(id,mat){
 		this.materials[id] = mat;
@@ -35,7 +39,7 @@ materials = {
 		if(!(mat instanceof resources.Material)) return;
 		if(mat.data.materialID == '') return;
 
-		if(!this.getMaterial(mat.data.materialID) || refresh){
+		if(!this.materialCompiled(mat.data.materialID) || refresh){
 			//compile it
 			var matData = mat.data.material;
 

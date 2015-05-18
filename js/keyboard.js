@@ -73,7 +73,10 @@ $(document).ready(function() {
 
 function simulateKeyEvent(el,char,type) {
   	var e = document.createEvent("KeyboardEvent");
-  	e.initKeyboardEvent(type || "keypress", true, true, window, char, char, 0, 0, 0, true);
+  	if(e.initKeyboardEvent){
+  		e.initKeyboardEvent(type || "keypress", true, true, window, char, char, 0, 0, 0, true);
+  	}
+  	else e.initKeyEvent(type || "keypress", true, true, window, char, char, 0, 0, 0, true);
   	Object.defineProperty(e,'keyCode',{
   		value: char
   	});

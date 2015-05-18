@@ -84,7 +84,7 @@ game = {
 					stop: true,
 					blocks: [
 						{
-							block: 'air',
+							block: undefined,
 							height: 1000,
 						}
 					]
@@ -225,7 +225,7 @@ game = {
 	requestPointerLock: function(){
 		this.player.enabled = true;
 		// Ask the browser to lock the pointer
-		document.body.requestPointerLock = document.body.requestPointerLock || document.body.mozRequestPointerLock || document.body.webkitRequestPointerLock;
+		document.body.requestPointerLock = document.body.requestPointerLock || document.body.mozRequestPointerLock || document.body.webkitRequestPointerLock || function(){};
 
 		if(/Firefox/i.test(navigator.userAgent)) {
 
@@ -238,7 +238,7 @@ game = {
 	},
 	exitPointerLock: function(){
 		this.player.enabled = false;
-		document.exitPointerLock = document.exitPointerLock || document.mozExitPointerLock || document.webkitExitPointerLock;
+		document.exitPointerLock = document.exitPointerLock || document.mozExitPointerLock || document.webkitExitPointerLock || function(){};
 	    document.exitPointerLock();
 	},
 	exitFullscreen: function(){
