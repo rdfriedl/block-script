@@ -27,19 +27,19 @@ function Shape(id,data){
 	};
 	this.id = id;
 	this.blockData.__proto__ = Block.prototype.data;
-	if(this.collider) this.collider.computeFaceNormals();
-	if(this.geometry){
-		for (var i = 0; i < this.geometry.faces.length; i++) {
-			this.geometry.faces[i].materialIndex = 0;
-		};
-		this.geometry.computeFaceNormals();
-	}
+	this.collision.computeFaceNormals();
+	for (var i = 0; i < this.geometry.faces.length; i++) {
+		this.geometry.faces[i].materialIndex = 0;
+	};
+	this.geometry.computeFaceNormals();
 }
 Shape.prototype = {
 	id: '',
 	name: '',
-	collision: undefined,
-	geometry: undefined,
+	collision: new THREE.Geometry(),
+	geometry: new THREE.Geometry(),
+	wireFrame: new THREE.Geometry(),
+	image: '',
 	blockData:{}
 }
 Shape.prototype.constructor = Shape;
@@ -53,6 +53,7 @@ var cube = new Shape('cube',{
 	geometry: new THREE.BoxGeometry(1, 1, 1),
 	collision: new THREE.BoxGeometry(1, 1, 1),
 	wireFrame: loadShape(shapeFolder+'cube.dae','WireFrame'),
+	image: 'res/img/shapes/cube.png',
 	blockData: {
 		canRotate: false,
 	}
@@ -64,6 +65,7 @@ var halfCube = new Shape('halfCube',{
 	geometry: loadShape(shapeFolder+'halfCube.dae','Shape'),
 	collision: loadShape(shapeFolder+'halfCube.dae','Shape'),
 	wireFrame: loadShape(shapeFolder+'halfCube.dae','WireFrame'),
+	image: 'res/img/shapes/halfCube.png',
 	blockData: {
 		transparent: true
 	}
@@ -75,6 +77,7 @@ var slant = new Shape('slant',{
 	geometry: loadShape(shapeFolder+'slant.dae','Shape'),
 	collision: loadShape(shapeFolder+'slant.dae','Shape'),
 	wireFrame: loadShape(shapeFolder+'slant.dae','WireFrame'),
+	image: 'res/img/shapes/slant.png',
 	blockData: {
 		transparent: true
 	}
@@ -86,6 +89,7 @@ var slantCornerIn = new Shape('slantCornerIn',{
 	geometry: loadShape(shapeFolder+'slantCornerIn.dae','Shape'),
 	collision: loadShape(shapeFolder+'slantCornerIn.dae','Shape'),
 	wireFrame: loadShape(shapeFolder+'slantCornerIn.dae','WireFrame'),
+	image: 'res/img/shapes/slantCornerIn.png',
 	blockData: {
 		transparent: true
 	}
@@ -97,6 +101,7 @@ var slantCornerOut = new Shape('slantCornerOut',{
 	geometry: loadShape(shapeFolder+'slantCornerOut.dae','Shape'),
 	collision: loadShape(shapeFolder+'slantCornerOut.dae','Shape'),
 	wireFrame: loadShape(shapeFolder+'slantCornerOut.dae','WireFrame'),
+	image: 'res/img/shapes/slantCornerOut.png',
 	blockData: {
 		transparent: true
 	}
@@ -108,6 +113,7 @@ var halfSlant = new Shape('halfSlant',{
 	geometry: loadShape(shapeFolder+'halfSlant.dae','Shape'),
 	collision: loadShape(shapeFolder+'halfSlant.dae','Shape'),
 	wireFrame: loadShape(shapeFolder+'halfSlant.dae','WireFrame'),
+	image: 'res/img/shapes/halfSlant.png',
 	transparent: true
 });
 shapes.addShape(halfSlant);
@@ -117,6 +123,7 @@ var halfSlantCornerIn = new Shape('halfSlantCornerIn',{
 	geometry: loadShape(shapeFolder+'halfSlantCornerIn.dae','Shape'),
 	collision: loadShape(shapeFolder+'halfSlantCornerIn.dae','Shape'),
 	wireFrame: loadShape(shapeFolder+'halfSlantCornerIn.dae','WireFrame'),
+	image: 'res/img/shapes/halfSlantCornerIn.png',
 	blockData: {
 		transparent: true
 	}
@@ -128,6 +135,7 @@ var halfSlantCornerOut = new Shape('halfSlantCornerOut',{
 	geometry: loadShape(shapeFolder+'halfSlantCornerOut.dae','Shape'),
 	collision: loadShape(shapeFolder+'halfSlantCornerOut.dae','Shape'),
 	wireFrame: loadShape(shapeFolder+'halfSlantCornerOut.dae','WireFrame'),
+	image: 'res/img/shapes/halfSlantCornerOut.png',
 	blockData: {
 		transparent: true
 	}
@@ -139,6 +147,7 @@ var stairs = new Shape('stairs',{
 	geometry: loadShape(shapeFolder+'stairs.dae','Shape'),
 	collision: loadShape(shapeFolder+'stairs.dae','Shape'),
 	wireFrame: loadShape(shapeFolder+'stairs.dae','WireFrame'),
+	image: 'res/img/shapes/stairs.png',
 	blockData: {
 		transparent: true
 	}
@@ -150,6 +159,7 @@ var stairsCornerIn = new Shape('stairsCornerIn',{
 	geometry: loadShape(shapeFolder+'stairsCornerIn.dae','Shape'),
 	collision: loadShape(shapeFolder+'stairsCornerIn.dae','Shape'),
 	wireFrame: loadShape(shapeFolder+'stairsCornerIn.dae','WireFrame'),
+	image: 'res/img/shapes/stairsCornerIn.png',
 	blockData: {
 		transparent: true
 	}
@@ -161,6 +171,7 @@ var stairsCornerOut = new Shape('stairsCornerOut',{
 	geometry: loadShape(shapeFolder+'stairsCornerOut.dae','Shape'),
 	collision: loadShape(shapeFolder+'stairsCornerOut.dae','Shape'),
 	wireFrame: loadShape(shapeFolder+'stairsCornerOut.dae','WireFrame'),
+	image: 'res/img/shapes/stairsCornerOut.png',
 	blockData: {
 		transparent: true
 	}

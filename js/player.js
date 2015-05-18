@@ -438,7 +438,7 @@ Player.prototype = {
 		if(this.selection.block){
 			//update geo
 			if(this.selection.block.shape !== this.selectionObject._shape){
-				var geo = this.selection.block.shape.geometry;
+				var geo = this.selection.block.shape.wireFrame;
 				//remove
 				if(this.selectionObject.parent) this.selectionObject.parent.remove(this.selectionObject);
 				this.selectionObject = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({
@@ -446,13 +446,13 @@ Player.prototype = {
 					transparent: true,
 					opacity: 0.4
 				}));
-				this.selectionObject.scale.multiplyScalar(game.blockSize).multiplyScalar(1.02);
+				this.selectionObject.scale.multiplyScalar(game.blockSize);
 				this.scene.add(this.selectionObject);
 				this.selectionObject._shape = this.selection.place.shape;
 			}
 
 			this.selectionObject.visible = true;
-			this.selectionObject.position.copy(this.selection.block.worldPosition).add(new THREE.Vector3(.501,.501,.501)).multiplyScalar(game.blockSize);
+			this.selectionObject.position.copy(this.selection.block.worldPosition).add(new THREE.Vector3(.5,.5,.5)).multiplyScalar(game.blockSize);
         	this.selectionObject.rotation.copy(this.selection.block.rotation);
 		}
 		else{

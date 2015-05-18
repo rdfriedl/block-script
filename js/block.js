@@ -2,12 +2,15 @@ function Block(position,data,chunk){
 	this.position = position || new THREE.Vector3();
 	this.chunk = chunk;
 
-	this.inportData(data);
-
+	this.material = materials.getMaterial(data.material);
+	this.shape = shapes.getShape(data.shape);
+		
 	this.data = {};
 	this.data.__proto__ = Block.prototype.data;
 	fn.combindOver(this.data,this.material.blockData);
 	fn.combindOver(this.data,this.shape.blockData);
+
+	this.inportData(data);
 }
 Block.prototype = {
 	chunk: undefined,

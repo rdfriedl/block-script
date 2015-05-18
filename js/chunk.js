@@ -147,7 +147,7 @@ Chunk.prototype = {
 
                     //collision
                     // if(block.visible && block.shape){
-                    //     collisionGeometry.merge(block.shape.collider,matrix);
+                    //     collisionGeometry.merge(block.shape.collision,matrix);
                     // }
                 }
             };

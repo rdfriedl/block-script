@@ -5,26 +5,29 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+		<link rel="stylesheet" href="css/bootstrap.min.css">
 		<link rel="stylesheet" href="css/bootstrap-theme.min.css">
 		<link rel="stylesheet" href="css/font-awesome.min.css">
-		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/messenger/1.4.0/css/messenger.css">
-		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/messenger/1.4.0/css/messenger-spinner.css">
-		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/messenger/1.4.0/css/messenger-theme-flat.css">
-		<link rel="stylesheet" type="text/css" href="style.css">
+		<link rel="stylesheet" href="css/messenger.css">
+		<link rel="stylesheet" href="css/messenger-spinner.css">
+		<link rel="stylesheet" href="css/messenger-theme-flat.css">
+		<link rel="stylesheet" href="css/style.css">
 		
-		<script src="https://code.jquery.com/jquery-2.1.3.min.js" defer></script>
+		<!-- lib -->
+		<script src="js/lib/jquery-2.1.3.min.js" defer></script>
+		<script src="js/lib/bootstrap.min.js" defer></script>
 		<script src="js/lib/knockout.js" defer></script>
 		<script src="js/lib/knockout-mapping.js" defer></script>
 		<script src="js/lib/underscore-min.js" defer></script>
 		<script src="js/lib/minivents.js" defer></script>
-		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js" defer></script>
-		<script src="https://code.createjs.com/soundjs-0.6.0.min.js" defer></script>
+		<script src="js/lib/soundjs-0.6.0.min.js" defer></script>
 		<script src="js/lib/keypress-2.1.0.min.js" defer></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/messenger/1.4.0/js/messenger.min.js" defer></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/messenger/1.4.0/js/messenger-theme-flat.js" defer></script>
+		<script src="js/lib/messenger.min.js" defer></script>
+		<script src="js/lib/messenger-theme-flat.js" defer></script>
 		<script src="js/lib/jquery.mousewheel.min.js" defer></script>
+		<script src="js/lib/dexie.min.js" defer></script>
 		
+		<!-- threejs lib -->
 		<script src="js/lib/three.min.js" defer></script>
 		<script src="js/lib/threejs/controls/PointerLockControls.js" defer></script>
 		<script src="js/lib/threejs/ImprovedNoise.js" defer></script>
@@ -32,21 +35,19 @@
 		<script src="js/lib/threejs/Detector.js" defer></script>
 		<script src="js/lib/threejs/libs/stats.min.js" defer></script>
 		<script src="js/lib/threejs/controls/OrbitControls.js" defer></script>
-		<script src='js/lib/threejs/loaders/STLLoader.js' defer></script>
-		<script src='js/lib/threejs/loaders/ColladaLoader.js' defer></script>
-		<script src='js/lib/threejs/loaders/OBJLoader.js' defer></script>
-		<script src='js/lib/threejs/loaders/MTLLoader.js' defer></script>
-		<script src='js/lib/threejs/loaders/OBJMTLLoader.js' defer></script>
-		<script src='js/lib/threejs/loaders/BinaryLoader.js' defer></script>
-		<script src='js/lib/threex.universalloader.js' defer></script>
-
-		<script src="js/lib/functions.js" defer></script>
-		<script src="js/lib/dexie.min.js" defer></script>
+		<script src="js/lib/threejs/loaders/STLLoader.js" defer></script>
+		<script src="js/lib/threejs/loaders/ColladaLoader.js" defer></script>
+		<script src="js/lib/threejs/loaders/OBJLoader.js" defer></script>
+		<script src="js/lib/threejs/loaders/MTLLoader.js" defer></script>
+		<script src="js/lib/threejs/loaders/OBJMTLLoader.js" defer></script>
+		<script src="js/lib/threejs/loaders/BinaryLoader.js" defer></script>
+		<script src="js/lib/threex.universalloader.js" defer></script>
 
 		<!-- util(s) and pollyfill(s) -->
 		<script src="js/util.js" defer></script>
 
 		<!-- custom lib -->
+		<script src="js/lib/functions.js" defer></script>
 		<script src="js/collision.js" defer></script>
 		<script src="js/player.js" defer></script>
 		<script src="js/voxelMap.js" defer></script>
@@ -497,7 +498,7 @@
 										<!-- /ko -->
 							  	  	</div>
 							  	  	<div role="tabpanel" class="tab-pane" id="shapes" data-bind="foreach: shapes">
-							  	  		<button type="button" class="btn btn-default" data-bind="text: name, click: $root.set($parent.selectedShape,id), css: {'active': id == $parent.selectedShape() }"></button>
+							  	  		<img class="shape" data-bind="title: name, attr:{'src': image}, click: $root.set($parent.selectedShape,id), css: {'selected': id == $parent.selectedShape() }"></img>
 							  	  	</div>
 							  	</div>
 							</div>

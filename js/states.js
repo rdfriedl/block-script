@@ -47,6 +47,7 @@ states = {
 	},
 	update: function(){ //update loop for the active state
 		var dtime = clock.getDelta() * 60;
+		// if(dtime > 10) dtime = 10;
 		requestAnimationFrame(this.update.bind(this));
 		if(this.activeState){
 			if(this.activeState.update){

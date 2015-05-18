@@ -56,5 +56,16 @@ function addDefaultResources(){
 		}
 	})
 
+	materialFolder.defineResource('material',{
+		name: 'Brick',
+		materialID: 'brick',
+		material: basicMaterial(url+'brick.png').toJSON(),
+		blockData: {
+			stepSound: ['stepStone1','stepStone2','stepStone3','stepStone4'],
+			placeSound: ['digStone1','digStone2','digStone3','digStone4'],
+			removeSound: ['digStone1','digStone2','digStone3','digStone4'],
+		}
+	})
+
 	//rooms
 }

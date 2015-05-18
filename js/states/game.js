@@ -416,7 +416,7 @@ game = {
 					self.shapes.push({
 						id: shape.id,
 						name: shape.name,
-						material: mat.material.map.sourceFile
+						image: shape.image
 					})
 				};
 			}

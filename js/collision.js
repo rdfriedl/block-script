@@ -270,7 +270,8 @@ collisions = {
 
         //test for blocks
         for (var i = 1; i <= loops && done == false; i++) {
-            var pos = a.position.clone().add(velocity.clone().divideScalar(loops).multiplyScalar(i));
+            var _velocity = velocity.clone().divideScalar(loops).multiplyScalar(i);
+            var pos = a.position.clone().add(_velocity);
             //check corners
             var box = a.collisionEntity._box.clone().translate(pos);
             var corners = [];
@@ -327,8 +328,8 @@ collisions = {
                 
                 if(block.data.canCollide){
                     if(collisions.canCollide(a.collisionEntity,block.collisionEntity)){
-                        if(collisions.checkCollision(a.collisionEntity,block.collisionEntity,velocity)){
-                            var a = collisions.SweptAABB(a.collisionEntity,block.collisionEntity,velocity);
+                        if(collisions.checkCollision(a.collisionEntity,block.collisionEntity,_velocity)){
+                            var a = collisions.SweptAABB(a.collisionEntity,block.collisionEntity,_velocity);
                             colInfo = a;
                             //had a collision so break out of the loop
                             done = true;
