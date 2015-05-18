@@ -65,7 +65,7 @@ body {
 }
 #game .menus .invt .shape{
 	cursor: pointer;
-	width: 8%;
+	width: 64px;
 	border-radius: 10px;
 	border: 2px solid transparent;
 }

@@ -24,6 +24,7 @@ Block.prototype = {
 	data: {
 		transparent: false,
 		canRotate: true,
+		canRotateOnY: true,
 		canCollide: true,
 		stepSound: [],
 		placeSound: [],

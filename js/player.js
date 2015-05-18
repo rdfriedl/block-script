@@ -222,9 +222,13 @@ Player.prototype = {
 			{
 				keys: 'MWU',
 				on_keydown: function(){
-					if(shapes.getShape(this.selection.place.shape).blockData.canRotate && this.selection.block){
+					var shape = shapes.getShape(this.selection.place.shape);
+					if(shape.blockData.canRotate && shape.blockData.canRotateOnY && this.selection.block){
 						createjs.Sound.play('digStone1');
 						this.selection.place.blockRotation += THREE.Math.degToRad(90);
+					}
+					else{
+						this.selection.place.blockRotation = 0;
 					}
 				},
 				this: this
@@ -232,9 +236,13 @@ Player.prototype = {
 			{
 				keys: 'MWD',
 				on_keydown: function(){
-					if(shapes.getShape(this.selection.place.shape).blockData.canRotate && this.selection.block){
+					var shape = shapes.getShape(this.selection.place.shape);
+					if(shape.blockData.canRotate && shape.blockData.canRotateOnY && this.selection.block){
 						createjs.Sound.play('digStone1');
 						this.selection.place.blockRotation -= THREE.Math.degToRad(90);
+					}
+					else{
+						this.selection.place.blockRotation = 0;
 					}
 				},
 				this: this

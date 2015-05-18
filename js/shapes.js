@@ -114,7 +114,10 @@ var halfSlant = new Shape('halfSlant',{
 	collision: loadShape(shapeFolder+'halfSlant.dae','Shape'),
 	wireFrame: loadShape(shapeFolder+'halfSlant.dae','WireFrame'),
 	image: 'res/img/shapes/halfSlant.png',
-	transparent: true
+	blockData:{
+		transparent: true,
+		canRotateOnY: false
+	}
 });
 shapes.addShape(halfSlant);
 
@@ -177,6 +180,32 @@ var stairsCornerOut = new Shape('stairsCornerOut',{
 	}
 });
 shapes.addShape(stairsCornerOut);
+
+var cone = new Shape('cone',{
+	name: 'Cone',
+	geometry: loadShape(shapeFolder+'cone.dae','Shape'),
+	collision: loadShape(shapeFolder+'cone.dae','Shape'),
+	wireFrame: loadShape(shapeFolder+'cone.dae','WireFrame'),
+	image: 'res/img/shapes/cone.png',
+	blockData: {
+		transparent: true,
+		canRotateOnY: false
+	}
+});
+shapes.addShape(cone);
+
+var halfCone = new Shape('halfCone',{
+	name: 'Half Cone',
+	geometry: loadShape(shapeFolder+'halfCone.dae','Shape'),
+	collision: loadShape(shapeFolder+'halfCone.dae','Shape'),
+	wireFrame: loadShape(shapeFolder+'halfCone.dae','WireFrame'),
+	image: 'res/img/shapes/halfCone.png',
+	blockData: {
+		transparent: true,
+		canRotateOnY: false
+	}
+});
+shapes.addShape(halfCone);
 
 
 })()
