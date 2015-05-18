@@ -5,8 +5,8 @@
       <author>Blender User</author>
       <authoring_tool>Blender 2.71.0 commit date:2014-06-25, commit time:18:36, hash:9337574</authoring_tool>
     </contributor>
-    <created>2015-05-18T10:33:17</created>
-    <modified>2015-05-18T10:33:17</modified>
+    <created>2015-05-18T13:39:45</created>
+    <modified>2015-05-18T13:39:45</modified>
     <unit name="meter" meter="1"/>
     <up_axis>Z_UP</up_axis>
   </asset>
@@ -33,6 +33,26 @@
   </library_cameras>
   <library_images/>
   <library_effects>
+    <effect id="Material_001-effect">
+      <profile_COMMON>
+        <technique sid="common">
+          <lambert>
+            <emission>
+              <color sid="emission">0 0 0 1</color>
+            </emission>
+            <ambient>
+              <color sid="ambient">0 0 0 1</color>
+            </ambient>
+            <diffuse>
+              <color sid="diffuse">0.8 0.8 0.8 1</color>
+            </diffuse>
+            <index_of_refraction>
+              <float sid="index_of_refraction">1</float>
+            </index_of_refraction>
+          </lambert>
+        </technique>
+      </profile_COMMON>
+    </effect>
     <effect id="Material-effect">
       <profile_COMMON>
         <technique sid="common">
@@ -55,6 +75,9 @@
     </effect>
   </library_effects>
   <library_materials>
+    <material id="Material_001-material" name="Material_001">
+      <instance_effect url="#Material_001-effect"/>
+    </material>
     <material id="Material-material" name="Material">
       <instance_effect url="#Material-effect"/>
     </material>
@@ -94,7 +117,7 @@
         <vertices id="Cube_001-mesh-vertices">
           <input semantic="POSITION" source="#Cube_001-mesh-positions"/>
         </vertices>
-        <polylist material="Material-material" count="72">
+        <polylist material="Material_001-material" count="72">
           <input semantic="VERTEX" source="#Cube_001-mesh-vertices" offset="0"/>
           <input semantic="NORMAL" source="#Cube_001-mesh-normals" offset="1"/>
           <input semantic="TEXCOORD" source="#Cube_001-mesh-map-0" offset="2" set="0"/>
@@ -126,7 +149,7 @@
           </technique_common>
         </source>
         <source id="Cube-mesh-map-0">
-          <float_array id="Cube-mesh-map-0-array" count="48">0.9999001 0.9998998 1.0004e-4 0.9999001 9.998e-5 9.998e-5 0.998025 -0.005713224 0.9980254 0.9941188 0.005881428 0.9980258 9.998e-5 0.9999001 1.0004e-4 9.998e-5 0.9998999 9.998e-5 0.9960231 0 0.007883191 1.003906 0 -0.01164799 -7.06911e-5 0.007883191 1 0.0078125 1.000071 0.9961645 0.9998999 1.00278e-4 0.9999001 0.9998998 9.998e-5 9.998e-5 0.005880773 -0.001806259 0.998025 -0.005713224 0.005881428 0.9980258 0.9998999 0.9999001 9.998e-5 0.9999001 0.9998999 9.998e-5</float_array>
+          <float_array id="Cube-mesh-map-0-array" count="48">1.01507e-4 0.999901 9.89437e-5 1.0097e-4 0.999899 9.86457e-5 1.000624 -4.76837e-7 1.000625 0.9999994 6.24865e-4 1 0.9998992 9.92417e-5 0.9999005 0.9998993 1.00672e-4 0.9999007 0.9960231 0 0.007883191 1.003906 0 -0.01164799 0 0 1.000977 0 1.000071 0.9961645 0.999901 0.9998986 1.01507e-4 0.999901 0.999899 9.86457e-5 6.23822e-4 3.8743e-7 1.000624 -4.76837e-7 6.24865e-4 1 9.92417e-5 1.00672e-4 0.9998992 9.92417e-5 1.00672e-4 0.9999007</float_array>
           <technique_common>
             <accessor source="#Cube-mesh-map-0-array" count="24" stride="2">
               <param name="S" type="float"/>
@@ -151,7 +174,7 @@
   <library_visual_scenes>
     <visual_scene id="Scene" name="Scene">
       <node id="Camera" name="Camera" type="NODE">
-        <matrix sid="transform">-0.6507254 -0.3460781 0.6758598 1.754888 0.759216 -0.2823027 0.5864267 1.53144 -0.01215237 0.8947263 0.4464495 1.109576 0 0 0 1</matrix>
+        <matrix sid="transform">-0.6576212 -0.3601546 0.661682 1.406201 0.7532508 -0.3001863 0.5852361 1.219269 -0.0121476 0.8832762 0.4686956 0.8749319 0 0 0 1</matrix>
         <instance_camera url="#Camera-camera"/>
       </node>
       <node id="WireFrame" name="WireFrame" type="NODE">
@@ -159,7 +182,7 @@
         <instance_geometry url="#Cube_001-mesh">
           <bind_material>
             <technique_common>
-              <instance_material symbol="Material-material" target="#Material-material"/>
+              <instance_material symbol="Material_001-material" target="#Material_001-material"/>
             </technique_common>
           </bind_material>
         </instance_geometry>
