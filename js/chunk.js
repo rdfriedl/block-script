@@ -4,14 +4,16 @@ Chunk = function(position,map){
     this.map = map;
 
     this.events = new Events();
+
     this.group = new THREE.Group();
     this.group.position.copy(this.scenePosition);
     this.map.group.add(this.group);
 
     this.debugGroup = new THREE.Group();
+    this.debugGroup.position.copy(this.scenePosition);
     this.map.debugGroup.add(this.debugGroup);
 
-    this.wireframe = new THREE.BoxHelper();
+    this.wireframe = createDebugBox(new THREE.Vector3(1,1,1));
     this.wireframe.position.set(0.5,0.5,0.5).multiplyScalar(game.chunkSize).multiplyScalar(game.blockSize);
     this.wireframe.scale.multiplyScalar(game.chunkSize).multiplyScalar(game.blockSize);
     this.debugGroup.add(this.wireframe);
@@ -26,8 +28,8 @@ Chunk.prototype = {
     
     mesh: undefined,
     collisionMesh: undefined,
-    debugGroup: undefined,
     group: undefined,
+    debugGroup: undefined,
     map: undefined,
     events: undefined,
     /*
@@ -119,14 +121,23 @@ Chunk.prototype = {
                 this.mesh.geometry.dispose();
                 this.group.remove(this.mesh);
             }
+            if(this.collisionMesh){
+                this.collisionMesh.geometry.dispose();
+                this.debugGroup.remove(this.collisionMesh);
+            }
 
-            if(this.empty) return;
-
-            buildCache[this.position.toString()] = buildCache[this.position.toString()]++ || 1;
+            if(this.empty){
+                this.map.group.remove(this.group);
+                this.map.debugGroup.remove(this.debugGroup);
+                return
+            }
+            else{
+                this.map.group.add(this.group);
+                this.map.debugGroup.add(this.debugGroup);
+            }
 
             var geometry = new THREE.Geometry();
             var material = materials.compile();
-            var collisionGeometry = new THREE.Geometry();
             var collisionMaterial = new THREE.MeshBasicMaterial({
                 wireframe: true
             });
@@ -144,23 +155,19 @@ Chunk.prototype = {
                     if(block.visible && block.material && block.shape){
                         geometry.merge(block.shape.geometry,matrix,block.material.materialIndex);
                     }
-
-                    //collision
-                    // if(block.visible && block.shape){
-                    //     collisionGeometry.merge(block.shape.collision,matrix);
-                    // }
                 }
             };
 
             geometry.mergeVertices();
             geometry.computeFaceNormals();
 
-            var mesh = new THREE.Mesh(geometry,material);
-            mesh.scale.multiplyScalar(game.blockSize);
-
-            this.mesh = mesh;
-            this.wireframe.update(this.mesh);
+            this.mesh = new THREE.Mesh(geometry,material);
+            this.mesh.scale.multiplyScalar(game.blockSize);
             this.group.add(this.mesh);
+
+            this.collisionMesh = new THREE.Mesh(geometry,collisionMaterial);
+            this.collisionMesh.scale.multiplyScalar(game.blockSize);
+            this.debugGroup.add(this.collisionMesh);
         }
         catch(e){
             console.error('failed to build chunk: '+this.position.toString());
@@ -169,8 +176,11 @@ Chunk.prototype = {
     },
     dispose: function(){
         if(this.mesh) this.mesh.geometry.dispose();
+        if(this.collisionMesh) this.collisionMesh.geometry.dispose();
+
         this.map.group.remove(this.group);
         this.map.debugGroup.remove(this.debugGroup);
+
         //remove all my blocks
         for (var i = 0; i < this.blocks.length; i++) {
             if(this.blocks[i]) this.blocks[i].dispose();

@@ -1,7 +1,6 @@
 var renderer, settingsDB;
 var clock = new THREE.Clock();
 var materialLoader = new THREE.MaterialLoader();
-var buildCache = {};
 
 function initDB(cb){
 	settingsDB.open().finally(function(){

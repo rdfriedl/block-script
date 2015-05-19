@@ -259,39 +259,37 @@ game = {
 		// var depth = 2;
 		if(this.enabled){
 			var func = function(x,y,z,dist,cb){
-				var loaded = true;
-				var position = this.player.position.clone();
-				position.x = Math.floor(position.x / (game.chunkSize*game.blockSize)) + x;
-				position.y = Math.floor(position.y / (game.chunkSize*game.blockSize)) + y;
-				position.z = Math.floor(position.z / (game.chunkSize*game.blockSize)) + z;
+				while(dist < game.viewRange){
+					var loaded = true;
+					var position = this.player.position.clone();
+					position.x = Math.floor(position.x / (game.chunkSize*game.blockSize)) + x;
+					position.y = Math.floor(position.y / (game.chunkSize*game.blockSize)) + y;
+					position.z = Math.floor(position.z / (game.chunkSize*game.blockSize)) + z;
 
-				loaded = (!loaded)? loaded : this.voxelMap.chunkLoaded(position);
-				loaded = !!loaded;
-				if(!loaded){
-					this.voxelMap.getChunk(position);
-					cb();
-				}
-				else{
-					if(++y > dist){
-						y = -dist;
-						x++;
-					}
-					if(x > dist){
-						x = -dist;
-						z++;
-					}
-					if(z > dist){
-						z = -dist;
-						dist++;
-					}
-					if(dist > game.viewRange){
-						cb();
+					loaded = (!loaded)? loaded : this.voxelMap.chunkLoaded(position);
+					loaded = !!loaded;
+					if(!loaded){
+						this.voxelMap.getChunk(position,cb);
 						return;
 					}
+					else{
+						if(++y > dist){
+							y = -dist;
+							x++;
+						}
+						if(x > dist){
+							x = -dist;
+							z++;
+						}
+						if(z > dist){
+							z = -dist;
+							dist++;
+						}
 
-					delete position, loaded;
-					func.bind(this,x,y,z,dist,cb)();
+						delete position, loaded;
+					}
 				}
+				cb();
 			}
 			func.bind(this)(0,0,0,0,function(){
 				setTimeout(this.loadChunkLoop.bind(this),20);
