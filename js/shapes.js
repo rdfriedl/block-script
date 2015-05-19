@@ -67,7 +67,8 @@ var halfCube = new Shape('halfCube',{
 	wireFrame: loadShape(shapeFolder+'halfCube.dae','WireFrame'),
 	image: 'res/img/shapes/halfCube.png',
 	blockData: {
-		transparent: true
+		transparent: true,
+		canRotateOnY: false
 	}
 });
 shapes.addShape(halfCube);
@@ -115,8 +116,7 @@ var halfSlant = new Shape('halfSlant',{
 	wireFrame: loadShape(shapeFolder+'halfSlant.dae','WireFrame'),
 	image: 'res/img/shapes/halfSlant.png',
 	blockData:{
-		transparent: true,
-		canRotateOnY: false
+		transparent: true
 	}
 });
 shapes.addShape(halfSlant);

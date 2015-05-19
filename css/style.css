@@ -1,6 +1,13 @@
+@font-face {
+    font-family: Font;
+    src: url(../fonts/cubicfive10.ttf);
+}
 body {
 	overflow: hidden;
 	display: none;
+}
+*{
+	font-family: Font;
 }
 .no-select{
 	user-select: none;
@@ -110,20 +117,22 @@ body {
 #menu .credits{
 
 }
-.credits-button{
-	padding-right: 20px;
-	padding-left: 20px;
-	position: absolute;
-	top: 10px;
-	right: 10px;
-	transition: all 0.2s;
-}
 .credits-back{
 	padding-right: 50px;
 	padding-left: 50px;
 	position: absolute;
 	top: 10px;
 	left: 10px;
+}
+.git_fork_link{
+	position: absolute;
+	right: 0px;
+	top: 0px;
+	transition: all 0.5s;
+	width: 10%;
+}
+.git_fork_link img{
+	width: 100%;
 }
 
 /*roomEditor*/

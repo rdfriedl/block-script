@@ -95,7 +95,7 @@
 	<body>
 		<div id="states">
 			<div id="menu">
-				<a type="button" class="btn btn-xs btn-default credits-button" data-bind="click: $root.set($root.menu,'credits'), visible: menu() == 'main'">Credits</a>
+				<a href="https://github.com/rdfriedl/block-script" target="_blank" class="git_fork_link" data-bind="style: {opacity: ($root.menu() == 'main')? 1 : 0}"><img src="res/img/forkme_right_darkblue.png"></a>
 				<a type="button" class="btn btn-md btn-default credits-back" data-bind="click: $root.set($root.menu,'main'), visible: menu() == 'credits'"><i class="fa fa-arrow-left"></i> Back</a>
 				<!-- main -->
 				<div class="menu" data-bind="visible: menu() == 'main'">
@@ -115,10 +115,11 @@
 						</h1>
 					</div>
 					<div class="col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3 col-lg-4 col-lg-offset-4">
-						<button type="button" class="btn btn-lg btn-block btn-success" data-bind="click: $root.set($root.menu,'maps')"><i class="fa fa-gamepad"></i> Play</button>
+						<button type="button" class="btn btn-lg btn-block btn-success" data-bind="click: $root.set($root.menu,'maps')" style="margin-top: 20px;"><i class="fa fa-gamepad"></i> Play</button>
 						<button type="button" class="btn btn-lg btn-block btn-default" data-bind="click: $root.set($root.menu,'help')"><i class="fa fa-question"></i> Help</button>
 						<button type="button" class="btn btn-lg btn-block btn-default" data-bind="click: $root.set($root.menu,'settings')"><i class="fa fa-cogs"></i> Settings</button>
 						<button type="button" class="btn btn-lg btn-block btn-default" data-bind="click: $root.editor" style="margin-top: 20px;"><i class="fa fa-pencil-square-o"></i> Editor (Beta)</button>
+						<button type="button" class="btn btn-lg btn-block btn-default" data-bind="click: $root.set($root.menu,'credits')"><i class="fa fa-bars"></i> Credits</button>
 					</div>
 				</div>
 				<!-- maps -->
@@ -313,7 +314,7 @@
 				</div>
 				<!-- credits -->
 				<div class="menu credits" data-bind="visible: menu() == 'credits'">
-					<div class="col-xs-10 col-xs-offset-2">
+					<div class="col-md-8 col-md-offset-2">
 						<div class="page-header">
 						  	<center><h1>Sound</h1></center>
 						</div>
@@ -321,6 +322,10 @@
 						  	<center><h1>Images</h1></center>
 						</div>
 						<center><h4>All block image are from: <a href="http://dokucraft.co.uk/" target="_blank">Dokucraft</a></h4></center>
+						<div class="page-header">
+						  	<center><h1>Fonts</h1></center>
+						</div>
+						<center><h4>All fonts are from: <a href="http://www.iamcal.com/misc/fonts/" target="_blank">iamcal.com</a></h4></center>
 						<div class="page-header">
 						  	<center><h1>Block Script</h1></center>
 						</div>

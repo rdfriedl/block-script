@@ -29,3 +29,7 @@ later on i plan to add support for the following browsers
 ####*Sound / Music*
 
  - none yet
+
+####*Fonts*
+
+ - All fonts are from: [iamcal.com](http://www.iamcal.com/misc/fonts)
