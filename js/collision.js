@@ -187,13 +187,13 @@ collisions = {
         }
 
         // find the earliest/latest times of collision
-        var entryTime = Math.max(entry.x, entry.y, entry.z);
+        var time = Math.max(entry.x, entry.y, entry.z);
         var exitTime = Math.min(exit.x, exit.y, exit.z);
 
         // if there was no collision
-        if(entryTime > exitTime || entryTime > 1){ //return if the entryTime is > 1 becuase we dont want to go further then we want to
+        if(time > exitTime || time > 1){ //return if the time is > 1 becuase we dont want to go further then we want to
             return {
-            	entryTime: 1,
+            	time: 1,
             	exitTime: Infinity,
             	normal: normal,
             	invEntry: invEntry,
@@ -239,7 +239,7 @@ collisions = {
 
             // return the time of collision
             return {
-            	entryTime: entryTime,
+            	time: time,
             	exitTime: exitTime,
             	normal: normal,
             	invEntry: invEntry,
@@ -256,7 +256,7 @@ collisions = {
         }
 
         var colInfo = {
-            entryTime: 1,
+            time: 1,
             exitTime: Infinity,
             normal: new THREE.Vector3(),
             invEntry: new THREE.Vector3(),
@@ -341,5 +341,90 @@ collisions = {
         };
         delete pos, corners, c, block, box;
         return colInfo;
+    },
+    _collideWithBlocks: function(a,map){
+        var velocity = a.velocity;
+
+        var collision = {
+            time: 1,
+            normal: new THREE.Vector3()
+        };
+
+        //get corners
+        var box = a.collisionEntity.box;
+        var v = [], corners = [];
+        if(velocity.y !== 0){
+            v.push( new THREE.Vector3(box.max.x, box[velocity.y < 0? 'min' : 'max'].y, box.max.z) );
+            v.push( new THREE.Vector3(box.max.x, box[velocity.y < 0? 'min' : 'max'].y, box.min.z) );
+            v.push( new THREE.Vector3(box.min.x, box[velocity.y < 0? 'min' : 'max'].y, box.max.z) );
+            v.push( new THREE.Vector3(box.min.x, box[velocity.y < 0? 'min' : 'max'].y, box.min.z) );
+        }
+        if(velocity.x !== 0){
+            v.push( new THREE.Vector3(box[velocity.x < 0? 'min' : 'max'].x, box.max.y, box.max.z) );
+            v.push( new THREE.Vector3(box[velocity.x < 0? 'min' : 'max'].x, box.max.y, box.min.z) );
+            v.push( new THREE.Vector3(box[velocity.x < 0? 'min' : 'max'].x, box.min.y, box.max.z) );
+            v.push( new THREE.Vector3(box[velocity.x < 0? 'min' : 'max'].x, box.min.y, box.min.z) );
+        }
+        if(velocity.z !== 0){
+            v.push( new THREE.Vector3(box.max.x, box.max.y, box[velocity.z < 0? 'min' : 'max'].z) );
+            v.push( new THREE.Vector3(box.min.x, box.max.y, box[velocity.z < 0? 'min' : 'max'].z) );
+            v.push( new THREE.Vector3(box.max.x, box.min.y, box[velocity.z < 0? 'min' : 'max'].z) );
+            v.push( new THREE.Vector3(box.min.x, box.min.y, box[velocity.z < 0? 'min' : 'max'].z) );
+        }
+        for (var k = 0; k < v.length; k++) {
+            var id = v[k].toString();
+            if(!corners[id]){
+                corners[id] = v[k];
+            }
+        };
+
+        //check for collisions
+        var ray = new THREE.Raycaster();
+        var collisions = [];
+        var dist = velocity.length();
+        ray.far = dist;
+        for (var i in corners) {
+            ray.set(corners[i].clone().add(velocity.clone().negate()),velocity.clone().normalize());
+
+            var intersects = ray.intersectObject(map.collisionGroup,true);
+            for (var k = 0; k < intersects.length; k++) {
+                var v = corners[i].clone().sub(intersects[k].point);
+                var entry = new THREE.Vector3();
+
+                if (v.x == 0){
+                    entry.x = -Infinity;
+                }
+                else{
+                    entry.x = v.x / velocity.x;
+                }
+
+                if (v.y == 0){
+                    entry.y = -Infinity;
+                }
+                else{
+                    entry.y = v.y / velocity.y;
+                }
+
+                if (v.z == 0){
+                    entry.z = -Infinity;
+                }
+                else{
+                    entry.z = v.z / velocity.z;
+                }
+
+                collisions.push({
+                    time: Math.max(v.x,v.y,v.z),
+                    normal: intersects[k].face.normal
+                });
+            };
+        };
+
+        for (var i = 0; i < collisions.length; i++) {
+            if(collisions[i].time < collision.time){
+                collision = collisions[i];
+            }
+        };
+
+        return collision;
     }
 }

@@ -41,6 +41,7 @@ $(document).ready(function() {
 			addDefaultResources();
 			materials.compileMaterials();
 
+			// blockPool.preAllocate(10000);
 			states.init();
 
 			//start loop

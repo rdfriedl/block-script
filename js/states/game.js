@@ -12,6 +12,7 @@ game = {
 
 		if(this.loadedMap){
 			this.loadedMap.save();
+			this.voxelMap.removeAllChunks();
 		}
 	},
 

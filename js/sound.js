@@ -239,3 +239,7 @@ var sounds = [
 		src: 'step/cloth4.ogg'
 	}
 ]
+
+sound = {
+	
+}

@@ -10,6 +10,9 @@ function VoxelMap(state,options){
 	this.debugGroup = new THREE.Group();
 	this.state.scene.add(this.debugGroup);
 
+	this.collisionGroup = new THREE.Group();
+	this.state.scene.add(this.collisionGroup);
+
 	this.chunkGenerator = new ChunkGeneratorBlank();
 
 	this.debug = false;
@@ -19,8 +22,9 @@ VoxelMap.prototype = {
 	mapLoader: undefined,
 	chunkGenerator: undefined,
 	group: undefined,
-	events: undefined,
 	debugGroup: undefined,
+	collisionGroup: undefined,
+	events: undefined,
 	/*
 	chunkLoaded
 	chunkSaved
@@ -266,10 +270,10 @@ VoxelMap.prototype = {
 Object.defineProperties(VoxelMap.prototype,{
     debug: {
         get: function(){
-            return this.debugGroup.visible;
+            return this.debugGroup.visible && this.collisionGroup.visible;
         },
         set: function(val){
-        	this.debugGroup.visible = val;
+        	this.debugGroup.visible = this.collisionGroup.visible = val;
         }
     },
 })

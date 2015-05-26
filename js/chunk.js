@@ -11,7 +11,11 @@ Chunk = function(position,map){
 
     this.debugGroup = new THREE.Group();
     this.debugGroup.position.copy(this.scenePosition);
-    this.map.debugGroup.add(this.debugGroup);
+    // this.map.debugGroup.add(this.debugGroup); dont add it yet
+
+    this.collisionGroup = new THREE.Group();
+    this.collisionGroup.position.copy(this.scenePosition);
+    this.map.collisionGroup.add(this.collisionGroup);
 
     this.wireframe = createDebugBox(new THREE.Vector3(1,1,1));
     this.wireframe.position.set(0.5,0.5,0.5).multiplyScalar(game.chunkSize).multiplyScalar(game.blockSize);
@@ -30,6 +34,7 @@ Chunk.prototype = {
     collisionMesh: undefined,
     group: undefined,
     debugGroup: undefined,
+    collisionGroup: undefined,
     map: undefined,
     events: undefined,
     /*
@@ -52,6 +57,7 @@ Chunk.prototype = {
         }
 
         var block = new Block(pos,data,this);
+        // var block = blockPool.allocate(pos,data,this);
         this.blocks[index] = block;
 
         if(!dontBuild){
@@ -123,17 +129,19 @@ Chunk.prototype = {
             }
             if(this.collisionMesh){
                 this.collisionMesh.geometry.dispose();
-                this.debugGroup.remove(this.collisionMesh);
+                this.collisionGroup.remove(this.collisionMesh);
             }
 
             if(this.empty){
                 this.map.group.remove(this.group);
                 this.map.debugGroup.remove(this.debugGroup);
+                this.map.collisionGroup.remove(this.collisionGroup);
                 return
             }
             else{
                 this.map.group.add(this.group);
                 this.map.debugGroup.add(this.debugGroup);
+                this.map.collisionGroup.add(this.collisionGroup);
             }
 
             var geometry = new THREE.Geometry();
@@ -167,7 +175,7 @@ Chunk.prototype = {
 
             this.collisionMesh = new THREE.Mesh(geometry,collisionMaterial);
             this.collisionMesh.scale.multiplyScalar(game.blockSize);
-            this.debugGroup.add(this.collisionMesh);
+            this.collisionGroup.add(this.collisionMesh);
         }
         catch(e){
             console.error('failed to build chunk: '+this.position.toString());
@@ -180,11 +188,14 @@ Chunk.prototype = {
 
         this.map.group.remove(this.group);
         this.map.debugGroup.remove(this.debugGroup);
+        this.map.collisionGroup.remove(this.collisionGroup);
 
         //remove all my blocks
         for (var i = 0; i < this.blocks.length; i++) {
             if(this.blocks[i]) this.blocks[i].dispose();
         };
+        delete this.blocks;
+        delete this;
     },
     getNeighbor: function(v){
         if(_.isArray(v)) v = new THREE.Vector3().fromArray(v);

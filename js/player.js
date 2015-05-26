@@ -347,15 +347,15 @@ Player.prototype = {
 		this.movement.onGround = false;
 
 		//collide
-		for(var i = 0; i < 3; i++){ //check for collision on each axis
+		var col;
+		while(!this.velocity.empty()){
 			col = collisions.collideWithBlocks(this,this.state.voxelMap);
-			this.position.x += this.velocity.x * col.entryTime;
-			this.position.y += this.velocity.y * col.entryTime;
-			this.position.z += this.velocity.z * col.entryTime;
+			var rtime = 1 - col.time;
+			//jump to time of collision
+			this.position.add(this.velocity.clone().multiplyScalar(col.time));
 			this.collisionEntity.position.copy(this.position);
-			this.velocity.x = (col.normal.x !== 0)? 0 : this.velocity.x - (this.velocity.x * col.entryTime);
-			this.velocity.y = (col.normal.y !== 0)? 0 : this.velocity.y - (this.velocity.y * col.entryTime);
-			this.velocity.z = (col.normal.z !== 0)? 0 : this.velocity.z - (this.velocity.z * col.entryTime);
+			//ajust velocity to slide
+			this.velocity.projectOnPlane(col.normal).multiplyScalar(rtime);
 
 			if(col.normal.y !== 0){
 				this.movement.velocity.y = 0;
@@ -365,7 +365,7 @@ Player.prototype = {
 			}
 		}
 
-		delete col, oldPos, i;
+		delete col, oldPos;
 
 		// pick block
 		this.pickBlock();

@@ -115,9 +115,9 @@ function loadShape(url,name){
 	return geometry;
 }
 THREE.Vector3.prototype.sign = function(){
-	Math.sign(this.x);
-	Math.sign(this.y);
-	Math.sign(this.z);
+	this.x = Math.sign(this.x);
+	this.y = Math.sign(this.y);
+	this.z = Math.sign(this.z);
 	return this;
 }
 THREE.Vector3.prototype.empty = function(){
@@ -333,4 +333,43 @@ if (!(function f() {}).name) {
             return name;
         }
     });
+}
+
+function InstancePool(type,context){
+	this.type = type || "Object";
+	this.context = context || window;
+
+	this.inUse = [];
+	this.notUsed = [];
+}
+InstancePool.prototype = {
+	context: window,
+	type: '',
+	inUse: [],
+	notUsed: [],
+	allocate: function(){
+		var obj;
+		if(this.notUsed.length > 0){
+			obj = this.notUsed.pop();
+		}
+		else{
+			obj = new this.context[this.type]();
+		}
+		this.inUse.push(obj);
+		obj.__proto__.constructor.apply(obj,arguments);
+		return obj;
+	},
+	preAllocate: function(number){
+		//create # of objects
+		for (var i = 0; i < number; i++) {
+			this.notUsed.push(new this.context[this.type]());
+		};
+	},
+	free: function(obj){
+		var index = this.inUse.indexOf(obj);
+		if(index !== -1){
+			this.inUse.splice(index,1);
+		}
+		this.notUsed.push(obj);
+	}
 }

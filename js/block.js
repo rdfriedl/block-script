@@ -1,4 +1,5 @@
 function Block(position,data,chunk){
+	data = data || {};
 	this.position = position || new THREE.Vector3();
 	this.chunk = chunk;
 
@@ -51,6 +52,7 @@ Block.prototype = {
 	},
 	dispose: function(){
 		delete this;
+		// blockPool.free(this);
 	},
 	getNeighbor: function(v){
         if(_.isArray(v)) v = new THREE.Vector3().fromArray(v);
@@ -150,3 +152,6 @@ Object.defineProperties(Block.prototype,{
 	}
 })
 Block.prototype.constructor = Block;
+
+var blockPool = new InstancePool('Block');
+// blockPool.preAllocate(10000);
