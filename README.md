@@ -2,7 +2,7 @@
 
 A simple minecraft like [threejs](http://threejs.org) example.
 
-![Block-Script](http://rdfriedl.github.io/img/games/block-script3.png)
+![Block-Script](http://rdfriedl.github.io/img/games/block-script/block-script3.png)
 
 
 ###demo
