@@ -335,9 +335,10 @@ if (!(function f() {}).name) {
     });
 }
 
-function InstancePool(type,context){
+function InstancePool(type,context,dontUseActiveArray){
 	this.type = type || "Object";
 	this.context = context || window;
+	this.dontUseActiveArray = dontUseActiveArray || false;
 
 	this.inUse = [];
 	this.notUsed = [];
@@ -347,6 +348,7 @@ InstancePool.prototype = {
 	type: '',
 	inUse: [],
 	notUsed: [],
+	dontUseActiveArray: false,
 	allocate: function(){
 		var obj;
 		if(this.notUsed.length > 0){
@@ -355,7 +357,7 @@ InstancePool.prototype = {
 		else{
 			obj = new this.context[this.type]();
 		}
-		this.inUse.push(obj);
+		if(!this.dontUseActiveArray) this.inUse.push(obj);
 		obj.__proto__.constructor.apply(obj,arguments);
 		return obj;
 	},
@@ -366,9 +368,11 @@ InstancePool.prototype = {
 		};
 	},
 	free: function(obj){
-		var index = this.inUse.indexOf(obj);
-		if(index !== -1){
-			this.inUse.splice(index,1);
+		if(!this.dontUseActiveArray){
+			var index = this.inUse.indexOf(obj);
+			if(index !== -1){
+				this.inUse.splice(index,1);
+			}
 		}
 		this.notUsed.push(obj);
 	}

@@ -56,8 +56,8 @@ Chunk.prototype = {
             this.blocks[index].dispose();
         }
 
-        var block = new Block(pos,data,this);
-        // var block = blockPool.allocate(pos,data,this);
+        // var block = new Block(pos,data,this);
+        var block = blockPool.allocate(pos,data,this);
         this.blocks[index] = block;
 
         if(!dontBuild){
