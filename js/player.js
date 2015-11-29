@@ -80,142 +80,96 @@ Player.prototype = {
 		group: 'player'
 	}),
 	setUpKeys: function(){
+		var keyUp = function(move){
+			return function(){this.movement[move]=false}
+		}
+		var keyDown = function(move){
+			return function(){this.movement[move]=true}
+		}
 		this.state.keypress.register_many([
 			//up
 			{
 				keys: 'w',
-				on_keydown: function(){
-					this.movement.up = true;
-				},
-				on_keyup: function(){
-					this.movement.up = false;
-				},
+				on_keydown: keyDown('up'),
+				on_keyup: keyUp('up'),
 				this: this
 			},
 			{
 				keys: 'up',
-				on_keydown: function(){
-					this.movement.up = true;
-				},
-				on_keyup: function(){
-					this.movement.up = false;
-				},
+				on_keydown: keyDown('up'),
+				on_keyup: keyUp('up'),
 				this: this
 			},
 			//left
 			{
 				keys: 'a',
-				on_keydown: function(){
-					this.movement.left = true;
-				},
-				on_keyup: function(){
-					this.movement.left = false;
-				},
+				on_keydown: keyDown('left'),
+				on_keyup: keyUp('left'),
 				this: this
 			},
 			{
 				keys: 'left',
-				on_keydown: function(){
-					this.movement.left = true;
-				},
-				on_keyup: function(){
-					this.movement.left = false;
-				},
+				on_keydown: keyDown('left'),
+				on_keyup: keyUp('left'),
 				this: this
 			},
 			//down
 			{
 				keys: 's',
-				on_keydown: function(){
-					this.movement.down = true;
-				},
-				on_keyup: function(){
-					this.movement.down = false;
-				},
+				on_keydown: keyDown('down'),
+				on_keyup: keyUp('down'),
 				this: this
 			},
 			{
 				keys: 'down',
-				on_keydown: function(){
-					this.movement.down = true;
-				},
-				on_keyup: function(){
-					this.movement.down = false;
-				},
+				on_keydown: keyDown('down'),
+				on_keyup: keyUp('down'),
 				this: this
 			},
 			//right
 			{
 				keys: 'd',
-				on_keydown: function(){
-					this.movement.right = true;
-				},
-				on_keyup: function(){
-					this.movement.right = false;
-				},
+				on_keydown: keyDown('right'),
+				on_keyup: keyUp('right'),
 				this: this
 			},
 			{
 				keys: 'right',
-				on_keydown: function(){
-					this.movement.right = true;
-				},
-				on_keyup: function(){
-					this.movement.right = false;
-				},
+				on_keydown: keyDown('right'),
+				on_keyup: keyUp('right'),
 				this: this
 			},
 			// sprint
 			{
 				keys: 'shift',
-				on_keydown: function(){
-					this.movement.sprint = true;
-				},
-				on_keyup: function(){
-					this.movement.sprint = false;
-				},
+				on_keydown: keyDown('sprint'),
+				on_keyup: keyUp('sprint'),
 				this: this
 			},
 			// jump
 			{
 				keys: 'space',
-				on_keydown: function(){
-					this.movement.jump = true;
-				},
-				on_keyup: function(){
-					this.movement.jump = false;
-				},
+				on_keydown: keyDown('jump'),
+				on_keyup: keyUp('jump'),
 				this: this
 			},
 			{
 				keys: 'num_0',
-				on_keydown: function(){
-					this.movement.jump = true;
-				},
-				on_keyup: function(){
-					this.movement.jump = false;
-				},
+				on_keydown: keyDown('jump'),
+				on_keyup: keyUp('jump'),
 				this: this
 			},
 			{
 				keys: 'insert',
-				on_keydown: function(){
-					this.movement.jump = true;
-				},
-				on_keyup: function(){
-					this.movement.jump = false;
-				},
+				on_keydown: keyDown('jump'),
+				on_keyup: keyUp('jump'),
 				this: this
 			},
 			// crouch
 			{
 				keys: 'ctrl',
-				on_keydown: function(){
-					this.movement.crouch = true;
-				},
-				on_keyup: function(){
-					this.movement.crouch = false;
-				},
+				on_keydown: keyDown('crouch'),
+				on_keyup: keyUp('crouch'),
 				this: this
 			},
 			//rotate placment

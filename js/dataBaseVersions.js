@@ -3,6 +3,15 @@ var settingsDB;
 //set up map settingsDB
 settingsDB = new Dexie('block-script-settings');
 
+// 1.7
+settingsDB
+	.version(1.7)
+	.stores({
+		map: 'id,parent',
+		material: 'id,parent',
+		folder: 'id,parent'
+	})
+
 // 1.6
 settingsDB
 	.version(1.6)

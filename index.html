@@ -53,7 +53,6 @@
 		<script src="js/voxelMap.js" defer></script>
 		<script src="js/chunk.js" defer></script>
 		<script src="js/keyboard.js" defer></script>
-		<script src="js/selectBlocks.js" defer></script>
 
 		<!-- resources -->
 		<script src="js/resources.js" defer></script>
@@ -64,9 +63,6 @@
 		<script src="js/states.js" defer></script>
 		<script src="js/states/menu.js" defer></script>
 		<script src="js/states/game.js" defer></script>
-		<script src="js/states/mapEditor.js" defer></script>
-		<script src="js/states/roomEditor.js" defer></script>
-		<script src="js/states/scriptEditor.js" defer></script>
 		
 		<!-- block -->
 		<script src="js/block.js" defer></script>
@@ -510,73 +506,6 @@
 						</div>
 					</div>
 				</div>
-			</div>
-			<div id="room-editor">
-				<nav class="navbar navbar-default no-select" data-bind="with: toolbar">
-				  	<div class="container-fluid">
-				  	  	<!-- Brand and toggle get grouped for better mobile display -->
-				  	  	<div class="navbar-header">
-				  	  	  	<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#room-editor-tool-bar">
-				  	  	  	  	<span class="sr-only">Toggle navigation</span>
-				  	  	  	  	<span class="icon-bar"></span>
-				  	  	  	  	<span class="icon-bar"></span>
-				  	  	  	  	<span class="icon-bar"></span>
-				  	  	  	</button>
-				  	  	  	<a class="navbar-brand" href="#" data-bind="click: goBack"><i class="fa fa-arrow-left"></i> Back</a>
-				  	  	</div>
-		
-				  	  	<!-- Collect the nav links, forms, and other content for toggling -->
-				  	  	<div class="collapse navbar-collapse" id="room-editor-tool-bar">
-				  	  	  	<ul class="nav navbar-nav">
-				  	  	  	  	<li class="dropdown" data-bind="with: file">
-				  	  	  	  	  	<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">File <span class="caret"></span></a>
-				  	  	  	  	  	<ul class="dropdown-menu" role="menu">
-				  	  	  	  	  	  	<li><a href="#"><i class="fa fa-folder-open"></i> Open</a></li>
-				  	  	  	  	  	  	<li><a href="#" data-bind="click: save"><i class="fa fa-floppy-o"></i> Save</a></li>
-				  	  	  	  	  	</ul>
-				  	  	  	  	</li>
-				  	  	  	  	<li class="dropdown">
-				  	  	  	  	  	<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Edit <span class="caret"></span></a>
-				  	  	  	  	  	<ul class="dropdown-menu" role="menu">
-				  	  	  	  	  	</ul>
-				  	  	  	  	</li>
-				  	  	  	  	<li class="dropdown">
-				  	  	  	  	  	<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Selection <span class="caret"></span></a>
-				  	  	  	  	  	<ul class="dropdown-menu" role="menu">
-				  	  	  	  	  	  	<li><a href="#">Deselect <small class="pull-right">Esc</small></a></li>
-				  	  	  	  	  	  	<li><a href="#">Delete <small class="pull-right">Del</small></a></li>
-				  	  	  	  	  	</ul>
-				  	  	  	  	</li>
-				  	  	  	  	<li class="dropdown">
-				  	  	  	  	  	<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Resources <span class="caret"></span></a>
-				  	  	  	  	  	<ul class="dropdown-menu" role="menu">
-				  	  	  	  	  	  	<li><a href="#">Manage Resources</a></li>
-				  	  	  	  	  	</ul>
-				  	  	  	  	</li>
-				  	  	  	  	<li data-bind="css: {'active': $root.tool() == 'blocks'}, click: $root.set($root.tool,'blocks')" title="blocks">
-				  	  	  	  	  	<a href="#"><i class="fa fa-cube"></i></a>
-				  	  	  	  	</li>
-				  	  	  	  	<li data-bind="css: {'active': $root.tool() == 'objects'}, click: $root.set($root.tool,'objects')" title="objects">
-				  	  	  	  	  	<a href="#"><i class="fa fa-square"></i></a>
-				  	  	  	  	</li>
-				  	  	  	</ul>
-				  	  	</div>
-				  	</div>
-				</nav>
-				<div id="block-selection" class="panel panel-default side-panel">
-					<div class="panel-heading">
-					   Blocks
-					</div>
-					<div class="panel-body">
-					   Basic panel example
-					</div>
-				</div>
-			</div>
-			<div id="script-editor">
-				
-			</div>
-			<div id="map-editor">
-
 			</div>
 		</div>
 	</body>
