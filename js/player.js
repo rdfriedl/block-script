@@ -54,7 +54,8 @@ Player.prototype = {
 
 		velocity: undefined,
 		acceleration: 1,
-		drag: 0.2,
+		drag: 0.15,
+		airDrag: 0.05,
 
 		gravity: 0.3,
 		onGround: false,
@@ -222,6 +223,7 @@ Player.prototype = {
 	},
 	update: function(dtime){
 		var speed = (this.movement.sprint)? this.movement.sprintSpeed : this.movement.walkSpeed;
+		var drag = this.movement.onGround? this.movement.drag : this.movement.airDrag;
 
 		//y
 		if(this.movement.onGround && this.movement.jump && this.enabled)
@@ -234,22 +236,26 @@ Player.prototype = {
 			this.movement.velocity.z -= this.movement.acceleration * dtime;
 		else if(this.movement.down && this.enabled)
 			this.movement.velocity.z += this.movement.acceleration * dtime;
-		else
-			if(Math.sign(this.movement.velocity.z) !== Math.sign(this.movement.velocity.z - this.movement.drag * Math.sign(this.movement.velocity.z)) * dtime){
+		else if(this.movement.z !== 0)
+			if(Math.sign(this.movement.velocity.z + -Math.sign(this.movement.velocity.z)*drag*dtime) !== Math.sign(this.movement.velocity.z)){
 				this.movement.velocity.z = 0;
 			}
-			else this.movement.velocity.z -= this.movement.drag * Math.sign(this.movement.velocity.z) * dtime;
+			else this.movement.velocity.z += -Math.sign(this.movement.velocity.z)*drag*dtime;
+			// if(Math.sign(this.movement.velocity.z) !== Math.sign(this.movement.velocity.z - this.movement.drag * Math.sign(this.movement.velocity.z)) * dtime){
+			// 	this.movement.velocity.z = 0;
+			// }
+			// else this.movement.velocity.z -= this.movement.drag * Math.sign(this.movement.velocity.z) * dtime;
 
 		//x
 		if(this.movement.left && this.enabled)
 			this.movement.velocity.x -= this.movement.acceleration * dtime;
 		else if(this.movement.right && this.enabled)
 			this.movement.velocity.x += this.movement.acceleration * dtime;
-		else 
-			if(Math.sign(this.movement.velocity.x) !== Math.sign(this.movement.velocity.x - this.movement.drag * Math.sign(this.movement.velocity.x)) * dtime){
+		else if(this.movement.x !== 0)
+			if(Math.sign(this.movement.velocity.x + -Math.sign(this.movement.velocity.x)*drag*dtime) !== Math.sign(this.movement.velocity.x)){
 				this.movement.velocity.x = 0;
 			}
-			else this.movement.velocity.x -= this.movement.drag * Math.sign(this.movement.velocity.x) * dtime;
+			else this.movement.velocity.x += -Math.sign(this.movement.velocity.x)*drag*dtime;
 
 		//stop player from going faster them the speed
 		if(this.movement.velocity.z < 0){

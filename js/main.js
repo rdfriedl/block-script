@@ -14,15 +14,8 @@ function initDB(cb){
 }
 
 $(document).ready(function() {
-	Messenger.options = {
-		maxMessages: 4,
-    	extraClasses: 'messenger-fixed messenger-on-bottom messenger-on-right',
-    	theme: 'flat'
-	};
-
 	if(!Detector.webgl){
 		Detector.addGetWebGLMessage();
-		Messenger().error('webgl not supported')
 	}
 
 	//create renderer
