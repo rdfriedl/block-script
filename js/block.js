@@ -147,7 +147,7 @@ Object.defineProperties(Block.prototype,{
 			for (var i = 0; i < sides.length; i++) {
 				b = this.getNeighbor(sides[i]);
 				if(b instanceof Block){
-					if(b.data.transparent){
+					if(b.transparent){
 						visible = true
 						continue;
 					}

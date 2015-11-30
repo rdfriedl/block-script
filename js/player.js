@@ -430,13 +430,17 @@ Player.prototype = {
 	placeBlock: function(){
 		if(this.selection.block){
 			var pos = this.selection.block.worldPosition.add(this.selection.normal);
+			var material = materials.getMaterial(this.selection.place.material);
+			var shape = shapes.getShape(this.selection.place.shape);
 
 			if(!(this.state.voxelMap.getBlock(pos) instanceof Block)){
-				this.state.voxelMap.setBlock(pos,{
+				var blockOpts = {
 					material: this.selection.place.material,
-					shape: this.selection.place.shape,
-					rotation: this.selection.place.rotation
-				},function(block){
+					shape: this.selection.place.shape
+				}
+				if(shape.blockData.canRotate && material.blockData.canRotate) blockOpts.rotation = this.selection.place.rotation;
+
+				this.state.voxelMap.setBlock(pos,blockOpts,function(block){
 					if(collisions.checkCollision(this, block)){
 						this.state.voxelMap.removeBlock(pos,undefined,true);
 					}
