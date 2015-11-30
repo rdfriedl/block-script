@@ -1,6 +1,6 @@
-# **Block - Script**
+# **Block-Script**
 
-A simple minecraft like [threejs](http://threejs.org) example.
+A simple [Minecraft](https://minecraft.net/) like [threejs](http://threejs.org) example.
 
 ![Block-Script](http://rdfriedl.github.io/img/games/block-script/block-script3.png)
 
@@ -11,12 +11,15 @@ Play it online [here](http://rdfriedl.github.io/block-script/)
 
 ***Browser Support***
 
-As of now it only works in [Chrome](http://www.google.com/chrome/).
+ - [Google Chrome](https://www.google.com/chrome)
+ - [FireFox](https://www.mozilla.org/en-US/firefox/new)
+ - [Opra](http://www.opera.com)
 
-Later on I plan to add support for the following browsers:
+***Sounds will not play in the following browsers***
 
- - [Fire Fox](https://www.mozilla.org/en-US/firefox/new/)
  - [Internet Explorer](http://windows.microsoft.com/en-us/internet-explorer)
+ - [Edge](http://www.microsoft.com/en-us/windows/microsoft-edge)
+ - [Safari](http://www.apple.com/safari)
 
 
 ###Credits
