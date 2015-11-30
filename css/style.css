@@ -152,7 +152,6 @@ body {
 
 /*cube*/
 .cube {
-  	perspective: 1000px;
  	width: 3em;
  	height: 3em;
   	text-align: center;

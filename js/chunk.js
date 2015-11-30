@@ -2,6 +2,7 @@ Chunk = function(position,map){
     this.blocks = [];
     this.position = position;
     this.map = map;
+    this.arrayBuffer = new ArrayBuffer(game.chunkSize*game.chunkSize*game.chunkSize*32*8);
 
     this.events = new Events();
 
@@ -93,111 +94,6 @@ Chunk.prototype = {
     },
     getBlock: function(position){
         return this.blocks[positionToIndex(position,game.chunkSize)];
-    },
-
-    //block functions
-    getBlockShape: function(pos){
-        if(pos instanceof THREE.Vector3) pos = positionToIndex(pos,game.chunkSize);
-
-        return this.blocks[pos].shape;
-    },
-    getBlockMaterial: function(pos){
-        if(pos instanceof THREE.Vector3) pos = positionToIndex(pos,game.chunkSize);
-
-        return this.blocks[pos].material;
-    },
-    getBlockTransparent: function(pos){
-        if(pos instanceof THREE.Vector3) pos = positionToIndex(pos,game.chunkSize);
-
-        return this.blocks[pos].transparent;
-    },
-    getBlockVisible: function(pos){
-        var visible = false;
-        var b, sides = [
-            [1,0,0],
-            [0,1,0],
-            [0,0,1],
-            [-1,0,0],
-            [0,-1,0],
-            [0,0,-1]
-        ];
-
-        for (var i = 0; i < sides.length; i++) {
-            b = this.getBlockNeighbor(pos,sides[i]);
-            if(b instanceof Block){
-                if(b.data.transparent){
-                    visible = true
-                    continue;
-                }
-                continue;
-            }
-            visible = true;
-        };
-
-        return visible;
-    },
-    getBlockEdge: function(pos){
-        pos = this.getBlockPosition(pos);
-        if(
-            !(
-                pos.x > 0 && 
-                pos.y > 0 && 
-                pos.z > 0 && 
-                pos.x < game.chunkSize-1 && 
-                pos.y < game.chunkSize-1 && 
-                pos.z < game.chunkSize-1
-            )
-        ){
-            return new THREE.Vector3(
-                    pos.x == 0? -1 : (pos.x == game.chunkSize-1)? 1 : 0, 
-                    pos.y == 0? -1 : (pos.y == game.chunkSize-1)? 1 : 0, 
-                    pos.z == 0? -1 : (pos.z == game.chunkSize-1)? 1 : 0
-                );
-        }
-        return new THREE.Vector3();
-    },
-    getBlockRotation: function(pos){
-        if(pos instanceof THREE.Vector3) pos = positionToIndex(pos,game.chunkSize);
-
-        return this.blocks[pos].rotation || new THREE.Vector3();
-    },
-    getBlockPosition: function(pos){
-        if(pos instanceof THREE.Vector3) pos = positionToIndex(pos,game.chunkSize);
-
-        return this.blocks[pos].position || new THREE.Vector3();
-    },
-    getBlockWorldPosition: function(pos){
-        return this.position.clone().multiplyScalar(game.chunkSize).add(this.getBlockPosition(pos));
-    },
-    getBlockScenePosition: function(pos){
-        return this.getBlockWorldPosition.multiplyScalar(game.blockSize);
-    },
-    getBlockNeighbor: function(position,v){
-        if(_.isArray(v)) v = new THREE.Vector3().fromArray(v);
-        v.sign();
-        var pos = v.clone().add(this.getBlockPosition(position));
-        var chunk = this;
-
-        if(
-            pos.x < 0 || 
-            pos.y < 0 || 
-            pos.z < 0 || 
-            pos.x >= game.chunkSize || 
-            pos.y >= game.chunkSize || 
-            pos.z >= game.chunkSize
-        ){
-            chunk = chunk.getNeighbor(v.clone());
-            if(!chunk) return; //dont go any futher if we cant find the chunk
-        }
-
-        if(pos.x < 0) pos.x=9;
-        if(pos.y < 0) pos.y=9;
-        if(pos.z < 0) pos.z=9;
-        if(pos.x >= game.chunkSize) pos.x=0;
-        if(pos.y >= game.chunkSize) pos.y=0;
-        if(pos.z >= game.chunkSize) pos.z=0;
-
-        return chunk.getBlock(pos);
     },
 
     inportData: function(data){ //data is a array of blocks

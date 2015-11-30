@@ -87,7 +87,7 @@
 		<div id="states">
 			<div id="menu">
 				<a href="https://github.com/rdfriedl/block-script" target="_blank" class="git_fork_link" data-bind="style: {opacity: ($root.menu() == 'main')? 1 : 0}"><img src="res/img/forkme_right_darkblue.png"></a>
-				<a type="button" class="btn btn-md btn-default credits-back" data-bind="click: $root.set($root.menu,'main'), visible: menu() == 'credits'"><i class="fa fa-arrow-left"></i> Back</a>
+				<a class="btn btn-md btn-default credits-back" data-bind="click: $root.set($root.menu,'main'), visible: menu() == 'credits'"><i class="fa fa-arrow-left"></i> Back</a>
 				<!-- main -->
 				<div class="menu" data-bind="visible: menu() == 'main'">
 					<div class="col-xs-12">
@@ -494,7 +494,7 @@
 										<!-- /ko -->
 							  	  	</div>
 							  	  	<div role="tabpanel" class="tab-pane" id="shapes" data-bind="foreach: shapes">
-							  	  		<img class="shape" data-bind="title: name, attr:{'src': image}, click: $root.set($parent.selectedShape,id), css: {'selected': id == $parent.selectedShape() }"></img>
+							  	  		<img class="shape" data-bind="title: name, attr:{'src': image}, click: $root.set($parent.selectedShape,id), css: {'selected': id == $parent.selectedShape() }"/>
 							  	  	</div>
 							  	</div>
 							</div>

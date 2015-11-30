@@ -1,8 +1,10 @@
-function VoxelMap(state,options){
+function VoxelMap(state,options,materials){
 	this.state = state;
 	fn.combindIn(this,options);
 	this.chunks = {};
 	this.events = new Events();
+
+	this.materials = materials || new Materials();
 
 	this.group = new THREE.Group();
 	this.state.scene.add(this.group);
@@ -21,6 +23,7 @@ VoxelMap.prototype = {
 	chunks: {},
 	mapLoader: undefined,
 	chunkGenerator: undefined,
+	materials: undefined,
 	group: undefined,
 	debugGroup: undefined,
 	collisionGroup: undefined,

@@ -294,8 +294,8 @@ Player.prototype = {
 				v.y--;
 				var block = this.state.voxelMap.getBlock(v);
 				if(block){
-					if(block.data.stepSound.length){
-						createjs.Sound.play(block.data.stepSound[Math.floor(Math.random() * block.data.stepSound.length)]);
+					if(block.stepSound.length){
+						createjs.Sound.play(block.stepSound[Math.floor(Math.random() * block.stepSound.length)]);
 					}
 				}
 			}
@@ -444,8 +444,8 @@ Player.prototype = {
 						block.chunk.saved = false;
 						block.chunk.build();
 						//play sound
-						if(block.data.placeSound.length){
-							createjs.Sound.play(block.data.placeSound[Math.floor(Math.random() * block.data.placeSound.length)]);
+						if(block.placeSound.length){
+							createjs.Sound.play(block.placeSound[Math.floor(Math.random() * block.placeSound.length)]);
 						}
 					}
 				}.bind(this),true)
@@ -459,8 +459,8 @@ Player.prototype = {
 			this.state.voxelMap.removeBlock(pos);
 			block.chunk.saved = false;
 			//play sound
-			if(block.data.removeSound.length){
-				createjs.Sound.play(block.data.removeSound[Math.floor(Math.random() * block.data.removeSound.length)]);
+			if(block.removeSound.length){
+				createjs.Sound.play(block.removeSound[Math.floor(Math.random() * block.removeSound.length)]);
 			}
 		}
 	}

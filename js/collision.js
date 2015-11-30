@@ -326,7 +326,7 @@ collisions = {
                 var block = map.getBlock(corners[k][1]);
                 if(!(block instanceof Block)) continue;
                 
-                if(block.data.canCollide){
+                if(block.canCollide){
                     if(collisions.canCollide(a.collisionEntity,block.collisionEntity)){
                         if(collisions.checkCollision(a.collisionEntity,block.collisionEntity,_velocity)){
                             var a = collisions.SweptAABB(a.collisionEntity,block.collisionEntity,_velocity);

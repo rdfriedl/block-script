@@ -1,15 +1,14 @@
 function Block(position,data,chunk){
-	data = data || {};
 	this.position = position || new THREE.Vector3();
 	this.chunk = chunk;
 
-	this.material = materials.getMaterial(data.material);
-	this.shape = shapes.getShape(data.shape);
+	this.material = materials.getMaterial(data? data.material : undefined);
+	this.shape = shapes.getShape(data? data.shape : undefined);
 		
-	this.data = {};
-	this.data.__proto__ = Block.prototype.data;
-	fn.combindOver(this.data,this.material.blockData);
-	fn.combindOver(this.data,this.shape.blockData);
+	// this.data = {};
+	// this.data.__proto__ = Block.prototype.data;
+	// fn.combindOver(this.data,this.material.blockData);
+	// fn.combindOver(this.data,this.shape.blockData);
 
 	this.inportData(data);
 }
@@ -33,6 +32,8 @@ Block.prototype = {
 	},
 
 	inportData: function(data){
+		if(!data) return;
+
 		this.material = materials.getMaterial(data.material);
 		this.shape = shapes.getShape(data.shape);
 		if(data.rotation && this.data.canRotate){
@@ -81,6 +82,15 @@ var blockCol = new CollisionEntity({
 	box: new THREE.Box3(new THREE.Vector3(0,0,0), new THREE.Vector3(game.blockSize,game.blockSize,game.blockSize)),
 	group: 'block'
 })
+function blockDataGet(prop){
+	return {
+		get: function(){
+			if(this.shape.blockData.hasOwnProperty(prop)) return this.shape.blockData[prop];
+			if(this.material.blockData.hasOwnProperty(prop)) return this.material.blockData[prop];
+			return this.data[prop];
+		}
+	}
+}
 Object.defineProperties(Block.prototype,{
 	collisionEntity: {
 		get: function(){
@@ -149,7 +159,16 @@ Object.defineProperties(Block.prototype,{
 			// this._visible = visible;
 			return visible;
 		}
-	}
+	},
+
+	//block data
+	transparent: blockDataGet('transparent'),
+	canRotate: blockDataGet('canRotate'),
+	canRotateOnY: blockDataGet('canRotateOnY'),
+	canCollide: blockDataGet('canCollide'),
+	stepSound: blockDataGet('stepSound'),
+	placeSound: blockDataGet('placeSound'),
+	removeSound: blockDataGet('removeSound')
 })
 Block.prototype.constructor = Block;
 

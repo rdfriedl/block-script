@@ -27,11 +27,32 @@ function indexToPosition(index,size){
 	}
 	return position;
 }
-function observable(val,cb){
-	o = ko.observable(val);
-	o.subscribe(cb);
+function observable(){
+	var val = Array.prototype.shift.call(arguments);
+	var o = val instanceof Array? ko.observableArray(val) : ko.observable(val);
+	
+	for(var i = 0; i < arguments.length; i++){
+		o.subscribe(arguments[i]);
+	}
 	return o;
 }
+Object.clone = function(obj,deep,ignore){
+	if(!obj) return {};
+	
+	var clone = new obj.constructor;
+	for(var i in obj){
+		if(ignore && (ignore instanceof Array? ignore.indexOf(i) : i in ignore)) continue;
+		
+		if(typeof obj[i] == 'object' && deep){
+			clone[i] = Object.clone(obj[i],deep);
+		}
+		else{
+			clone[i] = obj[i];
+		}
+	}
+	
+	return clone;
+};
 function loadTexture(url,prop,dontmap){ //texture image is not copied
 	var tex = new THREE.ImageUtils.loadTexture(url);
    	if(!dontmap){

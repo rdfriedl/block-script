@@ -3,6 +3,11 @@ materials = {
 	materials: {},
 	material: undefined,
 	nullMaterial: 'stone',
+	lastID: 0,
+	createID: function(){
+		return this.lastID++;
+	},
+
 	getMaterial: function(id){
 		return this.materials[id] || this.getMaterial(this.nullMaterial);
 	},
@@ -81,6 +86,89 @@ materials = {
 	}
 }
 
+function Materials(){
+	this.materials = [];
+}
+Materials.prototype = {
+	materials: [],
+	material: undefined,
+
+	updateMaterial: function(){
+		if(!this.material){
+			//compile it
+			var _materials = [];
+			for (var i in this.materials) {
+				_materials.push(this.materials[i].material);
+			};
+
+			this.material = new THREE.MeshFaceMaterial(_materials);
+		}
+
+		return this.material;
+	},
+	addMaterial: function(mat,dontUpdate){
+		if(!(mat instanceof Material)) throw new Error('material has to be a Material');
+
+		var index = this.materials.push(mat)-1;
+		if(!dontUpdate) this.updateMaterial();
+		return index;
+	},
+	removeMaterial: function(index,dontUpdate){ //index can be a index, name, or a Material
+		if(typeof index == 'number'){
+			//remove material by index
+			this.materials.splice(index,1);
+			if(!dontUpdate) this.updateMaterial();
+			return true;
+		}
+		else if(index instanceof Material){
+			//remove material by material
+			if(this.materials.indexOf(index) !== -1){
+				this.materials.splice(this.materials.indexOf(index),1);
+				if(!dontUpdate) this.updateMaterial();
+				return true;
+			}
+		}
+		else if(typeof index == 'string'){
+			//remove material by id
+			for(var i = 0; i < this.materials.length; i++){
+				if(this.materials[i].id == index){
+					this.materials.splice(i,1);
+					if(!dontUpdate) this.updateMaterial();
+					return true;
+				}
+			}
+			//remove material by name
+			for(var i = 0; i < this.materials.length; i++){
+				if(this.materials[i].name == index){
+					this.materials.splice(i,1);
+					if(!dontUpdate) this.updateMaterial();
+					return true;
+				}
+			}
+		}
+		return false;
+	},
+	getMaterialByID: function(id){
+		for(var i in this.materials){
+			if(this.materials[i].id == id){
+				return this.materials[i];
+			}
+		}
+	},
+	getMaterialByName: function(name){
+		for(var i in this.materials){
+			if(this.materials[i].name == name){
+				return this.materials[i];
+			}
+		}
+	},
+	createFromThreeJSMaterial: function(mat,data,dontUpdate){
+		var material = new Material(data);
+	}
+}
+Materials.prototype.constructor = Materials;
+
+var lastMaterialID = 0;
 function Material(id,data){
 	this.blockData = {};
 	for (var i in data) {
