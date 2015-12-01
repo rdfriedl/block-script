@@ -95,6 +95,7 @@ VoxelMap.prototype = {
 		var func = function(data){
 			chunk.loading = false;
 			chunk.inportData(data);
+			chunk.loaded = true;
 			this.events.emit('chunkLoaded',chunk);
 			chunk.events.emit('load',chunk);
 			if(cb) cb(chunk);

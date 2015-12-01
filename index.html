@@ -55,7 +55,7 @@
 		<!-- resources -->
 		<script src="js/resources.js" defer></script>
 		<script src="js/defineResources.js" defer></script>
-		<script src="js/defaultResources.js" defer></script>
+		<!-- <script src="js/defaultResources.js" defer></script> -->
 		
 		<!-- states -->
 		<script src="js/states.js" defer></script>
@@ -76,6 +76,7 @@
 		<!-- map -->
 		<script src="js/mapLoader.js" defer></script>
 		<script src="js/chunkGenerator.js" defer></script>
+		<script src="js/chunkLoader.js" defer></script>
 
 		<script src="js/sound.js" defer></script>
 		<script src="js/dataBaseVersions.js" defer></script>
@@ -88,6 +89,35 @@
 	
 		  	ga('create', 'UA-62048613-1', 'auto');
 		  	ga('send', 'pageview');
+		</script>
+
+		<!-- shaders -->
+		<script type="x-shader/x-vertex" id="vertexShader">
+			varying vec3 vWorldPosition;
+
+			void main() {
+
+				vec4 worldPosition = modelMatrix * vec4( position, 1.0 );
+				vWorldPosition = worldPosition.xyz;
+
+				gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+
+			}
+		</script>
+		<script type="x-shader/x-fragment" id="fragmentShader">
+			uniform vec3 topColor;
+			uniform vec3 bottomColor;
+			uniform float offset;
+			uniform float exponent;
+
+			varying vec3 vWorldPosition;
+
+			void main() {
+
+				float h = normalize( vWorldPosition + offset ).y;
+				gl_FragColor = vec4( mix( bottomColor, topColor, max( pow( max( h , 0.0), exponent ), 0.0 ) ), 1.0 );
+
+			}
 		</script>
 	</head>
 	<body>

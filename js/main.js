@@ -1,6 +1,9 @@
 var renderer, settingsDB;
 var clock = new THREE.Clock();
 var materialLoader = new THREE.MaterialLoader();
+var materials = new Materials({
+	defaultMaterial: 'stone'
+});
 
 function initDB(cb){
 	settingsDB.open().finally(function(){
@@ -31,8 +34,7 @@ $(document).ready(function() {
 
 	initDB(function(){
 		resources.init(function(){
-			addDefaultResources();
-			materials.compileMaterials();
+			defineMaterials();
 
 			blockPool.preAllocate(10000);
 			states.init();
@@ -51,6 +53,11 @@ $(document).ready(function() {
 	//show menu
 	$(document).on('contextmenu',function(event){
 		event.preventDefault();
+	})
+
+	//fix middle click
+	$(document).on('mousedown',function(event){
+		if(event.button = 1) event.preventDefault();
 	})
 
 	//dont allow the user to drag images

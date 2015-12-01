@@ -2,7 +2,6 @@ Chunk = function(position,map){
     this.blocks = [];
     this.position = position;
     this.map = map;
-    this.arrayBuffer = new ArrayBuffer(game.chunkSize*game.chunkSize*game.chunkSize*32*8);
 
     this.events = new Events();
 
@@ -28,15 +27,18 @@ Chunk.prototype = {
     position: new THREE.Vector3(),
 
     loading: false,
+    loaded: false,
+    built: false,
     saving: false,
     saved: true,
     
     mesh: undefined,
-    collisionMesh: undefined,
+    // collisionMesh: undefined,
     group: undefined,
     debugGroup: undefined,
     collisionGroup: undefined,
     map: undefined,
+    _visible: true,
     events: undefined,
     /*
     export
@@ -93,7 +95,12 @@ Chunk.prototype = {
         })
     },
     getBlock: function(position){
-        return this.blocks[positionToIndex(position,game.chunkSize)];
+        if(position instanceof THREE.Vector3){
+            return this.blocks[positionToIndex(position,game.chunkSize)];
+        }
+        else if(typeof position == 'number'){
+            return this.blocks[position];
+        }
     },
 
     inportData: function(data){ //data is a array of blocks
@@ -126,12 +133,12 @@ Chunk.prototype = {
     build: function(){
         try{
             if(this.mesh){
-                this.mesh.geometry.dispose();
                 this.group.remove(this.mesh);
+                this.mesh.geometry.dispose();
             }
             if(this.collisionMesh){
-                this.collisionMesh.geometry.dispose();
                 this.collisionGroup.remove(this.collisionMesh);
+                this.collisionMesh.geometry.dispose();
             }
 
             if(this.empty){
@@ -169,15 +176,20 @@ Chunk.prototype = {
             };
 
             geometry.mergeVertices();
+            geometry.normalsNeedUpdate = true;
             geometry.computeFaceNormals();
 
             this.mesh = new THREE.Mesh(geometry,material);
             this.mesh.scale.multiplyScalar(game.blockSize);
+            this.mesh.castShadow = true;
+            this.mesh.receiveShadow = true;
             this.group.add(this.mesh);
 
             this.collisionMesh = new THREE.Mesh(geometry,collisionMaterial);
             this.collisionMesh.scale.multiplyScalar(game.blockSize);
             this.collisionGroup.add(this.collisionMesh);
+
+            this.built = true;
         }
         catch(e){
             console.error('failed to build chunk: '+this.position.toString());
@@ -249,6 +261,15 @@ Object.defineProperties(Chunk.prototype,{
                 }
             };
             return empty;
+        }
+    },
+    visible: {
+        get: function(){
+            return this._visible || false;
+        },
+        set: function(val){
+            this._visible = !!val;
+            this.group.visible = !!val;
         }
     }
 })

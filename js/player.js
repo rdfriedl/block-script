@@ -176,7 +176,7 @@ Player.prototype = {
 			//rotate placment
 			{
 				keys: 'MWU',
-				on_keydown: function(){
+				on_keydown: _.throttle(function(){
 					var shape = shapes.getShape(this.selection.place.shape);
 					if(shape.blockData.canRotate && shape.blockData.canRotateOnY && this.selection.block){
 						createjs.Sound.play('digStone1');
@@ -185,12 +185,12 @@ Player.prototype = {
 					else{
 						this.selection.place.blockRotation = 0;
 					}
-				},
+				},150,{trailing: false}),
 				this: this
 			},
 			{
 				keys: 'MWD',
-				on_keydown: function(){
+				on_keydown: _.throttle(function(){
 					var shape = shapes.getShape(this.selection.place.shape);
 					if(shape.blockData.canRotate && shape.blockData.canRotateOnY && this.selection.block){
 						createjs.Sound.play('digStone1');
@@ -199,7 +199,7 @@ Player.prototype = {
 					else{
 						this.selection.place.blockRotation = 0;
 					}
-				},
+				},150,{trailing: false}),
 				this: this
 			},
 			//pick block
@@ -225,63 +225,63 @@ Player.prototype = {
 		var speed = (this.movement.sprint)? this.movement.sprintSpeed : this.movement.walkSpeed;
 		var drag = this.movement.onGround? this.movement.drag : this.movement.airDrag;
 
-		//y
-		if(this.movement.onGround && this.movement.jump && this.enabled)
-			this.movement.velocity.y = this.movement.jumpSpeed;
-		else
-			this.movement.velocity.y -= this.movement.gravity * dtime;
+		//only update the velocity if the chunk we are in is loaded
+		var chunk = this.chunk;
+		if(chunk && chunk.loaded){
+			//y
+			if(this.movement.onGround && this.movement.jump && this.enabled)
+				this.movement.velocity.y = this.movement.jumpSpeed;
+			else
+				this.movement.velocity.y -= this.movement.gravity * dtime;
 
-		//z
-		if(this.movement.up && this.enabled)
-			this.movement.velocity.z -= this.movement.acceleration * dtime;
-		else if(this.movement.down && this.enabled)
-			this.movement.velocity.z += this.movement.acceleration * dtime;
-		else if(this.movement.z !== 0)
-			if(Math.sign(this.movement.velocity.z + -Math.sign(this.movement.velocity.z)*drag*dtime) !== Math.sign(this.movement.velocity.z)){
-				this.movement.velocity.z = 0;
+			//z
+			if(this.movement.up && this.enabled)
+				this.movement.velocity.z -= this.movement.acceleration * dtime;
+			else if(this.movement.down && this.enabled)
+				this.movement.velocity.z += this.movement.acceleration * dtime;
+			else if(this.movement.z !== 0)
+				if(Math.sign(this.movement.velocity.z + -Math.sign(this.movement.velocity.z)*drag*dtime) !== Math.sign(this.movement.velocity.z)){
+					this.movement.velocity.z = 0;
+				}
+				else this.movement.velocity.z += -Math.sign(this.movement.velocity.z)*drag*dtime;
+
+			//x
+			if(this.movement.left && this.enabled)
+				this.movement.velocity.x -= this.movement.acceleration * dtime;
+			else if(this.movement.right && this.enabled)
+				this.movement.velocity.x += this.movement.acceleration * dtime;
+			else if(this.movement.x !== 0)
+				if(Math.sign(this.movement.velocity.x + -Math.sign(this.movement.velocity.x)*drag*dtime) !== Math.sign(this.movement.velocity.x)){
+					this.movement.velocity.x = 0;
+				}
+				else this.movement.velocity.x += -Math.sign(this.movement.velocity.x)*drag*dtime;
+
+			//stop player from going faster then the speed
+			if(this.movement.velocity.z < 0){
+				if(Math.abs(this.movement.velocity.z) > speed)
+					this.movement.velocity.z = speed * Math.sign(this.movement.velocity.z);
 			}
-			else this.movement.velocity.z += -Math.sign(this.movement.velocity.z)*drag*dtime;
-			// if(Math.sign(this.movement.velocity.z) !== Math.sign(this.movement.velocity.z - this.movement.drag * Math.sign(this.movement.velocity.z)) * dtime){
-			// 	this.movement.velocity.z = 0;
-			// }
-			// else this.movement.velocity.z -= this.movement.drag * Math.sign(this.movement.velocity.z) * dtime;
-
-		//x
-		if(this.movement.left && this.enabled)
-			this.movement.velocity.x -= this.movement.acceleration * dtime;
-		else if(this.movement.right && this.enabled)
-			this.movement.velocity.x += this.movement.acceleration * dtime;
-		else if(this.movement.x !== 0)
-			if(Math.sign(this.movement.velocity.x + -Math.sign(this.movement.velocity.x)*drag*dtime) !== Math.sign(this.movement.velocity.x)){
-				this.movement.velocity.x = 0;
+			else{
+				if(Math.abs(this.movement.velocity.z) > speed * 0.6)
+					this.movement.velocity.z = speed * 0.6 * Math.sign(this.movement.velocity.z);
 			}
-			else this.movement.velocity.x += -Math.sign(this.movement.velocity.x)*drag*dtime;
 
-		//stop player from going faster them the speed
-		if(this.movement.velocity.z < 0){
-			if(Math.abs(this.movement.velocity.z) > speed)
-				this.movement.velocity.z = speed * Math.sign(this.movement.velocity.z);
+			if(Math.abs(this.movement.velocity.x) > speed * 0.6)
+				this.movement.velocity.x = speed * 0.6 * Math.sign(this.movement.velocity.x);
+
+			//move
+			var oldPos = this.position.clone()
+
+			this.object.translateY(this.movement.velocity.y * dtime);
+			this.object.translateX(this.movement.velocity.x * dtime);
+			this.object.translateZ(this.movement.velocity.z * dtime);
+
+			this.velocity = this.position.clone();
+			this.position.copy(oldPos);
+			this.velocity.sub(this.position);
 		}
-		else{
-			if(Math.abs(this.movement.velocity.z) > speed * 0.6)
-				this.movement.velocity.z = speed * 0.6 * Math.sign(this.movement.velocity.z);
-		}
 
-		if(Math.abs(this.movement.velocity.x) > speed * 0.6)
-			this.movement.velocity.x = speed * 0.6 * Math.sign(this.movement.velocity.x);
-
-		//move
-		var oldPos = this.position.clone()
-
-		this.object.translateY(this.movement.velocity.y * dtime);
-		this.object.translateX(this.movement.velocity.x * dtime);
-		this.object.translateZ(this.movement.velocity.z * dtime);
-
-		this.velocity = this.position.clone();
-		this.position.copy(oldPos);
-		this.velocity.sub(this.position);
-
-		//view
+		//view Bobbing
 		if(this.movement.onGround){ //this is going to need to be moved below the collisions so when we push against a wall we dont walk
 			this.movement.viewBobbing += (Math.sqrt(this.velocity.x*this.velocity.x + this.velocity.z*this.velocity.z) / 28) * this.movement.viewBobbingDir;
 
@@ -307,8 +307,8 @@ Player.prototype = {
 		this.movement.onGround = false;
 
 		//collide
-		var col;
-		while(!this.velocity.empty()){
+		var col, a = 0;
+		while(!this.velocity.empty() && a++ < 12){
 			col = collisions.collideWithBlocks(this,this.state.voxelMap);
 			var rtime = 1 - col.time;
 			//jump to time of collision

@@ -6,6 +6,8 @@ menu = {
 		this.modal.maps.selected(-1);
 		this.modal.menu('main');
 		this.modal.maps.updateMaps();
+		
+		renderer.setClearColor(0x2b3e50, 1);
 	},
 	disable: function(){
 
@@ -69,8 +71,6 @@ menu = {
 		this.camera.lookAt( this.scene.position );
 	},
 	render: function(dtime){
-		renderer.setClearColor(0x2b3e50, 1);
-
 		renderer.clear();
 		renderer.render(this.scene, this.camera);
 	},

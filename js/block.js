@@ -36,9 +36,10 @@ Block.prototype = {
 
 		this.material = materials.getMaterial(data.material);
 		this.shape = shapes.getShape(data.shape);
-		if(data.rotation && this.data.canRotate){
+		if(data.rotation && this.canRotate){
 			this.rotation = new THREE.Euler(data.rotation.x,data.rotation.y,data.rotation.z);
 		}
+		else this.rotation = new THREE.Euler();
 	},
 	exportData: function(){
 		return {
@@ -85,8 +86,8 @@ var blockCol = new CollisionEntity({
 function blockDataGet(prop){
 	return {
 		get: function(){
-			if(this.shape.blockData.hasOwnProperty(prop)) return this.shape.blockData[prop];
-			if(this.material.blockData.hasOwnProperty(prop)) return this.material.blockData[prop];
+			if(this.shape && this.shape.blockData.hasOwnProperty(prop)) return this.shape.blockData[prop];
+			if(this.material && this.material.blockData.hasOwnProperty(prop)) return this.material.blockData[prop];
 			return this.data[prop];
 		}
 	}

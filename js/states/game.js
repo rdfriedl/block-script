@@ -3,12 +3,22 @@ game = {
 	container: undefined,
 	enabled: false,
 	enable: function(){
-		keyboard.enableState('game')
+		keyboard.enableState('game');
 		this.modal.blocks.update();
+		
+		this.chunkLoader.enabled = true;
+		this.chunkLoader.setRange(this.viewRange);
+
+		//set renderer options
+		renderer.shadowMapEnabled = true;
+	    renderer.shadowMapSoft = true;
+	    renderer.shadowMapType = THREE.PCFSoftShadowMap;
+		renderer.shadowMapCullFace = THREE.CullFaceBack;
 	},
 	disable: function(){
-		keyboard.disableState('game')
+		keyboard.disableState('game');
 		this.modal.menu('none');
+		this.chunkLoader.enabled = false;
 
 		if(this.loadedMap){
 			this.loadedMap.save();
@@ -27,6 +37,7 @@ game = {
 	chunkSize: 10,
 	blockSize: 32,
 	loadedMap: undefined,
+	chunkLoader: undefined,
 	init: function(){
 		var width = window.innerWidth;
 		var height = window.innerHeight;
@@ -48,6 +59,7 @@ game = {
 
 		this.voxelMap = new VoxelMap(this,{});
 		this.player = new Player(this,this.camera);
+		this.chunkLoader = new ChunkLoader(this.voxelMap);
 
 		var chunkGenerator = new ChunkGeneratorHills({
 			width: 40*game.chunkSize-1,
@@ -106,9 +118,7 @@ game = {
 
 		this.voxelMap.setChunkGenerator(chunkGenerator);
 
-		this.loadChunkLoop();
-		this.saveChunkLoop();
-		this.unloadChunkLoop();
+		this.chunkLoader.startTimers();
 		
 		$(window).resize(function(event) {
 			var width = window.innerWidth;
@@ -143,28 +153,27 @@ game = {
 		this.lightGroup = new THREE.Group();
 		this.scene.add(this.lightGroup);
 
-		var ambient = new THREE.AmbientLight( 0x888888 );
-	    this.lightGroup.add(ambient);
+	    // SUN
+		var sun = new THREE.DirectionalLight( 0xffffff, 1 );
+		sun.color.setHSL( 0.1, 1, 0.95 );
+		sun.position.set( -1, 1.75, 1 );
+	    sun.position.multiplyScalar(5000);
 
 	    var shadowNear = 1200;
 	    var shadowFar = 15000;
 
-		sun = new THREE.DirectionalLight( 0xffffff, 1 );
-		sun.position.set( 0, 1, 0 );
-	    sun.position.multiplyScalar(5000);
-
 	    sun.castShadow = true;
-	    // sun.onlyShadow = true;
 
 	    sun.shadowCameraNear = shadowNear;
 	    sun.shadowCameraFar = shadowFar;
+	    
+		sun.shadowBias = -0.0001;
 
-	    sun.shadowBias = 0.0001;
 	    sun.shadowMapDarkness = 0.8;
 	    sun.shadowMapWidth = 1280 * 2;
 	    sun.shadowMapHeight = 1280 * 2;
 
-	    var size = 1500;
+	    var size = 1000;
 	    sun.shadowCameraLeft = -size;
 	    sun.shadowCameraRight = size;
 	    sun.shadowCameraTop = size;
@@ -175,9 +184,30 @@ game = {
 	    this.lightGroup.add(sun);
 	    this.lightGroup.add(sun.target);
 
-	    this.lightGroup.rotateX(THREE.Math.degToRad(20));
-	    this.lightGroup.rotateZ(THREE.Math.degToRad(40));
+	    // ambient light
+		var ambient = new THREE.AmbientLight( 0x888888 );
+	    this.lightGroup.add(ambient);
 
+		// SKYDOME
+		var vertexShader = document.getElementById('vertexShader').textContent;
+		var fragmentShader = document.getElementById('fragmentShader').textContent;
+		var uniforms = {
+			topColor: 	 { type: "c", value: new THREE.Color( 0x0077ff ) },
+			bottomColor: { type: "c", value: new THREE.Color( 0xffffff ) },
+			offset:		 { type: "f", value: 33 },
+			exponent:	 { type: "f", value: 0.6 }
+		};
+		uniforms.topColor.value.setHSL( 0.6, 1, 0.6 );;
+
+		// scene.fog.color.copy( uniforms.bottomColor.value );
+
+		var skyGeo = new THREE.SphereGeometry( 4000, 32, 15 );
+		var skyMat = new THREE.ShaderMaterial({ vertexShader: vertexShader, fragmentShader: fragmentShader, uniforms: uniforms, side: THREE.BackSide });
+
+		var sky = new THREE.Mesh(skyGeo, skyMat);
+		this.lightGroup.add(sky);
+
+		// stats
 		this.stats = new Stats();
 		this.stats.domElement.style.position = 'absolute';
 		this.stats.domElement.style.top = '0px';
@@ -202,6 +232,8 @@ game = {
 			this.loadedMap.data.player.position.copy(this.player.position);
 			this.loadedMap.data.player.velocity.copy(this.player.movement.velocity);
 		}
+
+		this.chunkLoader.setPosition(this.player.position);
 	},
 	animate: function(dtime){
 		this.stats.update();
@@ -212,11 +244,6 @@ game = {
 	},
 
 	render: function(dtime){
-    	// renderer.shadowMapEnabled = true;
-		renderer.setClearColor( 0xbfd1e5, 1);
-	    renderer.shadowMapSoft = true;
-	    renderer.shadowMapType = THREE.PCFSoftShadowMap;
-
 	    renderer.clear();
 		renderer.render(this.scene, this.camera);
 		renderer.clearDepth();
@@ -255,99 +282,6 @@ game = {
 	},
 	fullscreenchange: function(event){
 
-	},
-	loadChunkLoop: function(){
-		// var depth = 2;
-		if(this.enabled){
-			var func = function(x,y,z,dist,cb){
-				while(dist < game.viewRange){
-					var loaded = true;
-					var position = this.player.position.clone();
-					position.x = Math.floor(position.x / (game.chunkSize*game.blockSize)) + x;
-					position.y = Math.floor(position.y / (game.chunkSize*game.blockSize)) + y;
-					position.z = Math.floor(position.z / (game.chunkSize*game.blockSize)) + z;
-
-					loaded = (!loaded)? loaded : this.voxelMap.chunkLoaded(position);
-					loaded = !!loaded;
-					if(!loaded){
-						this.voxelMap.getChunk(position,cb);
-						return;
-					}
-					else{
-						if(++y > dist){
-							y = -dist;
-							x++;
-						}
-						if(x > dist){
-							x = -dist;
-							z++;
-						}
-						if(z > dist){
-							z = -dist;
-							dist++;
-						}
-
-						delete position, loaded;
-					}
-				}
-				cb();
-			}
-			func.bind(this)(0,0,0,0,function(){
-				setTimeout(this.loadChunkLoop.bind(this),20);
-			}.bind(this));
-		}
-		else{
-			setTimeout(this.loadChunkLoop.bind(this),20);
-		}
-	},
-	saveChunkLoop: function(i){
-		i = i || 0;
-
-		var func = function(){
-			var k = 0;
-			for(var chunk in this.voxelMap.chunks){
-				k++;
-			}
-			if(++i >= k){
-				i=0;
-			}
-			setTimeout(this.saveChunkLoop.bind(this,i),50);
-		}.bind(this);
-
-		if(this.enabled){
-			var k=0;
-			for(var chunk in this.voxelMap.chunks){
-				if(k==i){
-					this.voxelMap.saveChunk(this.voxelMap.chunks[chunk].position,func);
-					return;
-				}
-				k++;
-			}
-
-			if(k==0) func();
-		}
-		else{
-			func();
-		}
-	},
-	unloadChunkLoop: function(){
-		var position = this.player.position.clone();
-
-		if(this.enabled){
-			position.x = Math.floor(position.x / (game.chunkSize*game.blockSize));
-			position.y = Math.floor(position.y / (game.chunkSize*game.blockSize));
-			position.z = Math.floor(position.z / (game.chunkSize*game.blockSize));
-
-			for (var i in this.voxelMap.chunks) {
-				var chunk = this.voxelMap.chunks[i]
-				if(Math.abs(this.voxelMap.chunks[i].position.x - position.x) > game.viewRange || Math.abs(this.voxelMap.chunks[i].position.y - position.y) > game.viewRange || Math.abs(this.voxelMap.chunks[i].position.z - position.z) > game.viewRange){
-					chunk.unload();
-				}
-			};
-		}
-
-		delete position;
-		setTimeout(this.unloadChunkLoop.bind(this),500);
 	},
 
 	loadMap: function(map){
