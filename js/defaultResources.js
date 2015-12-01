@@ -1,3 +1,19 @@
+function basicMaterial(url,prop,texProp){
+	var mat = new THREE.MeshLambertMaterial({
+		map: loadTexture(url,texProp),
+		reflectivity: 0
+	});
+
+	if(prop){
+        //set the prop
+        for(var i in prop){
+        	mat[i] = prop[i];
+        }
+	}
+
+	return mat;
+}
+
 function addDefaultResources(){
 	var folder = resources.defineResource('folder',{
 		name: 'default'

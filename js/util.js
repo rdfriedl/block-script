@@ -69,72 +69,6 @@ function loadTexture(url,prop,dontmap){ //texture image is not copied
 
     return tex;
 }
-function basicMaterial(url,prop,texProp){
-	var mat = new THREE.MeshLambertMaterial({
-		map: loadTexture(url,texProp),
-		reflectivity: 0
-	});
-
-	if(prop){
-        //set the prop
-        for(var i in prop){
-        	mat[i] = prop[i];
-        }
-	}
-
-	return mat;
-}
-loadShapeCache = {};
-function loadShape(url,name){
-	name = name || "Shape";
-	var geometry;
-
-	var func = function(data,name){
-		//get the geometry
-		var obj = data.getObjectByName(name);
-		if(obj){
-			var geo = obj.getGeometryByName('');
-
-			if(geo) return geo;
-		}
-		return new THREE.Geometry();
-	}
-
-	//create loader
-	if(!loadShapeCache[url]){
-		var loader = new THREEx.UniversalLoader();
-		loadShapeCache[url] = {
-			loader: loader,
-			geometries: {}
-		}
-		loader.load(url, function(url,data){
-			for (var i in loadShapeCache[url].geometries) {
-				var geo = func(data,i);
-				var geometry = loadShapeCache[url].geometries[i];
-
-				geometry.vertices = geo.vertices;
-				geometry.verticesNeedUpdate = true;
-
-				geometry.faces = geo.faces;
-				geometry.faceVertexUvs = geo.faceVertexUvs;
-
-				geometry.colors = geo.colors;
-				geometry.colorsNeedUpdate = true;
-
-				geometry.computeFaceNormals();
-			};
-		}.bind(this,url))
-	}
-	
-	//add geometry to the list
-	if(!loadShapeCache[url].geometries[name]){
-		geometry = loadShapeCache[url].geometries[name] = new THREE.Geometry();
-	}
-	else{
-		geometry = loadShapeCache[url].geometries[name];
-	}
-	return geometry;
-}
 THREE.Vector3.prototype.sign = function(){
 	this.x = Math.sign(this.x);
 	this.y = Math.sign(this.y);
@@ -341,19 +275,6 @@ function createDebugBox(size){
 	// mesh.matrix = object.matrixWorld;
 	// mesh.matrixAutoUpdate = false;
 	return mesh;
-}
-
-//pollyfill for function names in IE
-if (!(function f() {}).name) {
-    Object.defineProperty(Function.prototype, 'name', {
-        get: function() {
-            var name = this.toString().match(/^\s*function\s*(\S*)\s*\(/)[1];
-            // For better performance only parse once, and then cache the
-            // result through a new accessor for repeated access.
-            Object.defineProperty(this, 'name', { value: name });
-            return name;
-        }
-    });
 }
 
 function InstancePool(type,context,dontUseActiveArray){
