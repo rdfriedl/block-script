@@ -10,10 +10,14 @@ game = {
 		this.chunkLoader.setRange(this.viewRange);
 
 		//set renderer options
-		renderer.shadowMapEnabled = true;
+		renderer.shadowMapEnabled = settings.get('graphics/shadows');
 	    renderer.shadowMapSoft = true;
 	    renderer.shadowMapType = THREE.PCFSoftShadowMap;
 		renderer.shadowMapCullFace = THREE.CullFaceBack;
+
+		if(!renderer.shadowMapEnabled){
+			this.lightGroup.children[0].shadowMap.dispose();
+		}
 	},
 	disable: function(){
 		keyboard.disableState('game');
@@ -302,56 +306,57 @@ game = {
 			}
 		}.bind(this))
 	},
-
-	modal: {
-		menu: 'none',
-		esc: {
-			back: function(){
-				game.requestPointerLock();
-				game.modal.menu('none');
+	buildModal: function(){
+		return {
+			menu: 'none',
+			esc: {
+				back: function(){
+					game.requestPointerLock();
+					game.modal.menu('none');
+				},
+				fullscreen: function(){
+					game.requestFullscreen();
+				},
+				menu: function(){
+					game.voxelMap.saveAllChunks();
+					states.enableState('menu');
+				},
 			},
-			fullscreen: function(){
-				game.requestFullscreen();
-			},
-			menu: function(){
-				game.voxelMap.saveAllChunks();
-				states.enableState('menu');
-			},
-		},
-		blocks: {
-			selectedMaterial: observable('stone',function(val){
-				game.player.selection.place.material = val;
-			}),
-			selectedShape: observable('cube',function(val){
-				game.player.selection.place.shape = val;
-			}),
-			materials: [],
-			shapes: [],
-			update: function(){
-				var self = game.modal.blocks;
+			blocks: {
+				selectedMaterial: observable('stone',function(val){
+					game.player.selection.place.material = val;
+				}),
+				selectedShape: observable('cube',function(val){
+					game.player.selection.place.shape = val;
+				}),
+				materials: [],
+				shapes: [],
+				update: function(){
+					var self = game.modal.blocks;
 
-				self.materials([]);
-				var a = materials.materials;
-				for (var i in a) {
-					var mat = a[i];
-					self.materials.push({
-						id: mat.id,
-						name: mat.name,
-						type: 'block',
-						material: mat.material.map.sourceFile
-					})
-				};
+					self.materials([]);
+					var a = materials.materials;
+					for (var i in a) {
+						var mat = a[i];
+						self.materials.push({
+							id: mat.id,
+							name: mat.name,
+							type: 'block',
+							material: mat.material.map.sourceFile
+						})
+					};
 
-				self.shapes([]);
-				var a = shapes.shapes;
-				for (var i in a) {
-					var shape = a[i];
-					self.shapes.push({
-						id: shape.id,
-						name: shape.name,
-						image: shape.image
-					})
-				};
+					self.shapes([]);
+					var a = shapes.shapes;
+					for (var i in a) {
+						var shape = a[i];
+						self.shapes.push({
+							id: shape.id,
+							name: shape.name,
+							image: shape.image
+						})
+					};
+				}
 			}
 		}
 	}
@@ -359,7 +364,7 @@ game = {
 Object.defineProperties(game,{
 	viewRange: {
 		get: function(){
-			return parseInt(menu.modal.settings.graphics.viewRange());
+			return settings.get('graphics/viewRange') || 3;
 		}
 	}
 })

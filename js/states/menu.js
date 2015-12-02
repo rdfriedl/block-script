@@ -74,145 +74,155 @@ menu = {
 		renderer.clear();
 		renderer.render(this.scene, this.camera);
 	},
-	modal: {
-		menu: 'main',
-		settings: {
-			graphics: {
-				viewRangeRange: [2,8],
-				viewRange: 3,
-			}
-		},
-		editor: function(){
-			states.enableState('roomEditor');
-		},
-		maps: {
-			maps: [],
-			selected: -1,
-			create: {
-				name: '',
-				desc: '',
-				submit: function(){
-					menu.modal.maps.createMap(this);
-					this.name('');
-					this.desc('');
+	buildModal: function(){
+		var that = this;
+		return {
+			menu: observable('main',function(){
+				settings.update();
+			}),
+			settings: {
+				graphics: {
+					viewRangeRange: [2,8],
+					viewRange: observable(settings.get('graphics/viewRange'),function(val){
+						settings.set('graphics/viewRange',parseInt(val));
+					}),
+					shadows: observable(settings.get('graphics/shadows'),function(val){
+						settings.set('graphics/shadows',val);
+					})
 				}
 			},
-			edit: {
-				name: '',
-				desc: '',
-				submit: function(){
-					var self = menu.modal.maps;
-					var map = self.maps()[self.selected()];
-					if(map){
-						map.data.name = this.name();
-						map.data.desc = this.desc();
-						map.save();
+			editor: function(){
+				states.enableState('roomEditor');
+			},
+			maps: {
+				maps: [],
+				selected: -1,
+				create: {
+					name: '',
+					desc: '',
+					submit: function(){
+						menu.modal.maps.createMap(this);
 						this.name('');
 						this.desc('');
-
-						self.updateMaps();
 					}
-					$('#edit-map-modal').modal('hide');
-				}
-			},
-			download: {
-				progress: 0,
-				downloadLink: '',
-				downloadName: '',
-				download: function(map){
-					var self = menu.modal.maps.download;
+				},
+				edit: {
+					name: '',
+					desc: '',
+					submit: function(){
+						var self = menu.modal.maps;
+						var map = self.maps()[self.selected()];
+						if(map){
+							map.data.name = this.name();
+							map.data.desc = this.desc();
+							map.save();
+							this.name('');
+							this.desc('');
 
-					map.toJSON(function(json){
-						var str = JSON.stringify(json);
-						self.downloadLink('data:text/json,'+str);
-						self.downloadName(map.data.name);
-					},function(val){
-						self.progress(val);
-					});
-				}
-			},
-			upload: {
-				progress: 0,
-				upload: function(self,event){
-					var self = menu.modal.maps;
-					event.preventDefault();
-					readfiles(event.target.files,function(json){
-						try{
-							json = JSON.parse(json);
-							
-							var map = resources.createResource('map',json.data);
 							self.updateMaps();
-
-							//inport chunks
-							map.mapLoader.inportData(json.chunks);
 						}
-						catch(e){
-							console.error('failed to upload map')
-							console.error(e);
-						}
+						$('#edit-map-modal').modal('hide');
+					}
+				},
+				download: {
+					progress: 0,
+					downloadLink: '',
+					downloadName: '',
+					download: function(map){
+						var self = menu.modal.maps.download;
 
-						$('#upload-map-modal').modal('hide');
-					})
-					event.target.value = null;
+						map.toJSON(function(json){
+							var str = JSON.stringify(json);
+							self.downloadLink('data:text/json,'+str);
+							self.downloadName(map.data.name);
+						},function(val){
+							self.progress(val);
+						});
+					}
+				},
+				upload: {
+					progress: 0,
+					upload: function(self,event){
+						var self = menu.modal.maps;
+						event.preventDefault();
+						readfiles(event.target.files,function(json){
+							try{
+								json = JSON.parse(json);
+								
+								var map = resources.createResource('map',json.data);
+								self.updateMaps();
+
+								//inport chunks
+								map.mapLoader.inportData(json.chunks);
+							}
+							catch(e){
+								console.error('failed to upload map')
+								console.error(e);
+							}
+
+							$('#upload-map-modal').modal('hide');
+						})
+						event.target.value = null;
+					}
+				},
+				createMap: function(data){
+					var self = menu.modal.maps;
+
+					resources.createResource('map',{
+						name: this.create.name(),
+						desc: this.create.desc()
+					});
+					self.updateMaps();
+
+					$('#new-map-modal').modal('hide');
+				},
+				playMap: function(index){
+					var self = menu.modal.maps;
+					var map = self.maps()[self.selected()];
+
+					if(index !== undefined) map = self.maps()[index];
+
+					states.enableState('game');
+					game.requestPointerLock();
+					game.loadMap(map);
+				},
+				deleteMap: function(index){
+					var self = menu.modal.maps;
+					var map = self.maps()[self.selected()];
+					if(_.isNumber(index)) map = self.maps()[index];
+
+					resources.deleteResource(map.id);
+					self.updateMaps();
+
+					this.selected(-1);
+					$('#delete-map-modal').modal('hide');
+				},
+				editMap: function(){
+					var self = menu.modal.maps;
+					var map = self.maps()[self.selected()];
+					self.edit.name(map.data.name);
+					self.edit.desc(map.data.desc);
+					$('#edit-map-modal').modal('show');
+				},
+				downloadMap: function(){
+					var self = menu.modal.maps;
+					var map = self.maps()[this.selected()];
+					self.download.download(map);
+					$('#download-map-modal').modal('show');
+				},
+				uploadMap: function(){
+					$('#upload-map-modal').modal('show');
+				},
+
+				updateMaps: function(cb){
+					var self = menu.modal.maps;
+					self.maps([]);
+					self.maps(resources.modal.map());
+					if(cb) cb();
+				},
+				saveMaps: function(cb){
+					resources.saveAllResources('map',db);
 				}
-			},
-			createMap: function(data){
-				var self = menu.modal.maps;
-
-				resources.createResource('map',{
-					name: this.create.name(),
-					desc: this.create.desc()
-				});
-				self.updateMaps();
-
-				$('#new-map-modal').modal('hide');
-			},
-			playMap: function(index){
-				var self = menu.modal.maps;
-				var map = self.maps()[self.selected()];
-
-				if(index !== undefined) map = self.maps()[index];
-
-				states.enableState('game');
-				game.requestPointerLock();
-				game.loadMap(map);
-			},
-			deleteMap: function(index){
-				var self = menu.modal.maps;
-				var map = self.maps()[self.selected()];
-				if(_.isNumber(index)) map = self.maps()[index];
-
-				resources.deleteResource(map.id);
-				self.updateMaps();
-
-				this.selected(-1);
-				$('#delete-map-modal').modal('hide');
-			},
-			editMap: function(){
-				var self = menu.modal.maps;
-				var map = self.maps()[self.selected()];
-				self.edit.name(map.data.name);
-				self.edit.desc(map.data.desc);
-				$('#edit-map-modal').modal('show');
-			},
-			downloadMap: function(){
-				var self = menu.modal.maps;
-				var map = self.maps()[this.selected()];
-				self.download.download(map);
-				$('#download-map-modal').modal('show');
-			},
-			uploadMap: function(){
-				$('#upload-map-modal').modal('show');
-			},
-
-			updateMaps: function(cb){
-				var self = menu.modal.maps;
-				self.maps([]);
-				self.maps(resources.modal.map());
-				if(cb) cb();
-			},
-			saveMaps: function(cb){
-				resources.saveAllResources('map',db);
 			}
 		}
 	}

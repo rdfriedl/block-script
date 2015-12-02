@@ -4,12 +4,12 @@ var materialLoader = new THREE.MaterialLoader();
 var materials = new Materials({
 	defaultMaterial: 'stone'
 });
+var settings;
 
 function initDB(cb){
 	settingsDB.open().finally(function(){
-		console.log('opened db')
 		if(cb) cb();
-	}.bind(this));
+	});
 
 	settingsDB.on('error',function(err){
 		console.log(err);
@@ -33,18 +33,20 @@ $(document).ready(function() {
 	}.bind(this));
 
 	initDB(function(){
-		resources.init(function(){
-			defineMaterials();
+		initSettings(function(){
+			resources.init(function(){
+				defineMaterials();
 
-			blockPool.preAllocate(10000);
-			states.init();
+				blockPool.preAllocate(10000);
+				states.init();
 
-			//start loop
-			states.update();
-			
-			$('body').fadeIn(500);
-			states.enableState('menu');
-		})
+				//start loop
+				states.update();
+				
+				$('body').fadeIn(500);
+				states.enableState('menu');
+			})
+		});
 	});
 
 	//load sound
@@ -57,7 +59,7 @@ $(document).ready(function() {
 
 	//fix middle click
 	$(document).on('mousedown',function(event){
-		if(event.button = 1) event.preventDefault();
+		if(event.button == 1) event.preventDefault();
 	})
 
 	//dont allow the user to drag images

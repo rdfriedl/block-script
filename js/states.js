@@ -36,7 +36,7 @@ states = {
 			state.init();
 
 			//bindings
-			fn.combindOver(state.modal,this.baseModal);
+			state.modal = fn.combindOver(state.buildModal(),this.baseModal);
 			state.modal = ko.mapping.fromJS(state.modal);
 			ko.applyBindings(state.modal,state.container.get(0));
 
