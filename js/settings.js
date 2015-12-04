@@ -1,76 +1,75 @@
 function SettingsController(table,settings,cb){
 	if(!settings || !table) return;
 
-	this.events = new Events();
-
 	this.table = table;
-	this.defaults = settings || {};
-	this.settings = ko.mapping.fromJS(this.defaults);
+	this._defaults = settings || {};
+	fn.combindOver(this,this._defaults);
 
-	this.sync(cb);
+	this._events = new Events();
+
+	this._sync(cb);
 }
 SettingsController.prototype = {
-	dbName: 'settings',
-	sync: function(cb){
+	_sync: function(cb){
 		return new Promise(function(resolve, reject){
-			var settings = {};
 			this.table.each(function(data){
-				settings[data.id] = data.data;
-			}).then(function(){
-				ko.mapping.fromJS(settings,this.settings);
+				if(data.id in this._defaults){
+					this[data.id] = data.data;
+				}
+			}.bind(this)).then(function(){
+				this._events.emit('synced')
 				resolve();
 				cb && cb();
 			}.bind(this))
 		}.bind(this));
 	},
-	update: function(cb){
+	_update: function(cb){
 		return new Promise(function(resolve, reject){
-			var settings = ko.mapping.toJS(this.settings);
-			for(var id in settings){
+			for(var id in this._defaults){
 				this.table.put({
 					id: id,
-					data: settings[id]
+					data: this[id]
 				})
 			}
+			this._events.emit('updated')
 			resolve();
 			cb && cb();
 		}.bind(this));
 	},
-	settings: {},
-	defaults: {},
-	events: undefined,
+	_defaults: {},
+	_events: undefined,
 	/*
 		synced
 		updated
 	*/
-	get: function(path,obj){
+	_get: function(path,obj){
 		if(typeof path == 'string') path = path.split('/');
-		obj = obj || this.settings;
+		obj = obj || this;
 
-		if(obj[path[0]]){
+		if(obj[path[0]] != null){
 			if(path.length > 1){
-				return this.get(path,obj[path.shift()]);
+				return this._get(path,obj[path.shift()]);
 			}
 			else{
-				return obj[path[0]]();
+				return obj[path[0]];
 			}
 		}
 	},
-	set: function(path,val,obj){
+	_set: function(path,val,obj){
 		if(typeof path == 'string') path = path.split('/');
-		obj = obj || this.settings;
+		obj = obj || this;
 
-		if(obj[path[0]]){
+		if(obj[path[0]] != null){
 			if(path.length > 1){
-				return this.set(path,val,obj[path.shift()]);
+				return this._set(path,val,obj[path.shift()]);
 			}
 			else{
-				return obj[path[0]](val);
+				return obj[path[0]] = val;
 			}
 		}
 	},
-	resetToDefaults: function(){
-		ko.mapping.fromJS(this.defaults,this.settings);
+	_resetToDefaults: function(){
+		fn.combindOver(this,this._defaults);
 	}
 }
 

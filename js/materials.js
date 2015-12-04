@@ -1,4 +1,4 @@
-//class for handling and compiling material from material resources
+//class for handling and compiling materials
 function Materials(opts){
 	this.materials = [];
 	for(var i in opts){

@@ -5,8 +5,8 @@ settingsDB = new Dexie('block-script-settings');
 
 // 1.7
 settingsDB
-	.version(1.7)
+	.version(2)
 	.stores({
-		map: 'id,parent',
+		maps: 'id,type,data',
 		settings: 'id,data'
 	})

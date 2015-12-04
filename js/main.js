@@ -16,13 +16,22 @@ function initDB(cb){
 	});
 }
 
+function catchError(message){
+	return function(e){
+		console.error(message);
+		console.error(e);
+	}
+}
+
 $(document).ready(function() {
 	if(!Detector.webgl){
 		Detector.addGetWebGLMessage();
 	}
 
 	//create renderer
-	renderer = new THREE.WebGLRenderer();
+	renderer = new THREE.WebGLRenderer({
+	    preserveDrawingBuffer: true 
+	});
 	renderer.setPixelRatio( window.devicePixelRatio );
 	renderer.setSize( window.innerWidth, window.innerHeight );
     renderer.autoClear = false;
@@ -34,7 +43,7 @@ $(document).ready(function() {
 
 	initDB(function(){
 		initSettings(function(){
-			resources.init(function(){
+			// resources.init(function(){
 				defineMaterials();
 
 				blockPool.preAllocate(10000);
@@ -45,7 +54,7 @@ $(document).ready(function() {
 				
 				$('body').fadeIn(500);
 				states.enableState('menu');
-			})
+			// })
 		});
 	});
 

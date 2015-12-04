@@ -40,10 +40,27 @@ Object.clone = function(obj,deep,ignore){
 	if(!obj) return {};
 	
 	var clone = new obj.constructor;
+	clone.__proto__ = obj.__proto__;
+
+	//copy properties
 	for(var i in obj){
 		if(ignore && (ignore instanceof Array? ignore.indexOf(i) : i in ignore)) continue;
 		
-		if(typeof obj[i] == 'object' && deep){
+		//insert classes here
+		else if(obj[i] instanceof Date){
+			clone[i] = new Date(obj[i]);
+		}
+		else if(
+			obj[i] instanceof THREE.Vector4 ||
+			obj[i] instanceof THREE.Vector3 ||
+			obj[i] instanceof THREE.Vector2 ||
+			obj[i] instanceof THREE.Euler ||
+			obj[i] instanceof THREE.Quaternion
+		){
+			clone[i] = obj[i].clone();
+		}
+		//fallback
+		else if(typeof obj[i] == 'object' && deep){
 			clone[i] = Object.clone(obj[i],deep);
 		}
 		else{

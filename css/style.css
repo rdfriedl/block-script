@@ -86,6 +86,7 @@ body {
 	left: 10%;
 	right: 10%;
 	padding-top: 5%;
+    transition: all .5s;
 }
 
 #menu .menu .cube{
@@ -113,10 +114,24 @@ body {
 #menu .maps .list-group{
 	margin-bottom: 0px;
 }
+#menu .maps .panel-body{
+	overflow-y: auto;
+	max-height: 70vh;
+}
+#menu .maps .panel-body::-webkit-scrollbar{
+	display: none;
+}
 
 #menu .credits{
 
 }
+
+#menu #created-by{
+	position: fixed;
+	right: 10px;
+	bottom: 10px;
+}
+
 .credits-back{
 	padding-right: 50px;
 	padding-left: 50px;

@@ -77,22 +77,22 @@ menu = {
 	buildModal: function(){
 		var that = this;
 		return {
-			menu: observable('main',function(){
-				settings.update();
-			}),
+			menu: 'main',
 			settings: {
 				graphics: {
 					viewRangeRange: [2,8],
-					viewRange: observable(settings.get('graphics/viewRange'),function(val){
-						settings.set('graphics/viewRange',parseInt(val));
+					viewRange: observable(settings._get('graphics/viewRange'),function(val){
+						settings._set('graphics/viewRange',parseInt(val));
 					}),
-					shadows: observable(settings.get('graphics/shadows'),function(val){
-						settings.set('graphics/shadows',val);
+					shadows: observable(settings._get('graphics/shadows'),function(val){
+						settings._set('graphics/shadows',val);
+					})
+				},
+				save: function(){
+					settings._update().then(function(){
+						that.modal.menu('main')
 					})
 				}
-			},
-			editor: function(){
-				states.enableState('roomEditor');
 			},
 			maps: {
 				maps: [],
@@ -113,13 +113,14 @@ menu = {
 						var self = menu.modal.maps;
 						var map = self.maps()[self.selected()];
 						if(map){
-							map.data.name = this.name();
-							map.data.desc = this.desc();
-							map.save();
+							map.loader.setSettings({
+								info: {
+									name: this.name(),
+									desc: this.desc()
+								}
+							}).then(self.updateMaps)
 							this.name('');
 							this.desc('');
-
-							self.updateMaps();
 						}
 						$('#edit-map-modal').modal('hide');
 					}
@@ -131,10 +132,10 @@ menu = {
 					download: function(map){
 						var self = menu.modal.maps.download;
 
-						map.toJSON(function(json){
+						map.loader.toJSON(function(json){
 							var str = JSON.stringify(json);
 							self.downloadLink('data:text/json,'+str);
-							self.downloadName(map.data.name);
+							self.downloadName(map.loader.settings.info.name);
 						},function(val){
 							self.progress(val);
 						});
@@ -149,11 +150,24 @@ menu = {
 							try{
 								json = JSON.parse(json);
 								
-								var map = resources.createResource('map',json.data);
-								self.updateMaps();
+								var id = THREE.Math.generateUUID()
+								var map = {
+									id: id,
+									type: 'indexedDB',
+									data: 'block-script-map:'+id
+								}
+								var mapLoader = new MapLoaderDB(map.data);
 
 								//inport chunks
-								map.mapLoader.inportData(json.chunks);
+								Promise.all([
+									mapLoader.fromJSON(json),
+									settingsDB.maps.add(map)
+								]).then(function(){
+									self.maps.push({
+										map: map,
+										loader: mapLoader
+									})
+								})
 							}
 							catch(e){
 								console.error('failed to upload map')
@@ -167,12 +181,27 @@ menu = {
 				},
 				createMap: function(data){
 					var self = menu.modal.maps;
-
-					resources.createResource('map',{
-						name: this.create.name(),
-						desc: this.create.desc()
+					var id = THREE.Math.generateUUID()
+					var map = {
+						id: id,
+						type: 'indexedDB',
+						data: 'block-script-map:'+id
+					}
+					var mapLoader = new MapLoaderDB(map.data);
+					mapLoader.setSettings({
+						info: {
+							name: this.create.name(),
+							desc: this.create.desc(),
+							created: new Date(),
+							saved: new Date()
+						}
+					}).then(function(){
+						self.maps.push({
+							map: map,
+							loader: mapLoader
+						});
 					});
-					self.updateMaps();
+					settingsDB.maps.add(map);
 
 					$('#new-map-modal').modal('hide');
 				},
@@ -184,24 +213,28 @@ menu = {
 
 					states.enableState('game');
 					game.requestPointerLock();
-					game.loadMap(map);
+					game.loadMap(map.loader);
 				},
 				deleteMap: function(index){
 					var self = menu.modal.maps;
 					var map = self.maps()[self.selected()];
 					if(_.isNumber(index)) map = self.maps()[index];
 
-					resources.deleteResource(map.id);
-					self.updateMaps();
+					Promise.all([
+						settingsDB.maps.delete(map.map.id),
+						map.loader.delete()
+					]).then(function(){
+						self.maps.splice(self.maps.indexOf(map),1);
 
-					this.selected(-1);
-					$('#delete-map-modal').modal('hide');
+						this.selected(-1);
+						$('#delete-map-modal').modal('hide');
+					}.bind(this)).catch(catchError('failed to delete map'))
 				},
 				editMap: function(){
 					var self = menu.modal.maps;
 					var map = self.maps()[self.selected()];
-					self.edit.name(map.data.name);
-					self.edit.desc(map.data.desc);
+					self.edit.name(map.loader.settings.info.name);
+					self.edit.desc(map.loader.settings.info.desc);
 					$('#edit-map-modal').modal('show');
 				},
 				downloadMap: function(){
@@ -214,14 +247,50 @@ menu = {
 					$('#upload-map-modal').modal('show');
 				},
 
+				getMap: function(id){
+					for(var i in menu.modal.maps.maps()){
+						if(menu.modal.maps.maps()[i].map.id == id){
+							return menu.modal.maps.maps()[i];
+						}
+					}
+				},
 				updateMaps: function(cb){
 					var self = menu.modal.maps;
-					self.maps([]);
-					self.maps(resources.modal.map());
-					if(cb) cb();
-				},
-				saveMaps: function(cb){
-					resources.saveAllResources('map',db);
+					var maps = [];
+					return new Promise(function(resolve,reject){
+						var done = function(){
+							//update maps array
+							self.maps([]);
+							self.maps(maps);
+
+							//callback
+							resolve();
+							if(cb) cb();
+						};
+
+						settingsDB.maps.count(function(count){
+							done = _.after(count+1,done);
+						}).then(function(){
+							settingsDB.maps.each(function(data){
+								var map = self.getMap(data.id);
+								if(map){
+									//update it
+									maps.push(map);
+									map.loader.loadSettings().then(done);
+								}
+								else{
+									var mapLoader = new MapLoaderDB(data.data);
+									maps.push({
+										map: data,
+										loader: mapLoader
+									});
+									mapLoader.events.once('init',done);
+								}
+							});
+
+							done();
+						}).catch(reject);
+					});
 				}
 			}
 		}

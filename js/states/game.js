@@ -10,14 +10,9 @@ game = {
 		this.chunkLoader.setRange(this.viewRange);
 
 		//set renderer options
-		renderer.shadowMapEnabled = settings.get('graphics/shadows');
 	    renderer.shadowMapSoft = true;
 	    renderer.shadowMapType = THREE.PCFSoftShadowMap;
 		renderer.shadowMapCullFace = THREE.CullFaceBack;
-
-		if(!renderer.shadowMapEnabled){
-			this.lightGroup.children[0].shadowMap.dispose();
-		}
 	},
 	disable: function(){
 		keyboard.disableState('game');
@@ -25,7 +20,22 @@ game = {
 		this.chunkLoader.enabled = false;
 
 		if(this.loadedMap){
-			this.loadedMap.save();
+			//create screenShot
+			this.screenShotCanvas.width = renderer.domElement.width/4;
+			this.screenShotCanvas.height = renderer.domElement.height/4;
+			this.screenShotCTX.drawImage(renderer.domElement,0,0,this.screenShotCanvas.width,this.screenShotCanvas.height);
+
+			//save settings
+			this.loadedMap.setSettings({
+				info: {
+					saved: new Date(),
+					screenShot: this.screenShotCanvas.toDataURL()
+				},
+				player: {
+					position: this.player.position.clone(),
+					velocity: this.player.movement.velocity.clone()
+				}
+			});
 			this.voxelMap.removeAllChunks();
 		}
 	},
@@ -138,6 +148,9 @@ game = {
 			this.cameraHUD.updateProjectionMatrix();
 		}.bind(this));
 
+		this.screenShotCanvas = document.createElement('canvas');
+		this.screenShotCTX = this.screenShotCanvas.getContext('2d');
+
 		// Hook pointer lock state change events
 		$(document).on('pointerlockchange mozpointerlockchange webkitpointerlockchange', this.pointerlockchange.bind(this));
 		$(document).on('fullscreenchange mozfullscreenchange webkitfullscreenchange', this.pointerlockchange.bind(this));
@@ -231,12 +244,6 @@ game = {
 		this.animate(dtime);
 		this.render(dtime);
 
-		//update player position
-		if(this.loadedMap){
-			this.loadedMap.data.player.position.copy(this.player.position);
-			this.loadedMap.data.player.velocity.copy(this.player.movement.velocity);
-		}
-
 		this.chunkLoader.setPosition(this.player.position);
 	},
 	animate: function(dtime){
@@ -248,6 +255,12 @@ game = {
 	},
 
 	render: function(dtime){
+		renderer.shadowMapEnabled = settings.graphics.shadows;
+		if(!renderer.shadowMapEnabled && this.lightGroup.children[0].castShadow){
+			this.lightGroup.children[0].shadowMap.dispose();
+		}
+		this.lightGroup.children[0].castShadow = renderer.shadowMapEnabled;
+
 	    renderer.clear();
 		renderer.render(this.scene, this.camera);
 		renderer.clearDepth();
@@ -292,12 +305,11 @@ game = {
 		this.voxelMap.saveAllChunks(function(){
 			this.loadedMap = map;
 			this.voxelMap.removeAllChunks();
-			this.voxelMap.setMapLoader(map.mapLoader);
+			this.voxelMap.setMapLoader(map);
 
 			//set player position
-			this.player.position.copy(this.loadedMap.data.player.position);
-			this.player.movement.velocity.copy(this.loadedMap.data.player.velocity);
-
+			this.player.position.copy(this.loadedMap.settings.player.position);
+			this.player.movement.velocity.copy(this.loadedMap.settings.player.velocity);
 
 			if(this.player.position.empty()){
 				// set player position
@@ -364,7 +376,7 @@ game = {
 Object.defineProperties(game,{
 	viewRange: {
 		get: function(){
-			return settings.get('graphics/viewRange') || 3;
+			return settings.graphics.viewRange;
 		}
 	}
 })
