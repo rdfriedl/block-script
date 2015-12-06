@@ -48,6 +48,7 @@ game = {
 	lightGroup: undefined,
 	player: undefined,
 	voxelMap: undefined,
+	sounds: undefined,
 	chunkSize: 10,
 	blockSize: 32,
 	loadedMap: undefined,
@@ -66,6 +67,10 @@ game = {
 		this.scene = new THREE.Scene();
 		this.scene.fog = new THREE.FogExp2(0xbfd1e5,game.viewRange * game.chunkSize / 100000);
 		this.camera = new THREE.PerspectiveCamera(60, width / height, 0.1, 20000);
+
+		this.sounds = new Sounds(this.scene);
+		this.sounds.load('data/sounds.json');
+		this.camera.add(this.sounds.listener);
 
 		//setup
 		this.setUpScene();

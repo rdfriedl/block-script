@@ -18,8 +18,8 @@ SettingsController.prototype = {
 				}
 			}.bind(this)).then(function(){
 				this._events.emit('synced')
-				resolve();
 				cb && cb();
+				resolve();
 			}.bind(this))
 		}.bind(this));
 	},
@@ -32,8 +32,8 @@ SettingsController.prototype = {
 				})
 			}
 			this._events.emit('updated')
-			resolve();
 			cb && cb();
+			resolve();
 		}.bind(this));
 	},
 	_defaults: {},
@@ -74,13 +74,15 @@ SettingsController.prototype = {
 }
 
 function initSettings(cb){
-	settings = new SettingsController(settingsDB.settings,{
-		graphics: {
-			viewRange: 3,
-			shadows: true
-		}
-	},function(){
-		console.info('settings loaded');
-		cb && cb();
+	return new Promise(function(resolve,reject){
+		settings = new SettingsController(settingsDB.settings,{
+			graphics: {
+				viewRange: 3,
+				shadows: true
+			}
+		})
+
+		if(cb) cb(settings);
+		resolve(settings);
 	})
 }

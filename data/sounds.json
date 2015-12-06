@@ -1,0 +1,238 @@
+[
+	{
+		"id": "digStone1",
+		"src": "res/audio/dig/stone1.mp3"
+	},
+	{
+		"id": "digStone2",
+		"src": "res/audio/dig/stone2.mp3"
+	},
+	{
+		"id": "digStone3",
+		"src": "res/audio/dig/stone3.mp3"
+	},
+	{
+		"id": "digStone4",
+		"src": "res/audio/dig/stone4.mp3"
+	},
+	{
+		"id": "digGrass1",
+		"src": "res/audio/dig/grass1.mp3"
+	},
+	{
+		"id": "digGrass2",
+		"src": "res/audio/dig/grass2.mp3"
+	},
+	{
+		"id": "digGrass3",
+		"src": "res/audio/dig/grass3.mp3"
+	},
+	{
+		"id": "digGrass4",
+		"src": "res/audio/dig/grass4.mp3"
+	},
+	{
+		"id": "digWood1",
+		"src": "res/audio/dig/wood1.mp3"
+	},
+	{
+		"id": "digWood2",
+		"src": "res/audio/dig/wood2.mp3"
+	},
+	{
+		"id": "digWood3",
+		"src": "res/audio/dig/wood3.mp3"
+	},
+	{
+		"id": "digWood4",
+		"src": "res/audio/dig/wood4.mp3"
+	},
+	{
+		"id": "digGravel1",
+		"src": "res/audio/dig/gravel1.mp3"
+	},
+	{
+		"id": "digGravel2",
+		"src": "res/audio/dig/gravel2.mp3"
+	},
+	{
+		"id": "digGravel3",
+		"src": "res/audio/dig/gravel3.mp3"
+	},
+	{
+		"id": "digGravel4",
+		"src": "res/audio/dig/gravel4.mp3"
+	},
+	{
+		"id": "digSand1",
+		"src": "res/audio/dig/sand1.mp3"
+	},
+	{
+		"id": "digSand2",
+		"src": "res/audio/dig/sand2.mp3"
+	},
+	{
+		"id": "digSand3",
+		"src": "res/audio/dig/sand3.mp3"
+	},
+	{
+		"id": "digSand4",
+		"src": "res/audio/dig/sand4.mp3"
+	},
+	{
+		"id": "digSnow1",
+		"src": "res/audio/dig/snow1.mp3"
+	},
+	{
+		"id": "digSnow2",
+		"src": "res/audio/dig/snow2.mp3"
+	},
+	{
+		"id": "digSnow3",
+		"src": "res/audio/dig/snow3.mp3"
+	},
+	{
+		"id": "digSnow4",
+		"src": "res/audio/dig/snow4.mp3"
+	},
+	{
+		"id": "digCloth1",
+		"src": "res/audio/dig/cloth1.mp3"
+	},
+	{
+		"id": "digCloth2",
+		"src": "res/audio/dig/cloth2.mp3"
+	},
+	{
+		"id": "digCloth3",
+		"src": "res/audio/dig/cloth3.mp3"
+	},
+	{
+		"id": "digCloth4",
+		"src": "res/audio/dig/cloth4.mp3"
+	},
+	{
+		"id": "digGlass1",
+		"src": "res/audio/random/glass1.mp3"
+	},
+	{
+		"id": "digGlass2",
+		"src": "res/audio/random/glass2.mp3"
+	},
+	{
+		"id": "digGlass3",
+		"src": "res/audio/random/glass3.mp3"
+	},
+	{
+		"id": "stepStone1",
+		"src": "res/audio/step/stone1.mp3"
+	},
+	{
+		"id": "stepStone2",
+		"src": "res/audio/step/stone2.mp3"
+	},
+	{
+		"id": "stepStone3",
+		"src": "res/audio/step/stone3.mp3"
+	},
+	{
+		"id": "stepStone4",
+		"src": "res/audio/step/stone4.mp3"
+	},
+	{
+		"id": "stepGrass1",
+		"src": "res/audio/step/grass1.mp3"
+	},
+	{
+		"id": "stepGrass2",
+		"src": "res/audio/step/grass2.mp3"
+	},
+	{
+		"id": "stepGrass3",
+		"src": "res/audio/step/grass3.mp3"
+	},
+	{
+		"id": "stepGrass4",
+		"src": "res/audio/step/grass4.mp3"
+	},
+	{
+		"id": "stepWood1",
+		"src": "res/audio/step/wood1.mp3"
+	},
+	{
+		"id": "stepWood2",
+		"src": "res/audio/step/wood2.mp3"
+	},
+	{
+		"id": "stepWood3",
+		"src": "res/audio/step/wood3.mp3"
+	},
+	{
+		"id": "stepWood4",
+		"src": "res/audio/step/wood4.mp3"
+	},
+	{
+		"id": "stepGravel1",
+		"src": "res/audio/step/gravel1.mp3"
+	},
+	{
+		"id": "stepGravel2",
+		"src": "res/audio/step/gravel2.mp3"
+	},
+	{
+		"id": "stepGravel3",
+		"src": "res/audio/step/gravel3.mp3"
+	},
+	{
+		"id": "stepGravel4",
+		"src": "res/audio/step/gravel4.mp3"
+	},
+	{
+		"id": "stepSand1",
+		"src": "res/audio/step/sand1.mp3"
+	},
+	{
+		"id": "stepSand2",
+		"src": "res/audio/step/sand2.mp3"
+	},
+	{
+		"id": "stepSand3",
+		"src": "res/audio/step/sand3.mp3"
+	},
+	{
+		"id": "stepSand4",
+		"src": "res/audio/step/sand4.mp3"
+	},
+	{
+		"id": "stepSnow1",
+		"src": "res/audio/step/snow1.mp3"
+	},
+	{
+		"id": "stepSnow2",
+		"src": "res/audio/step/snow2.mp3"
+	},
+	{
+		"id": "stepSnow3",
+		"src": "res/audio/step/snow3.mp3"
+	},
+	{
+		"id": "stepSnow4",
+		"src": "res/audio/step/snow4.mp3"
+	},
+	{
+		"id": "stepCloth1",
+		"src": "res/audio/step/cloth1.mp3"
+	},
+	{
+		"id": "stepCloth2",
+		"src": "res/audio/step/cloth2.mp3"
+	},
+	{
+		"id": "stepCloth3",
+		"src": "res/audio/step/cloth3.mp3"
+	},
+	{
+		"id": "stepCloth4",
+		"src": "res/audio/step/cloth4.mp3"
+	}
+]

@@ -7,12 +7,8 @@ var materials = new Materials({
 var settings;
 
 function initDB(cb){
-	settingsDB.open().finally(function(){
+	return settingsDB.open().then(function(){
 		if(cb) cb();
-	});
-
-	settingsDB.on('error',function(err){
-		console.log(err);
 	});
 }
 
@@ -26,6 +22,7 @@ function catchError(message){
 $(document).ready(function() {
 	if(!Detector.webgl){
 		Detector.addGetWebGLMessage();
+		return;
 	}
 
 	//create renderer
@@ -37,29 +34,27 @@ $(document).ready(function() {
     renderer.autoClear = false;
 	$('body').prepend(renderer.domElement);
 
+	//resize renderer
 	$(window).resize(function(event) {
 		renderer.setSize( window.innerWidth, window.innerHeight );
 	}.bind(this));
 
-	initDB(function(){
-		initSettings(function(){
-			// resources.init(function(){
-				defineMaterials();
+	//start
+	Promise.all([
+		initDB(),
+		initSettings()
+	]).then(function(){
+		defineMaterials();
 
-				blockPool.preAllocate(10000);
-				states.init();
+		blockPool.preAllocate(10000);
+		states.init();
 
-				//start loop
-				states.update();
-				
-				$('body').fadeIn(500);
-				states.enableState('menu');
-			// })
-		});
-	});
-
-	//load sound
-	createjs.Sound.registerSounds(sounds, audioPath);
+		//start loop
+		states.update();
+		
+		$('body').fadeIn(500);
+		states.enableState('menu')
+	}).catch(catchError('failed to start'))
 
 	//show menu
 	$(document).on('contextmenu',function(event){

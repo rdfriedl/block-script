@@ -30,20 +30,24 @@ states = {
 		}
 	},
 	init: function(){
-		//start up all states
-		for (var i in this.states) {
-			var state = this.states[i];
-			state.init();
+		return new Promise(function(resolve,reject){
+			//start up all states
+			for (var i in this.states) {
+				var state = this.states[i];
+				state.init();
 
-			//bindings
-			state.modal = fn.combindOver(state.buildModal(),this.baseModal);
-			state.modal = ko.mapping.fromJS(state.modal);
-			ko.applyBindings(state.modal,state.container.get(0));
+				//bindings
+				state.modal = fn.combindOver(state.buildModal(),this.baseModal);
+				state.modal = ko.mapping.fromJS(state.modal);
+				ko.applyBindings(state.modal,state.container.get(0));
 
-			//tell the state its ko is loaded
-			state.events.emit('load');
-		};
-		this.disableAllStates(true);
+				//tell the state its ko is loaded
+				state.events.emit('load');
+			};
+			this.disableAllStates(true);
+
+			resolve();
+		}.bind(this))
 	},
 	update: function(){ //update loop for the active state
 		var dtime = clock.getDelta() * 60;

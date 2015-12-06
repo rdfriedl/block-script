@@ -4,11 +4,6 @@ function Block(position,data,chunk){
 
 	this.material = materials.getMaterial(data? data.material : undefined);
 	this.shape = shapes.getShape(data? data.shape : undefined);
-		
-	// this.data = {};
-	// this.data.__proto__ = Block.prototype.data;
-	// fn.combindOver(this.data,this.material.blockData);
-	// fn.combindOver(this.data,this.shape.blockData);
 
 	this.inportData(data);
 }

@@ -268,10 +268,12 @@ menu = {
 							if(cb) cb();
 						};
 
-						settingsDB.maps.count(function(count){
+						return settingsDB.maps.count(function(count){
 							done = _.after(count+1,done);
 						}).then(function(){
-							settingsDB.maps.each(function(data){
+							done();
+							
+							return settingsDB.maps.each(function(data){
 								var map = self.getMap(data.id);
 								if(map){
 									//update it
@@ -286,11 +288,9 @@ menu = {
 									});
 									mapLoader.events.once('init',done);
 								}
-							});
-
-							done();
-						}).catch(reject);
-					});
+							})
+						})
+					})
 				}
 			}
 		}

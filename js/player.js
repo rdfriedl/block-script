@@ -179,7 +179,7 @@ Player.prototype = {
 				on_keydown: _.throttle(function(){
 					var shape = shapes.getShape(this.selection.place.shape);
 					if(shape.blockData.canRotate && shape.blockData.canRotateOnY && this.selection.block){
-						createjs.Sound.play('digStone1');
+						this.state.sounds.play('digStone1',this.selection.block.sceneCenter);
 						this.selection.place.blockRotation += THREE.Math.degToRad(90);
 					}
 					else{
@@ -193,7 +193,7 @@ Player.prototype = {
 				on_keydown: _.throttle(function(){
 					var shape = shapes.getShape(this.selection.place.shape);
 					if(shape.blockData.canRotate && shape.blockData.canRotateOnY && this.selection.block){
-						createjs.Sound.play('digStone1');
+						this.state.sounds.play('digStone1',this.selection.block.sceneCenter);
 						this.selection.place.blockRotation -= THREE.Math.degToRad(90);
 					}
 					else{
@@ -208,7 +208,7 @@ Player.prototype = {
 				prevent_default: true,
 				on_keydown: function(){
 					if(this.selection.block){
-						createjs.Sound.play('digStone1');
+						this.state.sounds.play('digStone1',this.selection.block.sceneCenter);
 						this.selection.place.material = this.selection.block.material.id;
 						this.selection.place.shape = this.selection.block.shape.id;
 						this.selection.place.rotation.copy(this.selection.block.rotation);
@@ -295,7 +295,7 @@ Player.prototype = {
 				var block = this.state.voxelMap.getBlock(v);
 				if(block){
 					if(block.stepSound.length){
-						createjs.Sound.play(block.stepSound[Math.floor(Math.random() * block.stepSound.length)]);
+						this.state.sounds.play(block.stepSound[Math.floor(Math.random() * block.stepSound.length)],block.sceneCenter);
 					}
 				}
 			}
@@ -449,7 +449,7 @@ Player.prototype = {
 						block.chunk.build();
 						//play sound
 						if(block.placeSound.length){
-							createjs.Sound.play(block.placeSound[Math.floor(Math.random() * block.placeSound.length)]);
+							this.state.sounds.play(block.placeSound[Math.floor(Math.random() * block.placeSound.length)],block.sceneCenter);
 						}
 					}
 				}.bind(this),true)
@@ -464,7 +464,7 @@ Player.prototype = {
 			block.chunk.saved = false;
 			//play sound
 			if(block.removeSound.length){
-				createjs.Sound.play(block.removeSound[Math.floor(Math.random() * block.removeSound.length)]);
+				this.state.sounds.play(block.removeSound[Math.floor(Math.random() * block.removeSound.length)],block.sceneCenter);
 			}
 		}
 	}
