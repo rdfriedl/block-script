@@ -12,10 +12,11 @@ function initDB(cb){
 	});
 }
 
-function catchError(message){
+function catchError(message,cb){
 	return function(e){
 		console.error(message);
 		console.error(e);
+		if(cb) cb();
 	}
 }
 
@@ -56,9 +57,29 @@ $(document).ready(function() {
 		//start loop
 		states.update();
 		
-		$('body').fadeIn(500);
+		$('body').addClass('loaded');
 		states.enableState('menu')
-	}).catch(catchError('failed to start'))
+	}).catch(catchError('failed to start',function(){
+		BootstrapDialog.confirm({
+			title: 'DataBase Error',
+			message: 'Failed to load the database.<br>This maybe caused by an older database version.<br><br>Click "Clear DataBase" to removed all local data and recreate the DataBase.',
+			type: BootstrapDialog.TYPE_DANGER,
+			closable: false,
+			btnCancelLabel: 'Try Again',
+			btnOKLabel: 'Clear DataBase',
+			btnOKClass: 'btn-danger',
+			callback: function(result){
+	            if(result) {
+	            	settingsDB.delete().then(function(){
+	            		location.reload()
+	            	});
+	            }
+	            else {
+	            	location.reload()
+	            }
+	        }
+	    })
+	}))
 
 	//show menu
 	$(document).on('contextmenu',function(event){

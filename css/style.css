@@ -4,7 +4,6 @@
 }
 body {
 	overflow: hidden;
-	display: none;
 }
 *{
 	font-family: Font;
@@ -14,6 +13,17 @@ body {
 	-ms-user-select: none;
 	-moz-user-select: none;
 	-webkit-user-select: none;
+}
+
+/*hide stuff till page loads*/
+#states,body>canvas{
+	opacity: 0;
+	visibility: hidden;
+	transition: opacity .5s, visibility 0s;
+}
+.loaded #states,.loaded>canvas{
+	visibility: visible;
+	opacity: 1;
 }
 
 /*states*/
