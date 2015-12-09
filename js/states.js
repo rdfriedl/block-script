@@ -44,6 +44,8 @@ states = {
 				//tell the state its ko is loaded
 				state.events.emit('load');
 			};
+			updateUI();
+			
 			this.disableAllStates(true);
 
 			resolve();

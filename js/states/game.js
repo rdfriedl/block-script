@@ -261,7 +261,7 @@ game = {
 
 	render: function(dtime){
 		renderer.shadowMapEnabled = settings.graphics.shadows;
-		if(!renderer.shadowMapEnabled && this.lightGroup.children[0].castShadow){
+		if(!renderer.shadowMapEnabled && this.lightGroup.children[0].castShadow && this.lightGroup.children[0].shadowMap){
 			this.lightGroup.children[0].shadowMap.dispose();
 		}
 		this.lightGroup.children[0].castShadow = renderer.shadowMapEnabled;

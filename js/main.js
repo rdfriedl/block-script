@@ -19,6 +19,10 @@ function catchError(message){
 	}
 }
 
+function updateUI(){
+	$('input[data-toggle="toggle"]').change();
+}
+
 $(document).ready(function() {
 	if(!Detector.webgl){
 		Detector.addGetWebGLMessage();
