@@ -33,8 +33,8 @@ Sounds.prototype = {
 				this.sounds = json;
 			}.bind(this)).fail(function(event,type,error){
 				reject(error);
-			})
-		}.bind(this))
+			});
+		}.bind(this));
 	},
 	getSound: function(soundID){
 		for(var i in this.sounds){
@@ -48,12 +48,13 @@ Sounds.prototype = {
 		if(!sound) return;
 
 		var players = this.players[soundID] || (this.players[soundID] = []);
-		
+		var player;
+
 		//find a player to use
 		for(var i = 0; i < players.length; i++){
-			if(players[i].isPlaying == false){
+			if(players[i].isPlaying === false){
 				//use this one
-				var player = players[i];
+				player = players[i];
 
 				//position it
 				if(pos)
@@ -63,16 +64,16 @@ Sounds.prototype = {
 
 				//play it
 				player.play();
-				return
+				return;
 			}
 		}
 		//create a new one
 		if(players.length < this.settings.maxInstances){
-			var player = new THREE.Audio(this.listener);
+			player = new THREE.Audio(this.listener);
 			player.load(sound.src);
 			player.setRefDistance(this.settings.range);
 			player.autoplay = true;
-			
+
 			//add it
 			players.push(player);
 			this.group.add(player);
@@ -84,4 +85,4 @@ Sounds.prototype = {
 				player.position.copy(this.listener.getWorldPosition());
 		}
 	}
-}
+};

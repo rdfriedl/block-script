@@ -17,7 +17,7 @@ function catchError(message,cb){
 		console.error(message);
 		console.error(e);
 		if(cb) cb();
-	}
+	};
 }
 
 function updateUI(){
@@ -32,7 +32,7 @@ $(document).ready(function() {
 
 	//create renderer
 	renderer = new THREE.WebGLRenderer({
-	    preserveDrawingBuffer: true 
+	    preserveDrawingBuffer: true
 	});
 	renderer.setPixelRatio( window.devicePixelRatio );
 	renderer.setSize( window.innerWidth, window.innerHeight );
@@ -56,9 +56,9 @@ $(document).ready(function() {
 
 		//start loop
 		states.update();
-		
+
 		$('body').addClass('loaded');
-		states.enableState('menu')
+		states.enableState('menu');
 	}).catch(catchError('failed to start',function(){
 		BootstrapDialog.confirm({
 			title: 'DataBase Error',
@@ -71,63 +71,63 @@ $(document).ready(function() {
 			callback: function(result){
 	            if(result) {
 	            	settingsDB.delete().then(function(){
-	            		location.reload()
+	            		location.reload();
 	            	});
 	            }
 	            else {
-	            	location.reload()
+	            	location.reload();
 	            }
 	        }
-	    })
-	}))
+	    });
+	}));
 
 	//show menu
 	$(document).on('contextmenu',function(event){
 		event.preventDefault();
-	})
+	});
 
 	//fix middle click
 	$(document).on('mousedown',function(event){
 		if(event.button == 1) event.preventDefault();
-	})
+	});
 
 	//dont allow the user to drag images
 	$(document).on('dragstart','img',function(event){
 		event.preventDefault();
 		return false;
-	})
+	});
 
 	$('form.no-action').submit(function(event){
 		event.preventDefault();
-	})
+	});
 
 	$(document).on('dragend',function(event){
 		event.preventDefault();
-	})
+	});
 	$(document).on('drop','.drop-zone',function(event){
 		event.preventDefault();
-	})
+	});
 	$(document).on('dragover','.drop-zone',function(event){
 		$(this).addClass('hover');
 		event.stopPropagation();
 		return true;
-	})
+	});
 	$(document).on('dragover',function(){
 		$('.drop-zone').removeClass('hover');
 		return false;
-	})
+	});
 
 	$(document).on('click','a[href="#"]',function(event){
 		event.preventDefault();
-	})
+	});
 
 	$(window).focus(function(){
 		clock.getDelta();
-	})
+	});
 
 	$(window).on('error',function(event){
-		console.log(event)
-	})
+		console.log(event);
+	});
 });
 
 function readfiles(files, callback) {

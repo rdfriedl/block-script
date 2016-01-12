@@ -3,7 +3,7 @@ CollisionEntity = function(data){
 	this._box = data.box || new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
 	this.position = data.position || new THREE.Vector3();
 	this.group = data.group || this.group;
-}
+};
 CollisionEntity.prototype = {
 	group: 'none',
 	_box: undefined,
@@ -16,9 +16,9 @@ CollisionEntity.prototype = {
             box: this._box.clone(),
             position: this.position.clone(),
             group: this.group
-        })
+        });
     }
-}
+};
 Object.defineProperties(CollisionEntity.prototype,{
 	box: {
 		get: function(){
@@ -30,7 +30,7 @@ Object.defineProperties(CollisionEntity.prototype,{
 			return this.position.x;
 		},
 		set: function(val){
-			return this.position.x = val;
+			return (this.position.x = val);
 		}
 	},
 	y: {
@@ -38,7 +38,7 @@ Object.defineProperties(CollisionEntity.prototype,{
 			return this.position.y;
 		},
 		set: function(val){
-			return this.position.y = val;
+			return (this.position.y = val);
 		}
 	},
 	z: {
@@ -46,7 +46,7 @@ Object.defineProperties(CollisionEntity.prototype,{
 			return this.position.z;
 		},
 		set: function(val){
-			return this.position.z = val;
+			return (this.position.z = val);
 		}
 	},
 	x1: {
@@ -94,7 +94,7 @@ Object.defineProperties(CollisionEntity.prototype,{
 			return this._box.max.z - this._box.min.z;
 		}
 	},
-})
+});
 
 collisions = {
 	groups: {
@@ -159,7 +159,7 @@ collisions = {
         var entry = new THREE.Vector3();
         var exit = new THREE.Vector3();
 
-        if (to.x == 0){
+        if (to.x === 0){
             entry.x = -Infinity;
             exit.x = Infinity;
         }
@@ -168,7 +168,7 @@ collisions = {
             exit.x = invExit.x / to.x;
         }
 
-        if (to.y == 0){
+        if (to.y === 0){
             entry.y = -Infinity;
             exit.y = Infinity;
         }
@@ -177,7 +177,7 @@ collisions = {
             exit.y = invExit.y / to.y;
         }
 
-        if (to.z == 0){
+        if (to.z === 0){
             entry.z = -Infinity;
             exit.z = Infinity;
         }
@@ -253,7 +253,7 @@ collisions = {
         var velocity = a.velocity;
         var toGrid = function(vec){
             return vec.divideScalar(game.blockSize).floor();
-        }
+        };
 
         var colInfo = {
             time: 1,
@@ -269,7 +269,7 @@ collisions = {
         var done = false;
 
         //test for blocks
-        for (var i = 1; i <= loops && done == false; i++) {
+        for (var i = 1; i <= loops && done === false; i++) {
             var _velocity = velocity.clone().divideScalar(loops).multiplyScalar(i);
             var pos = a.position.clone().add(_velocity);
             //check corners
@@ -295,7 +295,8 @@ collisions = {
                 v.push(toGrid( new THREE.Vector3(box.max.x, box.min.y, box[velocity.z < 0? 'min' : 'max'].z) ));
                 v.push(toGrid( new THREE.Vector3(box.min.x, box.min.y, box[velocity.z < 0? 'min' : 'max'].z) ));
             }
-            for (var k = 0; k < v.length; k++) {
+            var k;
+            for (k = 0; k < v.length; k++) {
                 var id = v[k].x+'|'+v[k].y+'|'+v[k].z;
                 if(corners[id]){
                     corners[id][0]++;
@@ -303,9 +304,9 @@ collisions = {
                 else{
                     corners[id] = [0,v[k]];
                 }
-            };
+            }
             var c = [];
-            for (var k in corners) {
+            for (k in corners) {
                 var index = 0;
 
                 for (var j = 0; j < c.length; j++) {
@@ -313,23 +314,23 @@ collisions = {
                         index = j;
                         break;
                     }
-                };
-                
+                }
+
                 c.splice(j,0,corners[k]);
-            };
+            }
             corners = c;
 
             //check for collisions
-            for (var k in corners) {
-                if(done == true) break;
+            for (k in corners) {
+                if(done === true) break;
 
                 var block = map.getBlock(corners[k][1]);
                 if(!(block instanceof Block)) continue;
-                
+
                 if(block.canCollide){
                     if(collisions.canCollide(a.collisionEntity,block.collisionEntity)){
                         if(collisions.checkCollision(a.collisionEntity,block.collisionEntity,_velocity)){
-                            var a = collisions.SweptAABB(a.collisionEntity,block.collisionEntity,_velocity);
+                            var a = collisions.SweptAABB(a.collisionEntity,block.collisionEntity,_velocity); //jshint ignore: line
                             colInfo = a;
                             //had a collision so break out of the loop
                             done = true;
@@ -337,9 +338,9 @@ collisions = {
                         }
                     }
                 }
-            };
-        };
-        delete pos, corners, c, block, box;
+            }
+        }
+        delete pos, corners, c, block, box; //jshint ignore: line
         return colInfo;
     },
     _collideWithBlocks: function(a,map){
@@ -376,36 +377,37 @@ collisions = {
             if(!corners[id]){
                 corners[id] = v[k];
             }
-        };
+        }
 
         //check for collisions
         var ray = new THREE.Raycaster();
         var collisions = [];
         var dist = velocity.length();
+        var i;
         ray.far = dist;
-        for (var i in corners) {
+        for (i in corners) {
             ray.set(corners[i].clone().add(velocity.clone().negate()),velocity.clone().normalize());
 
             var intersects = ray.intersectObject(map.collisionGroup,true);
-            for (var k = 0; k < intersects.length; k++) {
-                var v = corners[i].clone().sub(intersects[k].point);
+            for (var k = 0; k < intersects.length; k++) { //jshint ignore: line
+                var v = corners[i].clone().sub(intersects[k].point); //jshint ignore: line
                 var entry = new THREE.Vector3();
 
-                if (v.x == 0){
+                if (v.x === 0){
                     entry.x = -Infinity;
                 }
                 else{
                     entry.x = v.x / velocity.x;
                 }
 
-                if (v.y == 0){
+                if (v.y === 0){
                     entry.y = -Infinity;
                 }
                 else{
                     entry.y = v.y / velocity.y;
                 }
 
-                if (v.z == 0){
+                if (v.z === 0){
                     entry.z = -Infinity;
                 }
                 else{
@@ -416,15 +418,15 @@ collisions = {
                     time: Math.max(v.x,v.y,v.z),
                     normal: intersects[k].face.normal
                 });
-            };
-        };
+            }
+        }
 
-        for (var i = 0; i < collisions.length; i++) {
+        for (i = 0; i < collisions.length; i++) {
             if(collisions[i].time < collision.time){
                 collision = collisions[i];
             }
-        };
+        }
 
         return collision;
     }
-}
+};

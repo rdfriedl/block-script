@@ -81,7 +81,7 @@ VoxelMap.prototype = {
 		this.getChunk(chunkPos,function(chunk){
 			var pos = position.clone();
 			pos.sub(chunk.worldPosition);
-			chunk.removeBlock(pos,dontBuild)
+			chunk.removeBlock(pos,dontBuild);
 			if(cb) cb();
 		}.bind(this));
 	},
@@ -105,15 +105,15 @@ VoxelMap.prototype = {
 			this.mapLoader.loadChunk(position,function(data){
 				if(!data){
 					//generate the chunk
-					this.chunkGenerator.generateChunk(position,func)
+					this.chunkGenerator.generateChunk(position,func);
 				}
 				else{
 					func(data);
 				}
-			}.bind(this))
+			}.bind(this));
 		}
 		else{
-			this.chunkGenerator.generateChunk(position,func)
+			this.chunkGenerator.generateChunk(position,func);
 		}
 	},
 	chunkLoaded: function(position){
@@ -133,7 +133,7 @@ VoxelMap.prototype = {
 					}.bind(this));
 				}
 				else if(cb) cb();
-			}.bind(this))
+			}.bind(this));
 		}
 		else if(cb) cb();
 	},
@@ -142,12 +142,12 @@ VoxelMap.prototype = {
 			chunk.dispose();
 			delete this.chunks[position.toString()];
 			if(cb) cb();
-		}.bind(this))
+		}.bind(this));
 	},
 	unloadChunk: function(position,cb){
 		this.saveChunk(position,function(){
 			this.removeChunk(position,cb);
-		}.bind(this))
+		}.bind(this));
 	},
 	saveAllChunks: function(cb){
 		var k = 1;
@@ -156,8 +156,8 @@ VoxelMap.prototype = {
 		}
 
 		cb = _.after(k,cb || function(){});
-		for(var i in this.chunks){
-			this.chunks[i].save(cb);
+		for(var j in this.chunks){
+			this.chunks[j].save(cb);
 		}
 		cb();
 	},
@@ -168,8 +168,8 @@ VoxelMap.prototype = {
 		}
 
 		cb = _.after(k,cb || function(){});
-		for(var i in this.chunks){
-			this.chunks[i].remove(cb);
+		for(var j in this.chunks){
+			this.chunks[j].remove(cb);
 		}
 		cb();
 	},
@@ -180,8 +180,8 @@ VoxelMap.prototype = {
 		}
 
 		cb = _.after(k,cb || function(){});
-		for(var i in this.chunks){
-			this.chunks[i].unload(cb);
+		for(var j in this.chunks){
+			this.chunks[j].unload(cb);
 		}
 		cb();
 	},
@@ -196,14 +196,14 @@ VoxelMap.prototype = {
 			var length = 0;
 			for (var i in this.chunks) {
 				length++;
-			};
+			}
 
 			var k = 0;
-			for (var i in this.chunks) {
+			for (var j in this.chunks) {
 				if(k++ == index){
-					this.chunks[i].build();
+					this.chunks[j].build();
 				}
-			};
+			}
 
 			if(index++ > length){
 				if(cb) cb();
@@ -211,7 +211,7 @@ VoxelMap.prototype = {
 			}
 
 			setTimeout(func.bind(this,index),10);
-		}
+		};
 		func.bind(this)(0);
 	},
 	setChunkGenerator: function(chunkGenerator,cb){
@@ -225,7 +225,7 @@ VoxelMap.prototype = {
 			size: size || new THREE.Vector3(),
 			offset: pos || new THREE.Vector3(),
 			data: []
-		}
+		};
 
 		var s = data.size;
 		for(var p = new THREE.Vector3(); p.x <= s.x && p.y <= s.y && p.z <= s.z; ){
@@ -263,14 +263,14 @@ VoxelMap.prototype = {
 			chunks[pos.toString()] = pos;
 		}
 
-		for(var i in chunks){
-			this.getChunk(chunks[i],function(chunk){
+		for(var k in chunks){
+			this.getChunk(chunks[k],function(chunk){
 				chunk.saved = false;
 				chunk.build();
-			})
+			});
 		}
 	}
-}
+};
 Object.defineProperties(VoxelMap.prototype,{
     debug: {
         get: function(){
@@ -280,4 +280,4 @@ Object.defineProperties(VoxelMap.prototype,{
         	this.debugGroup.visible = this.collisionGroup.visible = val;
         }
     },
-})
+});

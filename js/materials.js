@@ -16,7 +16,7 @@ Materials.prototype = {
 			var _materials = [];
 			for (var i in this.materials) {
 				_materials.push(this.materials[i].material);
-			};
+			}
 
 			this.material = new THREE.MeshFaceMaterial(_materials);
 		}
@@ -55,9 +55,9 @@ Materials.prototype = {
 				}
 			}
 			//remove material by name
-			for(var i = 0; i < this.materials.length; i++){
-				if(this.materials[i].name == index){
-					this.materials.splice(i,1);
+			for(var k = 0; k < this.materials.length; k++){
+				if(this.materials[k].name == index){
+					this.materials.splice(k,1);
 					if(!dontUpdate) this.updateMaterial();
 					return true;
 				}
@@ -76,7 +76,7 @@ Materials.prototype = {
 			//get by index
 			return this.materials[id];
 		}
-		
+
 		this.getMaterial.warnedIDs = this.getMaterial.warnedIDs || {};
 		if(!(id in this.getMaterial.warnedIDs) && id !== undefined){
 			this.getMaterial.warnedIDs[id] = true;
@@ -93,7 +93,7 @@ Materials.prototype = {
 			if(mat) return this.material.materials.indexOf(mat.material);
 		}
 	}
-}
+};
 Materials.prototype.constructor = Materials;
 
 var lastMaterialID = 0;
@@ -107,12 +107,12 @@ Material.prototype = {
 	id: '',
 	blockData: {},
 	material: undefined //threejs material
-}
+};
 Object.defineProperties(Material.prototype,{
 	materialIndex: {
 		get: function(){
 			return materials.getMaterialIndex(this);
 		}
 	}
-})
+});
 Material.prototype.constructor = Material;

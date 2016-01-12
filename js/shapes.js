@@ -18,19 +18,19 @@ shapes = {
 	removeShape: function(id){
 		delete this.shapes[id];
 	}
-}
+};
 
 function Shape(id,data){
 	this.blockData = {};
 	for (var i in data) {
 		this[i] = data[i];
-	};
+	}
 	this.id = id;
 	this.blockData.__proto__ = Block.prototype.data;
 	// this.collision.computeFaceNormals();
-	for (var i = 0; i < this.geometry.faces.length; i++) {
-		this.geometry.faces[i].materialIndex = 0;
-	};
+	for (var k = 0; k < this.geometry.faces.length; k++) {
+		this.geometry.faces[k].materialIndex = 0;
+	}
 	this.geometry.computeFaceNormals();
 }
 Shape.prototype = {
@@ -41,5 +41,5 @@ Shape.prototype = {
 	wireFrame: new THREE.Geometry(),
 	image: '',
 	blockData:{}
-}
+};
 Shape.prototype.constructor = Shape;

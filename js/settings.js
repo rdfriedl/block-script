@@ -17,10 +17,10 @@ SettingsController.prototype = {
 					this[data.id] = data.data;
 				}
 			}.bind(this)).then(function(){
-				this._events.emit('synced')
-				cb && cb();
+				this._events.emit('synced');
+				if(cb) cb();
 				resolve();
-			}.bind(this))
+			}.bind(this));
 		}.bind(this));
 	},
 	_update: function(cb){
@@ -29,10 +29,10 @@ SettingsController.prototype = {
 				this.table.put({
 					id: id,
 					data: this[id]
-				})
+				});
 			}
-			this._events.emit('updated')
-			cb && cb();
+			this._events.emit('updated');
+			if(cb) cb();
 			resolve();
 		}.bind(this));
 	},
@@ -64,14 +64,15 @@ SettingsController.prototype = {
 				return this._set(path,val,obj[path.shift()]);
 			}
 			else{
-				return obj[path[0]] = val;
+				obj[path[0]] = val;
+				return obj[path[0]];
 			}
 		}
 	},
 	_resetToDefaults: function(){
 		fn.combindOver(this,this._defaults);
 	}
-}
+};
 
 function initSettings(cb){
 	return new Promise(function(resolve,reject){
@@ -80,9 +81,11 @@ function initSettings(cb){
 				viewRange: 3,
 				shadows: true
 			}
-		})
+		});
 
-		if(cb) cb(settings);
-		resolve(settings);
-	})
+		settings._events.once('synced',function(){
+			if(cb) cb(settings);
+			resolve(settings);
+		});
+	});
 }

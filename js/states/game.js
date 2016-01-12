@@ -1,11 +1,11 @@
 //this file handles the scene/update/rendering of the game
-game = {
+var game = {
 	container: undefined,
 	enabled: false,
 	enable: function(){
 		keyboard.enableState('game');
 		this.modal.blocks.update();
-		
+
 		this.chunkLoader.enabled = true;
 		this.chunkLoader.setRange(this.viewRange);
 
@@ -133,12 +133,12 @@ game = {
 					]
 				},
 			]
-		})
+		});
 
 		this.voxelMap.setChunkGenerator(chunkGenerator);
 
 		this.chunkLoader.startTimers();
-		
+
 		$(window).resize(function(event) {
 			var width = window.innerWidth;
 			var height = window.innerHeight;
@@ -188,7 +188,7 @@ game = {
 
 	    sun.shadowCameraNear = shadowNear;
 	    sun.shadowCameraFar = shadowFar;
-	    
+
 		sun.shadowBias = -0.0001;
 
 	    sun.shadowMapDarkness = 0.8;
@@ -219,7 +219,7 @@ game = {
 			offset:		 { type: "f", value: 33 },
 			exponent:	 { type: "f", value: 0.6 }
 		};
-		uniforms.topColor.value.setHSL( 0.6, 1, 0.6 );;
+		uniforms.topColor.value.setHSL( 0.6, 1, 0.6 );
 
 		// scene.fog.color.copy( uniforms.bottomColor.value );
 
@@ -279,7 +279,7 @@ game = {
 
 		if(/Firefox/i.test(navigator.userAgent)) {
 
-		} 
+		}
 		document.body.requestPointerLock();
 	},
 	requestFullscreen: function(){
@@ -297,7 +297,7 @@ game = {
 	pointerlockchange: function (event) {
 		if ( document.pointerLockElement === document.body || document.mozPointerLockElement === document.body || document.webkitPointerLockElement === document.body ) {
 			this.player.enabled = true;
-		} 
+		}
 		else {
 			this.player.enabled = false;
 		}
@@ -321,7 +321,7 @@ game = {
 				var y = this.voxelMap.chunkGenerator.getHeight(0,0);
 				this.player.position.y = (_.max(y) + 4) * game.blockSize;
 			}
-		}.bind(this))
+		}.bind(this));
 	},
 	buildModal: function(){
 		return {
@@ -350,41 +350,42 @@ game = {
 				shapes: [],
 				update: function(){
 					var self = game.modal.blocks;
+					var a,i;
 
 					self.materials([]);
-					var a = materials.materials;
-					for (var i in a) {
+					a = materials.materials;
+					for (i in a) {
 						var mat = a[i];
 						self.materials.push({
 							id: mat.id,
 							name: mat.name,
 							type: 'block',
 							material: mat.material.map.sourceFile
-						})
-					};
+						});
+					}
 
 					self.shapes([]);
-					var a = shapes.shapes;
-					for (var i in a) {
+					a = shapes.shapes;
+					for (i in a) {
 						var shape = a[i];
 						self.shapes.push({
 							id: shape.id,
 							name: shape.name,
 							image: shape.image
-						})
-					};
+						});
+					}
 				}
 			}
-		}
+		};
 	}
-}
+};
 Object.defineProperties(game,{
 	viewRange: {
 		get: function(){
 			return settings.graphics.viewRange;
 		}
 	}
-})
+});
 
 states.addState('game',game);
 

@@ -25,13 +25,13 @@ function Player(state,camera){
 
 		switch(event.originalEvent.button){
 			case THREE.MOUSE.RIGHT:
-				this.placeBlock()
+				this.placeBlock();
 				break;
 			case THREE.MOUSE.LEFT:
-				this.removeBlock()
+				this.removeBlock();
 				break;
 		}
-	}.bind(this))
+	}.bind(this));
 }
 Player.prototype = {
 	_enabled: false,
@@ -82,11 +82,11 @@ Player.prototype = {
 	}),
 	setUpKeys: function(){
 		var keyUp = function(move){
-			return function(){this.movement[move]=false}
-		}
+			return function(){this.movement[move]=false};
+		};
 		var keyDown = function(move){
-			return function(){this.movement[move]=true}
-		}
+			return function(){this.movement[move]=true};
+		};
 		this.state.keypress.register_many([
 			//up
 			{
@@ -219,7 +219,7 @@ Player.prototype = {
 				},
 				this: this
 			},
-		])	
+		]);
 	},
 	update: function(dtime){
 		var speed = (this.movement.sprint)? this.movement.sprintSpeed : this.movement.walkSpeed;
@@ -270,7 +270,7 @@ Player.prototype = {
 				this.movement.velocity.x = speed * 0.6 * Math.sign(this.movement.velocity.x);
 
 			//move
-			var oldPos = this.position.clone()
+			var oldPos = this.position.clone();
 
 			this.object.translateY(this.movement.velocity.y * dtime);
 			this.object.translateX(this.movement.velocity.x * dtime);
@@ -325,7 +325,7 @@ Player.prototype = {
 			}
 		}
 
-		delete col, oldPos;
+		delete col, oldPos; // jshint ignore:line
 
 		// pick block
 		this.pickBlock();
@@ -356,7 +356,7 @@ Player.prototype = {
 					//fall back to using a box
 					var box = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3(game.blockSize,game.blockSize,game.blockSize));
 					box.translate(block.scenePosition);
-					var n = this.rayCaster.ray.intersectBox(box) || block.sceneCenter, normal = new THREE.Vector3();
+					var n = this.rayCaster.ray.intersectBox(box) || block.sceneCenter, normal = new THREE.Vector3(); // jshint ignore:line
 					n.sub(block.sceneCenter);
 		            if(Math.abs(n.y) > Math.abs(n.x) && Math.abs(n.y) > Math.abs(n.z))
 		                normal.y = Math.sign(n.y);
@@ -366,19 +366,19 @@ Player.prototype = {
 		                normal.z = Math.sign(n.z);
 		            this.selection.normal = normal;
 
-	            	delete n, box;
+	            	delete n, box; // jshint ignore:line
 				}
 
 	            break;
 			}
-			delete pos;
-		};
+			delete pos; // jshint ignore:line
+		}
 
 
 		//update shape
 		if(this.selection.block){
 			if(this.selection.place.shape !== this.placeOutLine._shape){
-				var geo = shapes.getShape(this.selection.place.shape).wireFrame;
+				var geo = shapes.getShape(this.selection.place.shape).wireFrame; // jshint ignore:line
 				//remove
 				if(this.placeOutLine.parent) this.placeOutLine.parent.remove(this.placeOutLine);
 				this.placeOutLine = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({
@@ -392,7 +392,7 @@ Player.prototype = {
 			}
 
 			this.placeOutLine.visible = !this.selection.block.getNeighbor(this.selection.normal);
-			this.placeOutLine.position.copy(this.selection.block.worldPosition).add(this.selection.normal).add(new THREE.Vector3(.5,.5,.5)).multiplyScalar(game.blockSize);
+			this.placeOutLine.position.copy(this.selection.block.worldPosition).add(this.selection.normal).add(new THREE.Vector3(0.5,0.5,0.5)).multiplyScalar(game.blockSize);
 			this.placeOutLine.lookAt(this.placeOutLine.position.clone().add(this.selection.normal));
 			this.placeOutLine.rotateX(THREE.Math.degToRad(90));
 			this.placeOutLine.rotateY(this.selection.place.blockRotation);
@@ -406,7 +406,7 @@ Player.prototype = {
 		if(this.selection.block){
 			//update geo
 			if(this.selection.block.shape !== this.selectionObject._shape){
-				var geo = this.selection.block.shape.wireFrame;
+				var geo = this.selection.block.shape.wireFrame; // jshint ignore:line
 				//remove
 				if(this.selectionObject.parent) this.selectionObject.parent.remove(this.selectionObject);
 				this.selectionObject = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({
@@ -420,7 +420,7 @@ Player.prototype = {
 			}
 
 			this.selectionObject.visible = true;
-			this.selectionObject.position.copy(this.selection.block.worldPosition).add(new THREE.Vector3(.5,.5,.5)).multiplyScalar(game.blockSize);
+			this.selectionObject.position.copy(this.selection.block.worldPosition).add(new THREE.Vector3(0.5,0.5,0.5)).multiplyScalar(game.blockSize);
         	this.selectionObject.rotation.copy(this.selection.block.rotation);
 		}
 		else{
@@ -437,7 +437,7 @@ Player.prototype = {
 				var blockOpts = {
 					material: this.selection.place.material,
 					shape: this.selection.place.shape
-				}
+				};
 				if(shape.blockData.canRotate && material.blockData.canRotate) blockOpts.rotation = this.selection.place.rotation;
 
 				this.state.voxelMap.setBlock(pos,blockOpts,function(block){
@@ -452,7 +452,7 @@ Player.prototype = {
 							this.state.sounds.play(block.placeSound[Math.floor(Math.random() * block.placeSound.length)],block.sceneCenter);
 						}
 					}
-				}.bind(this),true)
+				}.bind(this),true);
 			}
 		}
 	},
@@ -468,7 +468,7 @@ Player.prototype = {
 			}
 		}
 	}
-}
+};
 Object.defineProperties(Player.prototype,{
 	position: {
 		get: function(){
@@ -490,4 +490,4 @@ Object.defineProperties(Player.prototype,{
 			this.controls.enabled = val;
 		}
 	}
-})
+});

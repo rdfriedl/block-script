@@ -1,5 +1,5 @@
 // this class is for controlling the diffent keybaord controlls
-keyboard = {
+var keyboard = {
 	states: [],
 	activeState: undefined,
 
@@ -20,7 +20,7 @@ keyboard = {
 				this.activeState = this.states[i];
 				break;
 			}
-		};
+		}
 	},
 	disableState: function(name){
 		for (var i = 0; i < this.states.length; i++) {
@@ -28,12 +28,12 @@ keyboard = {
 				this.states[i].listener.stop_listening();
 				this.states[i].enabled = false;
 			}
-		};
+		}
 	},
 	disableAllStates: function(){
 		for (var i = 0; i < this.states.length; i++) {
 			this.disableState(this.states[i].name);
-		};
+		}
 	},
 	createState: function(keys,name){
 		var listener = new keypress.Listener(document);
@@ -41,7 +41,7 @@ keyboard = {
 		this.addState(listener,name);
 		return listener;
 	}
-}
+};
 
 //add mouse events to keypress
 keypress._keycode_dictionary[301] = 'LMB';

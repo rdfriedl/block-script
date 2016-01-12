@@ -19,7 +19,7 @@ ChunkLoader.prototype = {
 			if(this.enabled){
 				this._scanLoadChunk(function(){
 					setTimeout(loadLoop,20);
-				})
+				});
 			}
 			else setTimeout(loadLoop,20);
 		}.bind(this);
@@ -30,7 +30,7 @@ ChunkLoader.prototype = {
 			if(this.enabled){
 				this._scanSaveChunk(function(){
 					setTimeout(saveLoop,20);
-				})
+				});
 			}
 			else setTimeout(saveLoop,20);
 		}.bind(this);
@@ -41,7 +41,7 @@ ChunkLoader.prototype = {
 			if(this.enabled){
 				this._scanUnloadChunk(function(){
 					setTimeout(unloadLoop,500);
-				})
+				});
 			}
 			else setTimeout(unloadLoop,500);
 		}.bind(this);
@@ -52,7 +52,7 @@ ChunkLoader.prototype = {
 			if(this.enabled){
 				this._scanVisibleChunk(function(){
 					setTimeout(visibleLoop,500);
-				})
+				});
 			}
 			else setTimeout(visibleLoop,500);
 		}.bind(this);
@@ -104,7 +104,7 @@ ChunkLoader.prototype = {
 					dist++;
 				}
 
-				delete position, loaded;
+				delete position, loaded; //jshint ignore: line
 			}
 		}
 		cb();
@@ -126,17 +126,17 @@ ChunkLoader.prototype = {
 		position.z = Math.floor(position.z / (game.chunkSize*game.blockSize));
 
 		for (var i in this.map.chunks) {
-			var chunk = this.map.chunks[i]
+			var chunk = this.map.chunks[i];
 			if(
-				Math.abs(this.map.chunks[i].position.x - position.x) > this.unloadRange || 
-				Math.abs(this.map.chunks[i].position.y - position.y) > this.unloadRange || 
+				Math.abs(this.map.chunks[i].position.x - position.x) > this.unloadRange ||
+				Math.abs(this.map.chunks[i].position.y - position.y) > this.unloadRange ||
 				Math.abs(this.map.chunks[i].position.z - position.z) > this.unloadRange
 			){
 				chunk.unload();
 			}
-		};
+		}
 
-		delete position;
+		delete position; //jshint ignore: line
 		cb();
 	},
 	_scanVisibleChunk: function(cb){
@@ -146,19 +146,19 @@ ChunkLoader.prototype = {
 		position.z = Math.floor(position.z / (game.chunkSize*game.blockSize));
 
 		for (var i in this.map.chunks) {
-			var chunk = this.map.chunks[i]
+			var chunk = this.map.chunks[i];
 			if(
-				Math.abs(this.map.chunks[i].position.x - position.x) > this.visibleRange || 
-				Math.abs(this.map.chunks[i].position.y - position.y) > this.visibleRange || 
+				Math.abs(this.map.chunks[i].position.x - position.x) > this.visibleRange ||
+				Math.abs(this.map.chunks[i].position.y - position.y) > this.visibleRange ||
 				Math.abs(this.map.chunks[i].position.z - position.z) > this.visibleRange
 			){
 				chunk.visible = false;
 			}
 			else if(chunk.visible !== true) chunk.visible = true;
-		};
+		}
 
-		delete position;
+		delete position; //jshint ignore: line
 		cb();
 	}
-}
+};
 ChunkLoader.prototype.construtor = ChunkLoader;

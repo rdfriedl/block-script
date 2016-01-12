@@ -1,4 +1,4 @@
-Chunk = function(position,map){
+function Chunk(position,map){
     this.blocks = [];
     this.position = position;
     this.map = map;
@@ -31,7 +31,7 @@ Chunk.prototype = {
     built: false,
     saving: false,
     saved: true,
-    
+
     mesh: undefined,
     // collisionMesh: undefined,
     group: undefined,
@@ -64,13 +64,13 @@ Chunk.prototype = {
         this.blocks[index] = block;
 
         if(!dontBuild){
-            this.build()
+            this.build();
         }
 
         this.events.emit('blockChange',{
             block: block,
             from: oldBlock
-        })
+        });
 
         return block;
     },
@@ -87,12 +87,12 @@ Chunk.prototype = {
         this.blocks[index] = undefined;
 
         if(!dontBuild){
-            this.build()
+            this.build();
         }
 
         this.events.emit('blockRemove',{
             block: oldBlock
-        })
+        });
     },
     getBlock: function(position){
         if(position instanceof THREE.Vector3){
@@ -108,7 +108,7 @@ Chunk.prototype = {
 
         for (var i = 0; i < data.length; i++) {
             this.setBlock(i,data[i],true);
-        };
+        }
         this.events.emit('inport',data);
         this.build();
 
@@ -126,7 +126,7 @@ Chunk.prototype = {
             else{
                 data.push(undefined);
             }
-        };
+        }
         this.events.emit('export',data);
         return data;
     },
@@ -145,7 +145,7 @@ Chunk.prototype = {
                 this.map.group.remove(this.group);
                 this.map.debugGroup.remove(this.debugGroup);
                 this.map.collisionGroup.remove(this.collisionGroup);
-                return
+                return;
             }
             else{
                 this.map.group.add(this.group);
@@ -173,7 +173,7 @@ Chunk.prototype = {
                         geometry.merge(block.shape.geometry,matrix,block.material.materialIndex);
                     }
                 }
-            };
+            }
 
             geometry.mergeVertices();
             geometry.normalsNeedUpdate = true;
@@ -207,9 +207,9 @@ Chunk.prototype = {
         //remove all my blocks
         for (var i = 0; i < this.blocks.length; i++) {
             if(this.blocks[i]) this.blocks[i].dispose();
-        };
-        delete this.blocks;
-        delete this;
+        }
+        delete this.blocks; //jshint ignore: line
+        delete this; //jshint ignore: line
     },
     getNeighbor: function(v){
         if(_.isArray(v)) v = new THREE.Vector3().fromArray(v);
@@ -231,7 +231,7 @@ Chunk.prototype = {
     unload: function(cb){
         this.map.unloadChunk(this.position,cb);
     }
-}
+};
 Chunk.prototype.constructor = Chunk;
 Object.defineProperties(Chunk.prototype,{
     worldPosition: {
@@ -259,7 +259,7 @@ Object.defineProperties(Chunk.prototype,{
                         empty = false;
                     }
                 }
-            };
+            }
             return empty;
         }
     },
@@ -272,4 +272,4 @@ Object.defineProperties(Chunk.prototype,{
             this.group.visible = !!val;
         }
     }
-})
+});

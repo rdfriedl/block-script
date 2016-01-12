@@ -1,4 +1,4 @@
-ChunkGeneratorBlank = function(){
+function ChunkGeneratorBlank(){
 }
 ChunkGeneratorBlank.prototype = {
 	levels: [],
@@ -7,19 +7,20 @@ ChunkGeneratorBlank.prototype = {
 
 		for (var i = 0; i < game.chunkSize*game.chunkSize*game.chunkSize; i++) {
 			data.push(undefined);
-		};	
+		}
 
 		if(cb) cb(data);
 	}
-}
+};
 ChunkGeneratorBlank.prototype.constructor = ChunkGeneratorBlank;
 
-RoomGenerator = function(){}
+function RoomGenerator(){}
 RoomGenerator.prototype = {
 	levels: [],
 	generateChunk: function(position,cb){
 		var data = [];
 
+		//jshint ignore: start
 		for (var i = 0; i < game.chunkSize*game.chunkSize*game.chunkSize; i++) {
 			var pos = indexToPosition(i,game.chunkSize)//.add(position.clone().multiplyScalar(game.chunkSize));
 
@@ -37,14 +38,15 @@ RoomGenerator.prototype = {
 			else{
 				data.push(undefined);
 			}
-		};	
+		};
 
 		if(cb) cb(data);
+		//jshint ignore: end
 	}
-}
+};
 RoomGenerator.prototype.constructor = RoomGenerator;
 
-FladGenerator = function(){}
+function FladGenerator(){}
 FladGenerator.prototype = {
 	levels: [],
 	generateChunk: function(position,cb){
@@ -62,14 +64,14 @@ FladGenerator.prototype = {
 			else{
 				data.push(undefined);
 			}
-		};	
+		}
 
 		if(cb) cb(data);
 	}
-}
+};
 FladGenerator.prototype.constructor = FladGenerator;
 
-ChunkGeneratorHills = function(options){
+function ChunkGeneratorHills(options){
 	this.options = fn.combindOver({
 		seed: 0,
 		levels: [],
@@ -77,13 +79,14 @@ ChunkGeneratorHills = function(options){
 
 	for (var i = 0; i < this.options.levels.length; i++) {
 		this.levels.push(new Noise(this.options.seed + i));
-	};
+	}
 }
 ChunkGeneratorHills.prototype = {
 	levels: [],
 	noise: undefined,
 	cache: {},
 	generateChunk: function(position,cb){
+		//jshint ignore: start
 		var data = [];
 
 		for (var i = 0; i < game.chunkSize*game.chunkSize*game.chunkSize; i++) {
@@ -116,11 +119,13 @@ ChunkGeneratorHills.prototype = {
 			if(!f){
 				data.push(undefined);
 			}
-		};	
+		};
 
 		if(cb) cb(data);
+		//jshint ignore: end
 	},
 	getHeight: function(x, y) {
+		//jshint ignore: start
 		if(!this.cache[x+'|'+y]){
 			var lvls = [];
 			for (var i = 0; i < this.levels.length; i++) {
@@ -138,6 +143,7 @@ ChunkGeneratorHills.prototype = {
 			this.cache[x+'|'+y] = lvls;
 		}
 		return this.cache[x+'|'+y];
+		//jshint ignore: end
 	}
-}
+};
 ChunkGeneratorHills.prototype.constructor = ChunkGeneratorHills;

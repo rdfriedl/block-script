@@ -1,5 +1,5 @@
 //for handles game states, mainly menu, game, editor and maybe store
-states = {
+var states = {
 	states: {},
 	events: new Events(),
 	activeState: undefined,
@@ -43,13 +43,13 @@ states = {
 
 				//tell the state its ko is loaded
 				state.events.emit('load');
-			};
+			}
 			updateUI();
-			
+
 			this.disableAllStates(true);
 
 			resolve();
-		}.bind(this))
+		}.bind(this));
 	},
 	update: function(){ //update loop for the active state
 		var dtime = clock.getDelta() * 60;
@@ -94,7 +94,7 @@ states = {
 	disableState: function(name,dontFade){
 		this.states[name].enabled = false;
 		if(!dontFade){
-			this.states[name].container.removeClass('active').addClass('disable').fadeOut() 
+			this.states[name].container.removeClass('active').addClass('disable').fadeOut();
 		}
 		else{
 			this.states[name].container.removeClass('active').addClass('disable').hide();
@@ -107,11 +107,11 @@ states = {
 	disableAllStates: function(dontFade){
 		for (var i in this.states) {
 			this.disableState(i,dontFade);
-		};
+		}
 		this.activeState = undefined;
 	},
 	addState: function(name,state){
 		this.states[name] = state;
 		this.events.emit('stateAdded',this.states[name]);
 	}
-}
+};

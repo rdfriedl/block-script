@@ -1,7 +1,7 @@
 (function(){
 var shapeFolder = 'res/modals/shapes/';
 
-loadShapeCache = {};
+var loadShapeCache = {};
 function loadShape(url,name){
 	name = name || "Shape";
 	var geometry;
@@ -15,7 +15,7 @@ function loadShape(url,name){
 			if(geo) return geo;
 		}
 		return new THREE.Geometry();
-	}
+	};
 
 	//create loader
 	if(!loadShapeCache[url]){
@@ -23,7 +23,7 @@ function loadShape(url,name){
 		loadShapeCache[url] = {
 			loader: loader,
 			geometries: {}
-		}
+		};
 		loader.load(url, function(url,data){
 			for (var i in loadShapeCache[url].geometries) {
 				var geo = func(data,i);
@@ -39,10 +39,10 @@ function loadShape(url,name){
 				geometry.colorsNeedUpdate = true;
 
 				geometry.computeFaceNormals();
-			};
-		}.bind(this,url))
+			}
+		}.bind(this,url));
 	}
-	
+
 	//add geometry to the list
 	if(!loadShapeCache[url].geometries[name]){
 		geometry = loadShapeCache[url].geometries[name] = new THREE.Geometry();
@@ -55,7 +55,7 @@ function loadShape(url,name){
 
 var cube = new Shape('cube',{
 	name: 'Cube',
-	geometry: new THREE.BoxGeometry(1, 1, 1),
+	geometry: loadShape(shapeFolder+'cube.dae','Shape'),//new THREE.BoxGeometry(1, 1, 1),
 	// collision: new THREE.BoxGeometry(1, 1, 1),
 	wireFrame: loadShape(shapeFolder+'cube.dae','WireFrame'),
 	image: 'res/img/shapes/cube.png',
@@ -212,4 +212,4 @@ var halfCone = new Shape('halfCone',{
 });
 shapes.addShape(halfCone);
 
-})()
+})();

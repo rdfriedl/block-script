@@ -1,12 +1,12 @@
 //this file handles the scene/update/rendering of the menu
-menu = {
+var menu = {
 	container: undefined,
 	enabled: false,
 	enable: function(){
 		this.modal.maps.selected(-1);
 		this.modal.menu('main');
 		this.modal.maps.updateMaps();
-		
+
 		renderer.setClearColor(0x2b3e50, 1);
 	},
 	disable: function(){
@@ -43,10 +43,10 @@ menu = {
 		}.bind(this));
 	},
 	setUpScene: function(){
-		light = new THREE.DirectionalLight( 0xffffff );
+		var light = new THREE.DirectionalLight( 0xffffff );
 		light.position.set( 1, 1, 1 );
 		this.scene.add( light );
-		
+
 		var ambient = new THREE.AmbientLight( 0x666666 );
 	    this.scene.add(ambient);
 
@@ -59,7 +59,7 @@ menu = {
 			data.size = new THREE.Vector3().copy(data.size);
 			data.offset = new THREE.Vector3().copy(data.offset);
 			this.voxelMap.inportMapData(data);
-		}.bind(this))
+		}.bind(this));
 	},
 	update: function(dtime){
 		this.animate(dtime);
@@ -90,8 +90,8 @@ menu = {
 				},
 				save: function(){
 					settings._update().then(function(){
-						that.modal.menu('main')
-					})
+						that.modal.menu('main');
+					});
 				}
 			},
 			maps: {
@@ -118,7 +118,7 @@ menu = {
 									name: this.name(),
 									desc: this.desc()
 								}
-							}).then(self.updateMaps)
+							}).then(self.updateMaps);
 							this.name('');
 							this.desc('');
 						}
@@ -144,18 +144,18 @@ menu = {
 				upload: {
 					progress: 0,
 					upload: function(self,event){
-						var self = menu.modal.maps;
+						var that = menu.modal.maps;
 						event.preventDefault();
 						readfiles(event.target.files,function(json){
 							try{
 								json = JSON.parse(json);
-								
-								var id = THREE.Math.generateUUID()
+
+								var id = THREE.Math.generateUUID();
 								var map = {
 									id: id,
 									type: 'indexedDB',
 									data: 'block-script-map:'+id
-								}
+								};
 								var mapLoader = new MapLoaderDB(map.data);
 
 								//inport chunks
@@ -163,30 +163,30 @@ menu = {
 									mapLoader.fromJSON(json),
 									settingsDB.maps.add(map)
 								]).then(function(){
-									self.maps.push({
+									that.maps.push({
 										map: map,
 										loader: mapLoader
-									})
-								})
+									});
+								});
 							}
 							catch(e){
-								console.error('failed to upload map')
+								console.error('failed to upload map');
 								console.error(e);
 							}
 
 							$('#upload-map-modal').modal('hide');
-						})
+						});
 						event.target.value = null;
 					}
 				},
 				createMap: function(data){
 					var self = menu.modal.maps;
-					var id = THREE.Math.generateUUID()
+					var id = THREE.Math.generateUUID();
 					var map = {
 						id: id,
 						type: 'indexedDB',
 						data: 'block-script-map:'+id
-					}
+					};
 					var mapLoader = new MapLoaderDB(map.data);
 					mapLoader.setSettings({
 						info: {
@@ -228,7 +228,7 @@ menu = {
 
 						this.selected(-1);
 						$('#delete-map-modal').modal('hide');
-					}.bind(this)).catch(catchError('failed to delete map'))
+					}.bind(this)).catch(catchError('failed to delete map'));
 				},
 				editMap: function(){
 					var self = menu.modal.maps;
@@ -272,7 +272,7 @@ menu = {
 							done = _.after(count+1,done);
 						}).then(function(){
 							done();
-							
+
 							return settingsDB.maps.each(function(data){
 								var map = self.getMap(data.id);
 								if(map){
@@ -288,13 +288,13 @@ menu = {
 									});
 									mapLoader.events.once('init',done);
 								}
-							})
-						})
-					})
+							});
+						});
+					});
 				}
 			}
-		}
+		};
 	}
-}
+};
 
 states.addState('menu',menu);

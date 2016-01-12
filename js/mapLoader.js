@@ -12,12 +12,12 @@ function MapLoader(){
 			position: new THREE.Vector3(),
 			velocity: new THREE.Vector3()
 		}
-	}
+	};
 	this.init.apply(this,arguments).then(function(){
 		this.loadSettings().then(function(){
 			this.events.emit('init');
 		}.bind(this));
-	}.bind(this))
+	}.bind(this));
 }
 MapLoader.prototype = {
 	db: undefined,
@@ -49,7 +49,7 @@ MapLoader.prototype = {
 		return new Promise(function(resolve,reject){
 			resolve(0);
 			if(cb) cb();
-		})
+		});
 	},
 	loadSettings: function(cb){
 		return new Promise(function(resolve,reject){
@@ -69,7 +69,7 @@ MapLoader.prototype = {
 		return new Promise(function(resolve,reject){
 			resolve();
 			if(cb) cb();
-		})
+		});
 	},
 	checkSettings: function(){
 		this.settings.info.created = new Date(this.settings.info.created);
@@ -78,7 +78,7 @@ MapLoader.prototype = {
 	exportSettings: function(){
 		return Object.clone(this.settings,true);
 	}
-}
+};
 MapLoader.prototype.constructor = MapLoader;
 
 function MapLoaderDB(){
@@ -97,13 +97,13 @@ MapLoaderDB.prototype = {
 				.stores({
 					settings: 'id,data',
 					chunks: 'id,position,data'
-				})
+				});
 
 			this.db.open().then(function(){
-				resolve()
+				resolve();
 			}).catch(function(){
-				reject()
-			})
+				reject();
+			});
 		}.bind(this));
 	},
 	loadChunk: function(position,cb){
@@ -116,7 +116,7 @@ MapLoaderDB.prototype = {
 							id: position.toString(),
 							position: position,
 							data: data.data
-						})
+						});
 					}
 					data = data.data;
 				}
@@ -144,7 +144,7 @@ MapLoaderDB.prototype = {
 		return this.db.chunks.count(function(count){
 			if(cb) cb(count);
 			return count;
-		})
+		});
 	},
 	loadSettings: function(cb){
 		return new Promise(function(resolve,reject){
@@ -152,15 +152,15 @@ MapLoaderDB.prototype = {
 				for(var i in a){
 					fn.combindOver(this.settings[a[i].id],a[i].data);
 				}
-				
+
 				//make sure all the settings are in order
 				this.checkSettings();
 
 				this.events.emit('settingsLoaded',this);
-				resolve()
+				resolve();
 				if(cb) cb();
 			}.bind(this)).catch(reject);
-		}.bind(this))
+		}.bind(this));
 	},
 	saveSettings: function(cb){
 		return new Promise(function(resolve,reject){
@@ -177,14 +177,14 @@ MapLoaderDB.prototype = {
 				if(cb) cb();
 			}.bind(this));
 
-			for(var i in this.settings){
+			for(var k in this.settings){
 				this.db.settings.put({
-					id: i,
-					data: this.settings[i]
+					id: k,
+					data: this.settings[k]
 				}).then(done).catch(reject);
 			}
 			done();
-		}.bind(this))
+		}.bind(this));
 	},
 	delete: function(cb){
 		return this.db.delete().then(function(){
@@ -216,9 +216,9 @@ MapLoaderDB.prototype = {
 					if(progress) progress(100);
 					resolve(json);
 					if(cb) cb(json);
-				})
+				});
 			}.bind(this)).catch(reject);
-		}.bind(this))
+		}.bind(this));
 	},
 	fromJSON: function(json,cb,progress){
 		json = (typeof json == 'string')? JSON.parse(json) : json;
@@ -241,7 +241,7 @@ MapLoaderDB.prototype = {
 					id: pos.toString(),
 					position: pos,
 					data: chunk.data
-				})
+				});
 
 				if(++i < json.chunks.length){
 					setTimeout(func.bind(this,i),1);
@@ -251,10 +251,10 @@ MapLoaderDB.prototype = {
 					resolve();
 					if(cb) cb();
 				}
-			}
+			};
 			func.bind(this)(0);
-		}.bind(this))
+		}.bind(this));
 	}
-}
+};
 MapLoaderDB.prototype.__proto__ = MapLoader.prototype;
 MapLoaderDB.prototype.constructor = MapLoaderDB;

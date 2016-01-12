@@ -22,7 +22,7 @@ settingsDB
 	room: 'id,parent',
 	block: 'id,parent',
 	folder: 'id,parent'
-})
+});
 
 
 // 1.6
@@ -34,7 +34,7 @@ settingsDB
 	room: 'id,parent',
 	material: 'id,parent',
 	folder: 'id,parent'
-})
+});
 
 // 2
 settingsDB
@@ -44,4 +44,4 @@ settingsDB
 	settings: 'id,data'
 }).upgrade(function(trans){
 	//nothing to do
-})
+});

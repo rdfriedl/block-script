@@ -1,5 +1,5 @@
 function observable(val, cb) {
-	o = ko.observable(val);
+	var o = ko.observable(val);
 	o.subscribe(cb, o);
 	return o;
 }
@@ -30,7 +30,7 @@ function indexToPosition(index,size){
 function observable(){
 	var val = Array.prototype.shift.call(arguments);
 	var o = val instanceof Array? ko.observableArray(val) : ko.observable(val);
-	
+
 	for(var i = 0; i < arguments.length; i++){
 		o.subscribe(arguments[i]);
 	}
@@ -38,14 +38,14 @@ function observable(){
 }
 Object.clone = function(obj,deep,ignore){
 	if(!obj) return {};
-	
-	var clone = new obj.constructor;
+
+	var clone = new obj.constructor();
 	clone.__proto__ = obj.__proto__;
 
 	//copy properties
 	for(var i in obj){
 		if(ignore && (ignore instanceof Array? ignore.indexOf(i) : i in ignore)) continue;
-		
+
 		//insert classes here
 		else if(obj[i] instanceof Date){
 			clone[i] = new Date(obj[i]);
@@ -67,7 +67,7 @@ Object.clone = function(obj,deep,ignore){
 			clone[i] = obj[i];
 		}
 	}
-	
+
 	return clone;
 };
 function loadTexture(url,prop,dontmap){ //texture image is not copied
@@ -91,10 +91,10 @@ THREE.Vector3.prototype.sign = function(){
 	this.y = Math.sign(this.y);
 	this.z = Math.sign(this.z);
 	return this;
-}
+};
 THREE.Vector3.prototype.empty = function(){
 	return !this.x && !this.y && !this.z;
-}
+};
 THREE.Vector3.prototype.split = function(dirs){
 	if(!dirs){
 		//4
@@ -107,20 +107,20 @@ THREE.Vector3.prototype.split = function(dirs){
 	else{
 		//8
 	}
-}
+};
 THREE.Vector3.prototype.toString = function(){
 	return this.x+'|'+this.y+'|'+this.z;
-}
+};
 THREE.Vector3.prototype.fromString = function(str){
 	return this.fromArray(str.split('|'));
-}
+};
 
 THREE.Object3D.prototype.getMaterialById = function(a) {
-    return this.getMaterialByProperty("id", a)
-},
+    return this.getMaterialByProperty("id", a);
+};
 THREE.Object3D.prototype.getMaterialByName = function(a) {
-    return this.getMaterialByProperty("name", a)
-},
+    return this.getMaterialByProperty("name", a);
+};
 THREE.Object3D.prototype.getMaterialByProperty = function(a, b) {
 	if(this.material){
 	    if (this.material[a] === b){
@@ -130,16 +130,16 @@ THREE.Object3D.prototype.getMaterialByProperty = function(a, b) {
     for (var c = 0, d = this.children.length; c < d; c++) {
         var e = this.children[c].getMaterialByProperty(a, b);
         if (void 0 !== e)
-            return e
+            return e;
     }
-}
+};
 
 THREE.Object3D.prototype.getTextureById = function(a) {
-    return this.getTextureByProperty("id", a)
-},
+    return this.getTextureByProperty("id", a);
+};
 THREE.Object3D.prototype.getTextureByName = function(a) {
-    return this.getTextureByProperty("name", a)
-},
+    return this.getTextureByProperty("name", a);
+};
 THREE.Object3D.prototype.getTextureByProperty = function(a, b) {
 	if(this.material){
 	    if (this.material[a] === b){
@@ -149,16 +149,16 @@ THREE.Object3D.prototype.getTextureByProperty = function(a, b) {
     for (var c = 0, d = this.children.length; c < d; c++) {
         var e = this.children[c].getTextureByProperty(a, b);
         if (void 0 !== e)
-            return e
+            return e;
     }
-}
+};
 
 THREE.Object3D.prototype.getGeometryById = function(a) {
-    return this.getGeometryByProperty("id", a)
-},
+    return this.getGeometryByProperty("id", a);
+};
 THREE.Object3D.prototype.getGeometryByName = function(a) {
-    return this.getGeometryByProperty("name", a)
-},
+    return this.getGeometryByProperty("name", a);
+};
 THREE.Object3D.prototype.getGeometryByProperty = function(a, b) {
 	if(this.geometry){
 	    if (this.geometry[a] === b){
@@ -168,9 +168,9 @@ THREE.Object3D.prototype.getGeometryByProperty = function(a, b) {
     for (var c = 0, d = this.children.length; c < d; c++) {
         var e = this.children[c].getGeometryByProperty(a, b);
         if (void 0 !== e)
-            return e
+            return e;
     }
-}
+};
 //export maps on materials
 THREE.Material.prototype._toJSON = THREE.Material.prototype.toJSON;
 THREE.Material.prototype.toJSON = function(){
@@ -181,7 +181,7 @@ THREE.Material.prototype.toJSON = function(){
 	if(this.alphaMap) output.alphaMap = this.alphaMap.toJSON();
 	if(this.envMap) output.envMap = this.envMap.toJSON();
 	return output;
-}
+};
 //inport materials with maps
 THREE.MaterialLoader.prototype._parse = THREE.MaterialLoader.prototype.parse;
 THREE.MaterialLoader.prototype.parse = function(a) {
@@ -192,8 +192,8 @@ THREE.MaterialLoader.prototype.parse = function(a) {
 	if(a.specularMap) b.specularMap = THREE.Texture.fromJSON(a.specularMap);
 	if(a.alphaMap) b.alphaMap = THREE.Texture.fromJSON(a.alphaMap);
 	if(a.envMap) b.envMap = THREE.Texture.fromJSON(a.envMap);
-    return b
-}
+    return b;
+};
 THREE.Texture.prototype.toJSON = function(){
 	var output = {};
 
@@ -212,14 +212,14 @@ THREE.Texture.prototype.toJSON = function(){
 	if(this.generateMipmaps !== true) output.generateMipmaps = this.generateMipmaps;
 	if(this.flipY !== true) output.flipY = this.flipY;
 	return output;
-}
+};
 THREE.Texture.fromJSON = function(data){
 	var tex = THREE.ImageUtils.loadTexture(data.sourceFile);
 	for (var i in data) {
 		tex[i] = data[i];
-	};
+	}
 	return tex;
-}
+};
 function createDebugBox(size){
 	var geometry = new THREE.BufferGeometry();
 	geometry.addAttribute( 'position', new THREE.BufferAttribute( new Float32Array( 72 ), 3 ) );
@@ -324,7 +324,7 @@ InstancePool.prototype = {
 		//create # of objects
 		for (var i = 0; i < number; i++) {
 			this.notUsed.push(new this.context[this.type]());
-		};
+		}
 	},
 	free: function(obj){
 		if(!this.dontUseActiveArray){
@@ -335,4 +335,4 @@ InstancePool.prototype = {
 		}
 		this.notUsed.push(obj);
 	}
-}
+};
