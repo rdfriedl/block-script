@@ -60,7 +60,7 @@ Object.clone = function(obj,deep,ignore){
 			clone[i] = obj[i].clone();
 		}
 		//fallback
-		else if(typeof obj[i] == 'object' && deep){
+		else if(Object.isObject(obj[i]) && deep){
 			clone[i] = Object.clone(obj[i],deep);
 		}
 		else{
@@ -70,6 +70,17 @@ Object.clone = function(obj,deep,ignore){
 
 	return clone;
 };
+Object.isObject = function (v) {
+	return v instanceof Object;
+};
+Function.isFunction = function (v) {
+	return v instanceof Function;
+};
+String.isString = function (v) {
+	return v.__proto__.constructor === String;
+};
+Number.isNumber = Number.isFinite;
+
 function loadTexture(url,prop,dontmap){ //texture image is not copied
 	var tex = new THREE.ImageUtils.loadTexture(url);
    	if(!dontmap){

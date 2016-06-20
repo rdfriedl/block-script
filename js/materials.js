@@ -31,7 +31,7 @@ Materials.prototype = {
 		return index;
 	},
 	removeMaterial: function(index,dontUpdate){ //index can be a index, name, or a Material
-		if(typeof index == 'number'){
+		if(Number.isNumber(index)){
 			//remove material by index
 			this.materials.splice(index,1);
 			if(!dontUpdate) this.updateMaterial();
@@ -45,7 +45,7 @@ Materials.prototype = {
 				return true;
 			}
 		}
-		else if(typeof index == 'string'){
+		else if(String.isString(index)){
 			//remove material by id
 			for(var i = 0; i < this.materials.length; i++){
 				if(this.materials[i].id == index){
@@ -88,7 +88,7 @@ Materials.prototype = {
 		if(mat instanceof Material){
 			return this.material.materials.indexOf(mat.material);
 		}
-		else if(typeof mat == 'string'){
+		else if(String.isString(mat)){
 			mat = this.getMaterial(mat);
 			if(mat) return this.material.materials.indexOf(mat.material);
 		}

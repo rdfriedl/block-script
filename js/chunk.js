@@ -98,7 +98,7 @@ Chunk.prototype = {
         if(position instanceof THREE.Vector3){
             return this.blocks[positionToIndex(position,game.chunkSize)];
         }
-        else if(typeof position == 'number'){
+        else if(Number.isNumber(position)){
             return this.blocks[position];
         }
     },

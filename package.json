@@ -1,0 +1,16 @@
+{
+  "name": "block-script",
+  "version": "1.0.0",
+  "description": "a simple minecraft like ThreeJS example",
+  "main": "server/main.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rdfriedl/block-script.git"
+  },
+  "author": "rdfriedl",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/rdfriedl/block-script/issues"
+  },
+  "homepage": "https://github.com/rdfriedl/block-script#readme"
+}

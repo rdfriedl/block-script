@@ -103,8 +103,8 @@ collisions = {
 		block: []
 	},
     checkCollision: function(a,b, velocity){
-        if(typeof a == "object" && !(a instanceof CollisionEntity)) a = a.collisionEntity;
-        if(typeof b == "object" && !(b instanceof CollisionEntity)) b = b.collisionEntity;
+        if(Object.isObject(a) && !(a instanceof CollisionEntity)) a = a.collisionEntity;
+        if(Object.isObject(b) && !(b instanceof CollisionEntity)) b = b.collisionEntity;
         if(!a || !b) return false;
         velocity = velocity || new THREE.Vector3();
         a.position.add(velocity);
@@ -113,8 +113,8 @@ collisions = {
         return col;
     },
 	canCollide: function(a,b){
-        if(typeof a == "object" && !(a instanceof CollisionEntity)) a = a.collisionEntity;
-        if(typeof b == "object" && !(b instanceof CollisionEntity)) b = b.collisionEntity;
+        if(Object.isObject(a) && !(a instanceof CollisionEntity)) a = a.collisionEntity;
+        if(Object.isObject(b) && !(b instanceof CollisionEntity)) b = b.collisionEntity;
         if(!a || !b) return false;
 
 		if(this.groups[a.group]){

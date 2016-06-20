@@ -43,7 +43,7 @@ SettingsController.prototype = {
 		updated
 	*/
 	_get: function(path,obj){
-		if(typeof path == 'string') path = path.split('/');
+		if(String.isString(path)) path = path.split('/');
 		obj = obj || this;
 
 		if(obj[path[0]] != null){
@@ -56,7 +56,7 @@ SettingsController.prototype = {
 		}
 	},
 	_set: function(path,val,obj){
-		if(typeof path == 'string') path = path.split('/');
+		if(String.isString(path)) path = path.split('/');
 		obj = obj || this;
 
 		if(obj[path[0]] != null){

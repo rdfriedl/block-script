@@ -110,7 +110,7 @@ MapLoaderDB.prototype = {
 		return new Promise(function(resolve,reject){
 			this.db.chunks.get(position.toString(),function(data){
 				if(data){
-					if(typeof data.data == 'string'){
+					if(String.isString(data.data)){
 						data.data = JSON.parse(data.data);
 						this.db.chunks.put({
 							id: position.toString(),
@@ -221,7 +221,7 @@ MapLoaderDB.prototype = {
 		}.bind(this));
 	},
 	fromJSON: function(json,cb,progress){
-		json = (typeof json == 'string')? JSON.parse(json) : json;
+		json = Object.isObject(json)? JSON.parse(json) : json;
 
 		return new Promise(function(resolve,reject){
 			//inport settings
