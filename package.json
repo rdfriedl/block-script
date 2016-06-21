@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "description": "a simple minecraft like ThreeJS example",
   "main": "server/main.js",
+  "directories": {
+    "src": "./src",
+    "dist": "./dist"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/rdfriedl/block-script.git"
@@ -12,5 +16,56 @@
   "bugs": {
     "url": "https://github.com/rdfriedl/block-script/issues"
   },
-  "homepage": "https://github.com/rdfriedl/block-script#readme"
+  "scripts": {
+    "build": "set NODE_ENV=dev && gulp build",
+    "start": "set NODE_ENV=dev && gulp",
+    "production": "set NODE_ENV=production && gulp build"
+  },
+  "homepage": "https://github.com/rdfriedl/block-script#readme",
+  "devDependencies": {
+    "babel-loader": "^6.2.4",
+    "babel-plugin-transform-runtime": "^6.0.0",
+    "babel-preset-es2015": "^6.3.13",
+    "babel-preset-stage-2": "^6.0.0",
+    "base64-font-loader": "^0.0.3",
+    "css-loader": "^0.23.1",
+    "del": "^2.2.0",
+    "file-loader": "^0.8.5",
+    "gulp": "github:gulpjs/gulp#4.0",
+    "gulp-util": "^3.0.7",
+    "html-loader": "^0.4.3",
+    "img-loader": "^1.2.2",
+    "imports-loader": "^0.6.5",
+    "json-loader": "^0.5.4",
+    "markdown-loader": "^0.1.7",
+    "opener": "^1.4.1",
+    "raw-loader": "^0.5.1",
+    "script-loader": "^0.6.1",
+    "style-loader": "^0.13.0",
+    "svgo-loader": "^1.1.0",
+    "underscore": "^1.8.3",
+    "url-loader": "^0.5.7",
+    "vue-hot-reload-api": "1.2.0",
+    "vue-html-loader": "^1.2.2",
+    "vue-loader": "^8.5.2",
+    "vue-style-loader": "^1.0.0",
+    "webpack": "^1.13.1",
+    "webpack-dev-server": "^1.14.1"
+  },
+  "dependencies": {
+    "bootstrap": "^3.3.6",
+    "bootstrap-dialog": "^1.34.6",
+    "bootstrap-toggle": "^2.2.2",
+    "bootswatch": "^3.3.6",
+    "dexie": "^1.4.1",
+    "fontawesome": "^4.5.0",
+    "jquery": "^3.0.0",
+    "jquery.mousewheel": "^3.1.9",
+    "keypress": "^0.2.1",
+    "knockout": "^3.4.0",
+    "knockout-mapping": "^2.6.0",
+    "minivents": "^2.0.2",
+    "three": "^0.78.0",
+    "vue": "^1.0.25"
+  }
 }
