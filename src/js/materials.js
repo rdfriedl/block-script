@@ -1,5 +1,8 @@
+import THREE from 'three';
+import Block from './block.js';
+
 //class for handling and compiling materials
-function Materials(opts){
+export function Materials(opts){
 	this.materials = [];
 	for(var i in opts){
 		this[i] = opts[i];
@@ -96,8 +99,18 @@ Materials.prototype = {
 };
 Materials.prototype.constructor = Materials;
 
+Object.defineProperties(Materials, {
+	inst: {
+		get: function(){
+			return Materials._inst || (Materials._inst = new Materials({
+				defaultMaterial: 'stone'
+			}));
+		}
+	}
+})
+
 var lastMaterialID = 0;
-function Material(id,mat,blockData){
+export function Material(id,mat,blockData){
 	this.id = id;
 	this.material = mat;
 	this.blockData = blockData || {};
@@ -111,7 +124,7 @@ Material.prototype = {
 Object.defineProperties(Material.prototype,{
 	materialIndex: {
 		get: function(){
-			return materials.getMaterialIndex(this);
+			return Materials.inst.getMaterialIndex(this);
 		}
 	}
 });

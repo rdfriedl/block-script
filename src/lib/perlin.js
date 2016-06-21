@@ -14,7 +14,7 @@
  *
  */
 
-Noise = function(seed){
+export default function Noise(seed){
   this.perm = new Array(512);
   this.gradP = new Array(512);
   this.seed(seed || 0);

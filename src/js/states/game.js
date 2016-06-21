@@ -1,3 +1,15 @@
+import {states} from '../states.js';
+import Events from '../../lib/minvents.js';
+import keyboard from '../keyboard.js';
+import THREE from 'three';
+import VoxelMap from '../voxelMap.js';
+import Sounds from '../sound.js';
+import Stats from 'stats.js/build/stats.min.js';
+import Player from '../player.js';
+import ChunkLoader from '../chunkLoader.js';
+import {ChunkGeneratorHills} from '../chunkGenerator.js';
+import _ from 'underscore';
+
 //this file handles the scene/update/rendering of the game
 var game = {
 	container: undefined,
@@ -69,7 +81,7 @@ var game = {
 		this.camera = new THREE.PerspectiveCamera(60, width / height, 0.1, 20000);
 
 		this.sounds = new Sounds(this.scene);
-		this.sounds.load('data/sounds.json');
+		this.sounds.load(require('../../data/sounds.json'));
 		this.camera.add(this.sounds.listener);
 
 		//setup
@@ -237,7 +249,7 @@ var game = {
 	},
 	setUpHUD: function(){
 		//add pointer
-		var map = THREE.ImageUtils.loadTexture("res/img/pointer.png");
+		var map = THREE.ImageUtils.loadTexture(require("../../res/img/pointer.png"));
         map.magFilter = THREE.NearestFilter;
         map.minFilter = THREE.LinearMipMapLinearFilter;
 	    var material = new THREE.SpriteMaterial({ map: map, color: 0xffffff, fog: false });
@@ -427,3 +439,5 @@ game.keypress = keyboard.createState([
 		this: game
 	},
 ],'game');
+
+export {game as default};

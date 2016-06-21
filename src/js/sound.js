@@ -1,4 +1,6 @@
-function Sounds(scene,opts){
+import THREE from 'three';
+
+export default function Sounds(scene,opts){
 	this.players = {};
 	this.sounds = [];
 
@@ -28,13 +30,21 @@ Sounds.prototype = {
 		range: 64
 	},
 	load: function(url,db){
-		return new Promise(function(resolve,reject){
-			$.getJSON(url, function(json){
-				this.sounds = json;
-			}.bind(this)).fail(function(event,type,error){
-				reject(error);
-			});
-		}.bind(this));
+		if(Array.isArray(url)){
+			this.sounds = url;
+			return Promise.resolve();
+		}
+		else{
+			// load it
+			return new Promise(function(resolve,reject){
+				$.getJSON(url, function(json){
+					this.sounds = json;
+					resolve();
+				}.bind(this)).fail(function(event,type,error){
+					reject(error);
+				});
+			}.bind(this));
+		}
 	},
 	getSound: function(soundID){
 		for(var i in this.sounds){

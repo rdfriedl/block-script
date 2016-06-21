@@ -1,8 +1,13 @@
-function Block(position,data,chunk){
+import THREE from 'three';
+import {CollisionEntity} from './collision.js';
+import shapes from './shapes.js';
+import _ from 'underscore';
+
+export default function Block(position,data,chunk){
 	this.position = position || new THREE.Vector3();
 	this.chunk = chunk;
 
-	this.material = materials.getMaterial(data? data.material : undefined);
+	this.material = Materials.inst.getMaterial(data? data.material : undefined);
 	this.shape = shapes.getShape(data? data.shape : undefined);
 
 	this.inportData(data);
@@ -29,7 +34,7 @@ Block.prototype = {
 	inportData: function(data){
 		if(!data) return;
 
-		this.material = materials.getMaterial(data.material);
+		this.material = Materials.inst.getMaterial(data.material);
 		this.shape = shapes.getShape(data.shape);
 		if(data.rotation && this.canRotate){
 			this.rotation = new THREE.Euler(data.rotation.x,data.rotation.y,data.rotation.z);
@@ -168,4 +173,9 @@ Object.defineProperties(Block.prototype,{
 });
 Block.prototype.constructor = Block;
 
-var blockPool = new InstancePool('Block',window,true);
+var blockPool = new InstancePool(Block,true);
+
+export {blockPool, blockDataGet};
+
+// import Materials after we export block since we only need this to run the Block class
+import {Materials} from './materials.js';

@@ -1,3 +1,6 @@
+import $ from 'jquery';
+import keypress from 'keypress.js/keypress.js';
+
 // this class is for controlling the diffent keybaord controlls
 var keyboard = {
 	states: [],
@@ -82,3 +85,5 @@ function simulateKeyEvent(el,char,type) {
   	});
   	el.dispatchEvent(e);
 }
+
+export {keyboard as default};

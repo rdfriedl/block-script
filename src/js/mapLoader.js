@@ -1,4 +1,10 @@
-function MapLoader(){
+import THREE from 'three';
+import _ from 'underscore';
+import Dexie from 'dexie';
+import Events from '../lib/minvents.js';
+import fn from '../lib/functions.js';
+
+export default function MapLoader(){
 	this.events = new Events();
 	this.settings = {
 		info: {
@@ -81,7 +87,7 @@ MapLoader.prototype = {
 };
 MapLoader.prototype.constructor = MapLoader;
 
-function MapLoaderDB(){
+export function MapLoaderDB(){
 	MapLoader.apply(this,arguments);
 }
 MapLoaderDB.prototype = {

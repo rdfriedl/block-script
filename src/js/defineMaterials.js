@@ -1,6 +1,9 @@
+import THREE from 'three';
+import {Materials, Material} from './materials.js';
+
 function basicMaterial(url,prop,texProp){
 	var mat = new THREE.MeshLambertMaterial({
-		map: loadTexture(url,texProp),
+		map: loadTexture(url, texProp),
 		reflectivity: 0
 	});
 
@@ -22,7 +25,6 @@ function mutiMaterial(mats){
 
 function defineMaterials(){ //defineMaterials -- start --
 
-var url = "res/img/blocks/";
 var i;
 
 var stoneSounds = {
@@ -31,16 +33,16 @@ var stoneSounds = {
 	removeSound: ["digStone1","digStone2","digStone3","digStone4"],
 };
 //stone
-materials.addMaterial(new Material(
+Materials.inst.addMaterial(new Material(
 	"stone",
-	basicMaterial(url+"stone.png"),
+	basicMaterial(require("../res/img/blocks/stone.png")), //require the image so webpack compiles it
 	stoneSounds
 ),true);
 
 //grass
-materials.addMaterial(new Material(
+Materials.inst.addMaterial(new Material(
 	"grass",
-	basicMaterial(url+"grass_top.png"),
+	basicMaterial(require("../res/img/blocks/grass_top.png")),
 	{
 		stepSound: ["stepGrass1","stepGrass2","stepGrass3","stepGrass4"],
 		placeSound: ["digGrass1","digGrass2","digGrass3","digGrass4"],
@@ -54,23 +56,23 @@ var gravelSounds = {
 	removeSound: ["digGravel1","digGravel2","digGravel3","digGravel4"],
 };
 //dirt
-materials.addMaterial(new Material(
+Materials.inst.addMaterial(new Material(
 	"dirt",
-	basicMaterial(url+"dirt.png"),
+	basicMaterial(require("../res/img/blocks/dirt.png")),
 	gravelSounds
 ),true);
 
 //brick
-materials.addMaterial(new Material(
+Materials.inst.addMaterial(new Material(
 	"brick",
-	basicMaterial(url+"brick.png"),
+	basicMaterial(require("../res/img/blocks/brick.png")),
 	stoneSounds
 ),true);
 
 //gravel
-materials.addMaterial(new Material(
+Materials.inst.addMaterial(new Material(
 	"gravel",
-	basicMaterial(url+"gravel.png"),
+	basicMaterial(require("../res/img/blocks/gravel.png")),
 	gravelSounds
 ),true);
 
@@ -99,17 +101,17 @@ var glassColors = [
 	'white',
 	'yellow'
 ];
-materials.addMaterial(new Material(
+Materials.inst.addMaterial(new Material(
 	"glass",
-	basicMaterial(url+"glass.png",{
+	basicMaterial(require("../res/img/blocks/glass.png"),{
 		transparent: true,
 	}),
 	glassData
 ),true);
 for(i in glassColors){
-	materials.addMaterial(new Material(
+	Materials.inst.addMaterial(new Material(
 		"glass_"+glassColors[i],
-		basicMaterial(url+"glass_"+glassColors[i]+".png",{
+		basicMaterial(require("../res/img/blocks/glass_"+glassColors[i]+".png"),{
 			transparent: true
 		}),
 		glassData
@@ -117,9 +119,9 @@ for(i in glassColors){
 }
 
 //clay
-materials.addMaterial(new Material(
+Materials.inst.addMaterial(new Material(
 	"hardened_clay",
-	basicMaterial(url+"hardened_clay.png"),
+	basicMaterial(require("../res/img/blocks/hardened_clay.png")),
 	stoneSounds
 ),true);
 var clayColors = [
@@ -141,9 +143,9 @@ var clayColors = [
 	'yellow'
 ];
 for(i in clayColors){
-	materials.addMaterial(new Material(
+	Materials.inst.addMaterial(new Material(
 		"hardened_clay_stained_"+clayColors[i],
-		basicMaterial(url+"hardened_clay_stained_"+clayColors[i]+".png"),
+		basicMaterial(require("../res/img/blocks/hardened_clay_stained_"+clayColors[i]+".png")),
 		stoneSounds
 	),true);
 }
@@ -163,9 +165,9 @@ var woodTypes = [
 	'spruce'
 ];
 for(i in woodTypes){
-	materials.addMaterial(new Material(
+	Materials.inst.addMaterial(new Material(
 		"planks_"+woodTypes[i],
-		basicMaterial(url+"planks_"+woodTypes[i]+".png"),
+		basicMaterial(require("../res/img/blocks/planks_"+woodTypes[i]+".png")),
 		woodSounds
 	),true);
 }
@@ -195,11 +197,13 @@ var woolColors = [
 	'yellow'
 ];
 for(i in woolColors){
-	materials.addMaterial(new Material(
+	Materials.inst.addMaterial(new Material(
 		"wool_colored_"+woolColors[i],
-		basicMaterial(url+"wool_colored_"+woolColors[i]+".png"),
+		basicMaterial(require("../res/img/blocks/wool_colored_"+woolColors[i]+".png")),
 		clothSounds
 	),true);
 }
 
 } //defineMaterials -- end --
+
+export {defineMaterials as default};

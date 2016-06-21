@@ -1,3 +1,8 @@
+import _ from 'underscore';
+import ko from 'knockout';
+import fn from '../lib/functions.js';
+import Events from '../lib/minvents.js';
+
 //for handles game states, mainly menu, game, editor and maybe store
 var states = {
 	states: {},
@@ -44,7 +49,7 @@ var states = {
 				//tell the state its ko is loaded
 				state.events.emit('load');
 			}
-			updateUI();
+			$('input[data-toggle="toggle"]').change();
 
 			this.disableAllStates(true);
 
@@ -115,3 +120,5 @@ var states = {
 		this.events.emit('stateAdded',this.states[name]);
 	}
 };
+
+export {states};

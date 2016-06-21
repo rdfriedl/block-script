@@ -1,3 +1,7 @@
+import settingsDB from './dataBaseVersions.js';
+import fn from '../lib/functions.js';
+import Events from '../lib/minvents.js';
+
 function SettingsController(table,settings,cb){
 	if(!settings || !table) return;
 
@@ -74,7 +78,7 @@ SettingsController.prototype = {
 	}
 };
 
-function initSettings(cb){
+export function initSettings(cb){
 	return new Promise(function(resolve,reject){
 		settings = new SettingsController(settingsDB.settings,{
 			graphics: {

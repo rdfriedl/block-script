@@ -1,4 +1,9 @@
-function Player(state,camera){
+import THREE from 'three';
+import _ from 'underscore';
+import {CollisionEntity, collisions} from './collision.js';
+import Block from './block.js';
+
+export default function Player(state,camera){
 	this.state = state;
 	this.scene = state.scene;
 	this.camera = camera;
@@ -325,7 +330,7 @@ Player.prototype = {
 			}
 		}
 
-		delete col, oldPos; // jshint ignore:line
+		// delete col, oldPos; // jshint ignore:line
 
 		// pick block
 		this.pickBlock();
@@ -366,12 +371,12 @@ Player.prototype = {
 		                normal.z = Math.sign(n.z);
 		            this.selection.normal = normal;
 
-	            	delete n, box; // jshint ignore:line
+	            	// delete n, box; // jshint ignore:line
 				}
 
 	            break;
 			}
-			delete pos; // jshint ignore:line
+			// delete pos; // jshint ignore:line
 		}
 
 

@@ -1,3 +1,11 @@
+import {states} from '../states.js';
+import Events from '../../lib/minvents.js';
+import THREE from 'three';
+import VoxelMap from '../voxelMap.js';
+import settingsDB from '../dataBaseVersions.js';
+import _ from 'underscore';
+import {MapLoaderDB} from '../mapLoader.js';
+
 //this file handles the scene/update/rendering of the menu
 var menu = {
 	container: undefined,
@@ -50,16 +58,10 @@ var menu = {
 		var ambient = new THREE.AmbientLight( 0x666666 );
 	    this.scene.add(ambient);
 
-		$.ajax({
-			url: 'data/menuScene.json',
-			type: 'GET',
-			dataType: 'json'
-		})
-		.done(function(data){
-			data.size = new THREE.Vector3().copy(data.size);
-			data.offset = new THREE.Vector3().copy(data.offset);
-			this.voxelMap.inportMapData(data);
-		}.bind(this));
+		let data = require('../../data/menuScene.json');
+		data.size = new THREE.Vector3().copy(data.size);
+		data.offset = new THREE.Vector3().copy(data.offset);
+		this.voxelMap.inportMapData(data);
 	},
 	update: function(dtime){
 		this.animate(dtime);
@@ -298,3 +300,7 @@ var menu = {
 };
 
 states.addState('menu',menu);
+
+export {menu as default};
+
+import game from './game.js';

@@ -1,3 +1,7 @@
+import THREE from 'three';
+import ko from 'knockout';
+import _ from 'underscore';
+
 function observable(val, cb) {
 	var o = ko.observable(val);
 	o.subscribe(cb, o);
@@ -305,17 +309,15 @@ function createDebugBox(size){
 	return mesh;
 }
 
-function InstancePool(type,context,dontUseActiveArray){
-	this.type = type || "Object";
-	this.context = context || window;
+function InstancePool(type,dontUseActiveArray){
+	this.type = type || Object;
 	this.dontUseActiveArray = dontUseActiveArray || false;
 
 	this.inUse = [];
 	this.notUsed = [];
 }
 InstancePool.prototype = {
-	context: window,
-	type: '',
+	type: Object,
 	inUse: [],
 	notUsed: [],
 	dontUseActiveArray: false,
@@ -325,7 +327,7 @@ InstancePool.prototype = {
 			obj = this.notUsed.pop();
 		}
 		else{
-			obj = new this.context[this.type]();
+			obj = new this.type();
 		}
 		if(!this.dontUseActiveArray) this.inUse.push(obj);
 		obj.__proto__.constructor.apply(obj,arguments);
@@ -334,7 +336,7 @@ InstancePool.prototype = {
 	preAllocate: function(number){
 		//create # of objects
 		for (var i = 0; i < number; i++) {
-			this.notUsed.push(new this.context[this.type]());
+			this.notUsed.push(new this.type());
 		}
 	},
 	free: function(obj){
@@ -347,3 +349,12 @@ InstancePool.prototype = {
 		this.notUsed.push(obj);
 	}
 };
+
+window.observable = observable;
+window.namedFunction = namedFunction;
+window.positionToIndex = positionToIndex;
+window.indexToPosition = indexToPosition;
+window.observable = observable;
+window.loadTexture = loadTexture;
+window.createDebugBox = createDebugBox;
+window.InstancePool = InstancePool;

@@ -1,4 +1,6 @@
-function ChunkLoader(map,opts){
+import THREE from 'three';
+
+export default function ChunkLoader(map,opts){
 	this.position = new THREE.Vector3();
 	this.map = map;
 	this.timers = [];
@@ -104,7 +106,7 @@ ChunkLoader.prototype = {
 					dist++;
 				}
 
-				delete position, loaded; //jshint ignore: line
+				// delete position, loaded; //jshint ignore: line
 			}
 		}
 		cb();
@@ -136,7 +138,7 @@ ChunkLoader.prototype = {
 			}
 		}
 
-		delete position; //jshint ignore: line
+		// delete position; //jshint ignore: line
 		cb();
 	},
 	_scanVisibleChunk: function(cb){
@@ -157,7 +159,7 @@ ChunkLoader.prototype = {
 			else if(chunk.visible !== true) chunk.visible = true;
 		}
 
-		delete position; //jshint ignore: line
+		// delete position; //jshint ignore: line
 		cb();
 	}
 };

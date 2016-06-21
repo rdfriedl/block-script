@@ -19,12 +19,13 @@ module.exports = {
 			'bootstrap-toggle',
 			'bootstrap-dialog',
 			'dexie',
-			'keypress',
+			'keypress.js/keypress.js',
+			'stats.js/build/stats.min.js',
 			'knockout',
 			'knockout-mapping',
 			'minivents',
 			'three',
-			'fontawesome'
+			'font-awesome/css/font-awesome.min.css'
 		]
 	},
 	output: {
@@ -61,22 +62,22 @@ module.exports = {
 			},
 			{
 				test: /\.css$/,
-				exclude: /\.styles\.css/,
 				loaders: [
-					'style/url',
-					'file?name=res/css/[hash].[ext]'
+					'style-loader',
+					'css-loader'
 				]
 			},
 			{
 				test: /\.(woff|woff2|ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-				loader: 'file',
+				loader: 'url-loader',
 				query: {
+					limit: 100000,
 					name: 'res/font/[hash].[ext]'
 				}
 			},
 			{
 				test: /\.html$/,
-				loader: 'html'
+				loader: 'html-loader'
 			},
 			{
 				test: /\.md$/,
@@ -92,8 +93,7 @@ module.exports = {
 			{
 				test: /\.dae$/,
 				loaders: [
-					'file-loader?name=res/model/[hash].[ext]',
-					'svgo-loader'
+					'file-loader?name=res/model/[hash].[ext]'
 				]
 			},
 			{

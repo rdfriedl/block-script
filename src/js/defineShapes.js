@@ -1,5 +1,7 @@
-(function(){
-var shapeFolder = 'res/modals/shapes/';
+import THREE from 'three';
+import shapes from './shapes.js';
+import Shape from './shape.js';
+import UniversalLoader from 'exports?THREEx.UniversalLoader!imports?THREE=three!../lib/threex.universalloader.js';
 
 var loadShapeCache = {};
 function loadShape(url,name){
@@ -19,7 +21,7 @@ function loadShape(url,name){
 
 	//create loader
 	if(!loadShapeCache[url]){
-		var loader = new THREEx.UniversalLoader();
+		var loader = new UniversalLoader();
 		loadShapeCache[url] = {
 			loader: loader,
 			geometries: {}
@@ -55,9 +57,9 @@ function loadShape(url,name){
 
 var cube = new Shape('cube',{
 	name: 'Cube',
-	geometry: loadShape(shapeFolder+'cube.dae','Shape'),//new THREE.BoxGeometry(1, 1, 1),
+	geometry: loadShape(require('../res/models/shapes/cube.dae'),'Shape'),//new THREE.BoxGeometry(1, 1, 1),
 	// collision: new THREE.BoxGeometry(1, 1, 1),
-	wireFrame: loadShape(shapeFolder+'cube.dae','WireFrame'),
+	wireFrame: loadShape(require('../res/models/shapes/cube.dae'),'WireFrame'),
 	image: 'res/img/shapes/cube.png',
 	blockData: {
 		canRotate: false,
@@ -67,9 +69,9 @@ shapes.addShape(cube);
 
 var halfCube = new Shape('halfCube',{
 	name: 'Half Cube',
-	geometry: loadShape(shapeFolder+'halfCube.dae','Shape'),
-	// collision: loadShape(shapeFolder+'halfCube.dae','Shape'),
-	wireFrame: loadShape(shapeFolder+'halfCube.dae','WireFrame'),
+	geometry: loadShape(require('../res/models/shapes/halfCube.dae'),'Shape'),
+	// collision: loadShape(require('../res/models/shapes/halfCube.dae'),'Shape'),
+	wireFrame: loadShape(require('../res/models/shapes/halfCube.dae'),'WireFrame'),
 	image: 'res/img/shapes/halfCube.png',
 	blockData: {
 		transparent: true,
@@ -80,9 +82,9 @@ shapes.addShape(halfCube);
 
 var slant = new Shape('slant',{
 	name: 'Slant',
-	geometry: loadShape(shapeFolder+'slant.dae','Shape'),
-	// collision: loadShape(shapeFolder+'slant.dae','Shape'),
-	wireFrame: loadShape(shapeFolder+'slant.dae','WireFrame'),
+	geometry: loadShape(require('../res/models/shapes/slant.dae'),'Shape'),
+	// collision: loadShape(require('../res/models/shapes/slant.dae'),'Shape'),
+	wireFrame: loadShape(require('../res/models/shapes/slant.dae'),'WireFrame'),
 	image: 'res/img/shapes/slant.png',
 	blockData: {
 		transparent: true
@@ -92,9 +94,9 @@ shapes.addShape(slant);
 
 var slantCornerIn = new Shape('slantCornerIn',{
 	name: 'Slant Corner In',
-	geometry: loadShape(shapeFolder+'slantCornerIn.dae','Shape'),
-	// collision: loadShape(shapeFolder+'slantCornerIn.dae','Shape'),
-	wireFrame: loadShape(shapeFolder+'slantCornerIn.dae','WireFrame'),
+	geometry: loadShape(require('../res/models/shapes/slantCornerIn.dae'),'Shape'),
+	// collision: loadShape(require('../res/models/shapes/slantCornerIn.dae'),'Shape'),
+	wireFrame: loadShape(require('../res/models/shapes/slantCornerIn.dae'),'WireFrame'),
 	image: 'res/img/shapes/slantCornerIn.png',
 	blockData: {
 		transparent: true
@@ -104,9 +106,9 @@ shapes.addShape(slantCornerIn);
 
 var slantCornerOut = new Shape('slantCornerOut',{
 	name: 'Slant Corner Out',
-	geometry: loadShape(shapeFolder+'slantCornerOut.dae','Shape'),
-	// collision: loadShape(shapeFolder+'slantCornerOut.dae','Shape'),
-	wireFrame: loadShape(shapeFolder+'slantCornerOut.dae','WireFrame'),
+	geometry: loadShape(require('../res/models/shapes/slantCornerOut.dae'),'Shape'),
+	// collision: loadShape(require('../res/models/shapes/slantCornerOut.dae'),'Shape'),
+	wireFrame: loadShape(require('../res/models/shapes/slantCornerOut.dae'),'WireFrame'),
 	image: 'res/img/shapes/slantCornerOut.png',
 	blockData: {
 		transparent: true
@@ -116,9 +118,9 @@ shapes.addShape(slantCornerOut);
 
 var halfSlant = new Shape('halfSlant',{
 	name: 'Half Slant',
-	geometry: loadShape(shapeFolder+'halfSlant.dae','Shape'),
-	// collision: loadShape(shapeFolder+'halfSlant.dae','Shape'),
-	wireFrame: loadShape(shapeFolder+'halfSlant.dae','WireFrame'),
+	geometry: loadShape(require('../res/models/shapes/halfSlant.dae'),'Shape'),
+	// collision: loadShape(require('../res/models/shapes/halfSlant.dae'),'Shape'),
+	wireFrame: loadShape(require('../res/models/shapes/halfSlant.dae'),'WireFrame'),
 	image: 'res/img/shapes/halfSlant.png',
 	blockData:{
 		transparent: true
@@ -128,9 +130,9 @@ shapes.addShape(halfSlant);
 
 var halfSlantCornerIn = new Shape('halfSlantCornerIn',{
 	name: 'Half Slant Corner In',
-	geometry: loadShape(shapeFolder+'halfSlantCornerIn.dae','Shape'),
-	// collision: loadShape(shapeFolder+'halfSlantCornerIn.dae','Shape'),
-	wireFrame: loadShape(shapeFolder+'halfSlantCornerIn.dae','WireFrame'),
+	geometry: loadShape(require('../res/models/shapes/halfSlantCornerIn.dae'),'Shape'),
+	// collision: loadShape(require('../res/models/shapes/halfSlantCornerIn.dae'),'Shape'),
+	wireFrame: loadShape(require('../res/models/shapes/halfSlantCornerIn.dae'),'WireFrame'),
 	image: 'res/img/shapes/halfSlantCornerIn.png',
 	blockData: {
 		transparent: true
@@ -140,9 +142,9 @@ shapes.addShape(halfSlantCornerIn);
 
 var halfSlantCornerOut = new Shape('halfSlantCornerOut',{
 	name: 'Half Slant Corner Out',
-	geometry: loadShape(shapeFolder+'halfSlantCornerOut.dae','Shape'),
-	// collision: loadShape(shapeFolder+'halfSlantCornerOut.dae','Shape'),
-	wireFrame: loadShape(shapeFolder+'halfSlantCornerOut.dae','WireFrame'),
+	geometry: loadShape(require('../res/models/shapes/halfSlantCornerOut.dae'),'Shape'),
+	// collision: loadShape(require('../res/models/shapes/halfSlantCornerOut.dae'),'Shape'),
+	wireFrame: loadShape(require('../res/models/shapes/halfSlantCornerOut.dae'),'WireFrame'),
 	image: 'res/img/shapes/halfSlantCornerOut.png',
 	blockData: {
 		transparent: true
@@ -152,9 +154,9 @@ shapes.addShape(halfSlantCornerOut);
 
 var stairs = new Shape('stairs',{
 	name: 'Stairs',
-	geometry: loadShape(shapeFolder+'stairs.dae','Shape'),
-	// collision: loadShape(shapeFolder+'stairs.dae','Shape'),
-	wireFrame: loadShape(shapeFolder+'stairs.dae','WireFrame'),
+	geometry: loadShape(require('../res/models/shapes/stairs.dae'),'Shape'),
+	// collision: loadShape(require('../res/models/shapes/stairs.dae'),'Shape'),
+	wireFrame: loadShape(require('../res/models/shapes/stairs.dae'),'WireFrame'),
 	image: 'res/img/shapes/stairs.png',
 	blockData: {
 		transparent: true
@@ -164,9 +166,9 @@ shapes.addShape(stairs);
 
 var stairsCornerIn = new Shape('stairsCornerIn',{
 	name: 'Stairs Corner In',
-	geometry: loadShape(shapeFolder+'stairsCornerIn.dae','Shape'),
-	// collision: loadShape(shapeFolder+'stairsCornerIn.dae','Shape'),
-	wireFrame: loadShape(shapeFolder+'stairsCornerIn.dae','WireFrame'),
+	geometry: loadShape(require('../res/models/shapes/stairsCornerIn.dae'),'Shape'),
+	// collision: loadShape(require('../res/models/shapes/stairsCornerIn.dae'),'Shape'),
+	wireFrame: loadShape(require('../res/models/shapes/stairsCornerIn.dae'),'WireFrame'),
 	image: 'res/img/shapes/stairsCornerIn.png',
 	blockData: {
 		transparent: true
@@ -176,9 +178,9 @@ shapes.addShape(stairsCornerIn);
 
 var stairsCornerOut = new Shape('stairsCornerOut',{
 	name: 'Stairs Corner Out',
-	geometry: loadShape(shapeFolder+'stairsCornerOut.dae','Shape'),
-	// collision: loadShape(shapeFolder+'stairsCornerOut.dae','Shape'),
-	wireFrame: loadShape(shapeFolder+'stairsCornerOut.dae','WireFrame'),
+	geometry: loadShape(require('../res/models/shapes/stairsCornerOut.dae'),'Shape'),
+	// collision: loadShape(require('../res/models/shapes/stairsCornerOut.dae'),'Shape'),
+	wireFrame: loadShape(require('../res/models/shapes/stairsCornerOut.dae'),'WireFrame'),
 	image: 'res/img/shapes/stairsCornerOut.png',
 	blockData: {
 		transparent: true
@@ -188,9 +190,9 @@ shapes.addShape(stairsCornerOut);
 
 var cone = new Shape('cone',{
 	name: 'Cone',
-	geometry: loadShape(shapeFolder+'cone.dae','Shape'),
-	// collision: loadShape(shapeFolder+'cone.dae','Shape'),
-	wireFrame: loadShape(shapeFolder+'cone.dae','WireFrame'),
+	geometry: loadShape(require('../res/models/shapes/cone.dae'),'Shape'),
+	// collision: loadShape(require('../res/models/shapes/cone.dae'),'Shape'),
+	wireFrame: loadShape(require('../res/models/shapes/cone.dae'),'WireFrame'),
 	image: 'res/img/shapes/cone.png',
 	blockData: {
 		transparent: true,
@@ -201,9 +203,9 @@ shapes.addShape(cone);
 
 var halfCone = new Shape('halfCone',{
 	name: 'Half Cone',
-	geometry: loadShape(shapeFolder+'halfCone.dae','Shape'),
-	// collision: loadShape(shapeFolder+'halfCone.dae','Shape'),
-	wireFrame: loadShape(shapeFolder+'halfCone.dae','WireFrame'),
+	geometry: loadShape(require('../res/models/shapes/halfCone.dae'),'Shape'),
+	// collision: loadShape(require('../res/models/shapes/halfCone.dae'),'Shape'),
+	wireFrame: loadShape(require('../res/models/shapes/halfCone.dae'),'WireFrame'),
 	image: 'res/img/shapes/halfCone.png',
 	blockData: {
 		transparent: true,
@@ -211,5 +213,3 @@ var halfCone = new Shape('halfCone',{
 	}
 });
 shapes.addShape(halfCone);
-
-})();

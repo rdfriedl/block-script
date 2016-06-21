@@ -1,4 +1,6 @@
-CollisionEntity = function(data){
+import THREE from 'three';
+
+export function CollisionEntity(data){
 	data = data || {};
 	this._box = data.box || new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
 	this.position = data.position || new THREE.Vector3();
@@ -96,7 +98,7 @@ Object.defineProperties(CollisionEntity.prototype,{
 	},
 });
 
-collisions = {
+let collisions = {
 	groups: {
 		none: [],
 		player: ['block'],
@@ -340,7 +342,7 @@ collisions = {
                 }
             }
         }
-        delete pos, corners, c, block, box; //jshint ignore: line
+        // delete pos, corners, c, block, box; //jshint ignore: line
         return colInfo;
     },
     _collideWithBlocks: function(a,map){
@@ -430,3 +432,7 @@ collisions = {
         return collision;
     }
 };
+
+export {collisions}
+
+import Block from './block.js';

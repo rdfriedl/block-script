@@ -1,4 +1,7 @@
-function ChunkGeneratorBlank(){
+import fn from '../lib/functions.js';
+import Noise from '../lib/perlin.js';
+
+export function ChunkGeneratorBlank(){
 }
 ChunkGeneratorBlank.prototype = {
 	levels: [],
@@ -14,7 +17,7 @@ ChunkGeneratorBlank.prototype = {
 };
 ChunkGeneratorBlank.prototype.constructor = ChunkGeneratorBlank;
 
-function RoomGenerator(){}
+export function RoomGenerator(){}
 RoomGenerator.prototype = {
 	levels: [],
 	generateChunk: function(position,cb){
@@ -46,7 +49,7 @@ RoomGenerator.prototype = {
 };
 RoomGenerator.prototype.constructor = RoomGenerator;
 
-function FladGenerator(){}
+export function FladGenerator(){}
 FladGenerator.prototype = {
 	levels: [],
 	generateChunk: function(position,cb){
@@ -71,7 +74,7 @@ FladGenerator.prototype = {
 };
 FladGenerator.prototype.constructor = FladGenerator;
 
-function ChunkGeneratorHills(options){
+export function ChunkGeneratorHills(options){
 	this.options = fn.combindOver({
 		seed: 0,
 		levels: [],
@@ -147,3 +150,5 @@ ChunkGeneratorHills.prototype = {
 	}
 };
 ChunkGeneratorHills.prototype.constructor = ChunkGeneratorHills;
+
+import game from './states/game.js';

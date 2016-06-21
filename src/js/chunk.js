@@ -1,4 +1,10 @@
-function Chunk(position,map){
+import THREE from 'three';
+import Events from '../lib/minvents.js';
+import Block, {blockPool} from './block.js';
+import {Materials} from './materials.js';
+import _ from 'underscore';
+
+export default function Chunk(position,map){
     this.blocks = [];
     this.position = position;
     this.map = map;
@@ -154,7 +160,7 @@ Chunk.prototype = {
             }
 
             var geometry = new THREE.Geometry();
-            var material = materials.compile();
+            var material = Materials.inst.compile();
             var collisionMaterial = new THREE.MeshBasicMaterial({
                 wireframe: true
             });
@@ -273,3 +279,5 @@ Object.defineProperties(Chunk.prototype,{
         }
     }
 });
+
+import game from './states/game.js';

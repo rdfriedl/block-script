@@ -1,7 +1,7 @@
-var settingsDB;
+import Dexie from 'dexie';
 
 //set up map settingsDB
-settingsDB = new Dexie('block-script-settings');
+let settingsDB = new Dexie('block-script-settings');
 
 // 1.4
 settingsDB
@@ -45,3 +45,5 @@ settingsDB
 }).upgrade(function(trans){
 	//nothing to do
 });
+
+export {settingsDB as default};

@@ -1,4 +1,12 @@
-function VoxelMap(state,options,materials){
+import THREE from 'three';
+import _ from 'underscore';
+import fn from '../lib/functions.js';
+import Events from '../lib/minvents.js';
+import Chunk from './chunk.js';
+import {ChunkGeneratorBlank} from './chunkGenerator.js';
+import {Materials} from './materials.js';
+
+export default function VoxelMap(state,options,materials){
 	this.state = state;
 	fn.combindIn(this,options);
 	this.chunks = {};
