@@ -147,10 +147,6 @@ $(document).ready(function() {
 	$(window).focus(function(){
 		clock.getDelta();
 	});
-
-	$(window).on('error',function(event){
-		console.log(event);
-	});
 });
 
 function readfiles(files, callback) {

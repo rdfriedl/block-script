@@ -2,6 +2,7 @@ import THREE from 'three';
 import {CollisionEntity} from './collision.js';
 import shapes from './shapes.js';
 import _ from 'underscore';
+import * as config from './config.js';
 
 export default function Block(position,data,chunk){
 	this.position = position || new THREE.Vector3();
@@ -62,7 +63,7 @@ Block.prototype = {
 		var pos = v.clone().add(this.position);
 
        	var chunk = this.chunk;
-        if(pos.x < 0 || pos.y < 0 || pos.z < 0 || pos.x >= game.chunkSize || pos.y >= game.chunkSize || pos.z >= game.chunkSize){
+        if(pos.x < 0 || pos.y < 0 || pos.z < 0 || pos.x >= config.CHUNK_SIZE || pos.y >= config.CHUNK_SIZE || pos.z >= config.CHUNK_SIZE){
         	chunk = chunk.getNeighbor(v.clone());
         	if(!chunk) return; //dont go any futher if we cant find the chunk
         }
@@ -71,16 +72,16 @@ Block.prototype = {
 	        if(pos.x < 0) pos.x=9;
 	        if(pos.y < 0) pos.y=9;
 	        if(pos.z < 0) pos.z=9;
-	        if(pos.x >= game.chunkSize) pos.x=0;
-			if(pos.y >= game.chunkSize) pos.y=0;
-			if(pos.z >= game.chunkSize) pos.z=0;
+	        if(pos.x >= config.CHUNK_SIZE) pos.x=0;
+			if(pos.y >= config.CHUNK_SIZE) pos.y=0;
+			if(pos.z >= config.CHUNK_SIZE) pos.z=0;
         }
 
         return chunk.getBlock(pos);
 	}
 };
 var blockCol = new CollisionEntity({
-	box: new THREE.Box3(new THREE.Vector3(0,0,0), new THREE.Vector3(game.blockSize,game.blockSize,game.blockSize)),
+	box: new THREE.Box3(new THREE.Vector3(0,0,0), new THREE.Vector3(config.BLOCK_SIZE,config.BLOCK_SIZE,config.BLOCK_SIZE)),
 	group: 'block'
 });
 function blockDataGet(prop){
@@ -102,12 +103,12 @@ Object.defineProperties(Block.prototype,{
 	},
 	worldPosition: {
 		get: function(){
-			return (this.chunk)? this.chunk.position.clone().multiplyScalar(game.chunkSize).add(this.position) : new THREE.Vector3();
+			return (this.chunk)? this.chunk.position.clone().multiplyScalar(config.CHUNK_SIZE).add(this.position) : new THREE.Vector3();
 		}
 	},
 	scenePosition: {
 		get: function(){
-			return this.worldPosition.multiplyScalar(game.blockSize);
+			return this.worldPosition.multiplyScalar(config.BLOCK_SIZE);
 		}
 	},
 	sceneCenter: {
@@ -117,16 +118,16 @@ Object.defineProperties(Block.prototype,{
 	},
 	center: {
 		get: function(){
-			return new THREE.Vector3(0.5,0.5,0.5).multiplyScalar(game.blockSize);
+			return new THREE.Vector3(0.5,0.5,0.5).multiplyScalar(config.BLOCK_SIZE);
 		}
 	},
 	edge: {
 		get: function(){
-			if(!(this.position.x > 0 && this.position.y > 0 && this.position.z > 0 && this.position.x < game.chunkSize-1 && this.position.y < game.chunkSize-1 && this.position.z < game.chunkSize-1)){
+			if(!(this.position.x > 0 && this.position.y > 0 && this.position.z > 0 && this.position.x < config.CHUNK_SIZE-1 && this.position.y < config.CHUNK_SIZE-1 && this.position.z < config.CHUNK_SIZE-1)){
 				return new THREE.Vector3(
-					this.position.x === 0? -1 : (this.position.x == game.chunkSize-1)? 1 : 0,
-					this.position.y === 0? -1 : (this.position.y == game.chunkSize-1)? 1 : 0,
-					this.position.z === 0? -1 : (this.position.z == game.chunkSize-1)? 1 : 0
+					this.position.x === 0? -1 : (this.position.x == config.CHUNK_SIZE-1)? 1 : 0,
+					this.position.y === 0? -1 : (this.position.y == config.CHUNK_SIZE-1)? 1 : 0,
+					this.position.z === 0? -1 : (this.position.z == config.CHUNK_SIZE-1)? 1 : 0
 					);
 			}
 			return new THREE.Vector3();

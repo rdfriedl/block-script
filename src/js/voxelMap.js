@@ -5,6 +5,7 @@ import Events from '../lib/minvents.js';
 import Chunk from './chunk.js';
 import {ChunkGeneratorBlank} from './chunkGenerator.js';
 import {Materials} from './materials.js';
+import * as config from './config.js';
 
 export default function VoxelMap(state,options,materials){
 	this.state = state;
@@ -58,7 +59,7 @@ VoxelMap.prototype = {
 	},
 	getBlock: function(position){
 		var chunkPos = position.clone();
-		chunkPos.divideScalar(game.chunkSize);
+		chunkPos.divideScalar(config.CHUNK_SIZE);
 		chunkPos.floor();
 
 		var chunkID = chunkPos.toString();
@@ -66,12 +67,12 @@ VoxelMap.prototype = {
 			var chunk = this.chunks[chunkID];
 			var pos = position.clone();
 			pos.sub(chunk.worldPosition);
-			return chunk.blocks[positionToIndex(pos,game.chunkSize)];
+			return chunk.blocks[positionToIndex(pos,config.CHUNK_SIZE)];
 		}
 	},
 	setBlock: function(position,data,cb,dontBuild){
 		var chunkPos = position.clone();
-		chunkPos.divideScalar(game.chunkSize);
+		chunkPos.divideScalar(config.CHUNK_SIZE);
 		chunkPos.floor();
 
 		this.getChunk(chunkPos,function(chunk){
@@ -83,7 +84,7 @@ VoxelMap.prototype = {
 	},
 	removeBlock: function(position,cb,dontBuild){
 		var chunkPos = position.clone();
-		chunkPos.divideScalar(game.chunkSize);
+		chunkPos.divideScalar(config.CHUNK_SIZE);
 		chunkPos.floor();
 
 		this.getChunk(chunkPos,function(chunk){
@@ -267,7 +268,7 @@ VoxelMap.prototype = {
 			pos.add(data.offset);
 			this.setBlock(pos,data.data[i],null,true);
 
-			pos.divideScalar(game.chunkSize).floor();
+			pos.divideScalar(config.CHUNK_SIZE).floor();
 			chunks[pos.toString()] = pos;
 		}
 

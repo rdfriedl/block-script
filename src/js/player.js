@@ -1,14 +1,17 @@
 import THREE from 'three';
 import _ from 'underscore';
-import {CollisionEntity, collisions} from './collision.js';
+
 import Block from './block.js';
+import shapes from './shapes.js';
+import {CollisionEntity, collisions} from './collision.js';
+import * as config from './config.js';
 
 export default function Player(state,camera){
 	this.state = state;
 	this.scene = state.scene;
 	this.camera = camera;
 	this.rayCaster = new THREE.Raycaster();
-	this.rayCaster.far = game.blockSize * 5;
+	this.rayCaster.far = config.BLOCK_SIZE * 5;
 
 	this.controls = new THREE.PointerLockControls(this.camera);
 	this.controls.enabled = false;
@@ -295,7 +298,7 @@ Player.prototype = {
 				this.movement.viewBobbingDir = -this.movement.viewBobbingDir;
 
 				//play step sound
-				var v = new THREE.Vector3(this.position.x,this.collisionEntity.y1,this.position.z).divideScalar(game.blockSize).floor();
+				var v = new THREE.Vector3(this.position.x,this.collisionEntity.y1,this.position.z).divideScalar(config.BLOCK_SIZE).floor();
 				v.y--;
 				var block = this.state.voxelMap.getBlock(v);
 				if(block){
@@ -345,7 +348,7 @@ Player.prototype = {
 		var intersects = this.rayCaster.intersectObject(this.state.voxelMap.group,true);
 		for (var i = 0; i < intersects.length; i++) {
 			var pos = new THREE.Vector3().add(intersects[i].point).sub(intersects[i].face.normal);
-			pos.divideScalar(game.blockSize).floor();
+			pos.divideScalar(config.BLOCK_SIZE).floor();
 
 			var block = this.state.voxelMap.getBlock(pos);
 
@@ -359,7 +362,7 @@ Player.prototype = {
 				}
 				else{
 					//fall back to using a box
-					var box = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3(game.blockSize,game.blockSize,game.blockSize));
+					var box = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3(config.BLOCK_SIZE,config.BLOCK_SIZE,config.BLOCK_SIZE));
 					box.translate(block.scenePosition);
 					var n = this.rayCaster.ray.intersectBox(box) || block.sceneCenter, normal = new THREE.Vector3(); // jshint ignore:line
 					n.sub(block.sceneCenter);
@@ -391,13 +394,13 @@ Player.prototype = {
 					transparent: true,
 					opacity: 0.4
 				}));
-				this.placeOutLine.scale.multiplyScalar(game.blockSize);
+				this.placeOutLine.scale.multiplyScalar(config.BLOCK_SIZE);
 				this.scene.add(this.placeOutLine);
 				this.placeOutLine._shape = this.selection.place.shape;
 			}
 
 			this.placeOutLine.visible = !this.selection.block.getNeighbor(this.selection.normal);
-			this.placeOutLine.position.copy(this.selection.block.worldPosition).add(this.selection.normal).add(new THREE.Vector3(0.5,0.5,0.5)).multiplyScalar(game.blockSize);
+			this.placeOutLine.position.copy(this.selection.block.worldPosition).add(this.selection.normal).add(new THREE.Vector3(0.5,0.5,0.5)).multiplyScalar(config.BLOCK_SIZE);
 			this.placeOutLine.lookAt(this.placeOutLine.position.clone().add(this.selection.normal));
 			this.placeOutLine.rotateX(THREE.Math.degToRad(90));
 			this.placeOutLine.rotateY(this.selection.place.blockRotation);
@@ -419,13 +422,13 @@ Player.prototype = {
 					transparent: true,
 					opacity: 0.4
 				}));
-				this.selectionObject.scale.multiplyScalar(game.blockSize);
+				this.selectionObject.scale.multiplyScalar(config.BLOCK_SIZE);
 				this.scene.add(this.selectionObject);
 				this.selectionObject._shape = this.selection.place.shape;
 			}
 
 			this.selectionObject.visible = true;
-			this.selectionObject.position.copy(this.selection.block.worldPosition).add(new THREE.Vector3(0.5,0.5,0.5)).multiplyScalar(game.blockSize);
+			this.selectionObject.position.copy(this.selection.block.worldPosition).add(new THREE.Vector3(0.5,0.5,0.5)).multiplyScalar(config.BLOCK_SIZE);
         	this.selectionObject.rotation.copy(this.selection.block.rotation);
 		}
 		else{
@@ -482,7 +485,7 @@ Object.defineProperties(Player.prototype,{
 	},
 	chunk: {
 		get: function(){
-			var id = this.position.clone().divideScalar(game.blockSize).floor().divideScalar(game.chunkSize).floor().toString();
+			var id = this.position.clone().divideScalar(config.BLOCK_SIZE).floor().divideScalar(config.CHUNK_SIZE).floor().toString();
 			return this.state.voxelMap.chunks[id];
 		}
 	},
@@ -496,3 +499,4 @@ Object.defineProperties(Player.prototype,{
 		}
 	}
 });
+import game from './states/game.js';

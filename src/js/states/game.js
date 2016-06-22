@@ -1,14 +1,8 @@
-import {states} from '../states.js';
-import Events from '../../lib/minvents.js';
-import keyboard from '../keyboard.js';
 import THREE from 'three';
-import VoxelMap from '../voxelMap.js';
-import Sounds from '../sound.js';
-import Stats from 'stats.js/build/stats.min.js';
-import Player from '../player.js';
-import ChunkLoader from '../chunkLoader.js';
-import {ChunkGeneratorHills} from '../chunkGenerator.js';
 import _ from 'underscore';
+import {states} from '../states.js';
+import keyboard from '../keyboard.js';
+import * as config from '../config.js';
 
 //this file handles the scene/update/rendering of the game
 var game = {
@@ -61,8 +55,6 @@ var game = {
 	player: undefined,
 	voxelMap: undefined,
 	sounds: undefined,
-	chunkSize: 10,
-	blockSize: 32,
 	loadedMap: undefined,
 	chunkLoader: undefined,
 	init: function(){
@@ -77,7 +69,7 @@ var game = {
 		this.cameraHUD.position.z = 10;
 
 		this.scene = new THREE.Scene();
-		this.scene.fog = new THREE.FogExp2(0xbfd1e5,game.viewRange * game.chunkSize / 100000);
+		this.scene.fog = new THREE.FogExp2(0xbfd1e5,game.viewRange * config.CHUNK_SIZE / 100000);
 		this.camera = new THREE.PerspectiveCamera(60, width / height, 0.1, 20000);
 
 		this.sounds = new Sounds(this.scene);
@@ -93,8 +85,8 @@ var game = {
 		this.chunkLoader = new ChunkLoader(this.voxelMap);
 
 		var chunkGenerator = new ChunkGeneratorHills({
-			width: 40*game.chunkSize-1,
-			height: 40*game.chunkSize-1,
+			width: 40*config.CHUNK_SIZE-1,
+			height: 40*config.CHUNK_SIZE-1,
 			levels: [
 				{
 					quality: 10,
@@ -331,7 +323,7 @@ var game = {
 			if(this.player.position.empty()){
 				// set player position
 				var y = this.voxelMap.chunkGenerator.getHeight(0,0);
-				this.player.position.y = (_.max(y) + 4) * game.blockSize;
+				this.player.position.y = (_.max(y) + 4) * config.BLOCK_SIZE;
 			}
 		}.bind(this));
 	},
@@ -399,6 +391,8 @@ Object.defineProperties(game,{
 	}
 });
 
+export {game as default};
+
 states.addState('game',game);
 
 //create the keypress object
@@ -440,4 +434,10 @@ game.keypress = keyboard.createState([
 	},
 ],'game');
 
-export {game as default};
+import Events from '../../lib/minvents.js';
+import VoxelMap from '../voxelMap.js';
+import Sounds from '../sound.js';
+import Stats from 'stats.js/build/stats.min.js';
+import Player from '../player.js';
+import ChunkLoader from '../chunkLoader.js';
+import {ChunkGeneratorHills} from '../chunkGenerator.js';

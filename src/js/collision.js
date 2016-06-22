@@ -1,4 +1,5 @@
 import THREE from 'three';
+import * as config from './config.js';
 
 export function CollisionEntity(data){
 	data = data || {};
@@ -254,7 +255,7 @@ let collisions = {
     collideWithBlocks: function(a,map){
         var velocity = a.velocity;
         var toGrid = function(vec){
-            return vec.divideScalar(game.blockSize).floor();
+            return vec.divideScalar(config.BLOCK_SIZE).floor();
         };
 
         var colInfo = {
@@ -267,7 +268,7 @@ let collisions = {
             exit: new THREE.Vector3(Infinity,Infinity,Infinity)
         };
         var dist = velocity.length();
-        var loops = (dist > game.blockSize)? Math.ceil(dist / game.blockSize) : 1;
+        var loops = (dist > config.BLOCK_SIZE)? Math.ceil(dist / config.BLOCK_SIZE) : 1;
         var done = false;
 
         //test for blocks

@@ -1,4 +1,5 @@
 import THREE from 'three';
+import * as config from './config.js';
 
 export default function ChunkLoader(map,opts){
 	this.position = new THREE.Vector3();
@@ -82,9 +83,9 @@ ChunkLoader.prototype = {
 		while(dist < this.loadRange){
 			var loaded = true;
 			var position = this.position.clone();
-			position.x = Math.floor(position.x / (game.chunkSize*game.blockSize)) + x;
-			position.y = Math.floor(position.y / (game.chunkSize*game.blockSize)) + y;
-			position.z = Math.floor(position.z / (game.chunkSize*game.blockSize)) + z;
+			position.x = Math.floor(position.x / (config.CHUNK_SIZE*config.BLOCK_SIZE)) + x;
+			position.y = Math.floor(position.y / (config.CHUNK_SIZE*config.BLOCK_SIZE)) + y;
+			position.z = Math.floor(position.z / (config.CHUNK_SIZE*config.BLOCK_SIZE)) + z;
 
 			loaded = (!loaded)? loaded : this.map.chunkLoaded(position);
 			loaded = !!loaded;
@@ -123,9 +124,9 @@ ChunkLoader.prototype = {
 	},
 	_scanUnloadChunk: function(cb){
 		var position = this.position.clone();
-		position.x = Math.floor(position.x / (game.chunkSize*game.blockSize));
-		position.y = Math.floor(position.y / (game.chunkSize*game.blockSize));
-		position.z = Math.floor(position.z / (game.chunkSize*game.blockSize));
+		position.x = Math.floor(position.x / (config.CHUNK_SIZE*config.BLOCK_SIZE));
+		position.y = Math.floor(position.y / (config.CHUNK_SIZE*config.BLOCK_SIZE));
+		position.z = Math.floor(position.z / (config.CHUNK_SIZE*config.BLOCK_SIZE));
 
 		for (var i in this.map.chunks) {
 			var chunk = this.map.chunks[i];
@@ -143,9 +144,9 @@ ChunkLoader.prototype = {
 	},
 	_scanVisibleChunk: function(cb){
 		var position = this.position.clone();
-		position.x = Math.floor(position.x / (game.chunkSize*game.blockSize));
-		position.y = Math.floor(position.y / (game.chunkSize*game.blockSize));
-		position.z = Math.floor(position.z / (game.chunkSize*game.blockSize));
+		position.x = Math.floor(position.x / (config.CHUNK_SIZE*config.BLOCK_SIZE));
+		position.y = Math.floor(position.y / (config.CHUNK_SIZE*config.BLOCK_SIZE));
+		position.z = Math.floor(position.z / (config.CHUNK_SIZE*config.BLOCK_SIZE));
 
 		for (var i in this.map.chunks) {
 			var chunk = this.map.chunks[i];
@@ -164,3 +165,5 @@ ChunkLoader.prototype = {
 	}
 };
 ChunkLoader.prototype.construtor = ChunkLoader;
+
+import game from './states/game.js';

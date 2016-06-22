@@ -1,5 +1,6 @@
 import fn from '../lib/functions.js';
 import Noise from '../lib/perlin.js';
+import * as config from './config.js';
 
 export function ChunkGeneratorBlank(){
 }
@@ -8,7 +9,7 @@ ChunkGeneratorBlank.prototype = {
 	generateChunk: function(position,cb){
 		var data = [];
 
-		for (var i = 0; i < game.chunkSize*game.chunkSize*game.chunkSize; i++) {
+		for (var i = 0; i < config.CHUNK_SIZE*config.CHUNK_SIZE*config.CHUNK_SIZE; i++) {
 			data.push(undefined);
 		}
 
@@ -24,8 +25,8 @@ RoomGenerator.prototype = {
 		var data = [];
 
 		//jshint ignore: start
-		for (var i = 0; i < game.chunkSize*game.chunkSize*game.chunkSize; i++) {
-			var pos = indexToPosition(i,game.chunkSize)//.add(position.clone().multiplyScalar(game.chunkSize));
+		for (var i = 0; i < config.CHUNK_SIZE*config.CHUNK_SIZE*config.CHUNK_SIZE; i++) {
+			var pos = indexToPosition(i,config.CHUNK_SIZE)//.add(position.clone().multiplyScalar(config.CHUNK_SIZE));
 
 			if(pos.x == 0 || pos.y == 0 || pos.z == 0){
 				if(pos.y < 3 && pos.y > 0 && (pos.x == 5 || pos.z == 5)){
@@ -55,8 +56,8 @@ FladGenerator.prototype = {
 	generateChunk: function(position,cb){
 		var data = [];
 
-		for (var i = 0; i < game.chunkSize*game.chunkSize*game.chunkSize; i++) {
-			var pos = indexToPosition(i,game.chunkSize).add(position.clone().multiplyScalar(game.chunkSize));
+		for (var i = 0; i < config.CHUNK_SIZE*config.CHUNK_SIZE*config.CHUNK_SIZE; i++) {
+			var pos = indexToPosition(i,config.CHUNK_SIZE).add(position.clone().multiplyScalar(config.CHUNK_SIZE));
 
 			if(pos.y < 10){
 				data.push({
@@ -92,8 +93,8 @@ ChunkGeneratorHills.prototype = {
 		//jshint ignore: start
 		var data = [];
 
-		for (var i = 0; i < game.chunkSize*game.chunkSize*game.chunkSize; i++) {
-			var pos = indexToPosition(i,game.chunkSize).add(position.clone().multiplyScalar(game.chunkSize));
+		for (var i = 0; i < config.CHUNK_SIZE*config.CHUNK_SIZE*config.CHUNK_SIZE; i++) {
+			var pos = indexToPosition(i,config.CHUNK_SIZE).add(position.clone().multiplyScalar(config.CHUNK_SIZE));
 			var lvls = this.getHeight(pos.x,pos.z);
 
 			var f = false, l = -1;
@@ -150,5 +151,3 @@ ChunkGeneratorHills.prototype = {
 	}
 };
 ChunkGeneratorHills.prototype.constructor = ChunkGeneratorHills;
-
-import game from './states/game.js';

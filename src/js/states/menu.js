@@ -6,6 +6,14 @@ import settingsDB from '../dataBaseVersions.js';
 import _ from 'underscore';
 import {MapLoaderDB} from '../mapLoader.js';
 
+function catchError(message,cb){
+	return function(e){
+		console.error(message);
+		console.error(e);
+		if(cb) cb();
+	};
+}
+
 //this file handles the scene/update/rendering of the menu
 var menu = {
 	container: undefined,

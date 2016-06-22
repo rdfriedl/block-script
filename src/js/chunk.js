@@ -3,6 +3,7 @@ import Events from '../lib/minvents.js';
 import Block, {blockPool} from './block.js';
 import {Materials} from './materials.js';
 import _ from 'underscore';
+import * as config from './config.js';
 
 export default function Chunk(position,map){
     this.blocks = [];
@@ -24,8 +25,8 @@ export default function Chunk(position,map){
     this.map.collisionGroup.add(this.collisionGroup);
 
     this.wireframe = createDebugBox(new THREE.Vector3(1,1,1));
-    this.wireframe.position.set(0.5,0.5,0.5).multiplyScalar(game.chunkSize).multiplyScalar(game.blockSize);
-    this.wireframe.scale.multiplyScalar(game.chunkSize).multiplyScalar(game.blockSize);
+    this.wireframe.position.set(0.5,0.5,0.5).multiplyScalar(config.CHUNK_SIZE).multiplyScalar(config.BLOCK_SIZE);
+    this.wireframe.scale.multiplyScalar(config.CHUNK_SIZE).multiplyScalar(config.BLOCK_SIZE);
     this.debugGroup.add(this.wireframe);
 }
 Chunk.prototype = {
@@ -56,8 +57,8 @@ Chunk.prototype = {
         if(!data) return this.removeBlock(position,dontBuild);
 
         var oldBlock;
-        var index = (position instanceof THREE.Vector3)? positionToIndex(position,game.chunkSize) : position;
-        var pos = (position instanceof THREE.Vector3)? position : indexToPosition(position,game.chunkSize);
+        var index = (position instanceof THREE.Vector3)? positionToIndex(position,config.CHUNK_SIZE) : position;
+        var pos = (position instanceof THREE.Vector3)? position : indexToPosition(position,config.CHUNK_SIZE);
 
         //dispose of the old block
         if(this.blocks[index]){
@@ -82,7 +83,7 @@ Chunk.prototype = {
     },
     removeBlock: function(position,dontBuild){
         var oldBlock;
-        var index = (position instanceof THREE.Vector3)? positionToIndex(position,game.chunkSize) : position;
+        var index = (position instanceof THREE.Vector3)? positionToIndex(position,config.CHUNK_SIZE) : position;
 
         //dispose of the old block
         if(this.blocks[index]){
@@ -102,7 +103,7 @@ Chunk.prototype = {
     },
     getBlock: function(position){
         if(position instanceof THREE.Vector3){
-            return this.blocks[positionToIndex(position,game.chunkSize)];
+            return this.blocks[positionToIndex(position,config.CHUNK_SIZE)];
         }
         else if(Number.isNumber(position)){
             return this.blocks[position];
@@ -118,7 +119,7 @@ Chunk.prototype = {
         this.events.emit('inport',data);
         this.build();
 
-        if(this.blocks.length !== game.chunkSize * game.chunkSize * game.chunkSize){
+        if(this.blocks.length !== config.CHUNK_SIZE * config.CHUNK_SIZE * config.CHUNK_SIZE){
             console.error('not all blocks inported: '+this.position.toString()+' ('+this.blocks.length+')');
         }
     },
@@ -186,13 +187,13 @@ Chunk.prototype = {
             geometry.computeFaceNormals();
 
             this.mesh = new THREE.Mesh(geometry,material);
-            this.mesh.scale.multiplyScalar(game.blockSize);
+            this.mesh.scale.multiplyScalar(config.BLOCK_SIZE);
             this.mesh.castShadow = true;
             this.mesh.receiveShadow = true;
             this.group.add(this.mesh);
 
             this.collisionMesh = new THREE.Mesh(geometry,collisionMaterial);
-            this.collisionMesh.scale.multiplyScalar(game.blockSize);
+            this.collisionMesh.scale.multiplyScalar(config.BLOCK_SIZE);
             this.collisionGroup.add(this.collisionMesh);
 
             this.built = true;
@@ -242,12 +243,12 @@ Chunk.prototype.constructor = Chunk;
 Object.defineProperties(Chunk.prototype,{
     worldPosition: {
         get: function(){
-            return this.position.clone().multiplyScalar(game.chunkSize);
+            return this.position.clone().multiplyScalar(config.CHUNK_SIZE);
         }
     },
     scenePosition: {
         get: function(){
-            return this.position.clone().multiplyScalar(game.chunkSize).multiplyScalar(game.blockSize);
+            return this.position.clone().multiplyScalar(config.CHUNK_SIZE).multiplyScalar(config.BLOCK_SIZE);
         }
     },
     empty: {
@@ -279,5 +280,3 @@ Object.defineProperties(Chunk.prototype,{
         }
     }
 });
-
-import game from './states/game.js';
