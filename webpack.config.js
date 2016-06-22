@@ -34,6 +34,11 @@ module.exports = {
 		publicPath: ''
 	},
 	plugins: [
+		new webpack.DefinePlugin({
+			'process.env': {
+				'NODE_ENV': '"'+process.env.NODE_ENV.trim()+'"'
+			}
+		}),
 		new webpack.optimize.CommonsChunkPlugin({
 			name: "vendor",
 			filename: "vendor.bundle.js",

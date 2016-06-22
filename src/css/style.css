@@ -2,17 +2,12 @@
     font-family: Font;
     src: url(../fonts/cubicfive10.ttf);
 }
-body {
-	overflow: hidden;
+html, body {
+	width: 100%;
+	height: 100%;
 }
-*{
+body, *{
 	font-family: Font;
-}
-.no-select{
-	user-select: none;
-	-ms-user-select: none;
-	-moz-user-select: none;
-	-webkit-user-select: none;
 }
 
 /*hide stuff till page loads*/

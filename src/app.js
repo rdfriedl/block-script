@@ -1,6 +1,8 @@
 // import libraries
 import $ from 'jquery';
 import ko from 'knockout';
+import Vue from 'vue';
+import VueRouter from 'vue-router';
 import 'bootstrap';
 import 'bootstrap-toggle';
 import BootstrapDialog from 'bootstrap-dialog';
@@ -19,6 +21,7 @@ import 'bootstrap-toggle/css/bootstrap-toggle.min.css';
 import 'bootstrap-dialog/dist/css/bootstrap-dialog.min.css';
 
 import './css/style.css';
+import './css/utils.css';
 
 import './js/util.js';
 import settingsDB from './js/dataBaseVersions.js';
@@ -31,6 +34,37 @@ import {blockPool} from './js/block.js';
 import {states} from './js/states.js';
 import menu from './js/states/menu.js';
 import game from './js/states/game.js';
+
+// load vue components
+import GameComponent from './components/Game.vue';
+import MenuComponent from './components/Menu.vue';
+import CreditsMenuComponent from './components/menu/Credits.vue';
+import HelpMenuComponent from './components/menu/Help.vue';
+import SettingsMenuComponent from './components/menu/Settings.vue';
+import MapsMenuComponent from './components/menu/Maps.vue';
+
+// set up the config
+Vue.use(VueRouter);
+Vue.config.devtools = Vue.config.debug = process.env.NODE_ENV == 'dev';
+
+//create the router
+let router = new VueRouter();
+router.map({
+	'': {component: MenuComponent},
+	menu: {component: MenuComponent},
+	'play/:mapID': {component: GameComponent},
+	credits: {component: CreditsMenuComponent},
+	help: {component: HelpMenuComponent},
+	'help/:topic': {component: HelpMenuComponent},
+	settings: {component: SettingsMenuComponent},
+	'settings/:topic': {component: SettingsMenuComponent},
+	maps: {component: MapsMenuComponent}
+});
+
+// start vue
+jQuery(document).ready(function($) {
+	router.start(Vue.extend({}), 'body');
+});
 
 // main.js
 window.renderer = undefined;
@@ -60,7 +94,7 @@ $(document).ready(function() {
 	renderer.setPixelRatio( window.devicePixelRatio );
 	renderer.setSize( window.innerWidth, window.innerHeight );
     renderer.autoClear = false;
-	$('body').prepend(renderer.domElement);
+	// $('body').prepend(renderer.domElement);
 
 	//resize renderer
 	$(window).resize(function(event) {

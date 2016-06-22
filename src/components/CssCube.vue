@@ -3,24 +3,35 @@
 
 <div class="cube">
 	<div class="_3dbox">
-		<div class="_3dface front"></div>
-		<div class="_3dface top"></div>
-		<div class="_3dface bottom"></div>
-		<div class="_3dface left"></div>
-		<div class="_3dface right"></div>
-		<div class="_3dface back"></div>
+		<div class="_3dface front" :style="{background: `url(${front || side || defaultImage})`, backgroundSize: '100%'}"></div>
+		<div class="_3dface top" :style="{background: `url(${top || bottom || side || defaultImage})`, backgroundSize: '100%'}"></div>
+		<div class="_3dface bottom" :style="{background: `url(${bottom || top || side || defaultImage})`, backgroundSize: '100%'}"></div>
+		<div class="_3dface left" :style="{background: `url(${left || side || defaultImage})`, backgroundSize: '100%'}"></div>
+		<div class="_3dface right" :style="{background: `url(${right || side || defaultImage})`, backgroundSize: '100%'}"></div>
+		<div class="_3dface back" :style="{background: `url(${back || side || defaultImage})`, backgroundSize: '100%'}"></div>
 	</div>
 </div>
 
 </template>
 
-<!-- NOTE: make images for the sides on the cube be arguments for this component -->
-
 <!-- JS -->
 <script>
 
 export default {
-
+	props: [
+		'top',
+		'bottom',
+		'front',
+		'back',
+		'right',
+		'left',
+		'side'
+	],
+	data(){
+		return {
+			defaultImage: ''
+		};
+	}
 }
 
 </script>
@@ -49,19 +60,18 @@ export default {
 }
 
 ._3dface {
-		overflow: hidden;
-		position: absolute;
-		width: 2em;
-		height: 2em;
-		background: #FFF;
-		background-size: 100%;
-		color: #333;
+	overflow: hidden;
+	position: absolute;
+	width: 2em;
+	height: 2em;
+	background: #FFF;
+	background-size: 100%;
+	color: #333;
 }
 
 ._3dface.front {
-		transform: translate3d(0, 0, 1em);
+	transform: translate3d(0, 0, 1em);
 }
-
 ._3dface.top {
 	transform: rotateX(90deg) translate3d(0, 0, 1em);
 }
@@ -74,29 +84,12 @@ export default {
 	transform: rotateY(-90deg) translate3d(0, 0, 1em);
 }
 ._3dface.right {
-		left: 50%;
-		margin-left: -50%;
-		transform: rotateY(90deg) translate3d(0, 0, 1em);
+	left: 50%;
+	margin-left: -50%;
+	transform: rotateY(90deg) translate3d(0, 0, 1em);
 }
 ._3dface.back {
-		transform: rotateY(180deg) translate3d(0, 0, 1em);
-}
-
-/* config */
-.cube .bottom{
-	background: url('../res/img/blocks/dirt.png');
-		background-size: 100%;
-}
-.cube .front, .cube .back, .cube .right, .cube .left{
-	background: url('../res/img/blocks/grass_side.png');
-		background-size: 100%;
-}
-.cube .top{
-		background: linear-gradient(
-				rgba(85, 153, 68, 0.6),
-				rgba(85, 153, 68, 0.6)
-		), url('../res/img/blocks/grass_top.png');
-		background-size: 100%;
+	transform: rotateY(180deg) translate3d(0, 0, 1em);
 }
 
 .cube:hover ._3dbox{
