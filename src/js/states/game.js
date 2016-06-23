@@ -437,7 +437,7 @@ game.keypress = keyboard.createState([
 import Events from '../../lib/minvents.js';
 import VoxelMap from '../voxelMap.js';
 import Sounds from '../sound.js';
-import Stats from 'stats.js/build/stats.min.js';
+import Stats from 'stats';
 import Player from '../player.js';
 import ChunkLoader from '../chunkLoader.js';
 import {ChunkGeneratorHills} from '../chunkGenerator.js';

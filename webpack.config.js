@@ -5,6 +5,16 @@ const webpack = require("webpack");
 module.exports = {
 	resolve: {
 		extensions: ['', '.webpack.js', '.web.js', '.ts', '.tsx', '.js', '.vue'],
+		alias: {
+			'event-emitter': 'wolfy87-eventemitter/EventEmitter.min.js',
+			'font-awesome': 'font-awesome/css/font-awesome.min.css',
+			'keypress': 'keypress.js/keypress.js',
+			'stats': 'stats.js/build/stats.min.js',
+			'bootstrap-css': 'bootstrap/dist/css/bootstrap.min.css',
+			'bootswatch-superhero': 'bootswatch/superhero/bootstrap.min.css',
+			'bootstrap-toggle-css': 'bootstrap-toggle/css/bootstrap-toggle.min.css',
+			'bootstrap-dialog-css': 'bootstrap-dialog/dist/css/bootstrap-dialog.min.css'
+		},
 		root: [
 			path.resolve('./node_modules/')
 		]
@@ -15,17 +25,25 @@ module.exports = {
 			'jquery',
 			'jquery.mousewheel',
 			'vue',
+			'vue-router',
+			'underscore',
 			'bootstrap',
 			'bootstrap-toggle',
 			'bootstrap-dialog',
 			'dexie',
-			'keypress.js/keypress.js',
-			'stats.js/build/stats.min.js',
+			'keypress',
+			'stats',
 			'knockout',
 			'knockout-mapping',
 			'minivents',
 			'three',
-			'font-awesome/css/font-awesome.min.css'
+			'font-awesome',
+			'event-emitter',
+			'bootstrap-css',
+			'bootswatch-superhero',
+			'bootstrap-toggle-css',
+			'bootstrap-dialog-css',
+			'vue-strap'
 		]
 	},
 	output: {
@@ -34,11 +52,9 @@ module.exports = {
 		publicPath: ''
 	},
 	plugins: [
-		new webpack.DefinePlugin({
-			'process.env': {
-				'NODE_ENV': '"'+process.env.NODE_ENV.trim()+'"'
-			}
-		}),
+		new webpack.EnvironmentPlugin([
+			"NODE_ENV"
+		]),
 		new webpack.optimize.CommonsChunkPlugin({
 			name: "vendor",
 			filename: "vendor.bundle.js",
@@ -51,6 +67,7 @@ module.exports = {
 			jQuery: "jquery",
 			"window.jQuery": "jquery"
 		}),
+		new webpack.dependencies.LabeledModulesPlugin(),
 		new webpack.optimize.OccurenceOrderPlugin()
 	],
 	module: {

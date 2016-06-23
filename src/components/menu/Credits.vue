@@ -1,5 +1,5 @@
 <template>
-<a class="btn btn-md btn-info pull-left margin-10" v-link="'/menu'" style="position: fixed;"><i class="fa fa-arrow-left"></i> Back</a>
+<a class="btn btn-md btn-info pull-left margin-10" v-link="'/menu'" style="position: fixed; z-index:100;"><i class="fa fa-arrow-left"></i> Back</a>
 
 <div class="col-md-8 col-md-offset-2" style="margin-bottom: 10vh;">
     <div class="page-header">

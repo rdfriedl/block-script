@@ -1,5 +1,5 @@
 <template>
-<a class="btn btn-md btn-info pull-left margin-10" v-link="'/menu'" style="position: absolute; z-index:100;"><i class="fa fa-arrow-left"></i> Back</a>
+<a class="btn btn-md btn-info pull-left margin-10" v-link="'/menu'" style="position: fixed; z-index:100;"><i class="fa fa-arrow-left"></i> Back</a>
 
 <div class="col-xs-12">
 	<h1 style="text-align: center;"><i class="fa fa-question"></i> Help</h1>

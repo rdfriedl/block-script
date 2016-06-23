@@ -1,5 +1,5 @@
 import $ from 'jquery';
-import keypress from 'keypress.js/keypress.js';
+import keypress from 'keypress';
 
 // this class is for controlling the diffent keybaord controlls
 var keyboard = {

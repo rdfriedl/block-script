@@ -10,16 +10,26 @@ body, *{
 	font-family: Font;
 }
 
-/*hide stuff till page loads*/
-#states,body>canvas{
-	opacity: 0;
-	visibility: hidden;
-	transition: opacity .5s, visibility 0s;
+/* custom scrollbar */
+/* scrollbar */
+.scroll-custom::-webkit-scrollbar {
+	width: 12px;
 }
-.loaded #states,.loaded>canvas{
-	visibility: visible;
-	opacity: 1;
+
+/* track */
+.scroll-custom::-webkit-scrollbar-track {
+	background: hsl(176, 45%, 50%);
 }
+
+/* handle */
+.scroll-custom::-webkit-scrollbar-thumb {
+	background: rgba(0,0,0,0.3);
+}
+.scroll-custom::-webkit-scrollbar-thumb:window-inactive {
+	background: rgba(0,0,0,0.3);
+}
+
+/* old styles */
 
 /*states*/
 #states{

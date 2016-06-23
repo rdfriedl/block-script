@@ -14,12 +14,15 @@
 <!-- JS -->
 <script>
 
-import ThreeJS from 'three';
+import THREE from 'three';
+// extentions
+import 'imports?THREE=three!../lib/threejs/controls/PointerLockControls.js';
+import 'imports?THREE=three!../lib/threejs/loaders/ColladaLoader.js';
 
 export default {
 	data() {
 		return {
-			version: 'r'+ThreeJS.REVISION
+			version: 'r'+THREE.REVISION
 		};
 	}
 }

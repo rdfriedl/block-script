@@ -132,6 +132,19 @@ img.fix-width{
 	width: 100%;
 }
 
+/* scroll */
+.scroll{
+	overflow: auto;
+}
+.scroll-v{
+	overflow-y: auto;
+	overflow-x: hidden;
+}
+.scroll-h{
+	overflow-y: hidden;
+	overflow-x: auto;
+}
+
 .truncate {
     display: block;
     white-space: nowrap;
