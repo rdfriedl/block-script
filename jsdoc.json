@@ -1,0 +1,15 @@
+{
+	"tags": {
+    	"allowUnknownTags": true
+    },
+    "source": {
+    	"includePattern": ".*\\.js$",
+    	"include": ["src/", "./README.md"],
+    	"exclude": ["src/lib"]
+    },
+    "opts": {
+	    "destination": "./docs/",
+	    "recurse": true,
+        "access": "all"
+	}
+}

@@ -25,7 +25,7 @@
 					<tr v-for="map in maps">
 						<td width="6">{{map.id}}</td>
 						<td>{{map.name}}</td>
-						<td><pre>{{map.description}}</pre></td>
+						<td v-html="map.description | nl-to-br"></td>
 						<td width="80"><div class="btn-group btn-group-sm pull-right">
 							<button type="button" class="btn btn-success" @click="loadMap(map.id)"><i class="fa fa-play"></i></button>
 							<button type="button" class="btn btn-danger" @click="removeMap(map.id)"><i class="fa fa-trash"></i></button>

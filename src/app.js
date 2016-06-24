@@ -9,6 +9,7 @@ import BootstrapDialog from 'bootstrap-dialog';
 
 // three.js
 import THREE from 'three';
+if(process.env.NODE_ENV == 'dev') window.THREE = THREE;
 
 // css
 import 'font-awesome';
@@ -44,6 +45,10 @@ import MapsMenuComponent from './components/menu/Maps.vue';
 Vue.use(VueRouter);
 Vue.config.devtools = Vue.config.debug = process.env.NODE_ENV == 'dev';
 
+Vue.filter('nl-to-br', function(value){
+	return String(value).replace(/\n/g,'<br>');
+})
+
 //create the router
 let router = new VueRouter();
 router.map({
@@ -60,9 +65,7 @@ router.map({
 });
 
 // start vue
-$(document).ready(function($) {
-	router.start(Vue.extend({}), 'body');
-});
+router.start(Vue.extend({}), 'body');
 
 // main.js
 // window.renderer = undefined;

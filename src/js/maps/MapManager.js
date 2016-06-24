@@ -4,6 +4,8 @@ import MapLoaderIndexedDB from './MapLoaderIndexedDB.js';
 
 /**
  * main class that manages the maps
+ * @class
+ * @name MapManager
  */
 export default class MapManager{
 	/**

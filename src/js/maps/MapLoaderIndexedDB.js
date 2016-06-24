@@ -4,11 +4,14 @@ import Dexie from 'dexie';
 
 /**
  * MapLoader for loading maps from local databases
+ * @class
+ * @name MapLoaderIndexedDB
  * @extends {MapLoader}
  */
 export default class MapLoaderIndexedDB extends MapLoader{
 	/**
 	 * @name init
+	 * @memberOf MapLoaderIndexedDB
 	 * @param {String} name - The name of the local database
 	 */
 	Init(name){

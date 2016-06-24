@@ -3,75 +3,178 @@
  * @author mrdoob / http://mrdoob.com
  */
 
-THREE.VRControls = function ( object, callback ) {
+THREE.VRControls = function ( object, onError ) {
 
 	var scope = this;
 
 	var vrInput;
 
-	var onVRDevices = function ( devices ) {
+	var standingMatrix = new THREE.Matrix4();
+
+	function gotVRDevices( devices ) {
 
 		for ( var i = 0; i < devices.length; i ++ ) {
 
-			var device = devices[ i ];
-
-			if ( device instanceof PositionSensorVRDevice ) {
+			if ( ( 'VRDisplay' in window && devices[ i ] instanceof VRDisplay ) ||
+				 ( 'PositionSensorVRDevice' in window && devices[ i ] instanceof PositionSensorVRDevice ) ) {
 
 				vrInput = devices[ i ];
-				return; // We keep the first we encounter
+				break;  // We keep the first we encounter
 
 			}
 
 		}
 
-		if ( callback !== undefined ) {
+		if ( !vrInput ) {
 
-			callback( 'HMD not available' );
+			if ( onError ) onError( 'VR input not available.' );
 
 		}
 
-	};
+	}
 
-	if ( navigator.getVRDevices !== undefined ) {
+	if ( navigator.getVRDisplays ) {
 
-		navigator.getVRDevices().then( onVRDevices );
+		navigator.getVRDisplays().then( gotVRDevices );
 
-	} else if ( callback !== undefined ) {
+	} else if ( navigator.getVRDevices ) {
 
-		callback( 'Your browser is not VR Ready' );
+		// Deprecated API.
+		navigator.getVRDevices().then( gotVRDevices );
 
 	}
 
 	// the Rift SDK returns the position in meters
 	// this scale factor allows the user to define how meters
 	// are converted to scene units.
+
 	this.scale = 1;
+
+	// If true will use "standing space" coordinate system where y=0 is the
+	// floor and x=0, z=0 is the center of the room.
+	this.standing = false;
+
+	// Distance from the users eyes to the floor in meters. Used when
+	// standing=true but the VRDisplay doesn't provide stageParameters.
+	this.userHeight = 1.6;
+
+	this.getStandingMatrix = function () {
+
+		return standingMatrix;
+
+	};
 
 	this.update = function () {
 
-		if ( vrInput === undefined ) return;
+		if ( vrInput ) {
 
-		var state = vrInput.getState();
+			if ( vrInput.getPose ) {
 
-		if ( state.orientation !== null ) {
+				var pose = vrInput.getPose();
 
-			object.quaternion.copy( state.orientation );
+				if ( pose.orientation !== null ) {
 
-		}
+					object.quaternion.fromArray( pose.orientation );
 
-		if ( state.position !== null ) {
+				}
 
-			object.position.copy( state.position ).multiplyScalar( scope.scale );
+				if ( pose.position !== null ) {
+
+					object.position.fromArray( pose.position );
+
+				} else {
+
+					object.position.set( 0, 0, 0 );
+
+				}
+
+			} else {
+
+				// Deprecated API.
+				var state = vrInput.getState();
+
+				if ( state.orientation !== null ) {
+
+					object.quaternion.copy( state.orientation );
+
+				}
+
+				if ( state.position !== null ) {
+
+					object.position.copy( state.position );
+
+				} else {
+
+					object.position.set( 0, 0, 0 );
+
+				}
+
+			}
+
+			if ( this.standing ) {
+
+				if ( vrInput.stageParameters ) {
+
+					object.updateMatrix();
+
+					standingMatrix.fromArray(vrInput.stageParameters.sittingToStandingTransform);
+					object.applyMatrix( standingMatrix );
+
+				} else {
+
+					object.position.setY( object.position.y + this.userHeight );
+
+				}
+
+			}
+
+			object.position.multiplyScalar( scope.scale );
 
 		}
 
 	};
 
+	this.resetPose = function () {
+
+		if ( vrInput ) {
+
+			if ( vrInput.resetPose !== undefined ) {
+
+				vrInput.resetPose();
+
+			} else if ( vrInput.resetSensor !== undefined ) {
+
+				// Deprecated API.
+				vrInput.resetSensor();
+
+			} else if ( vrInput.zeroSensor !== undefined ) {
+
+				// Really deprecated API.
+				vrInput.zeroSensor();
+
+			}
+
+		}
+
+	};
+
+	this.resetSensor = function () {
+
+		console.warn( 'THREE.VRControls: .resetSensor() is now .resetPose().' );
+		this.resetPose();
+
+	};
+
 	this.zeroSensor = function () {
 
-		if ( vrInput === undefined ) return;
+		console.warn( 'THREE.VRControls: .zeroSensor() is now .resetPose().' );
+		this.resetPose();
 
-		vrInput.zeroSensor();
+	};
+
+	this.dispose = function () {
+
+		vrInput = null;
 
 	};
 

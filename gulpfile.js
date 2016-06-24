@@ -4,6 +4,8 @@ const del = require('del');
 const webpack = require('webpack');
 const WebpackDevServer = require('webpack-dev-server');
 const opener = require('opener');
+const shell = require('gulp-shell');
+const webserver = require('gulp-webserver');
 
 // Configurations.
 const webpackConfig = require('./webpack.config.js');
@@ -71,6 +73,25 @@ gulp.task('serve', function(done) {
 	server.listen(8080, 'localhost');
 	opener('http://localhost:8080');
 });
+
+gulp.task('build:docs', function(){
+	return gulp.src('README.md', {read: false})
+  		.pipe(shell('jsdoc -c jsdoc.json'));
+});
+gulp.task('watch:docs', function(){
+	gulp.watch('src/**/*', gulp.parallel('build:docs'))
+});
+gulp.task('clean:docs', function(done){
+	del(['docs']).then(() => done());
+});
+gulp.task('serve:docs', function(){
+	return gulp.src('docs')
+		.pipe(webserver({
+			livereload: true,
+			open: true
+		}))
+})
+gulp.task('docs', gulp.series('clean:docs', 'build:docs', gulp.parallel('watch:docs', 'serve:docs')));
 
 // Production task.
 gulp.task('build', gulp.series('clean', gulp.parallel('build:webpack','build:html')));

@@ -3,6 +3,8 @@ import Events from 'event-emitter';
 
 /**
  * base class for all MapLoaders
+ * @name MapLoader
+ * @class
  * @extends {Events}
  */
 export default class MapLoader extends Events{
