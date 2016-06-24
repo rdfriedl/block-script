@@ -73,8 +73,12 @@ export default class VoxelChunk extends THREE.Group{
 		//get all the materials
 		this.materials.clear();
 		for(let block of blocks){
-			if(block.material instanceof THREE.Material)
+			if(block.material instanceof THREE.MultiMaterial){
+				block.material.materials.forEach(mat => this.materials.add(mat));
+			}
+			else if(block.material instanceof THREE.Material){
 				this.materials.add(block.material);
+			}
 		}
 
 		//update or create the mat
@@ -86,8 +90,6 @@ export default class VoxelChunk extends THREE.Group{
 			this.material = new THREE.MultiMaterial(Array.from(this.materials));
 		}
 
-		//create the mat
-
 		//merge the geometries
 		for(let block of blocks){
 			let pos = block.position.clone().add(new THREE.Vector3(0.5,0.5,0.5));
@@ -95,7 +97,12 @@ export default class VoxelChunk extends THREE.Group{
 			matrix.makeRotationFromEuler(block.rotation);
 			matrix.setPosition(pos);
 
-			geometry.merge(block.geometry, matrix, this.material.materials.indexOf(block.material));
+			if(block.material instanceof THREE.MultiMaterial){
+				geometry.merge(block.geometry, matrix, this.material.materials.indexOf(block.material.materials[0]));
+			}
+			else if(block.material instanceof THREE.Material){
+				geometry.merge(block.geometry, matrix, this.material.materials.indexOf(block.material));
+			}
 		}
 
 		geometry.mergeVertices();

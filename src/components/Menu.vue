@@ -80,12 +80,14 @@ export default {
 	    	scene.add(ambient);
 		}
 
-		const range = 10;
+		const range = 12;
 		const blockList = Object.keys(blocks).map(key => blocks[key].UID);
-		// let toggleBlockPosition = new THREE.Vector3(-range,-range,-range);
 		function toggleBlock(){
-			// let pos = toggleBlockPosition;
 			let pos = new THREE.Vector3(Math.random()-.5,Math.random()-.5,Math.random()-.5).multiplyScalar(range*2);
+			while(Math.abs(pos.length()) > range){
+				pos = new THREE.Vector3(Math.random()-.5,Math.random()-.5,Math.random()-.5).multiplyScalar(range*2);
+			}
+
 			if(map.getBlock(pos)){
 				map.removeBlock(pos);
 			}
@@ -93,18 +95,6 @@ export default {
 				map.setBlock(blockList[Math.floor(Math.random()*blockList.length)], pos);
 			}
 			map.updateChunks();
-
-			// if(++pos.x > range){
-			// 	pos.x = -range;
-			// 	if(++pos.y > range){
-			// 		pos.y = -range;
-			// 		if(++pos.z > range){
-			// 			pos.x = -range;
-			// 			pos.y = -range;
-			// 			pos.z = -range;
-			// 		}
-			// 	}
-			// }
 		}
 
 		// resize

@@ -50,6 +50,35 @@ DirtBlock.UID = 'dirt';
 
 /**
  * @class
+ * @name TopDirtBlock
+ * @extends {VoxelBlock}
+ */
+export class TopDirtBlock extends VoxelBlock{
+	CreateGeometry(){
+		let geo = new THREE.BoxGeometry(1,1,1);
+		geo.faces.forEach(face => {
+			if(face.normal.y == 1)
+				face.materialIndex = 2; //top
+			else if(face.normal.y == -1)
+				face.materialIndex = 1; //bottom
+			else
+				face.materialIndex = 0; //side
+		});
+		return geo;
+	}
+	CreateMaterial(){
+		let mat = new THREE.MultiMaterial([
+			basicMaterial(require('../res/img/blocks/grass_side.png')),
+			basicMaterial(require('../res/img/blocks/dirt.png')),
+			basicMaterial(require('../res/img/blocks/grass_top.png'))
+		]);
+		return mat;
+	}
+}
+TopDirtBlock.UID = 'topDirt';
+
+/**
+ * @class
  * @name StoneBlock
  * @extends {VoxelBlock}
  */
