@@ -1,12 +1,12 @@
 import THREE from 'three';
-import ko from 'knockout';
-import _ from 'underscore';
+// import ko from 'knockout';
+// import _ from 'underscore';
 
-function observable(val, cb) {
-	var o = ko.observable(val);
-	o.subscribe(cb, o);
-	return o;
-}
+// function observable(val, cb) {
+// 	var o = ko.observable(val);
+// 	o.subscribe(cb, o);
+// 	return o;
+// }
 function namedFunction(name, fn) {
     return (new Function("return function (call) { return function " + name +
         " () { return call(this, arguments) }; };")())(Function.apply.bind(fn));
@@ -31,15 +31,15 @@ function indexToPosition(index,size){
 	}
 	return position;
 }
-function observable(){
-	var val = Array.prototype.shift.call(arguments);
-	var o = val instanceof Array? ko.observableArray(val) : ko.observable(val);
+// function observable(){
+// 	var val = Array.prototype.shift.call(arguments);
+// 	var o = val instanceof Array? ko.observableArray(val) : ko.observable(val);
 
-	for(var i = 0; i < arguments.length; i++){
-		o.subscribe(arguments[i]);
-	}
-	return o;
-}
+// 	for(var i = 0; i < arguments.length; i++){
+// 		o.subscribe(arguments[i]);
+// 	}
+// 	return o;
+// }
 Object.clone = function(obj,deep,ignore){
 	if(!obj) return {};
 
@@ -350,11 +350,11 @@ InstancePool.prototype = {
 	}
 };
 
-window.observable = observable;
-window.namedFunction = namedFunction;
-window.positionToIndex = positionToIndex;
-window.indexToPosition = indexToPosition;
-window.observable = observable;
-window.loadTexture = loadTexture;
-window.createDebugBox = createDebugBox;
-window.InstancePool = InstancePool;
+// window.observable = observable;
+// window.namedFunction = namedFunction;
+// window.positionToIndex = positionToIndex;
+// window.indexToPosition = indexToPosition;
+// window.observable = observable;
+// window.loadTexture = loadTexture;
+// window.createDebugBox = createDebugBox;
+// window.InstancePool = InstancePool;

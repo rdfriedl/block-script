@@ -8,7 +8,7 @@
 <style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out;}@keyframes octocat-wave{0%,100%{transform:rotate(0);}20%,60%{transform:rotate(-25deg);}40%,80%{transform:rotate(10deg);}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none;}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out;}}</style>
 
 <div class="flex-v" style="align-items: center">
-	<h1 class="text-center" style="margin-top: 10vh;">
+	<h1 class="text-center title" style="margin-top: 10vh;">
 		<small><css-cube :side="cubeSide" :top="cubeTop" :bottom="cubeBottom"></css-cube></small>
 		Block-Script
 	</h1>
@@ -31,7 +31,10 @@ import $ from 'jquery';
 import THREE from 'three';
 import CssCube from './CssCube.vue';
 import VoxelMap from '../js/voxel/VoxelMap.js';
+import VoxelBlockManager from '../js/voxel/VoxelBlockManager.js';
 import * as blocks from '../js/blocks.js';
+
+import ChunkGeneratorFlat from '../js/generators/ChunkGeneratorFlat.js';
 
 export default {
 	components: {CssCube},
@@ -52,7 +55,7 @@ export default {
 
 		// create scene
 		let camera, scene;
-		let map, velocity = new THREE.Vector3();
+		let map, velocity = new THREE.Vector3((Math.random()-0.5)*0.003,(Math.random()-0.5)*0.003,(Math.random()-0.5)*0.003);
 
 		function init(){
 			camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 1000);
@@ -73,26 +76,31 @@ export default {
 
 			// add lights
 			let light = new THREE.DirectionalLight(0xffffff);
+			light.intensity = 0.5;
 			light.position.set(1, 1, 1);
 			scene.add(light);
 
 			let ambient = new THREE.AmbientLight(0x666666);
+			ambient.intensity = 0.5;
 	    	scene.add(ambient);
 		}
 
 		const range = 12;
-		const blockList = Object.keys(blocks).map(key => blocks[key].UID);
+		const blockList = Object.keys(blocks).map(key => blocks[key].UID).filter(UID => !UID.includes('glass'));
 		function toggleBlock(){
 			let pos = new THREE.Vector3(Math.random()-.5,Math.random()-.5,Math.random()-.5).multiplyScalar(range*2);
 			while(Math.abs(pos.length()) > range){
 				pos = new THREE.Vector3(Math.random()-.5,Math.random()-.5,Math.random()-.5).multiplyScalar(range*2);
 			}
 
+			//random rotation
+			let rotation = new THREE.Vector3(Math.random()*Math.PI*2,Math.random()*Math.PI*2,Math.random()*Math.PI*2).divideScalar(Math.PI*2/4).round().multiplyScalar(Math.PI*2/4);
+
 			if(map.getBlock(pos)){
 				map.removeBlock(pos);
 			}
 			else{
-				map.setBlock(blockList[Math.floor(Math.random()*blockList.length)], pos);
+				map.setBlock(VoxelBlockManager.inst.createBlock(blockList[Math.floor(Math.random()*blockList.length)], {rotation: rotation.toArray()}), pos);
 			}
 			map.updateChunks();
 		}
@@ -160,6 +168,9 @@ export default {
 	height: 100%;
 	overflow: hidden;
 	z-index: -100;
+}
+.title{
+	filter: drop-shadow(0 0 15px);
 }
 
 </style>

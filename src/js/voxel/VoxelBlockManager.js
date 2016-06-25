@@ -56,9 +56,9 @@ export default class VoxelBlockManager{
 	 * @param  {String} id - the UID of the block to create
 	 * @return {VoxelBlock}
 	 */
-	createBlock(id){
+	createBlock(id, data){
 		if(this.hasBlock(id))
-			return new (this.getBlock(id))();
+			return new (this.getBlock(id))(data);
 	}
 
 	/**

@@ -1,11 +1,11 @@
 // import libraries
 import $ from 'jquery';
-import ko from 'knockout';
+// import ko from 'knockout';
 import Vue from 'vue';
 import VueRouter from 'vue-router';
-import 'bootstrap';
-import 'bootstrap-toggle';
-import BootstrapDialog from 'bootstrap-dialog';
+import 'bootstrap-js';
+import 'bootstrap-toggle-js';
+import BootstrapDialog from 'bootstrap-dialog-js';
 
 // three.js
 import THREE from 'three';

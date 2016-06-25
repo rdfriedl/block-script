@@ -1,9 +1,10 @@
 import THREE from 'three';
 
 /**
- * @class
+ * @class the base class for all blocks
  * @name VoxelBlock
- * @param {Object} [data] - an optional json object to pass to the .fromJSON function
+ * @param {Object} [data] - an optional json object to pass to {@link VoxelBlock.fromJSON}
+ * @param {Object} data.parameters a Object to be passed to {@link VoxelBlock.setParameters}
  */
 export default class VoxelBlock{
 	constructor(data){
@@ -34,6 +35,15 @@ export default class VoxelBlock{
 			this.edge = true;
 		}
 
+		/**
+		 * an object that holds the parameters for this class of block
+		 * @name parameters
+		 * @type {Object}
+		 * @private
+		 * @memberOf VoxelBlock#
+		 */
+		this.parameters;// = {};
+
 		if(data)
 			this.fromJSON(data);
 	}
@@ -61,24 +71,65 @@ export default class VoxelBlock{
 	}
 
 	/**
+	 * returns a parameter with "id"
+	 * @param  {String} id
+	 * @return {*}
+	 */
+	getParameter(id){
+		return this.parameters && this.parameters[id];
+	}
+
+	/**
+	 * sets a parameter with id to value
+	 * @param {String|Object} id the id of the parameter to set, or a key value map. with the key being the id
+	 * @param {*} [value] the value to set the parameter to
+	 * @returns {this}
+	 */
+	setParameter(id,value){
+		if(!this.parameters) this.parameters = {};
+
+		if(Object.isObject()){
+			for(let i in id){
+				this.parameters[i] = id[i];
+			}
+		}
+		else{
+			this.parameters[id] = value;
+		}
+
+		this.UpdateParameters();
+		return this;
+	}
+
+	/**
 	 * exports this block to json format
 	 * @return {Object}
+	 * @property {String} type the UID of the block
+	 * @property {Number[]} rotation the rotation of this object, in format [x,y,z]
+	 * @property {Object} parameters an object containing all the parameters of the block
 	 */
 	toJSON(){
 		return {
 			type: this.id,
-			rotation: this.rotation.toArray()
+			rotation: this.rotation.toArray(),
+			parameters: this.parameters? this.parameters : {}
 		};
 	}
 
 	/**
 	 * @param {Object} json
+	 * @param {Number[]} json.rotation the rotation of the block, in format [x,y,z]
+	 * @param {Object} json.parameters an object to pass to {@link VoxelBlock.setParameters}
 	 * @return {this}
 	 */
 	fromJSON(json){
-		if(!data) return;
+		if(json.rotation)
+			this.rotation = new THREE.Euler().fromArray(json.rotation);
 
-		this.rotation = new THREE.Euler().fromArray(json.rotation);
+		if(json.parameters)
+			this.setParameters(json.parameters);
+
+		return this;
 	}
 
 	/**
@@ -225,6 +276,13 @@ export default class VoxelBlock{
 	CreateMaterial(){
 		return new THREE.MeshNormalMaterial();
 	}
+
+	/**
+	 * updates the block based on its parameters.
+	 * this is called from {@link VoxelBlock.setParameter} and {@link VoxelBlock.setParameters}
+	 * @private
+	 */
+	UpdateParameters(){}
 }
 
 /**

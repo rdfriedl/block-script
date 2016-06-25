@@ -143,8 +143,10 @@ export default class VoxelChunk extends THREE.Group{
 	}
 
 	/**
-	 * @param {VoxelBlock} block
-	 * @param {(THREE.Vector3|String)} posision
+	 * adds a block to the chunk at position.
+	 * if "block" is a String it will create a new block with using the parents maps {@link VoxelBlockManager#createBlock}
+	 * @param {VoxelBlock|String} block
+	 * @param {(THREE.Vector3|String)} position
 	 * @returns {this}
 	 */
 	setBlock(block,pos){
@@ -170,8 +172,8 @@ export default class VoxelChunk extends THREE.Group{
 	}
 
 	/**
-	 * removes block at pos
-	 * @param  {(THREE.Vector3|String)} pos
+	 * removes block at position
+	 * @param  {(THREE.Vector3|String)} position
 	 * @return {this}
 	 */
 	removeBlock(pos){
@@ -207,6 +209,7 @@ export default class VoxelChunk extends THREE.Group{
 	/**
 	 * exports chunk to json format
 	 * @return {Object}
+	 * @property {Array} blocks an array of Objects from {@link VoxelBlock.toJSON}
 	 */
 	toJSON(){
 		let json = {};
@@ -225,6 +228,7 @@ export default class VoxelChunk extends THREE.Group{
 	/**
 	 * imports chunk from json
 	 * @param  {Object} json
+	 * @param  {Object[]} json.blocks an array of objects to pass to {@link VoxelBlock.fromJSON}
 	 * @return {this}
 	 */
 	fromJSON(json){

@@ -52,6 +52,45 @@ export default class VoxelMap extends THREE.Group{
 	}
 
 	/**
+	 * creates or gets the chunk at position and returns it
+	 * @param  {(THREE.Vector3|String)} position
+	 * @return {VoxelChunk}
+	 */
+	createChunk(pos){
+		//string to vector
+		if(String.isString(pos))
+			pos = new THREE.Vector3().fromArray(pos.split(','));
+
+		if(pos instanceof THREE.Vector3){
+			pos = pos.clone().round();
+			let chunk = this.chunks.get(pos.toArray().join(','));
+			if(chunk)
+				return chunk;
+			else{
+				chunk = new VoxelChunk();
+				this.setChunk(chunk, pos);
+				return chunk;
+			}
+		}
+	}
+
+	/**
+	 * checks to see if this map has a chunk at position
+	 * @param  {(THREE.Vector3|String)} position
+	 * @return {Boolean}
+	 */
+	hasChunk(pos){
+		//string to vector
+		if(String.isString(pos))
+			pos = new THREE.Vector3().fromArray(pos.split(','));
+
+		if(pos instanceof THREE.Vector3){
+			pos = pos.clone().round();
+			return this.chunks.has(pos.toArray().join(','));
+		}
+	}
+
+	/**
 	 * returns the chunk at "position".
 	 * @param  {(THREE.Vector3|String)} position
 	 * @return {VoxelChunk}
@@ -77,13 +116,13 @@ export default class VoxelMap extends THREE.Group{
 	}
 
 	/**
-	 * @param {VoxelChunk} chunk
+	 * @param {VoxelChunk|Object} chunk a {@link VoxelChunk} or a Object to pass to {@link VoxelChunk#fromJSON}
 	 * @param {(THREE.Vector3|String)} position
 	 * @returns {this}
 	 */
 	setChunk(chunk,pos){
 		if(!chunk instanceof VoxelChunk)
-			throw new Error('chunk has to be a instanceof VoxelChunk');
+			chunk = new VoxelChunk().fromJSON(chunk);
 
 		//string to vector
 		if(String.isString(pos))

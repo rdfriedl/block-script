@@ -6,10 +6,16 @@ module.exports = {
 	resolve: {
 		extensions: ['', '.webpack.js', '.web.js', '.ts', '.tsx', '.js', '.vue'],
 		alias: {
-			'event-emitter': 'wolfy87-eventemitter/EventEmitter.min.js',
+			'event-emitter': 'wolfy87-eventemitter/EventEmitter.min.js', //event-emiiter is not part of vendor
 			'font-awesome': 'font-awesome/css/font-awesome.min.css',
 			'keypress': 'keypress.js/keypress.js',
 			'stats': 'stats.js/build/stats.min.js',
+
+ 			//fit bootstrap
+			'bootstrap-js': 'imports-loader?jQuery=jquery!bootstrap',
+			'bootstrap-toggle-js': 'imports-loader?jQuery=jquery!bootstrap-toggle',
+			'bootstrap-dialog-js': 'imports-loader?jQuery=jquery!bootstrap-dialog',
+
 			'bootstrap-css': 'bootstrap/dist/css/bootstrap.min.css',
 			'bootswatch-superhero': 'bootswatch/superhero/bootstrap.min.css',
 			'bootstrap-toggle-css': 'bootstrap-toggle/css/bootstrap-toggle.min.css',
@@ -26,19 +32,14 @@ module.exports = {
 			'jquery.mousewheel',
 			'vue',
 			'vue-router',
-			'underscore',
-			'bootstrap',
-			'bootstrap-toggle',
-			'bootstrap-dialog',
+			'bootstrap-js',
+			'bootstrap-toggle-js',
+			'bootstrap-dialog-js',
 			'dexie',
 			'keypress',
 			'stats',
-			'knockout',
-			'knockout-mapping',
-			'minivents',
 			'three',
 			'font-awesome',
-			'event-emitter',
 			'bootstrap-css',
 			'bootswatch-superhero',
 			'bootstrap-toggle-css',
@@ -46,6 +47,25 @@ module.exports = {
 			'vue-strap'
 		]
 	},
+	externals: {
+		'jquery': 'jQuery',
+		'jquery.mousewheel': 'undefined',
+		'vue': 'Vue',
+		'vue-router': 'VueRouter',
+		'bootstrap-js': 'undefined',
+		'bootstrap-toggle-js': 'undefined',
+		'bootstrap-dialog-js': 'undefined',
+		'dexie': 'Dexie',
+		'keypress': 'keypress',
+		'stats': 'Stats',
+		'three': 'THREE',
+		'font-awesome': 'undefined',
+		'bootstrap-css': 'undefined',
+		'bootswatch-superhero': 'undefined',
+		'bootstrap-toggle-css': 'undefined',
+		'bootstrap-dialog-css': 'undefined',
+		'vue-strap': 'VueStrap'
+    },
 	output: {
         path: path.resolve("./dist"),
 		filename: "[name].js",
@@ -59,13 +79,6 @@ module.exports = {
 			name: "vendor",
 			filename: "vendor.bundle.js",
 			chunks: ['app','vendor']
-		}),
-
-		// fix bootstrap
-		new webpack.ProvidePlugin({
-			$: "jquery",
-			jQuery: "jquery",
-			"window.jQuery": "jquery"
 		}),
 		new webpack.dependencies.LabeledModulesPlugin(),
 		new webpack.optimize.OccurenceOrderPlugin()
