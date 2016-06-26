@@ -56,10 +56,11 @@ export default class VoxelChunk extends THREE.Group{
 	 * @return {this}
 	 */
 	build(){
+		let old = {};
 		if(this.mesh){
-			this.remove(this.mesh);
+			// this.remove(this.mesh);
 			this.mesh.geometry.dispose();
-			this.mesh = undefined;
+			old.geometry = this.mesh.geometry;
 		}
 
 		//dont build if we are empty
@@ -68,7 +69,16 @@ export default class VoxelChunk extends THREE.Group{
 		let geometry = new THREE.Geometry();
 
 		//filter all the blocks
-		let blocks = Array.from(this.blocks).map(b => b[1]).filter(block => block.visible);
+		let blocks = Array.from(this.blocks).map(b => b[1]).filter(block => {
+			if(this.map.blockVisibilityCache.has(block)){
+				return this.map.blockVisibilityCache.get(block);
+			}
+			else{
+				let v = block.visible;
+				this.map.blockVisibilityCache.set(block,v);
+				return v;
+			}
+		});
 
 		//get all the materials
 		this.materials.clear();
@@ -109,9 +119,17 @@ export default class VoxelChunk extends THREE.Group{
 		geometry.normalsNeedUpdate = true;
 		geometry.computeFaceNormals();
 
-		this.mesh = new THREE.Mesh(geometry, this.material);
-		this.mesh.scale.multiply(this.blockSize);
-		this.add(this.mesh);
+		if(!this.mesh){
+			this.mesh = new THREE.Mesh(geometry, this.material);
+			this.mesh.scale.multiply(this.blockSize);
+			this.add(this.mesh);
+		}
+		else{
+			this.mesh.geometry = geometry;
+			this.mesh.geometry.needsUpdate = true;
+		}
+
+		delete old.geometry;
 
 		this.needsBuild = false;
 	}
@@ -139,7 +157,7 @@ export default class VoxelChunk extends THREE.Group{
 	 * @return {THREE.Vector3}
 	 */
 	getBlockPosition(block){
-		return this.blocksPositions.get(block);
+		return this.blocksPositions.get(block) || new THREE.Vector3();
 	}
 
 	/**
@@ -186,6 +204,12 @@ export default class VoxelChunk extends THREE.Group{
 			pos = pos.clone().round();
 			this.blocks.delete(pos.toArray().join(','));
 			this.blocksPositions.delete(block);
+
+			this.map.blockVisibilityCache.delete(block);
+			block.getNeighbors().forEach(b => {
+				if(b instanceof VoxelBlock)
+					this.map.blockVisibilityCache.delete(b);
+			});
 
 			block.chunk = undefined;
 

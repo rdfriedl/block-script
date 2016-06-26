@@ -40,6 +40,7 @@ export default {
 	components: {CssCube},
 	data() {
 		return {
+			enabled: false,
 			cubeSide: require('../res/img/blocks/grass_side.png'),
 			cubeTop: require('../res/img/blocks/grass_top.png'),
 			cubeBottom: require('../res/img/blocks/dirt.png')
@@ -56,6 +57,7 @@ export default {
 		// create scene
 		let camera, scene;
 		let map, velocity = new THREE.Vector3((Math.random()-0.5)*0.003,(Math.random()-0.5)*0.003,(Math.random()-0.5)*0.003);
+		let clock = new THREE.Clock(), i = 0;
 
 		function init(){
 			camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 1000);
@@ -71,8 +73,6 @@ export default {
 			map.updateChunks();
 
 			scene.add(map);
-
-			setInterval(toggleBlock, 1000/20);
 
 			// add lights
 			let light = new THREE.DirectionalLight(0xffffff);
@@ -128,11 +128,22 @@ export default {
 		function render(){
 			renderer.render( scene, camera );
 		}
-		function update(){
-			animate();
-			render();
+		let update = function(){
+			let delta = clock.getDelta();
+			clock.running = this.enabled;
+			if(this.enabled){
+				animate();
+				render();
+
+				//toggle blocks
+				i += delta;
+				if(i > 1/20){
+					toggleBlock();
+					i = 0;
+				}
+			}
 			requestAnimationFrame(update);
-		}
+		}.bind(this)
 
 		init();
 		update();
@@ -140,6 +151,10 @@ export default {
 	attached(){
 		//add it to my element
 		$(this.three.renderer.domElement).appendTo(this.$els.canvas);
+		this.enabled = true;
+	},
+	detached(){
+		this.enabled = false;
 	}
 }
 

@@ -36,7 +36,7 @@ export default class VoxelMap extends THREE.Group{
 
 		/**
 		 * the size of the blocks in this map.
-		 * NOTE: you will have to manualy rebuild the map if this is changed
+		 * NOTE: you will have to manualy rebuild all the maps chunks if this is changed
 		 * @type {THREE.Vector3}
 		 * @default [32,32,32]
 		 */
@@ -46,9 +46,16 @@ export default class VoxelMap extends THREE.Group{
 		 * the size of the chunks in this map.
 		 * NOTE: you will have to manualy remove and recreate all the chunks in the map if this is changed
 		 * @type {THREE.Vector3}
-		 * @default [10,10,10]
+		 * @default [16,16,16]
 		 */
-		this.chunkSize = new THREE.Vector3(10,10,10);
+		this.chunkSize = new THREE.Vector3(16,16,16);
+
+		/**
+		 * a WeakMap that is used by the chunks to cache the visibility of blocks
+		 * @type {WeakMap}
+		 * @private
+		 */
+		this.blockVisibilityCache = new WeakMap();
 	}
 
 	/**

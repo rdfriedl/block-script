@@ -140,6 +140,10 @@ module.exports = {
 			{
 				test: /\.json$/,
 				loader: 'json-loader'
+			},
+			{
+				test: /\.shader$/,
+				loader: 'raw-loader'
 			}
 		]
 	}

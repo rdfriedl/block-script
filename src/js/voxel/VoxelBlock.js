@@ -1,5 +1,14 @@
 import THREE from 'three';
 
+const NEIGHBORS_DIRS = [
+	[1,0,0],
+	[0,1,0],
+	[0,0,1],
+	[-1,0,0],
+	[0,-1,0],
+	[0,0,-1]
+]
+
 /**
  * @class the base class for all blocks
  * @name VoxelBlock
@@ -35,15 +44,6 @@ export default class VoxelBlock{
 			this.edge = true;
 		}
 
-		/**
-		 * an object that holds the parameters for this class of block
-		 * @name parameters
-		 * @type {Object}
-		 * @private
-		 * @memberOf VoxelBlock#
-		 */
-		this.parameters;// = {};
-
 		if(data)
 			this.fromJSON(data);
 	}
@@ -71,6 +71,19 @@ export default class VoxelBlock{
 	}
 
 	/**
+	 * returns an array of neighbors
+	 * @return {VoxelBlock[]}
+	 */
+	getNeighbors(){
+		let a = [];
+		let vec = new THREE.Vector3();
+		for (let i = 0; i < NEIGHBORS_DIRS.length; i++) {
+			a.push(this.getNeighbor(vec.fromArray(NEIGHBORS_DIRS[i])));
+		}
+		return a;
+	}
+
+	/**
 	 * returns a parameter with "id"
 	 * @param  {String} id
 	 * @return {*}
@@ -86,7 +99,8 @@ export default class VoxelBlock{
 	 * @returns {this}
 	 */
 	setParameter(id,value){
-		if(!this.parameters) this.parameters = {};
+		if(!this.hasOwnProperty('parameters'))
+			this.parameters = Object.create(this.parameters);
 
 		if(Object.isObject()){
 			for(let i in id){
@@ -174,25 +188,19 @@ export default class VoxelBlock{
 	 */
 	get visible(){
 		let visible = false;
-		let b, sides = [
-			[1,0,0],
-			[0,1,0],
-			[0,0,1],
-			[-1,0,0],
-			[0,-1,0],
-			[0,0,-1]
-		];
-
-		for (let i = 0; i < sides.length; i++) {
-			b = this.getNeighbor(new THREE.Vector3().fromArray(sides[i]));
+		let blocks = this.getNeighbors();
+		for(let i in blocks){
+			let b = blocks[i];
 			if(b instanceof VoxelBlock){
-				if(b.data.transparent){
+				if(b.parameters.transparent){
 					visible = true;
-					continue;
+					break;
 				}
-				continue;
 			}
-			visible = true;
+			else{
+				visible = true;
+				break;
+			}
 		}
 
 		return visible;
@@ -310,7 +318,7 @@ VoxelBlock.UID = 'block';
  * @property {Array} placeSound an array of sound ids to play if the player places this block
  * @property {Array} removeSound an array of sound ids to play if the player destroys this block
  */
-VoxelBlock.prototype.data = {
+VoxelBlock.prototype.parameters = {
 	transparent: false,
 	canCollide: true,
 	canRotate: true,
