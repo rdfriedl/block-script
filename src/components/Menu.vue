@@ -33,6 +33,7 @@ import CssCube from './CssCube.vue';
 import VoxelMap from '../js/voxel/VoxelMap.js';
 import VoxelBlockManager from '../js/voxel/VoxelBlockManager.js';
 import * as blocks from '../js/blocks.js';
+import * as ChunkUtils from '../js/ChunkUtils.js';
 
 import ChunkGeneratorFlat from '../js/generators/ChunkGeneratorFlat.js';
 
@@ -60,7 +61,7 @@ export default {
 		let clock = new THREE.Clock(), i = 0;
 
 		function init(){
-			camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 1000);
+			camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 100000);
 			camera.position.z = 600;
 			scene = new THREE.Scene();
 
@@ -70,9 +71,9 @@ export default {
 			//create voxel map
 			map = new VoxelMap();
 			map.blockManager.registerBlock(blocks);
-			map.updateChunks();
-
 			scene.add(map);
+			ChunkUtils.drawCube(map, new THREE.Vector3(-20,-20,-20), new THREE.Vector3(20,20,20), 'stone', 'frame');
+			map.updateChunks();
 
 			// add lights
 			let light = new THREE.DirectionalLight(0xffffff);

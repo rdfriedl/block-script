@@ -81,7 +81,7 @@ Function.isFunction = function (v) {
 	return v instanceof Function;
 };
 String.isString = function (v) {
-	return v.__proto__.constructor === String;
+	return v && v.__proto__.constructor === String;
 };
 Number.isNumber = Number.isFinite;
 
@@ -123,6 +123,12 @@ THREE.Vector3.prototype.split = function(dirs){
 		//8
 	}
 };
+THREE.Vector3.prototype.abs = function(){
+	this.x = Math.abs(this.x);
+	this.y = Math.abs(this.y);
+	this.z = Math.abs(this.z);
+	return this;
+}
 THREE.Vector3.prototype.toString = function(){
 	return this.x+'|'+this.y+'|'+this.z;
 };

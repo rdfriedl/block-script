@@ -135,19 +135,45 @@ export default class VoxelChunk extends THREE.Group{
 	}
 
 	/**
-	 * returns the block at "position".
-	 * if the Vector3 is negative it will get the block from the edge of the chunk
-	 * @param  {(THREE.Vector3|String)} position
-	 * @return {VoxelBlock}
+	 * checks to see if we have a block at position, or if the block is in this chunk
+	 * @param  {THREE.Vector3|String|VoxelBlock} position - the position to check, or the block to check for
+	 * @return {Boolean}
 	 */
-	getBlock(pos){
+	hasBlock(pos){
 		//string to vector
 		if(String.isString(pos))
 			pos = new THREE.Vector3().fromArray(pos.split(','));
 
 		if(pos instanceof THREE.Vector3){
 			pos = pos.clone().round();
+			return this.blocks.has(pos.toArray().join(','));
+		}
+		else if(pos instanceof VoxelBlock){
+			for(let block of this.blocks){
+				if(block[1] === pos)
+					return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * returns the block at "position".
+	 * if the Vector3 is negative it will get the block from the edge of the chunk
+	 * @param  {(THREE.Vector3|String|VoxelBlock)} position
+	 * @return {VoxelBlock}
+	 */
+	getBlock(pos){
+		if(String.isString(pos))
+			pos = new THREE.Vector3().fromArray(pos.split(','));
+
+		if(pos instanceof THREE.Vector3){
+			pos = pos.clone().round();
 			return this.blocks.get(pos.toArray().join(','));
+		}
+		else if(pos instanceof VoxelBlock){
+			if(this.hasBlock(pos))
+				return pos;
 		}
 	}
 
@@ -161,6 +187,26 @@ export default class VoxelChunk extends THREE.Group{
 	}
 
 	/**
+	 * creates a block with id and adds it to the chunk
+	 * @param  {String} id - the UID of the block to create
+	 * @param  {THREE.Vector3|String} position - the position to add the block to
+	 * @returns {VoxelBlock}
+	 */
+	createBlock(id,pos){
+		let block;
+		if(String.isString(id))
+			block = this.map && this.map.blockManager.createBlock(id);
+
+		if(String.isString(pos))
+			pos = new THREE.Vector3().fromArray(pos.split(','));
+
+		if(block && pos){
+			this.setBlock(block, pos);
+		}
+		return block;
+	}
+
+	/**
 	 * adds a block to the chunk at position.
 	 * if "block" is a String it will create a new block with using the parents maps {@link VoxelBlockManager#createBlock}
 	 * @param {VoxelBlock|String} block
@@ -171,7 +217,6 @@ export default class VoxelChunk extends THREE.Group{
 		if(String.isString(block))
 			block = this.map && this.map.blockManager.createBlock(block);
 
-		//string to vector
 		if(String.isString(pos))
 			pos = new THREE.Vector3().fromArray(pos.split(','));
 
@@ -180,7 +225,7 @@ export default class VoxelChunk extends THREE.Group{
 			this.blocks.set(pos.toArray().join(','),block);
 			this.blocksPositions.set(block, pos);
 
-			block.chunk = this;
+			block.parent = this;
 
 			//tell the map that we need to rebuild this chunk
 			this.needsBuild = true;
@@ -190,28 +235,48 @@ export default class VoxelChunk extends THREE.Group{
 	}
 
 	/**
+	 * removes all blocks from this chunk
+	 * @return {this}
+	 */
+	clearBlocks(){
+		this.blocks.clear();
+		this.materials.clear();
+		this.needsBuild = true;
+
+		return this;
+	}
+
+	/**
 	 * removes block at position
-	 * @param  {(THREE.Vector3|String)} position
+	 * @param  {THREE.Vector3|String|VoxelBlock} position - the position of the block to remove, or the {@link VoxelBlock} to remove
 	 * @return {this}
 	 */
 	removeBlock(pos){
-		//string to vector
 		if(String.isString(pos))
 			pos = new THREE.Vector3().fromArray(pos.split(','));
 
-		let block = this.getBlock(pos);
-		if(pos instanceof THREE.Vector3 && block instanceof VoxelBlock){
-			pos = pos.clone().round();
-			this.blocks.delete(pos.toArray().join(','));
+		if(this.hasBlock(pos)){
+			let block;
+			if(pos instanceof THREE.Vector3){
+				block = this.getBlock(pos.clone().round());
+			}
+			else if(pos instanceof VoxelBlock){
+				block = pos;
+			}
+			if(!block) return this;
+
+			// remove it from the maps
+			this.blocks.delete(block.position.toArray().join(','));
 			this.blocksPositions.delete(block);
 
+			// remove it from the cache, and update its neighbors
 			this.map.blockVisibilityCache.delete(block);
 			block.getNeighbors().forEach(b => {
 				if(b instanceof VoxelBlock)
 					this.map.blockVisibilityCache.delete(b);
 			});
 
-			block.chunk = undefined;
+			block.parent = undefined;
 
 			//tell the map that we need to rebuild this chunk
 			this.needsBuild = true;
@@ -269,6 +334,10 @@ export default class VoxelChunk extends THREE.Group{
 		}
 
 		return this;
+	}
+
+	toString(){
+		return 'VoxelChunk(' + this.chunkPosition.toArray().join(',') + ')';
 	}
 
 	/**

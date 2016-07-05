@@ -90,7 +90,7 @@ module.exports = {
 				loader: 'vue'
 			},
 			{
-				test: /src.*\.js$/,
+				test: /\.js$/,
 				exclude: /(node_modules|web_modules)/,
 				loader: 'babel',
 				query: JSON.parse(fs.readFileSync('./.babelrc'))

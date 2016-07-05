@@ -19,7 +19,7 @@ export default class ChunkGeneratorFlat extends ChunkGenerator{
 				new THREE.Vector3(1,0,1).multiply(chunk.map.chunkSize).setY(1),
 				'top_dirt');
 		}
-		else if(chunk.chunkPosition.y < 1){
+		else if(chunk.chunkPosition.y < -1){
 			ChunkUtils.drawCube(
 				chunk,
 				new THREE.Vector3(0,0,0),
@@ -29,9 +29,15 @@ export default class ChunkGeneratorFlat extends ChunkGenerator{
 		else if(chunk.chunkPosition.y < 0){
 			ChunkUtils.drawCube(
 				chunk,
-				new THREE.Vector3(0,0,0),
+				new THREE.Vector3(0,0,0).setY(Math.floor(chunk.map.chunkSize.y/2)),
 				chunk.map.chunkSize,
 				'dirt');
+
+			ChunkUtils.drawCube(
+				chunk,
+				new THREE.Vector3(0,0,0),
+				chunk.map.chunkSize.clone().setY(Math.ceil(chunk.map.chunkSize.y/2)),
+				'stone');
 		}
 		return chunk;
 	}

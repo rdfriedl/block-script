@@ -12,8 +12,10 @@ import THREE from 'three';
  * @param  {String|Function} block the block to use. if a function is passed it will be called with
  * @param  {THREE.Vector3} block.pos the position of the block
  */
-export function drawLine(chunk, from, to, block){
-
+export function drawLine(chunk, fromV, toV, block){
+	let dv = new THREE.Vector3().add(toV).sub(fromV);
+	let sv = new THREE.Vector3(fromV.x < toV.x? 1 : -1, fromV.y < toV.y? 1 : -1, fromV.z < toV.z? 1 : -1);
+	let err = 0;
 }
 
 /**

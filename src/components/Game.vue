@@ -32,6 +32,7 @@ import VoxelMap from '../js/voxel/VoxelMap.js';
 import VoxelBlockManager from '../js/voxel/VoxelBlockManager.js';
 import * as blocks from '../js/blocks.js';
 import * as ChunkUtils from '../js/ChunkUtils.js';
+import ChunkGeneratorFlat from '../js/generators/ChunkGeneratorFlat.js';
 
 import vertexShader from '../shaders/vertexShader.shader';
 import fragmentShader from '../shaders/fragmentShader.shader';
@@ -77,7 +78,9 @@ export default {
 		map.updateChunks();
 		scene.add(map);
 
-		ChunkUtils.drawCube(map, new THREE.Vector3(-20,-20,-20), new THREE.Vector3(20,20,20), 'stone', 'frame');
+		let generator = new ChunkGeneratorFlat();
+
+		// ChunkUtils.drawCube(map, new THREE.Vector3(-20,-20,-20), new THREE.Vector3(20,20,20), 'stone', 'frame');
 
 		let clock = new THREE.Clock(), i = 0;
 		let stats;
@@ -106,7 +109,42 @@ export default {
 			else{
 				map.setBlock(VoxelBlockManager.inst.createBlock(blockList[Math.floor(Math.random()*blockList.length)], {rotation: rotation.toArray()}), pos);
 			}
-			map.updateChunks();
+			// map.updateChunks();
+		}
+		function loadNextChunk(){
+			let vec = new THREE.Vector3(),
+				dist = 0;
+
+			const range = 2;
+			let p = controls.target.clone().divide(map.blockSize).divide(map.chunkSize).floor();
+
+			while(dist < range){
+				let v = p.clone().add(vec);
+
+				if(!map.hasChunk(v)){
+					//create it
+					let chunk = map.createChunk(v);
+					generator.setUpChunk(chunk);
+					map.updateChunks();
+					break;
+				}
+				else{
+					if(++vec.x > dist){
+						vec.x = -dist;
+						vec.y++;
+					}
+					if(vec.y > dist){
+						vec.y = -dist;
+						vec.z++;
+					}
+					if(vec.z > dist){
+						dist++;
+						vec.x = -dist;
+						vec.y = -dist;
+						vec.z = -dist;
+					}
+				}
+			}
 		}
 
 		// resize
@@ -117,25 +155,34 @@ export default {
 			renderer.setSize(window.innerWidth, window.innerHeight);
 		});
 
-		function animate(){
+		function animate(dtime){
 			controls.update();
 			stats.update();
 		}
-		function render(){
+		function render(dtime){
 			renderer.render(scene, camera);
 		}
+
+		let loadTimer = 0;
 		let update = function(){
-			let delta = clock.getDelta();
+			let dtime = clock.getDelta();
 			clock.running = this.enabled;
 			if(this.enabled){
-				animate();
-				render();
+				animate(dtime);
+				render(dtime);
 
 				//toggle blocks
-				i += delta;
+				i += dtime;
 				if(i > 1/40){
-					toggleBlock();
+					// toggleBlock();
 					i = 0;
+				}
+
+				//load chunks
+				loadTimer += dtime;
+				if(loadTimer > 1/4){
+					loadNextChunk();
+					loadTimer = 0;
 				}
 			}
 			requestAnimationFrame(update);

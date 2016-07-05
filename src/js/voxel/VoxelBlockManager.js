@@ -67,15 +67,17 @@ export default class VoxelBlockManager{
 	 * @return {this}
 	 */
 	registerBlock(block){
-		if(Array.isArray(block))
+		if(Function.isFunction(block) && block.UID){
+			this.blocks.set(block.UID, block);
+		}
+		else if(Array.isArray(block)){
 			block.forEach(block => this.blocks.set(block.UID, block));
-		if(Object.isObject(block)){
+		}
+		else if(Object.isObject(block)){
 			for(let i in block){
 				this.blocks.set(block[i].UID, block[i])
 			}
 		}
-		else
-			this.blocks.set(block.UID, block);
 
 		return this;
 	}

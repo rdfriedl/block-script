@@ -25,9 +25,9 @@ export default class VoxelBlock{
 
 		/**
 		 * the chunk we belong to
-		 * @type {VoxelChunk}
+		 * @type {VoxelChunk|VoxelSelection}
 		 */
-		this.chunk = undefined;
+		this.parent = undefined;
 
 		/**
 		 * if we are at the edge of the chunk
@@ -49,25 +49,52 @@ export default class VoxelBlock{
 	}
 
 	/**
+	 * add this block to a parent
+	 * @param {VoxelChunk|VoxelSelection|VoxelMap} parent
+	 * @param {THREE.Vector3|String} pos
+	 * @returns {this}
+	 */
+	addTo(parent, pos){
+		if(parent.addBlock)
+			parent.addBlock(this, pos);
+
+		return this;
+	}
+
+	/**
+	 * removes this block from its parent
+	 * @return {this}
+	 */
+	remove(){
+		if(this.parent){
+			this.parent.removeBlock(this);
+		}
+		return this;
+	}
+
+	/**
 	 * @param  {THREE.Vector3} direction - the direction to check
 	 * @return {VoxelBlock}
 	 */
 	getNeighbor(dir){
-		if(!this.chunk) return;
+		if(!this.parent) return;
 
 		var pos = dir.clone().add(this.position);
 
-		let chunk = this.chunk;
-        if(pos.x < 0 || pos.y < 0 || pos.z < 0 || pos.x >= this.chunkSize.x || pos.y >= this.chunkSize.y || pos.z >= this.chunkSize.z){
-        	chunk = chunk.getNeighbor(dir);
-        	if(!chunk) return; //dont go any futher if we cant find the chunk
+		let parent = this.parent;
+        // only wrap if we are in a chunk, dont wrap if we are in a selection
+        if(this.chunk){
+	        if(pos.x < 0 || pos.y < 0 || pos.z < 0 || pos.x >= this.chunkSize.x || pos.y >= this.chunkSize.y || pos.z >= this.chunkSize.z){
+	        	parent = parent.getNeighbor(dir);
+	        	if(!parent) return; //dont go any futher if we cant find the chunk
+	        }
+
+	        if(pos.x >= this.chunkSize.x) pos.x -= this.chunkSize.x;
+			if(pos.y >= this.chunkSize.y) pos.y -= this.chunkSize.y;
+			if(pos.z >= this.chunkSize.z) pos.z -= this.chunkSize.z;
         }
 
-        if(pos.x >= this.chunkSize.x) pos.x -= this.chunkSize.x;
-		if(pos.y >= this.chunkSize.y) pos.y -= this.chunkSize.y;
-		if(pos.z >= this.chunkSize.z) pos.z -= this.chunkSize.z;
-
-        return chunk.getBlock(pos);
+        return parent.getBlock(pos);
 	}
 
 	/**
@@ -147,16 +174,35 @@ export default class VoxelBlock{
 	}
 
 	/**
-	 * the position of the block in the chunk
+	 * returns the parent {@link VoxelChunk} if this block is a child of it
+	 * @return {VoxelChunk}
+	 * @readOnly
+	 */
+	get chunk(){
+		return this.parent instanceof VoxelChunk? this.parent : undefined;
+	}
+
+	/**
+	 * returns the parent {@link VoxelSelection} if this block is a child of it
+	 * @return {VoxelSelection}
+	 * @readOnly
+	 */
+	get selection(){
+		return this.parent instanceof VoxelSelection? this.parent : undefined;
+	}
+
+	/**
+	 * the position of the block in its parent
 	 * @type {THREE.Vector3}
 	 * @readOnly
 	 */
 	get position(){
-		return this.chunk? this.chunk.getBlockPosition(this) : new THREE.Vector3();
+		return this.parent? this.parent.getBlockPosition(this) : new THREE.Vector3();
 	}
 
 	/**
 	 * the position of this block, in blocks, reletive to the VoxelMap
+	 * this will only work if the block is in a {@link VoxelChunk} that has a {@link VoxelMap}
 	 * @type {THREE.Vector3}
 	 * @readOnly
 	 */
@@ -166,6 +212,7 @@ export default class VoxelBlock{
 
 	/**
 	 * the position of this block reletive to the scene
+	 * this will only work if the block is in a {@link VoxelChunk} that has a {@link VoxelMap}
 	 * @type {THREE.Vector3}
 	 * @readOnly
 	 */
@@ -207,6 +254,7 @@ export default class VoxelBlock{
 	}
 
 	/**
+	 * returns the VoxelMap this block is in
 	 * @type {VoxelMap}
 	 * @readOnly
 	 */
@@ -227,7 +275,7 @@ export default class VoxelBlock{
 	 * @readOnly
 	 */
 	get blockSize(){
-		return this.map? this.map.blockSize : new THREE.Vector3();
+		return this.parent? this.parent.blockSize : new THREE.Vector3();
 	}
 
 	/**
@@ -236,7 +284,7 @@ export default class VoxelBlock{
 	 * @readOnly
 	 */
 	get chunkSize(){
-		return this.map? this.map.chunkSize : new THREE.Vector3();
+		return this.parent? this.parent.chunkSize : new THREE.Vector3();
 	}
 
 	/**
@@ -327,3 +375,6 @@ VoxelBlock.prototype.parameters = {
 	placeSound: [],
 	removeSound: []
 }
+
+import VoxelChunk from './VoxelChunk.js';
+import VoxelSelection from './VoxelSelection.js';
