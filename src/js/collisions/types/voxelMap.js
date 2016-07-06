@@ -59,7 +59,7 @@ export default class CollisionEntityVoxelMap extends CollisionEntity{
 				let col = CollisionEntityBox.SweptAABB(entity.box, box, velocity);
 
 				//if there was a collision
-				if(!collision || col.entryTime < collision.entryTime){
+				if(col && (!collision || col.entryTime < collision.entryTime)){
 					collision = col;
 				}
 			}

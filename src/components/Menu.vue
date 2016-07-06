@@ -173,7 +173,7 @@ export default {
 			renderer.render( scene, camera );
 		}
 		let update = function(){
-			let dtime = clock.getDelta();
+			let dtime = Math.min(clock.getDelta(), 0.5); //clamp delta time
 			clock.running = this.enabled;
 			if(this.enabled){
 				animate(dtime);

@@ -43,13 +43,13 @@ export default class CollisionEntity{
 		let velocity = this.velocity.clone().multiplyScalar(dtime);
 
 		//get movment boundingBox
-		let movmentBox = this.boundingBox;
-		movmentBox.union(this.boundingBox.translate(velocity));
+		let movementBox = this.boundingBox;
+		movementBox.union(this.boundingBox.translate(velocity));
 
 		//get all entities that are in the way
 		let entities = this.world.listEntities().filter(entity => {
 			//make sure its not us, and also that its static (since we cant handle non-static collisions)
-			return entity !== this && entity.isStatic && movmentBox.intersectsBox(entity.boundingBox);
+			return entity !== this && entity.isStatic && movementBox.intersectsBox(entity.boundingBox);
 		});
 
 		//loop until we stop moving
@@ -59,7 +59,7 @@ export default class CollisionEntity{
 
 			//find the first collision
 			for (var i = 0; i < entities.length; i++) {
-				let data = entities[i].getCollisionData(this, velocity, movmentBox);
+				let data = entities[i].getCollisionData(this, velocity, movementBox);
 				if(!col || data.entryTime <= col.entryTime){
 					col = data;
 					entity = entities[i];
@@ -117,10 +117,10 @@ export default class CollisionEntity{
 	 * gets the time and normal of a collision
 	 * @param {CollisionEntity} entity
 	 * @param {THREE.Vector3} velocity
-	 * @param {THREE.Box3} movmentBox
+	 * @param {THREE.Box3} movementBox
 	 * @returns {Object}
 	 */
-	getCollisionData(entity, velocity, movmentBox){
+	getCollisionData(entity, velocity, movementBox){
 		return {
 			entryTime: Infinity, //it never collides with this entity
 			exitTime: Infinity,
