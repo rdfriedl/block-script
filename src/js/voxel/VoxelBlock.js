@@ -13,7 +13,7 @@ const NEIGHBORS_DIRS = [
  * @class the base class for all blocks
  * @name VoxelBlock
  * @param {Object} [data] - an optional json object to pass to {@link VoxelBlock.fromJSON}
- * @param {Object} data.parameters a Object to be passed to {@link VoxelBlock.setParameters}
+ * @param {Object} data.properties a Object to be passed to {@link VoxelBlock.setProp}
  */
 export default class VoxelBlock{
 	constructor(data){
@@ -28,6 +28,11 @@ export default class VoxelBlock{
 		 * @type {VoxelChunk|VoxelSelection}
 		 */
 		this.parent = undefined;
+
+		// check to see if we set up the properties
+		if(!this.__proto__.hasOwnProperty('properties')){
+			this.constructor._setUpProperties();
+		}
 
 		/**
 		 * if we are at the edge of the chunk
@@ -115,8 +120,8 @@ export default class VoxelBlock{
 	 * @param  {String} id
 	 * @return {*}
 	 */
-	getParameter(id){
-		return this.parameters && this.parameters[id];
+	getProp(id){
+		return this.properties && this.properties[id];
 	}
 
 	/**
@@ -125,20 +130,20 @@ export default class VoxelBlock{
 	 * @param {*} [value] the value to set the parameter to
 	 * @returns {this}
 	 */
-	setParameter(id,value){
+	setProp(id,value){
 		if(!this.hasOwnProperty('parameters'))
-			this.parameters = Object.create(this.parameters);
+			this.properties = Object.create(this.properties);
 
-		if(Object.isObject()){
+		if(Object.isObject(id)){
 			for(let i in id){
-				this.parameters[i] = id[i];
+				this.properties[i] = id[i];
 			}
 		}
 		else{
-			this.parameters[id] = value;
+			this.properties[id] = value;
 		}
 
-		this.UpdateParameters();
+		this.UpdateProps();
 		return this;
 	}
 
@@ -153,22 +158,22 @@ export default class VoxelBlock{
 		return {
 			type: this.id,
 			rotation: this.rotation.toArray(),
-			parameters: this.parameters? this.parameters : {}
+			parameters: this.properties? this.properties : {}
 		};
 	}
 
 	/**
 	 * @param {Object} json
 	 * @param {Number[]} json.rotation the rotation of the block, in format [x,y,z]
-	 * @param {Object} json.parameters an object to pass to {@link VoxelBlock.setParameters}
+	 * @param {Object} json.properties an object to pass to {@link VoxelBlock.setProp}
 	 * @return {this}
 	 */
 	fromJSON(json){
 		if(json.rotation)
 			this.rotation = new THREE.Euler().fromArray(json.rotation);
 
-		if(json.parameters)
-			this.setParameters(json.parameters);
+		if(json.properties)
+			this.setProp(json.properties);
 
 		return this;
 	}
@@ -239,7 +244,7 @@ export default class VoxelBlock{
 		for(let i in blocks){
 			let b = blocks[i];
 			if(b instanceof VoxelBlock){
-				if(b.parameters.transparent){
+				if(b.properties.transparent){
 					visible = true;
 					break;
 				}
@@ -335,10 +340,35 @@ export default class VoxelBlock{
 
 	/**
 	 * updates the block based on its parameters.
-	 * this is called from {@link VoxelBlock.setParameter} and {@link VoxelBlock.setParameters}
+	 * this is called from {@link VoxelBlock.setProp} and {@link VoxelBlock.setProp}
 	 * @private
 	 */
-	UpdateParameters(){}
+	UpdateProps(){}
+
+	static _setUpProperties(){
+		if(!this.prototype.hasOwnProperty('properties')){
+			this.prototype.properties = this.DefalutProperties || {};
+
+			function checkProperties(){
+				//make sure we extend a class the has properties
+				if(this.prototype.__proto__.constructor._setUpProperties){
+					//if my parent dose not have a properties object, create one
+					if(!this.prototype.__proto__.properties)
+						this.prototype.__proto__.constructor._setUpProperties();
+
+					// make sure i extend another class, and make sure that my properties are not set up yet
+					if(this.prototype.__proto__ !== Object.prototype && this.prototype.properties.__proto__ === Object.prototype){
+						this.prototype.properties = this.defalutProperties || {};
+						this.prototype.properties.__proto__ = this.prototype.__proto__.properties;
+					}
+				}
+				else{
+					this.prototype.properties = this.defalutProperties || {};
+				}
+			}
+			checkProperties.call(this);
+		}
+	}
 }
 
 /**
@@ -366,7 +396,7 @@ VoxelBlock.UID = 'block';
  * @property {Array} placeSound an array of sound ids to play if the player places this block
  * @property {Array} removeSound an array of sound ids to play if the player destroys this block
  */
-VoxelBlock.prototype.parameters = {
+VoxelBlock.prototype.properties = {
 	transparent: false,
 	canCollide: true,
 	canRotate: true,

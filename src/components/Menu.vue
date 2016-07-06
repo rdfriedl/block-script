@@ -37,6 +37,10 @@ import * as ChunkUtils from '../js/ChunkUtils.js';
 
 import ChunkGeneratorFlat from '../js/generators/ChunkGeneratorFlat.js';
 
+import CollisionWorld from '../js/collisions/CollisionWorld.js';
+import CollisionEntityBox from '../js/collisions/types/box.js';
+import CollisionEntityVoxelMap from '../js/collisions/types/voxelMap.js';
+
 export default {
 	components: {CssCube},
 	data() {
@@ -60,9 +64,13 @@ export default {
 		let map, velocity = new THREE.Vector3((Math.random()-0.5)*0.003,(Math.random()-0.5)*0.003,(Math.random()-0.5)*0.003);
 		let clock = new THREE.Clock(), i = 0;
 
+		let box1, box2, mesh1, mesh2, collisionMap;
+		let collitionWorld;
+
 		function init(){
 			camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 100000);
 			camera.position.z = 600;
+			camera.position.y = 100;
 			scene = new THREE.Scene();
 
 			//if we are debugging add this to global scope
@@ -72,8 +80,36 @@ export default {
 			map = new VoxelMap();
 			map.blockManager.registerBlock(blocks);
 			scene.add(map);
-			ChunkUtils.drawCube(map, new THREE.Vector3(-20,-20,-20), new THREE.Vector3(20,20,20), 'stone', 'frame');
+			ChunkUtils.drawCube(map, new THREE.Vector3(-10,-1,-10), new THREE.Vector3(10,0,10), function(){return blockList[Math.floor(Math.random()*blockList.length)] }, 'solid');
+			ChunkUtils.drawCube(map, new THREE.Vector3(-10,0,-10), new THREE.Vector3(10,1,10), function(){return blockList[Math.floor(Math.random()*blockList.length)] }, 'frame');
 			map.updateChunks();
+
+			collisionMap = new CollisionEntityVoxelMap(map);
+
+			box1 = new CollisionEntityBox(new THREE.Vector3(200,10,200), new THREE.Vector3(0,5,0));
+			box1.isStatic = true;
+
+			box2 = new CollisionEntityBox(new THREE.Vector3(50,50,50));
+			box2.onCollision = (entity, normal) => {
+				if(normal.y !== 0){
+					box2.velocity.y = 0;
+				}
+			}
+
+			collitionWorld = new CollisionWorld();
+			// collitionWorld.addEntity(box1);
+			collitionWorld.addEntity(collisionMap);
+			collitionWorld.addEntity(box2);
+
+			mesh2 = new THREE.Mesh(new THREE.BoxGeometry(50,50,50), new THREE.MeshLambertMaterial({color: 0xff0000}));
+
+			scene.add(mesh2);
+
+			window.reset = () => {
+				box2.position.set(0,100,0);
+				box2.velocity.set((Math.random()*2-1)*100,50,(Math.random()*2-1)*100);
+			}
+			window.reset();
 
 			// add lights
 			let light = new THREE.DirectionalLight(0xffffff);
@@ -87,7 +123,7 @@ export default {
 		}
 
 		const range = 12;
-		const blockList = Object.keys(blocks).map(key => blocks[key].UID).filter(UID => !UID.includes('glass'));
+		const blockList = Object.keys(blocks).map(key => blocks[key].UID)//.filter(UID => !UID.includes('glass'));
 		function toggleBlock(){
 			let pos = new THREE.Vector3(Math.random()-.5,Math.random()-.5,Math.random()-.5).multiplyScalar(range*2);
 			while(Math.abs(pos.length()) > range){
@@ -114,32 +150,46 @@ export default {
 			renderer.setSize(window.innerWidth, window.innerHeight);
 		});
 
-		function animate(){
-			map.rotation.x += velocity.x;
-			map.rotation.y += velocity.y;
-			map.rotation.z += velocity.z;
+		function animate(dtime){
+			collitionWorld.step(dtime);
 
-			let change = 0.0001;
-			velocity.x += (Math.random()-0.5)*change;
-			velocity.y += (Math.random()-0.5)*change;
-			velocity.z += (Math.random()-0.5)*change;
-			let min = -0.005, max = 0.005;
-			velocity.clamp(new THREE.Vector3(min,min,min), new THREE.Vector3(max,max,max));
+			mesh2.position.copy(box2.position);
+
+			if(box2.position.y < -100){
+				window.reset();
+			}
+			// map.rotation.x += velocity.x;
+			// map.rotation.y += velocity.y;
+			// map.rotation.z += velocity.z;
+
+			// let change = 0.0001;
+			// velocity.x += (Math.random()-0.5)*change;
+			// velocity.y += (Math.random()-0.5)*change;
+			// velocity.z += (Math.random()-0.5)*change;
+			// let min = -0.005, max = 0.005;
+			// velocity.clamp(new THREE.Vector3(min,min,min), new THREE.Vector3(max,max,max));
 		}
-		function render(){
+		function render(dtime){
 			renderer.render( scene, camera );
 		}
 		let update = function(){
-			let delta = clock.getDelta();
+			let dtime = clock.getDelta();
 			clock.running = this.enabled;
 			if(this.enabled){
-				animate();
-				render();
+				animate(dtime);
+				render(dtime);
+
+				// //toggle blocks
+				// i += dtime;
+				// if(i > 1/20){
+				// 	toggleBlock();
+				// 	i = 0;
+				// }
 
 				//toggle blocks
-				i += delta;
-				if(i > 1/20){
-					toggleBlock();
+				i += dtime;
+				if(i > 1/0.5){
+					box2.velocity.y =+ 200;
 					i = 0;
 				}
 			}

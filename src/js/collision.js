@@ -105,7 +105,7 @@ let collisions = {
 		player: ['block'],
 		block: []
 	},
-    checkCollision: function(a,b, velocity){
+    checkCollision: function(a, b, velocity){
         if(Object.isObject(a) && !(a instanceof CollisionEntity)) a = a.collisionEntity;
         if(Object.isObject(b) && !(b instanceof CollisionEntity)) b = b.collisionEntity;
         if(!a || !b) return false;
