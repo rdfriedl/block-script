@@ -2,7 +2,7 @@ import THREE from 'three';
 import CollisionEntity from '../CollisionEntity.js';
 
 /**
- * @class a point collition shape
+ * @class collition entity for a {@link VoxelMap}
  * @name CollisionEntityVoxelMap
  * @extends {CollisionEntity}
  */
@@ -72,7 +72,29 @@ export default class CollisionEntityVoxelMap extends CollisionEntity{
 				}
 		}
 		else if(entity instanceof CollisionEntityPoint){
-			// TODO
+			let box = new THREE.Box3();
+			let collision;
+
+			// test for and find the first collision
+			for (var i = 0; i < blocks.length; i++) {
+				let block = blocks[i], scenePosition = block.scenePosition;
+				box.min.copy(scenePosition);
+				box.max.copy(scenePosition).add(this.map.blockSize);
+
+				let col = CollisionEntityPoint.SweptAABB(entity.position, box, velocity);
+
+				//if there was a collision
+				if(col && (!collision || col.entryTime < collision.entryTime)){
+					collision = col;
+				}
+			}
+
+			if(collision)
+				return {
+					entryTime: collision.entryTime == 1? Infinity : collision.entryTime,
+					exitTime: collision.exitTime,
+					normal: collision.normal
+				}
 		}
 		else if(entity instanceof CollisionEntityVoxelMap){
 			// NOTE: no point in this, since two maps will never collide
@@ -82,4 +104,5 @@ export default class CollisionEntityVoxelMap extends CollisionEntity{
 	}
 }
 
-import CollisionEntityBox from './box.js'
+import CollisionEntityBox from './box.js';
+import CollisionEntityPoint from './point.js';

@@ -1,6 +1,6 @@
 /**
+ * @class manages a list of voxels blocks, and provides functions for creating them
  * @name VoxelBlockManager
- * @class
  */
 export default class VoxelBlockManager{
 	/**

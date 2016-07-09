@@ -33,10 +33,13 @@ export default class CollisionEntityBox extends CollisionEntity{
 			let col = CollisionEntityBox.SweptAABB(entity.box, this.box, velocity);
 
 			if(col)
-				return cal;
+				return col;
 		}
 		else if(entity instanceof CollisionEntityPoint){
-			// TODO
+			let col = CollisionEntityPoint.SweptAABB(entity.position, this.box, velocity);
+
+			if(col)
+				return col;
 		}
 
 		return super.getCollisionData(entity, velocity, movementBox);
@@ -151,3 +154,5 @@ export default class CollisionEntityBox extends CollisionEntity{
 		}
 	}
 }
+
+import CollisionEntityPoint from './point.js';

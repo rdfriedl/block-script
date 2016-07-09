@@ -5,11 +5,7 @@
 <div v-el:canvas class="canvas-container"></div>
 
 <div class="col-xs-12">
-	<div class="page-header">
-		<h1>load map: {{$route.params.mapID}}</h1>
-	</div>
-	<a class="btn btn-md btn-info" v-link="'/maps'"><i class="fa fa-arrow-left"></i> Back</a>
-	<a href="http://threejs.org" class="btn btn-info" target="_blank">Three.js {{version}}</a>
+	<a class="btn btn-md btn-info pull-right" v-link="'/maps'"><i class="fa fa-arrow-left"></i> Back</a>
 </div>
 
 </template>
@@ -22,8 +18,6 @@ import THREE from 'three';
 // extentions
 import 'imports?THREE=three!../lib/threejs/controls/PointerLockControls.js';
 import 'imports?THREE=three!../lib/threejs/loaders/ColladaLoader.js';
-// import 'imports?THREE=three!../lib/threejs/controls/FlyControls.js';
-// import 'imports?THREE=three!../lib/threejs/controls/TrackballControls.js';
 import 'imports?THREE=three!../lib/threejs/controls/OrbitControls.js';
 
 import Stats from 'stats';
@@ -33,6 +27,11 @@ import VoxelBlockManager from '../js/voxel/VoxelBlockManager.js';
 import * as blocks from '../js/blocks.js';
 import * as ChunkUtils from '../js/ChunkUtils.js';
 import ChunkGeneratorFlat from '../js/generators/ChunkGeneratorFlat.js';
+
+import Player from '../js/Player.js';
+
+import CollisionWorld from '../js/collisions/CollisionWorld.js';
+import CollisionEntityVoxelMap from '../js/collisions/types/voxelMap.js';
 
 import vertexShader from '../shaders/vertexShader.shader';
 import fragmentShader from '../shaders/fragmentShader.shader';
@@ -55,7 +54,7 @@ export default {
 		if(process.env.NODE_ENV == 'dev') window.gameScene = scene;
 
 		let camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 20000);
-		camera.position.z = 600;
+		camera.position.z = 400;
 
 		let controls = new THREE.OrbitControls(camera, renderer.domElement);
 		controls.enableDamping = true;
@@ -73,14 +72,30 @@ export default {
 		// controls.dynamicDampingFactor = 0.3;
 		// controls.keys = [ 65, 83, 68 ];
 
+		// create collision world
+		let world = new CollisionWorld();
+
+		// create player
+		let player = new Player();
+		scene.add(player);
+		if(process.env.NODE_ENV == 'dev') window.player = player;
+
+		// create map
 		let map = new VoxelMap();
 		map.blockManager.registerBlock(blocks);
 		map.updateChunks();
 		scene.add(map);
 
-		let generator = new ChunkGeneratorFlat();
+		// add map to collision world
+		map.collision = new CollisionEntityVoxelMap(map);
+		world.addEntity(map.collision);
 
-		// ChunkUtils.drawCube(map, new THREE.Vector3(-20,-20,-20), new THREE.Vector3(20,20,20), 'stone', 'frame');
+		// add player to the collision world
+		world.addEntity(player.collision);
+		player.getPosition().copy(map.blockSize.clone().multiply(map.chunkSize).divideScalar(2));
+
+		// create genorator
+		let generator = new ChunkGeneratorFlat();
 
 		let clock = new THREE.Clock(), i = 0;
 		let stats;
@@ -92,25 +107,7 @@ export default {
 		stats.domElement.style.position = 'absolute';
 		stats.domElement.style.top = '0px';
 
-		const range = 12;
-		const blockList = Object.keys(blocks).map(key => blocks[key].UID).filter(UID => !UID.includes('glass'));
-		function toggleBlock(){
-			let pos = new THREE.Vector3(Math.random()-.5,Math.random()-.5,Math.random()-.5).multiplyScalar(range*2);
-			while(Math.abs(pos.length()) > range){
-				pos = new THREE.Vector3(Math.random()-.5,Math.random()-.5,Math.random()-.5).multiplyScalar(range*2);
-			}
-
-			//random rotation
-			let rotation = new THREE.Vector3(Math.random()*Math.PI*2,Math.random()*Math.PI*2,Math.random()*Math.PI*2).divideScalar(Math.PI*2/4).round().multiplyScalar(Math.PI*2/4);
-
-			if(map.getBlock(pos)){
-				map.removeBlock(pos);
-			}
-			else{
-				map.setBlock(VoxelBlockManager.inst.createBlock(blockList[Math.floor(Math.random()*blockList.length)], {rotation: rotation.toArray()}), pos);
-			}
-			// map.updateChunks();
-		}
+		// chunk loader
 		function loadNextChunk(){
 			let vec = new THREE.Vector3(),
 				dist = 0;
@@ -155,28 +152,38 @@ export default {
 			renderer.setSize(window.innerWidth, window.innerHeight);
 		});
 
+		// runtime functions
 		function animate(dtime){
+			function callUpdate(object){
+				object.children.forEach(obj => {
+					if(obj.update)
+						obj.update(dtime);
+
+					if(obj.children)
+						callUpdate(obj);
+				})
+			}
+			callUpdate(scene);
+
 			controls.update();
 			stats.update();
+
+			// only update the collision world if the chunk the player is standing in is loaded
+			if(map.hasChunk(player.position.clone().divide(map.blockSize).divide(map.chunkSize).floor())){
+				world.step(dtime);
+			}
 		}
 		function render(dtime){
 			renderer.render(scene, camera);
 		}
 
 		let loadTimer = 0;
-		let update = function(){
+		function update(){
 			let dtime = clock.getDelta();
 			clock.running = this.enabled;
 			if(this.enabled){
 				animate(dtime);
 				render(dtime);
-
-				//toggle blocks
-				i += dtime;
-				if(i > 1/40){
-					// toggleBlock();
-					i = 0;
-				}
 
 				//load chunks
 				loadTimer += dtime;
@@ -185,8 +192,8 @@ export default {
 					loadTimer = 0;
 				}
 			}
-			requestAnimationFrame(update);
-		}.bind(this)
+			requestAnimationFrame(update.bind(this));
+		};
 
 		let lightGroup, sun, ambient, sky;
 		function setUpSky(){
@@ -247,8 +254,10 @@ export default {
 			lightGroup.add(sky);
 		}
 
-		update();
+		// start
+		update.apply(this);
 
+		// save some stuff to vue controler
 		this._renderer = renderer;
 		this._stats = stats;
 	},

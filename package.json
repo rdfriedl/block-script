@@ -17,8 +17,8 @@
 		"url": "https://github.com/rdfriedl/block-script/issues"
 	},
 	"scripts": {
-		"build": "set NODE_ENV=dev && gulp build",
-		"start": "set NODE_ENV=dev && gulp",
+		"build": "set NODE_ENV=dev&& gulp build",
+		"start": "set NODE_ENV=dev&& gulp",
 		"test": "karma start karma.conf.js",
 		"production": "set NODE_ENV=production && gulp build"
 	},
@@ -74,12 +74,9 @@
 		"jquery": "^3.0.0",
 		"jquery.mousewheel": "^3.1.9",
 		"keypress.js": "2.1.0",
-		"knockout": "^3.4.0",
-		"knockout-mapping": "^2.6.0",
 		"minivents": "^2.0.2",
 		"stats.js": "^0.16.0",
 		"three": "^0.78.0",
-		"underscore": "^1.8.3",
 		"vue": "^1.0.25",
 		"vue-router": "^0.7.13",
 		"vue-strap": "^1.0.11",

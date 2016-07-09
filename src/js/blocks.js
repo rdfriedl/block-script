@@ -37,7 +37,7 @@ function basicMaterial(url,props,texProps){
 }
 
 /**
- * @class UID dirt
+ * @class UID "dirt"
  * @name Dirt
  * @extends {VoxelBlock}
  */
@@ -55,7 +55,7 @@ window.VoxelBlock = VoxelBlock;
 window.Dirt = Dirt;
 
 /**
- * @class UID top_dirt
+ * @class UID "top_dirt"
  * @name TopDirt
  * @extends {VoxelBlock}
  */
@@ -84,7 +84,7 @@ export class TopDirt extends VoxelBlock{
 TopDirt.UID = 'top_dirt';
 
 /**
- * @class UID stone
+ * @class UID "stone"
  * @name Stone
  * @extends {VoxelBlock}
  */
@@ -96,7 +96,7 @@ export class Stone extends VoxelBlock{
 Stone.UID = 'stone';
 
 /**
- * @class UID grass
+ * @class UID "grass"
  * @name Grass
  * @extends {VoxelBlock}
  */
@@ -108,7 +108,7 @@ export class Grass extends VoxelBlock{
 Grass.UID = 'grass';
 
 /**
- * @class UID brick
+ * @class UID "brick"
  * @name Brick
  * @extends {VoxelBlock}
  */
@@ -120,7 +120,7 @@ export class Brick extends VoxelBlock {
 Brick.UID = 'brick';
 
 /**
- * @class UID gravel
+ * @class UID "gravel"
  * @name Gravel
  * @extends {VoxelBlock}
  */
@@ -150,7 +150,7 @@ const GLASS_TYPE = [
 	'yellow'
 ]
 /**
- * @class UID glass
+ * @class UID "glass"
  * @name Glass
  * @extends {VoxelBlock}
  */
