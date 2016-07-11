@@ -1,13 +1,13 @@
 <!-- HTML -->
 <template>
 
-<div v-el:stats class="stats-container"></div>
 <div v-el:canvas class="canvas-container"></div>
 
 <div class="pointer-lock-overlay" v-show="!hasPointerLock" @click="requestPointerLock">
 	<h1>Click to enable Pointer Lock</h1>
 </div>
 
+<div v-el:stats class="stats-container"></div>
 <div class="col-xs-12">
 	<a class="btn btn-md btn-info pull-right" v-link="'/maps'"><i class="fa fa-arrow-left"></i> Back</a>
 </div>
@@ -90,8 +90,10 @@ export default {
 		// create map
 		let map = new VoxelMap();
 		map.blockManager.registerBlock(blocks);
+		map.blockManager.usePool = true;
 		map.updateChunks();
 		scene.add(map);
+		if(process.env.NODE_ENV == 'dev') window.map = map;
 
 		// add map to collision world
 		map.collision = new CollisionEntityVoxelMap(map);
@@ -157,6 +159,13 @@ export default {
 					if(dist[i] > view_range){
 						// unload chunk
 						map.removeChunk(chunk);
+
+						// dispose of all the blocks
+						let blocks = chunk.listBlocks();
+						chunk.clearBlocks();
+						blocks.forEach(block => {
+							map.blockManager.disposeBlock(block);
+						});
 						break;
 					}
 				}

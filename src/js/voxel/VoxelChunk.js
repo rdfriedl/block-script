@@ -46,9 +46,16 @@ export default class VoxelChunk extends THREE.Group{
 
 		/**
 		 * a Set of all the materials on all the blocks in this chunk
-		 * @type {Set}
+		 * @var {Set}
 		 */
 		this.materials = new Set();
+
+		/**
+		 * a tmp Vector3 the chunk uses so it dose not have to create new instances
+		 * @var {THREE.Vector3}
+		 * @private
+		 */
+		this.tmpVec = new THREE.Vector3();
 	}
 
 	/**
@@ -56,12 +63,8 @@ export default class VoxelChunk extends THREE.Group{
 	 * @return {this}
 	 */
 	build(){
-		let old = {};
-		if(this.mesh){
-			// this.remove(this.mesh);
+		if(this.mesh)
 			this.mesh.geometry.dispose();
-			old.geometry = this.mesh.geometry;
-		}
 
 		//dont build if we are empty
 		if(this.empty) return;
@@ -101,8 +104,9 @@ export default class VoxelChunk extends THREE.Group{
 		}
 
 		//merge the geometries
+		let v = new THREE.Vector3(0.5,0.5,0.5);
 		for(let block of blocks){
-			let pos = block.position.clone().add(new THREE.Vector3(0.5,0.5,0.5));
+			let pos = this.tmpVec.copy(block.position).add(v);
 			let matrix = new THREE.Matrix4();
 
 			// set rotation
@@ -121,7 +125,6 @@ export default class VoxelChunk extends THREE.Group{
 		}
 
 		geometry.mergeVertices();
-		geometry.normalsNeedUpdate = true;
 		geometry.computeFaceNormals();
 
 		if(!this.mesh){
@@ -134,8 +137,6 @@ export default class VoxelChunk extends THREE.Group{
 			this.mesh.geometry.needsUpdate = true;
 		}
 
-		delete old.geometry;
-
 		this.needsBuild = false;
 	}
 
@@ -147,10 +148,10 @@ export default class VoxelChunk extends THREE.Group{
 	hasBlock(pos){
 		//string to vector
 		if(String.isString(pos))
-			pos = new THREE.Vector3().fromArray(pos.split(','));
+			pos = this.tmpVec.fromArray(pos.split(','));
 
 		if(pos instanceof THREE.Vector3){
-			pos = pos.clone().round();
+			pos = this.tmpVec.copy(pos).round();
 			return this.blocks.has(pos.toArray().join(','));
 		}
 		else if(pos instanceof VoxelBlock){
@@ -170,10 +171,10 @@ export default class VoxelChunk extends THREE.Group{
 	 */
 	getBlock(pos){
 		if(String.isString(pos))
-			pos = new THREE.Vector3().fromArray(pos.split(','));
+			pos = this.tmpVec.fromArray(pos.split(','));
 
 		if(pos instanceof THREE.Vector3){
-			pos = pos.clone().round();
+			pos = this.tmpVec.copy(pos).round();
 			return this.blocks.get(pos.toArray().join(','));
 		}
 		else if(pos instanceof VoxelBlock){
@@ -203,7 +204,7 @@ export default class VoxelChunk extends THREE.Group{
 			block = this.map && this.map.blockManager.createBlock(id);
 
 		if(String.isString(pos))
-			pos = new THREE.Vector3().fromArray(pos.split(','));
+			pos = this.tmpVec.fromArray(pos.split(','));
 
 		if(block && pos){
 			this.setBlock(block, pos);
@@ -223,12 +224,12 @@ export default class VoxelChunk extends THREE.Group{
 			block = this.map && this.map.blockManager.createBlock(block);
 
 		if(String.isString(pos))
-			pos = new THREE.Vector3().fromArray(pos.split(','));
+			pos = this.tmpVec.fromArray(pos.split(','));
 
 		if(pos instanceof THREE.Vector3 && block instanceof VoxelBlock){
-			pos = pos.clone().round();
+			pos = this.tmpVec.copy(pos).round();
 			this.blocks.set(pos.toArray().join(','),block);
-			this.blocksPositions.set(block, pos);
+			this.blocksPositions.set(block, pos.clone()); //clone the pos so we are not storing the original vec
 
 			block.parent = this;
 
@@ -244,6 +245,7 @@ export default class VoxelChunk extends THREE.Group{
 	 * @return {this}
 	 */
 	clearBlocks(){
+		this.listBlocks().forEach(b => b.parent = undefined);
 		this.blocks.clear();
 		this.materials.clear();
 		this.needsBuild = true;
@@ -258,12 +260,12 @@ export default class VoxelChunk extends THREE.Group{
 	 */
 	removeBlock(pos){
 		if(String.isString(pos))
-			pos = new THREE.Vector3().fromArray(pos.split(','));
+			pos = this.tmpVec.fromArray(pos.split(','));
 
 		if(this.hasBlock(pos)){
 			let block;
 			if(pos instanceof THREE.Vector3){
-				block = this.getBlock(pos.clone().round());
+				block = this.getBlock(pos);
 			}
 			else if(pos instanceof VoxelBlock){
 				block = pos;
@@ -288,6 +290,14 @@ export default class VoxelChunk extends THREE.Group{
 		}
 
 		return this;
+	}
+
+	/**
+	 * returns an Array of all the blocks in this chunk
+	 * @return {VoxelChunk[]}
+	 */
+	listBlocks(){
+		return Array.from(this.blocks).map(d => d[1]);
 	}
 
 	/**

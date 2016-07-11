@@ -33,10 +33,10 @@ export function drawCube(chunk, fromV, toV, block, type = 'solid'){
 	let i = Math.abs(dist.x*dist.y*dist.z);
 	function setBlock(pos){
 		let b = block instanceof Function? block(pos) : block;
-		if(block == null || block == undefined)
+		if(b == null || b == undefined)
 			chunk.removeBlock(pos);
 		else
-			chunk.setBlock(block, pos);
+			chunk.setBlock(b, pos);
 	}
 	while(i-- > 0){
 		switch(type){

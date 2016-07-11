@@ -19,10 +19,24 @@ export default class VoxelBlockManager{
 		 * @private
 		 */
 		this.blocks = new Map();
+
+		/**
+		 * a pool of blocks to pull from
+		 * @var {Object}
+		 * @private
+		 */
+		this.blockPool = new Object();
+
+		/**
+		 * whether to use the blockPool
+		 * @var {Boolean}
+		 * @default false
+		 */
+		this.usePool = false;
 	}
 
 	/**
-	 * @param  {(VoxelBlock|String)} - a UID of a block or a {@link VoxelBlock}
+	 * @param  {VoxelBlock|String} - a UID of a block or a {@link VoxelBlock} class
 	 * @return {Boolean}
 	 */
 	hasBlock(id){
@@ -52,11 +66,26 @@ export default class VoxelBlockManager{
 	}
 
 	/**
-	 * returns a new block
+	 * gets a block from the pool or creates a new one
 	 * @param  {String} id - the UID of the block to create
+	 * @param {Object} data - a object that is passed to {@link VoxelBlock#fromJSON}
 	 * @return {VoxelBlock}
 	 */
 	createBlock(id, data){
+		if(this.usePool)
+			return this.newBlock(id, data);
+		else
+			return this._createBlock(id, data);
+	}
+
+	/**
+	 * returns a new block
+	 * @param  {String} id - the UID of the block to create
+	 * @param  {Object} data - a object that is passed to {@link VoxelBlock#fromJSON}
+	 * @private
+	 * @return {VoxelBlock}
+	 */
+	_createBlock(id, data){
 		if(this.hasBlock(id))
 			return new (this.getBlock(id))(data);
 	}
@@ -90,6 +119,55 @@ export default class VoxelBlockManager{
 		let arr = [];
 		this.blocks.forEach(b => arr.push(b));
 		return arr;
+	}
+
+	/**
+	 * get a new block of "type" from the pool.
+	 * if there is none it will create one
+	 * @param  {String} id - the UID of the block to create
+	 * @param  {Object} data - a object that is passed to {@link VoxelBlock#fromJSON}
+	 * @return {VoxelBlock}
+	 */
+	newBlock(id, data){
+		if(this.blockPool[id]){
+			let block = this.blockPool[id].shift();
+			if(block && data)
+				block.fromJSON(data);
+
+			return block || this._createBlock(id, data);
+		}
+
+		return this._createBlock(id, data);
+	}
+
+	/**
+	 * removes block from its parent and adds it back into the pool
+	 * @return {this}
+	 */
+	disposeBlock(block){
+		if(block instanceof VoxelBlock){
+			this._resetBlock(block);
+			if(!this.blockPool[block.id])
+				this.blockPool[block.id] = [];
+
+			this.blockPool[block.id].push(block);
+		}
+		return this;
+	}
+
+	/**
+	 * resets a block before putting it back in the pool
+	 * @param  {VoxelBlock} block
+	 * @return {this}
+	 */
+	_resetBlock(block){
+		if(block.hasOwnProperty('properties'))
+			delete block.properties;
+
+		if(block.parent)
+			block.parent.removeBlock(block);
+
+		return this;
 	}
 }
 

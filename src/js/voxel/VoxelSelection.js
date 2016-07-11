@@ -34,6 +34,13 @@ export default class VoxelSelection{
 		 * @default [32,32,32]
 		 */
 		this.blockSize = new THREE.Vector3(32,32,32);
+
+		/**
+		 * a tmp Vector3 the chunk uses so it dose not have to create new instances
+		 * @var {THREE.Vector3}
+		 * @private
+		 */
+		this.tmpVec = new THREE.Vector3();
 	}
 
 	/**
@@ -44,10 +51,10 @@ export default class VoxelSelection{
 	hasBlock(pos){
 		//string to vector
 		if(String.isString(pos))
-			pos = new THREE.Vector3().fromArray(pos.split(','));
+			pos = this.tmpVec.fromArray(pos.split(','));
 
 		if(pos instanceof THREE.Vector3){
-			pos = pos.clone().round();
+			pos = this.tmpVec.copy(pos).round();
 			return this.blocks.has(pos.toArray().join(','));
 		}
 		else if(pos instanceof VoxelBlock){
@@ -66,10 +73,10 @@ export default class VoxelSelection{
 	 */
 	getBlock(pos){
 		if(String.isString(pos))
-			pos = new THREE.Vector3().fromArray(pos.split(','));
+			pos = this.tmpVec.fromArray(pos.split(','));
 
 		if(pos instanceof THREE.Vector3){
-			pos = pos.clone().round();
+			pos = this.tmpVec.copy(pos).round();
 			return this.blocks.get(pos.toArray().join(','));
 		}
 		else if(pos instanceof VoxelBlock){
@@ -99,7 +106,7 @@ export default class VoxelSelection{
 			block = this.blockManager.createBlock(id);
 
 		if(String.isString(pos))
-			pos = new THREE.Vector3().fromArray(pos.split(','));
+			pos = this.tmpVec.fromArray(pos.split(','));
 
 		if(block && pos){
 			this.setBlock(block, pos);
@@ -120,12 +127,12 @@ export default class VoxelSelection{
 
 		//string to vector
 		if(String.isString(pos))
-			pos = new THREE.Vector3().fromArray(pos.split(','));
+			pos = this.tmpVec.fromArray(pos.split(','));
 
 		if(pos instanceof THREE.Vector3 && block instanceof VoxelBlock){
-			pos = pos.clone().round();
+			pos = this.tmpVec.copy(pos).round();
 			this.blocks.set(pos.toArray().join(','),block);
-			this.blocksPositions.set(block, pos);
+			this.blocksPositions.set(block, pos.clone());
 
 			block.parent = this;
 		}
@@ -138,6 +145,7 @@ export default class VoxelSelection{
 	 * @return {this}
 	 */
 	clearBlocks(){
+		this.listBlocks().forEach(b => b.parent = undefined);
 		this.blocks.clear();
 
 		return this;
@@ -150,7 +158,7 @@ export default class VoxelSelection{
 	 */
 	removeBlock(pos){
 		if(String.isString(pos))
-			pos = new THREE.Vector3().fromArray(pos.split(','));
+			pos = this.tmpVec.fromArray(pos.split(','));
 
 		if(this.hasBlock(pos)){
 			let block;
@@ -170,6 +178,14 @@ export default class VoxelSelection{
 		}
 
 		return this;
+	}
+
+	/**
+	 * returns an Array of all the blocks in this chunk
+	 * @return {VoxelChunk[]}
+	 */
+	listBlocks(){
+		return Array.from(this.blocks).map(d => d[1]);
 	}
 
 	/**
