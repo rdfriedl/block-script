@@ -104,7 +104,12 @@ export default class VoxelChunk extends THREE.Group{
 		for(let block of blocks){
 			let pos = block.position.clone().add(new THREE.Vector3(0.5,0.5,0.5));
 			let matrix = new THREE.Matrix4();
-			matrix.makeRotationFromEuler(block.rotation);
+
+			// set rotation
+			if(block.properties.rotation instanceof THREE.Euler)
+				matrix.makeRotationFromEuler(block.properties.rotation);
+
+			// set position
 			matrix.setPosition(pos);
 
 			if(block.material instanceof THREE.MultiMaterial){

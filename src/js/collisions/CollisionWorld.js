@@ -23,7 +23,7 @@ export default class CollisionWorld{
 		 * a THREE.Vector3 that is added to all non-static entities in this world every step
 		 * @var {THREE.Vector3}
 		 */
-		this.gravity = new THREE.Vector3(0, -500, 0);
+		this.gravity = new THREE.Vector3(0, -18, 0);
 	}
 
 	/**
@@ -37,14 +37,13 @@ export default class CollisionWorld{
 		else
 			this.clock.getDelta();
 
-		let gravity = this.gravity.clone().multiplyScalar(dtime);
-
 		//update all entities
 		let entities = this.listEntities().filter(e => !e.isStatic).forEach(entity => {
-			//add gravity
-			entity.velocity.add(gravity);
+			// add gravity
+			// NOTE: dont multiply gravity by dtime sincethe velocity of the entity is already modified by it
+			entity.velocity.add(this.gravity);
 
-			//step
+			// step
 			entity.step(dtime);
 		})
 

@@ -1,45 +1,6 @@
 import THREE from 'three';
-// import ko from 'knockout';
-// import _ from 'underscore';
 
-// function observable(val, cb) {
-// 	var o = ko.observable(val);
-// 	o.subscribe(cb, o);
-// 	return o;
-// }
-function namedFunction(name, fn) {
-    return (new Function("return function (call) { return function " + name +
-        " () { return call(this, arguments) }; };")())(Function.apply.bind(fn));
-}
-function positionToIndex(position,size){
-	if(size instanceof THREE.Vector3){
-		return (position.z*size.x*size.y)+(position.y*size.x)+position.x;
-	}
-	else return (position.z*size*size)+(position.y*size)+position.x;
-}
-function indexToPosition(index,size){
-	var position = new THREE.Vector3(0,0,0);
-	if(size instanceof THREE.Vector3){
-		position.z = Math.floor(index/(size.x*size.y));
-		position.y = Math.floor((index-(position.z*(size.x*size.y)))/size.x);
-		position.x = index-(position.y*size.x)-(position.z*size.x*size.y);
-	}
-	else{
-		position.z = Math.floor(index/(size*size));
-		position.y = Math.floor((index-(position.z*(size*size)))/size);
-		position.x = index-(position.y*size)-(position.z*size*size);
-	}
-	return position;
-}
-// function observable(){
-// 	var val = Array.prototype.shift.call(arguments);
-// 	var o = val instanceof Array? ko.observableArray(val) : ko.observable(val);
-
-// 	for(var i = 0; i < arguments.length; i++){
-// 		o.subscribe(arguments[i]);
-// 	}
-// 	return o;
-// }
+// Object
 Object.clone = function(obj,deep,ignore){
 	if(!obj) return {};
 
@@ -77,14 +38,53 @@ Object.clone = function(obj,deep,ignore){
 Object.isObject = function (v) {
 	return v instanceof Object;
 };
-Function.isFunction = function (v) {
-	return v instanceof Function;
+
+// Fuction
+Function.isFunction = function (v) {return v instanceof Function};
+Function.after = function(times,...functions){
+	return () => {
+		times--;
+		if(times<=0) functions.forEach(f => f());
+	}
+}
+Function.debounce = function(func,time){
+	let timeout;
+	return function(...args){
+		clearTimeout(timeout);
+		timeout = setTimeout(function(){
+			func(...args);
+		},time);
+	}
+}
+Function.noop = function(){};
+
+// String
+String.isString = function(v){return v && v.__proto__.constructor === String};
+String.prototype.replaceAll = function(search, replacement) {
+    return this.split(search).join(replacement);
 };
-String.isString = function (v) {
-	return v && v.__proto__.constructor === String;
+String.prototype.splice = function(idx, rem, str) {
+    return this.slice(0, idx) + str + this.slice(idx + Math.abs(rem));
 };
+
+// Number
 Number.isNumber = Number.isFinite;
 
+// Math
+Math.lerp = function(min, max, d) {
+	var dif = Math.max(min, max) - Math.min(min, max);
+	if (min < max)
+		return min + dif * d;
+	else if (max < min)
+		return max + dif * (1 - d);
+	else
+		return min
+};
+Math.clamp = function(v,min,max){
+	return Math.min(Math.max(v,min),max);
+};
+
+// THREE.js
 function loadTexture(url,prop,dontmap){ //texture image is not copied
 	var tex = new THREE.ImageUtils.loadTexture(url);
    	if(!dontmap){
@@ -314,53 +314,3 @@ function createDebugBox(size){
 	// mesh.matrixAutoUpdate = false;
 	return mesh;
 }
-
-function InstancePool(type,dontUseActiveArray){
-	this.type = type || Object;
-	this.dontUseActiveArray = dontUseActiveArray || false;
-
-	this.inUse = [];
-	this.notUsed = [];
-}
-InstancePool.prototype = {
-	type: Object,
-	inUse: [],
-	notUsed: [],
-	dontUseActiveArray: false,
-	allocate: function(){
-		var obj;
-		if(this.notUsed.length > 0){
-			obj = this.notUsed.pop();
-		}
-		else{
-			obj = new this.type();
-		}
-		if(!this.dontUseActiveArray) this.inUse.push(obj);
-		obj.__proto__.constructor.apply(obj,arguments);
-		return obj;
-	},
-	preAllocate: function(number){
-		//create # of objects
-		for (var i = 0; i < number; i++) {
-			this.notUsed.push(new this.type());
-		}
-	},
-	free: function(obj){
-		if(!this.dontUseActiveArray){
-			var index = this.inUse.indexOf(obj);
-			if(index !== -1){
-				this.inUse.splice(index,1);
-			}
-		}
-		this.notUsed.push(obj);
-	}
-};
-
-// window.observable = observable;
-// window.namedFunction = namedFunction;
-// window.positionToIndex = positionToIndex;
-// window.indexToPosition = indexToPosition;
-// window.observable = observable;
-// window.loadTexture = loadTexture;
-// window.createDebugBox = createDebugBox;
-// window.InstancePool = InstancePool;

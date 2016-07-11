@@ -23,7 +23,7 @@ export function drawLine(chunk, fromV, toV, block){
  * @param  {VoxelChunk|VoxelMap} chunk the chunk or map to use
  * @param  {THREE.Vector3} from the start position
  * @param  {THREE.Vector3} to the end position
- * @param  {String|Function} block the block to use. if a function is passed it will be called with
+ * @param  {String|Function|Null} block the block to use. if a function is passed it will be called with
  * @param  {THREE.Vector3} block.pos the position of the block
  * @param  {String} [type='solid'] the type of cube ('solide', 'hollow', 'frame')
  */
@@ -31,6 +31,13 @@ export function drawCube(chunk, fromV, toV, block, type = 'solid'){
 	let pos = new THREE.Vector3().copy(fromV);
 	let dist = toV.clone().sub(fromV);
 	let i = Math.abs(dist.x*dist.y*dist.z);
+	function setBlock(pos){
+		let b = block instanceof Function? block(pos) : block;
+		if(block == null || block == undefined)
+			chunk.removeBlock(pos);
+		else
+			chunk.setBlock(block, pos);
+	}
 	while(i-- > 0){
 		switch(type){
 			case 'frame':
@@ -39,7 +46,7 @@ export function drawCube(chunk, fromV, toV, block, type = 'solid'){
 					(pos.y == fromV.y || pos.y == toV.y + Math.sign(fromV.y - toV.y)) +
 					(pos.z == fromV.z || pos.z == toV.z + Math.sign(fromV.z - toV.z)) >= 2
 				){
-					chunk.setBlock(block instanceof Function? block(pos) : block, pos);
+					setBlock(pos);
 				}
 				break;
 			case 'hollow':
@@ -48,12 +55,12 @@ export function drawCube(chunk, fromV, toV, block, type = 'solid'){
 					(pos.y == fromV.y || pos.y == toV.y + Math.sign(fromV.y - toV.y)) ||
 					(pos.z == fromV.z || pos.z == toV.z + Math.sign(fromV.z - toV.z))
 				){
-					chunk.setBlock(block instanceof Function? block(pos) : block, pos);
+					setBlock(pos);
 				}
 				break;
 			default:
 			case 'solid':
-				chunk.setBlock(block instanceof Function? block(pos) : block, pos);
+				setBlock(pos);
 				break;
 		}
 

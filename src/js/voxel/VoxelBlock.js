@@ -18,12 +18,6 @@ const NEIGHBORS_DIRS = [
 export default class VoxelBlock{
 	constructor(data){
 		/**
-		 * the rotation of the block
-		 * @var {THREE.Euler}
-		 */
-		this.rotation = new THREE.Euler();
-
-		/**
 		 * the chunk we belong to
 		 * @type {VoxelChunk|VoxelSelection}
 		 */
@@ -32,21 +26,6 @@ export default class VoxelBlock{
 		// check to see if we set up the properties
 		if(!this.__proto__.hasOwnProperty('properties')){
 			this.constructor._setUpProperties();
-		}
-
-		/**
-		 * if we are at the edge of the chunk
-		 * @type {Boolean}
-		 */
-		this.edge = false;
-		if(this.position.x == 0 ||
-			this.position.y == 0 ||
-			this.position.z == 0 ||
-			this.position.x >= this.chunkSize-1 ||
-			this.position.y >= this.chunkSize-1 ||
-			this.position.z >= this.chunkSize-1){
-
-			this.edge = true;
 		}
 
 		if(data)
@@ -397,6 +376,7 @@ VoxelBlock.UID = 'block';
  * @property {Array} removeSound an array of sound ids to play if the player destroys this block
  */
 VoxelBlock.prototype.properties = {
+	rotation: new THREE.Euler(),
 	transparent: false,
 	canCollide: true,
 	canRotate: true,
