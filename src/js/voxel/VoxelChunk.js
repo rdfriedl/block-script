@@ -309,7 +309,7 @@ export default class VoxelChunk extends THREE.Group{
 		this.listBlocks().forEach(b => {
 			b.parent = undefined;
 			if(this.map)
-				this.map.blockVisibilityCache.delete(block);
+				this.map.blockVisibilityCache.delete(b);
 		});
 		this.blocks.clear();
 		this.materials.clear();
