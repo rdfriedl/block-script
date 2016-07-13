@@ -167,14 +167,6 @@ class Player extends THREE.Group{
 	getPosition(){
 		return this.collision.position;
 	}
-
-	bindKeys(keyboard){
-
-	}
-
-	unbindKeys(keyboard){
-
-	}
 }
 Player.WALK_SPEED = 2.29 * 60;
 Player.WALK_BACK_SPEED = 0.5; // % of player speed

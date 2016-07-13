@@ -59,15 +59,41 @@ export default class VoxelChunk extends THREE.Group{
 	}
 
 	/**
+	 * fired when a block is set
+	 * @event VoxelChunk#block:set
+	 * @type {Object}
+	 * @property {VoxelChunk} target
+	 * @property {VoxelBlock} block
+	 * @property {VoxelBlock} oldBlock
+	 */
+	/**
+	 * fired when a block is removed
+	 * @event VoxelChunk#block:removed
+	 * @type {Object}
+	 * @property {VoxelChunk} target
+	 * @property {VoxelBlock} block - the block that was removed
+	 */
+	/**
+	 * fired when the chunk has rebuilt its mesh
+	 * @event VoxelChunk#built
+	 * @type {Object}
+	 * @property {VoxelChunk} target
+	 */
+	/**
+	 * @event VoxelChunk#blocks:cleared
+	 * @type {Object}
+	 * @property {VoxelChunk} target
+	 */
+
+	/**
 	 * updates the geometry and material for this chunk, based on the blocks
 	 * @return {this}
+	 *
+	 * @fires VoxelChunk#built
 	 */
 	build(){
 		if(this.mesh)
 			this.mesh.geometry.dispose();
-
-		//dont build if we are empty
-		if(this.empty) return;
 
 		let geometry = new THREE.Geometry();
 
@@ -138,6 +164,18 @@ export default class VoxelChunk extends THREE.Group{
 		}
 
 		this.needsBuild = false;
+
+		// fire event
+		this.dispatchEvent({
+			type: 'built'
+		})
+
+		// fire event on parent
+		if(this.map && this.map.dispatchEvent)
+			this.map.dispatchEvent({
+				type: 'chunk:built',
+				chunk: this
+			})
 	}
 
 	/**
@@ -218,6 +256,8 @@ export default class VoxelChunk extends THREE.Group{
 	 * @param {VoxelBlock|String} block
 	 * @param {(THREE.Vector3|String)} position
 	 * @returns {this}
+	 *
+	 * @fires VoxelChunk#block:set
 	 */
 	setBlock(block,pos){
 		if(String.isString(block))
@@ -228,13 +268,32 @@ export default class VoxelChunk extends THREE.Group{
 
 		if(pos instanceof THREE.Vector3 && block instanceof VoxelBlock){
 			pos = this.tmpVec.copy(pos).round();
-			this.blocks.set(pos.toArray().join(','),block);
+
+			let str = pos.toArray().join(',');
+			let oldBlock = this.blocks.get(str);
+			this.blocks.set(str,block);
 			this.blocksPositions.set(block, pos.clone()); //clone the pos so we are not storing the original vec
 
 			block.parent = this;
 
 			//tell the map that we need to rebuild this chunk
 			this.needsBuild = true;
+
+			// fire event
+			this.dispatchEvent({
+				type: 'block:set',
+				block: block,
+				oldBlock: oldBlock
+			});
+
+			// fire event on parent
+			if(this.map && this.map.dispatchEvent)
+				this.map.dispatchEvent({
+					type: 'block:set',
+					chunk: this,
+					block: block,
+					oldBlock: oldBlock
+				})
 		}
 
 		return this;
@@ -243,12 +302,30 @@ export default class VoxelChunk extends THREE.Group{
 	/**
 	 * removes all blocks from this chunk
 	 * @return {this}
+	 *
+	 * @fires VoxelChunk#blocks:cleared
 	 */
 	clearBlocks(){
-		this.listBlocks().forEach(b => b.parent = undefined);
+		this.listBlocks().forEach(b => {
+			b.parent = undefined;
+			if(this.map)
+				this.map.blockVisibilityCache.delete(block);
+		});
 		this.blocks.clear();
 		this.materials.clear();
 		this.needsBuild = true;
+
+		// fire event
+		this.dispatchEvent({
+			type: 'blocks:cleared'
+		})
+
+		// fire event on parent
+		if(this.map && this.map.dispatchEvent)
+			this.map.dispatchEvent({
+				type: 'chunk:blocks:cleared',
+				chunk: this
+			})
 
 		return this;
 	}
@@ -257,6 +334,8 @@ export default class VoxelChunk extends THREE.Group{
 	 * removes block at position
 	 * @param  {THREE.Vector3|String|VoxelBlock} position - the position of the block to remove, or the {@link VoxelBlock} to remove
 	 * @return {this}
+	 *
+	 * @fires VoxelChunk#block:removed
 	 */
 	removeBlock(pos){
 		if(String.isString(pos))
@@ -287,6 +366,20 @@ export default class VoxelChunk extends THREE.Group{
 
 			//tell the map that we need to rebuild this chunk
 			this.needsBuild = true;
+
+			// fire event
+			this.dispatchEvent({
+				type: 'block:removed',
+				block: block
+			})
+
+			// fire event on parent
+			if(this.map && this.map.dispatchEvent)
+				this.map.dispatchEvent({
+					type: 'block:removed',
+					chunk: this,
+					block: block
+				})
 		}
 
 		return this;

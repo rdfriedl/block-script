@@ -7,6 +7,7 @@ import 'bootstrap-toggle-js';
 
 // three.js
 import THREE from 'three';
+import './js/three-changes.js';
 if(process.env.NODE_ENV == 'dev') window.THREE = THREE;
 
 // css
@@ -28,6 +29,7 @@ import CreditsMenuComponent from './components/menu/Credits.vue';
 import HelpMenuComponent from './components/menu/Help.vue';
 import SettingsMenuComponent from './components/menu/Settings.vue';
 import MapsMenuComponent from './components/menu/Maps.vue';
+import RoomEditorComponent from './components/RoomEditor.vue';
 
 // set up the config
 Vue.use(VueRouter);
@@ -49,7 +51,9 @@ router.map({
 	'/settings': {component: SettingsMenuComponent},
 	'/settings/:topic': {component: SettingsMenuComponent},
 	'/maps': {component: MapsMenuComponent},
-	'/maps/:modal': {component: MapsMenuComponent}
+	'/maps/:modal': {component: MapsMenuComponent},
+	'/editor': {component: RoomEditorComponent},
+	'/editor/:room': {component: RoomEditorComponent}
 });
 
 // start vue

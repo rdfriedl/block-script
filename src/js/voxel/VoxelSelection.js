@@ -3,9 +3,12 @@ import THREE from 'three';
 /**
  * @class
  * @name VoxelSelection
+ *
+ * @extends {THREE.EventDispatcher}
  */
-export default class VoxelSelection{
+export default class VoxelSelection extends THREE.EventDispatcher{
 	constructor(blockManager = VoxelBlockManager.inst){
+		super();
 		/**
 		 * the block manager this selection will use
 		 * @default {@link VoxelBlockManager.inst}
@@ -42,6 +45,27 @@ export default class VoxelSelection{
 		 */
 		this.tmpVec = new THREE.Vector3();
 	}
+
+	/**
+	 * fired when a block is set
+	 * @event VoxelSelection#block:set
+	 * @type {Object}
+	 * @property {VoxelChunk} target
+	 * @property {VoxelBlock} block
+	 * @property {VoxelBlock} oldBlock
+	 */
+	/**
+	 * fired when a block is removed
+	 * @event VoxelSelection#block:removed
+	 * @type {Object}
+	 * @property {VoxelChunk} target
+	 * @property {VoxelBlock} block - the block that was removed
+	 */
+	/**
+	 * @event VoxelSelection#blocks:cleared
+	 * @type {Object}
+	 * @property {VoxelChunk} target
+	 */
 
 	/**
 	 * checks to see if we have a block at position, or if the block is in this selection
@@ -120,6 +144,8 @@ export default class VoxelSelection{
 	 * @param {VoxelBlock|String} block
 	 * @param {(THREE.Vector3|String)} position
 	 * @returns {this}
+	 *
+	 * @fires VoxelSelection#block:set
 	 */
 	setBlock(block,pos){
 		if(String.isString(block))
@@ -131,10 +157,19 @@ export default class VoxelSelection{
 
 		if(pos instanceof THREE.Vector3 && block instanceof VoxelBlock){
 			pos = this.tmpVec.copy(pos).round();
-			this.blocks.set(pos.toArray().join(','),block);
+			let str = pos.toArray().join(',');
+			let oldBlock = this.blocks.get(str);
+			this.blocks.set(str,block);
 			this.blocksPositions.set(block, pos.clone());
 
 			block.parent = this;
+
+			// fire event
+			this.dispatchEvent({
+				type: 'block:set',
+				block: block,
+				oldBlock: oldBlock
+			})
 		}
 
 		return this;
@@ -143,10 +178,17 @@ export default class VoxelSelection{
 	/**
 	 * removes all blocks from this selection
 	 * @return {this}
+	 *
+	 * @fires VoxelSelection#blocks:cleared
 	 */
 	clearBlocks(){
 		this.listBlocks().forEach(b => b.parent = undefined);
 		this.blocks.clear();
+
+		// fire evnet
+		this.dispatchEvent({
+			type: 'blocks:cleared'
+		})
 
 		return this;
 	}
@@ -155,6 +197,8 @@ export default class VoxelSelection{
 	 * removes block at position
 	 * @param  {(THREE.Vector3|String)} position
 	 * @return {this}
+	 *
+	 * @fires VoxelSelection#block:removed
 	 */
 	removeBlock(pos){
 		if(String.isString(pos))
@@ -175,6 +219,11 @@ export default class VoxelSelection{
 			this.blocksPositions.delete(block);
 
 			block.parent = undefined;
+
+			this.dispatchEvent({
+				type: 'block:removed',
+				block: block
+			})
 		}
 
 		return this;

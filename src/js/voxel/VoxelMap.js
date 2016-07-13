@@ -59,11 +59,71 @@ export default class VoxelMap extends THREE.Group{
 
 		/**
 		 * a tmp Vector3 the chunk uses so it dose not have to create new instances
-		 * @var {THREE.Vector3}
+		 * @type {THREE.Vector3}
 		 * @private
 		 */
 		this.tmpVec = new THREE.Vector3();
+
+		/**
+		 * the mesh used for displaying the chunk
+		 * @type {THREE.Mesh}
+		 * @private
+		 */
+		this.mesh = undefined;
 	}
+
+	/**
+	 * this event bubbles up from the {@link VoxelChunk#block:set}
+	 * @event VoxelMap#block:set
+	 * @type {Object}
+	 * @property {VoxelMap} target
+	 * @property {VoxelChunk} chunk
+	 * @property {VoxelBlock} block
+	 * @property {VoxelBlock} oldBlock
+	 */
+	/**
+	 * this event bubbles up from the {@link VoxelChunk#block:removed}
+	 * @event VoxelMap#block:removed
+	 * @type {Object}
+	 * @property {VoxelMap} target
+	 * @property {VoxelChunk} chunk
+	 * @property {VoxelBlock} block - the block that was removed
+	 */
+	/**
+	 * fired when a chunk clears all its blocks
+	 * @event VoxelMap#chunk:blocks:cleared
+	 * @type {Object}
+	 * @property {VoxelMap} target
+	 * @property {VoxelChunk} chunk
+	 */
+	/**
+	 * fired when a chunk has rebuilt its mesh
+	 * @event VoxelMap#chunk:built
+	 * @type {Object}
+	 * @property {VoxelMap} target
+	 * @property {VoxelChunk} chunk
+	 */
+	/**
+	 * fires when a chunk is set in the map
+	 * @event VoxelMap#chunk:set
+	 * @type {Object}
+	 * @property {VoxelMap} target
+	 * @property {VoxelChunk} chunk
+	 * @property {VoxelChunk} oldChunk
+	 */
+	/**
+	 * fires when this map clears all its chunks
+	 * @event VoxelMap#chunks:cleared
+	 * @type {Object}
+	 * @property {VoxelMap} target
+	 */
+	/**
+	 * fires when a chunk is removed from the map
+	 * @event VoxelMap#chunk:removed
+	 * @type {Object}
+	 * @property {VoxelMap} target
+	 * @property {VoxelChunk} chunk
+	 */
 
 	/**
 	 * creates or gets the chunk at position and returns it
@@ -146,6 +206,8 @@ export default class VoxelMap extends THREE.Group{
 	 * @param {VoxelChunk|Object} chunk a {@link VoxelChunk} or a Object to pass to {@link VoxelChunk#fromJSON}
 	 * @param {(THREE.Vector3|String)} position
 	 * @returns {this}
+	 *
+	 * @fires VoxelMap#chunk:set
 	 */
 	setChunk(chunk,pos){
 		if(!chunk instanceof VoxelChunk)
@@ -156,12 +218,21 @@ export default class VoxelMap extends THREE.Group{
 
 		if(pos instanceof THREE.Vector3){
 			pos = this.tmpVec.copy(pos).round();
-			this.chunks.set(pos.toArray().join(','),chunk);
+			let str = pos.toArray().join(',');
+			let oldChunk = this.chunks.get(str);
+			this.chunks.set(str,chunk);
 			this.chunksPositions.set(chunk, pos.clone());
 
 			this.add(chunk);
 			chunk.position.copy(pos).multiply(this.chunkSize).multiply(this.blockSize);
 			chunk.map = this;
+
+			// fire event
+			this.dispatchEvent({
+				type: 'chunk:set',
+				chunk: chunk,
+				oldChunk: oldChunk
+			})
 		}
 
 		return this;
@@ -170,10 +241,17 @@ export default class VoxelMap extends THREE.Group{
 	/**
 	 * removes all the chunks in this map
 	 * @return {this}
+	 *
+	 * @fires VoxelMap#chunks:cleared
 	 */
 	clearChunks(){
 		this.listChunks().forEach(c => c.parent = undefined);
 		this.chunks.clear();
+
+		// fire event
+		this.dispatchEvent({
+			type: 'chunks:cleared'
+		});
 
 		return this;
 	}
@@ -182,6 +260,8 @@ export default class VoxelMap extends THREE.Group{
 	 * removes a chunk from the map
 	 * @param  {THREE.Vector3|String|VoxelChunk} posision - ths position of the chunk to remove. or the {@link VoxelChunk} to remove
 	 * @return {this}
+	 *
+	 * @fires VoxelMap#chunk:removed
 	 */
 	removeChunk(pos){
 		//string to vector
@@ -204,6 +284,12 @@ export default class VoxelMap extends THREE.Group{
 			chunk.map = undefined;
 			chunk.position.set(0,0,0);
 			this.remove(chunk);
+
+			// fire event
+			this.dispatchEvent({
+				type: 'chunk:removed',
+				chunk: chunk
+			})
 		}
 
 		return this;
