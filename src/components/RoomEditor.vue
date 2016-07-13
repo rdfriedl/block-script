@@ -113,7 +113,7 @@ export default {
 		ssaoPass.renderToScreen = true;
 		//ssaoPass.uniforms[ "tDiffuse" ].value will be set by ShaderPass
 		ssaoPass.uniforms["tDepth"].value = depthRenderTarget.texture;
-		ssaoPass.uniforms['size'].value.set( window.innerWidth, window.innerHeight );
+		ssaoPass.uniforms['size'].value.set(window.innerWidth, window.innerHeight);
 		ssaoPass.uniforms['cameraNear'].value = camera.near;
 		ssaoPass.uniforms['cameraFar'].value = camera.far;
 		ssaoPass.uniforms['onlyAO'].value = false;
@@ -150,6 +150,56 @@ export default {
 		controls.mouseButtons.PAN = undefined;
 		controls.mouseButtons.ZOOM = undefined;
 
+		// disable orbit controls if ctrlKey is down
+		window.addEventListener('keydown', ev => controls.enabled = !ev.ctrlKey);
+		window.addEventListener('keyup', ev => controls.enabled = !ev.ctrlKey);
+
+		// make custom camera pan
+		let panSpeed = 1;
+		let panControl = {
+			mouseDown: false,
+			mouseStart: new THREE.Vector2(),
+			controlStart: new THREE.Vector3(),
+			cameraRelPosition: new THREE.Vector3()
+		};
+		panControl.point = new THREE.Mesh(new THREE.SphereBufferGeometry(5, 32, 32), new THREE.MeshBasicMaterial({
+			color: 0x59fff3,
+			transparent: true,
+			depthTest: false
+		}));
+		panControl.point.visible = false;
+		scene.add(panControl.point);
+
+		renderer.domElement.addEventListener('mousedown', ev => {
+			if(ev.button == THREE.MOUSE.MIDDLE && ev.ctrlKey){
+				panControl.mouseDown = true;
+				panControl.mouseStart = new THREE.Vector2(ev.clientX, ev.clientY);
+				panControl.controlStart = controls.target.clone();
+				panControl.cameraRelPosition = camera.position.clone().sub(controls.target);
+			}
+		})
+		renderer.domElement.addEventListener('mousemove', ev => {
+			if(panControl.mouseDown){
+				let mousePosition = new THREE.Vector2(ev.clientX, ev.clientY);
+				let moved = mousePosition.clone().sub(panControl.mouseStart);
+
+				// move camera
+				let dir = camera.getWorldDirection();
+				let angle = Math.atan2(dir.x, dir.z);
+				controls.target.copy(panControl.controlStart).add(new THREE.Vector3(moved.x * panSpeed, 0, moved.y * panSpeed).applyAxisAngle(camera.up, angle));
+				camera.position.copy(controls.target).add(panControl.cameraRelPosition);
+
+				// target point
+				panControl.point.position.copy(controls.target);
+
+				panControl.point.visible = true;
+			}
+		});
+		renderer.domElement.addEventListener('mouseup', ev => {
+			panControl.mouseDown = false;
+			panControl.point.visible = false;
+		})
+
 		// create gridWalls
 		let gridWalls = new GridCube(ROOM_SIZE/2, BLOCK_SIZE, 0x666666, 0x666666);
 		gridWalls.position.set(1,1,1).multiplyScalar(ROOM_SIZE/2*BLOCK_SIZE);
@@ -175,20 +225,19 @@ export default {
 		let edgesGroup = new THREE.Group();
 		let chunkEdges = new Map();
 		map.addEventListener('chunk:built', (ev) => {
-			// rebuild edges for chunk
+			// remove old helper
+			let helper = chunkEdges.get(ev.chunk);
+			chunkEdges.delete(ev.chunk);
+
+			if(helper && helper.parent)
+					helper.parent.remove(helper);
+
+			// build new helper
 			if(!ev.chunk.empty){
 				let helper = new THREE.EdgesHelper(ev.chunk.mesh);
 				helper.material.linewidth = 2;
 				edgesGroup.add(helper);
 				chunkEdges.set(ev.chunk, helper);
-			}
-			else{
-				// remove helper
-				let helper = chunkEdges.get(ev.chunk);
-				chunkEdges.delete(ev.chunk);
-
-				if(helper && helper.parent)
-						helper.parent.remove(helper);
 			}
 		})
 		map.addEventListener('chunk:removed', ev => {
@@ -206,28 +255,7 @@ export default {
 		this.$watch('view.edges', v => edgesGroup.visible = v);
 
 		// create light
-		scene.add(new THREE.AmbientLight(0xbbbbbb));
-
-		// create clock
-		let clock = new THREE.Clock();
-		function update(){
-			let dtime = clock.getDelta();
-			if(this.enabled){
-				map.updateChunks();
-				controls.update();
-
-				gridWalls.updateViewingDirection(camera.getWorldDirection());
-			}
-
-			// Render depth into depthRenderTarget
-			scene.overrideMaterial = depthMaterial;
-			renderer.render(scene, camera, depthRenderTarget, true);
-			// Render renderPass and SSAO shaderPass
-			scene.overrideMaterial = null;
-			effectComposer.render();
-
-			requestAnimationFrame(update.bind(this));
-		}
+		scene.add(new THREE.AmbientLight(0xffffff));
 
 		// create editor tools
 		let attachTool = new AttachTool(camera, map, renderer);
@@ -271,6 +299,29 @@ export default {
 		attachTool.intersects.push(wallsForTools);
 		scene.add(wallsForTools);
 
+
+		// create clock
+		let clock = new THREE.Clock();
+		function update(){
+			let dtime = clock.getDelta();
+			if(this.enabled){
+				map.updateChunks();
+				controls.update();
+
+				gridWalls.updateViewingDirection(camera.getWorldDirection());
+			}
+
+			// Render depth into depthRenderTarget
+			scene.overrideMaterial = depthMaterial;
+			renderer.render(scene, camera, depthRenderTarget, true);
+			// Render renderPass and SSAO shaderPass
+			scene.overrideMaterial = null;
+			effectComposer.render();
+
+			// renderer.render(scene, camera);
+
+			requestAnimationFrame(update.bind(this));
+		}
 		// save some stuff to vue controler
 		this._renderer = renderer;
 		this._keyboard = new Keyboard();
@@ -281,6 +332,7 @@ export default {
 		// debug
 		if(process.env.NODE_ENV == 'dev'){
 			window.editorMap = map;
+			window.editorScene = scene;
 		}
 	},
 	attached(){
