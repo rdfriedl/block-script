@@ -2,6 +2,7 @@ import THREE from 'three';
 import EditorTool from './EditorTool.js';
 import VoxelBlock from '../voxel/VoxelBlock.js';
 import VoxelChunk from '../voxel/VoxelChunk.js';
+import * as ChunkUtils from '../ChunkUtils.js';
 
 export default class AttachTool extends EditorTool{
 	constructor(camera, map, renderer){
@@ -10,13 +11,16 @@ export default class AttachTool extends EditorTool{
 		this.map = map;
 		this.renderer;
 
+		this.enabled = true;
+
 		this.intersects = [this.map];
 		this.raycaster = new THREE.Raycaster();
 		this.mousePosition = new THREE.Vector2();
-		this.target = undefined;
-		this.targetNormal = undefined;
-		this.targetObject = undefined;
-		this.placeTarget = undefined;
+		this.mousedown = false;
+		this.mousebutton = -1;
+
+		this.start = undefined;
+		this.end = undefined;
 
 		this.testCollision = undefined;
 		this.checkPlace = undefined;
@@ -30,21 +34,49 @@ export default class AttachTool extends EditorTool{
 				(event.clientX / renderer.domElement.clientWidth) * 2 - 1,
 				- (event.clientY / renderer.domElement.clientHeight) * 2 + 1);
 
-			this.updateTarget().updateObjects();
+			this.end = this.getTarget(this.mousePosition);
+
+			this.updateObjects();
 		});
 
 		// place blocks
 		renderer.domElement.addEventListener('mousedown', event => {
-			if(this.placeTarget && event.button == THREE.MOUSE.LEFT && (!this.checkPlace || this.checkPlace(this.placeTarget))){
-				this.map.setBlock(this.placeBlockID, this.placeTarget);
+			if(event.button == THREE.MOUSE.LEFT || event.button == THREE.MOUSE.RIGHT){
+				this.start = this.getTarget(this.mousePosition);
+				this.mousedown = true;
+				this.mousebutton = event.button;
+			}
+		});
+		renderer.domElement.addEventListener('mouseup', event => {
+			// place
+			if(
+				this.mousedown &&
+				this.start && this.start.placeTarget &&
+				this.end && this.end.placeTarget &&
+				event.button == THREE.MOUSE.LEFT &&
+				(!this.checkPlace || (this.checkPlace(this.start.placeTarget) && this.checkPlace(this.end.placeTarget)))
+			){
+				let box = this.getSelectionBox(this.start.placeTarget, this.end.placeTarget);
+				ChunkUtils.drawCube(this.map, box.start, box.end, this.placeBlockID);
 				this.map.updateChunks();
 			}
 
-			if(this.targetObject && event.button == THREE.MOUSE.RIGHT && (!this.checkRemove || this.checkRemove(this.targetObject))){
-				this.targetObject.remove();
+			// remove
+			if(
+				this.mousedown &&
+				this.start && this.start.target &&
+				this.end && this.end.target &&
+				event.button == THREE.MOUSE.RIGHT &&
+				(!this.checkRemove || (this.checkRemove(this.start.target) && this.checkRemove(this.end.target)))
+			){
+				let box = this.getSelectionBox(this.start.target, this.end.target);
+				ChunkUtils.drawCube(this.map, box.start, box.end, null);
 				this.map.updateChunks();
 			}
-		});
+
+			this.start = undefined;
+			this.mousedown = false;
+		})
 
 		// create objects
 		this.selectionFace = new THREE.Mesh(new THREE.PlaneBufferGeometry(1, 1), new THREE.MeshBasicMaterial({
@@ -57,12 +89,23 @@ export default class AttachTool extends EditorTool{
 		this.selectionFace.scale.copy(this.map.blockSize);
 		this.add(this.selectionFace);
 
+		this.selectionBox = new THREE.Mesh(new THREE.BoxBufferGeometry(1,1,1), new THREE.MeshBasicMaterial({
+			color: 0xff2222,
+			transparent: true,
+			opacity: 0.5,
+			depthTest: false,
+			wireframe: true
+		}));//, 0xff2222);
+		// this.selectionBox.material.depthTest = false;
+		this.add(this.selectionBox);
+
 		// update
 		this.updateObjects();
 	}
 
-	updateTarget(){
-		this.raycaster.setFromCamera(this.mousePosition, this.camera);
+	getTarget(mouse){
+		let info = {};
+		this.raycaster.setFromCamera(mouse, this.camera);
 
 		let intersects = this.raycaster.intersectObjects(this.intersects, true);
 
@@ -71,45 +114,56 @@ export default class AttachTool extends EditorTool{
 				let intersection = intersects[i];
 
 				if(!this.testCollision || this.testCollision(intersects.object)){
-					this.targetNormal = intersection.face.normal.clone();
+					info.point = intersection.point.clone();
+					info.normal = intersection.face.normal.clone();
 					// make the normal 1/4 the size of the blocks
 					let n = intersection.face.normal.clone().multiply(this.map.blockSize).divideScalar(4);
 					//get target
-					this.target = intersection.point.clone().sub(n).divide(this.map.blockSize).floor();
+					info.target = intersection.point.clone().sub(n).divide(this.map.blockSize).floor();
 					//get place target
-					this.placeTarget = intersection.point.clone().add(n).divide(this.map.blockSize).floor();
+					info.placeTarget = intersection.point.clone().add(n).divide(this.map.blockSize).floor();
 
 					// get target block
-					if(intersection.object.parent instanceof VoxelChunk){
-						this.targetObject = intersection.object.parent.getBlock(this.target.clone().sub(intersection.object.parent.worldPosition));
-					}
-					else
-						this.targetObject = undefined;
+					if(intersection.object.parent instanceof VoxelChunk)
+						info.block = intersection.object.parent.getBlock(info.target.clone().sub(intersection.object.parent.worldPosition));
 
 					break;
 				}
 			}
 		}
-		else{
-			this.target = undefined;
-			this.targetNormal = undefined;
-			this.placeTarget = undefined;
-			this.targetObject = undefined;
-		}
 
-		return this;
+		return info;
+	}
+
+	getSelectionBox(start, end){
+		let half = new THREE.Vector3(0.5,0.5,0.5);
+		let diff = end.clone().sub(start);
+		return {
+			start: start.clone().add(half).add(half.clone().multiply(diff.clone().sign().negate().map(v => v || -1))),
+			end: end.clone().add(half).add(half.clone().multiply(diff.clone().sign().map(v => v || 1)))
+		}
 	}
 
 	updateObjects(){
-		if(this.target){
+		if(this.end && this.end.target){
 			this.selectionFace.visible = true;
-			this.selectionFace.position.copy(this.target.clone().add(new THREE.Vector3(0.5,0.5,0.5)).multiply(this.map.blockSize));
-			this.selectionFace.position.add(this.map.blockSize.clone().divideScalar(2).multiply(this.targetNormal).multiplyScalar(1.1));
-			this.selectionFace.quaternion.setFromUnitVectors(this.selectionFace.up, this.targetNormal);
+			this.selectionFace.position.copy(this.end.target.clone().add(new THREE.Vector3(0.5,0.5,0.5)).multiply(this.map.blockSize));
+			this.selectionFace.position.add(this.map.blockSize.clone().divideScalar(2).multiply(this.end.normal).multiplyScalar(1.05));
+			this.selectionFace.quaternion.setFromUnitVectors(this.selectionFace.up, this.end.normal);
 		}
-		else{
+		else
 			this.selectionFace.visible = false;
+
+		if(this.start){
+			let type = this.mousebutton == THREE.MOUSE.LEFT? 'placeTarget' : 'target';
+			this.selectionBox.visible = true;
+			let box = this.getSelectionBox(this.start[type], this.end[type]);
+
+			this.selectionBox.position.copy(box.start).add(box.end.clone().sub(box.start).divideScalar(2)).multiply(this.map.blockSize);
+			this.selectionBox.scale.copy(box.end.clone().sub(box.start)).multiply(this.map.blockSize);
 		}
+		else
+			this.selectionBox.visible = false;
 
 		return this;
 	}

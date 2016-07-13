@@ -351,16 +351,16 @@ export default class VoxelChunk extends THREE.Group{
 			}
 			if(!block) return this;
 
-			// remove it from the maps
-			this.blocks.delete(block.position.toArray().join(','));
-			this.blocksPositions.delete(block);
-
 			// remove it from the cache, and update its neighbors
 			this.map.blockVisibilityCache.delete(block);
 			block.getNeighbors().forEach(b => {
 				if(b instanceof VoxelBlock)
 					this.map.blockVisibilityCache.delete(b);
 			});
+
+			// remove it from the maps
+			this.blocks.delete(block.position.toArray().join(','));
+			this.blocksPositions.delete(block);
 
 			block.parent = undefined;
 

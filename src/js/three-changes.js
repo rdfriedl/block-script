@@ -21,3 +21,10 @@ THREE.EventDispatcher.prototype.dispatchEvent = function(event) {
 		}
 	}
 }
+
+THREE.Vector3.prototype.map = function(fn) {
+	this.x = fn(this.x);
+	this.y = fn(this.y);
+	this.z = fn(this.z);
+	return this;
+}
