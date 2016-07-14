@@ -1,11 +1,9 @@
 <!-- HTML -->
 <template>
 
-<div v-el:canvas class="canvas-container"></div>
-
-<nav class="navbar navbar-default" role="navigation">
-	<ul class="nav navbar-nav">
-		<li><div class="btn-group">
+<div layout="column" style="height:100%;">
+	<div>
+		<div class="btn-group">
 			<a v-link="'/menu'" class="btn btn-info"><i class="fa fa-arrow-left"></i> Back</a>
 			<dropdown>
 				<a class="dropdown-toggle btn btn-default" data-toggle="dropdown"><span>File</span></a>
@@ -24,12 +22,29 @@
 					<li><a @click="view.walls = !view.walls">Walls <i class="fa fa-check" v-show="view.walls"></i></a></li>
 				</ul>
 			</dropdown>
-		</div></li>
-	</ul>
-	<ul class="nav navbar-nav navbar-right">
-		<li><a href="#">Link</a></li>
-	</ul>
-</nav>
+		</div>
+	</div>
+
+	<div self="size-x1" layout="row stretch-stretch">
+		<div self="size-1of4">
+			<tabs :active="0">
+				<tab header="Blocks">
+					<div layout="rows top-spread">
+						<div class="block" self="size-1of8" v-for="(key, block) of blocks" @click="selectedBlockID = block.UID" :class="{active: selectedBlockID == block.UID}">
+							<mesh-preview class="fix-width" :mesh="getBlockMesh(block)"></mesh-preview>
+						</div>
+					</div>
+				</tab>
+				<tab header="Options">
+
+				</tab>
+			</tabs>
+		</div>
+		<div self="size-3of4">
+			<div v-el:canvas class="canvas-container"></div>
+		</div>
+	</div>
+</div>
 
 </template>
 
@@ -37,8 +52,10 @@
 <script>
 
 import $ from 'jquery';
-import * as VueStrap from 'vue-strap';
 import THREE from 'three';
+
+import MeshPreviewComponent from './editor/MeshPreview.vue';
+import * as VueStrap from 'vue-strap';
 
 // three plugins
 import 'imports?THREE=three!../lib/threejs/controls/OrbitControls.js';
@@ -61,17 +78,28 @@ const ROOM_SIZE = new THREE.Vector3(32,16,32);
 
 export default {
 	components: {
-		dropdown: VueStrap.dropdown
+		dropdown: VueStrap.dropdown,
+		tabs: VueStrap.tabset,
+		tab: VueStrap.tab,
+		meshPreview: MeshPreviewComponent
 	},
-	data() {
-		return {
-			mode: 'place',
-			view: {
-				edges: false,
-				axes: true,
-				walls: true,
-				blocks: true
-			}
+	data(){return {
+		selectedBlockID: 'dirt',
+		blocks: blocks,
+		mode: 'place',
+		view: {
+			edges: false,
+			axes: true,
+			walls: true,
+			blocks: true
+		}
+	}},
+	methods: {
+		getBlockMesh(blockCls){
+			let block = new blockCls();
+			let mesh = new THREE.Mesh(block.geometry, block.material);
+			mesh.scale.set(32,32,32);
+			return () => mesh;
 		}
 	},
 	created(){
@@ -121,6 +149,9 @@ export default {
 			}
 		]);
 
+		editor.attachTool.placeBlockID = this.selectedBlockID;
+		this.$watch('selectedBlockID', v => editor.attachTool.placeBlockID = v);
+
 		// view walls
 		editor.gridWalls.visible = this.view.walls;
 		this.$watch('view.walls', v => editor.gridWalls.visible = v);
@@ -166,11 +197,16 @@ export default {
 		if(process.env.NODE_ENV == 'dev')
 			window.editor = editor;
 	},
+	ready(){
+		window.addEventListener('resize', Function.debounce(() => this.$emit('canvas-resize'), 150));
+	},
 	attached(){
 		//add it to my element
 		this.$els.canvas.appendChild(this.editor.renderer.domElement);
 		this.editor.keyboard.listen();
 		this.enabled = true;
+
+		this.$emit('canvas-resize');
 	},
 	detached(){
 		this.editor.keyboard.stop_listening();
@@ -186,8 +222,8 @@ function createRenderer(editor){
 	renderer.setClearColor(0x333333, 1);
 
 	// resize renderer
-	window.addEventListener('resize', () => {
-		renderer.setSize(window.innerWidth, window.innerHeight);
+	this.$on('canvas-resize', () => {
+		renderer.setSize(this.$els.canvas.parentElement.clientWidth, this.$els.canvas.parentElement.clientHeight);
 	});
 }
 
@@ -199,8 +235,8 @@ function createScene(editor){
 	let camera = editor.camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 20000);
 
 	//resize camera when window resizes
-	window.addEventListener('resize', () => {
-		camera.aspect = window.innerWidth / window.innerHeight;
+	this.$on('canvas-resize', () => {
+		camera.aspect = this.$els.canvas.parentElement.clientWidth / this.$els.canvas.parentElement.clientHeight;
 		camera.updateProjectionMatrix();
 	});
 
@@ -283,9 +319,9 @@ function createRendererEffects(editor){
 	effectComposer.addPass(ssaoPass);
 
 	// resize effects
-	window.addEventListener('resize', () => {
-		let width = window.innerWidth;
-		let height = window.innerHeight;
+	this.$on('canvas-resize', () => {
+		let width = this.$els.canvas.parentElement.clientWidth;
+		let height = this.$els.canvas.parentElement.clientHeight;
 
 		// Resize renderTargets
 		ssaoPass.uniforms['size'].value.set(width, height);
@@ -328,7 +364,6 @@ function createTools(editor){
 
 	// create editor tools
 	let attachTool = editor.attachTool = new AttachTool(editor.camera, editor.map, editor.renderer);
-	attachTool.placeBlockID = 'stone';
 	attachTool.intersects.push(roomWalls);
 	editor.scene.add(attachTool);
 
@@ -366,8 +401,8 @@ function createControls(editor){
 		if(camLookAt.enabled && event.button == camLookAt.mouseButtons.LOOK){
 			let raycaster = new THREE.Raycaster();
 			raycaster.setFromCamera(new THREE.Vector2(
-				(event.clientX / editor.renderer.domElement.clientWidth) * 2 - 1,
-				- (event.clientY / editor.renderer.domElement.clientHeight) * 2 + 1), editor.camera);
+				(event.offsetX / editor.renderer.domElement.clientWidth) * 2 - 1,
+				- (event.offsetY / editor.renderer.domElement.clientHeight) * 2 + 1), editor.camera);
 
 			let intersects = raycaster.intersectObjects([editor.map, editor.roomWalls], true);
 
@@ -382,15 +417,20 @@ function createControls(editor){
 
 <style scoped>
 
-.canvas-container{
-	position: absolute;
-	width: 100%;
-	height: 100%;
-	overflow: hidden;
-}
-
 .navbar-right{
 	margin-right: 0;
+}
+
+.block{
+	box-sizing: border-box;
+	background: rgba(0,0,0,0.5);
+	border: 2px solid grey;
+	margin: 5px;
+	cursor: pointer;
+}
+
+.block.active{
+	border-color: black;
 }
 
 </style>

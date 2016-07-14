@@ -16,6 +16,7 @@ import 'bootstrap-css';
 import 'bootswatch-superhero';
 import 'bootstrap-toggle-css';
 import 'bootstrap-dialog-css';
+import 'flex-layout-attribute';
 
 import './css/style.css';
 import './css/utils.css';

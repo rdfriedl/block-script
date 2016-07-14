@@ -44,6 +44,7 @@ module.exports = {
 			'bootswatch-superhero',
 			'bootstrap-toggle-css',
 			'bootstrap-dialog-css',
+			'flex-layout-attribute',
 			'vue-strap'
 		]
 	},
@@ -64,6 +65,7 @@ module.exports = {
 		'bootswatch-superhero': 'undefined',
 		'bootstrap-toggle-css': 'undefined',
 		'bootstrap-dialog-css': 'undefined',
+		'flex-layout-attribute ': 'undefined',
 		'vue-strap': 'VueStrap'
     },
 	output: {

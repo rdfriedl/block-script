@@ -35,8 +35,8 @@ export default class AttachTool extends EditorTool{
 		// bind events
 		renderer.domElement.addEventListener('mousemove', event => {
 			this.mousePosition.set(
-				(event.clientX / renderer.domElement.clientWidth) * 2 - 1,
-				- (event.clientY / renderer.domElement.clientHeight) * 2 + 1);
+				(event.offsetX / renderer.domElement.clientWidth) * 2 - 1,
+				- (event.offsetY / renderer.domElement.clientHeight) * 2 + 1);
 
 			if(this.enabled)
 				this.end = this.getTarget(this.mousePosition);
