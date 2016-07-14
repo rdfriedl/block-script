@@ -4,8 +4,8 @@ export default class GridCube extends THREE.Group{
 	constructor(gridSize, cellSize, colorCenterLine, colorGrid){
 		super();
 		this.walls = {};
-		this.cellSize = cellSize || 10;
-		this.gridSize = gridSize || 10;
+		this.cellSize = cellSize || new THREE.Vector3();
+		this.gridSize = gridSize || new THREE.Vector3();
 		this.colorCenterLine = colorCenterLine;
 		this.colorGrid = colorGrid;
 		this.sides = ['x','y','z'];
@@ -24,11 +24,28 @@ export default class GridCube extends THREE.Group{
 			this.walls[side] = this.walls[side] || {};
 
 			[1,-1].forEach(s => {
+				let gridSize = new THREE.Vector2();
+				let cellSize = new THREE.Vector2();
+				switch(side){
+					case 'x':
+						gridSize.set(this.gridSize.y, this.gridSize.z);
+						cellSize.set(this.cellSize.y, this.cellSize.z);
+						break;
+					case 'y':
+						gridSize.set(this.gridSize.x, this.gridSize.z);
+						cellSize.set(this.cellSize.x, this.cellSize.z);
+						break;
+					case 'z':
+						gridSize.set(this.gridSize.x, this.gridSize.y);
+						cellSize.set(this.cellSize.x, this.cellSize.y);
+						break;
+				}
+
 				let normal = new THREE.Vector3();
-				let grid = new THREE.GridHelper(this.gridSize*this.cellSize, this.cellSize, this.colorCenterLine, this.colorGrid);
+				let grid = new THREE.GridHelper(gridSize.clone().multiply(cellSize), cellSize, this.colorCenterLine, this.colorGrid);
 
 				normal[side] = -s;
-				grid.position[side] = this.gridSize*this.cellSize*s;
+				grid.position[side] = this.gridSize[side]*this.cellSize[side]*s;
 				grid.quaternion.setFromUnitVectors(grid.up, normal);
 
 				this.add(grid);

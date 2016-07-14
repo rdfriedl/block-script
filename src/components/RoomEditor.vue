@@ -57,8 +57,7 @@ import VoxelBlockManager from '../js/voxel/VoxelBlockManager.js';
 
 import AttachTool from '../js/editor-tools/AttachTool.js';
 
-const BLOCK_SIZE = 32;
-const ROOM_SIZE = 20;
+const ROOM_SIZE = new THREE.Vector3(32,16,32);
 
 export default {
 	components: {
@@ -66,285 +65,317 @@ export default {
 	},
 	data() {
 		return {
+			mode: 'place',
 			view: {
 				edges: false,
+				axes: true,
 				walls: true,
 				blocks: true
 			}
 		}
 	},
 	created(){
-		// create renderer
-		let renderer = new THREE.WebGLRenderer();
-		renderer.setPixelRatio(window.devicePixelRatio);
-		renderer.setSize(window.innerWidth, window.innerHeight);
-		renderer.setClearColor(0x333333, 1);
+		let editor = {};
+		let modes = editor.modes = {};
+		this.$watch('mode', (newValue, oldValue) => {
+			if(modes[oldValue])
+				modes[oldValue].exit();
 
-		// resize renderer
-		window.addEventListener('resize', () => {
-			renderer.setSize(window.innerWidth, window.innerHeight);
+			if(modes[newValue])
+				modes[newValue].enter();
 		});
 
-		// create scene
-		let scene = new THREE.Scene();
+		// create keyboard
+		editor.keyboard = new Keyboard();
 
-		// create camera
-		let camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 20000);
-		camera.position.set(1,0,1).multiplyScalar(BLOCK_SIZE*10).add(new THREE.Vector3(1,1,1).multiplyScalar(300));
+		// init
+		createRenderer.call(this, editor);
+		createScene.call(this, editor);
+		createRendererEffects.call(this, editor);
+		createTools.call(this, editor);
+		createControls.call(this, editor);
 
-		//resize camera when window resizes
-		window.addEventListener('resize', () => {
-			camera.aspect = window.innerWidth / window.innerHeight;
-			camera.updateProjectionMatrix();
-		});
-
-		// create AO post processing effect
-		let renderPass = new THREE.RenderPass(scene, camera);
-
-		// Setup depth pass
-		let depthMaterial = new THREE.MeshDepthMaterial();
-		depthMaterial.depthPacking = THREE.RGBADepthPacking;
-		depthMaterial.blending = THREE.NoBlending;
-		let pars = {minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter};
-		let depthRenderTarget = new THREE.WebGLRenderTarget(window.innerWidth, window.innerHeight, pars);
-
-		// Setup SSAO pass
-		let ssaoPass = new THREE.ShaderPass(THREE.SSAOShader);
-		ssaoPass.renderToScreen = true;
-		//ssaoPass.uniforms[ "tDiffuse" ].value will be set by ShaderPass
-		ssaoPass.uniforms["tDepth"].value = depthRenderTarget.texture;
-		ssaoPass.uniforms['size'].value.set(window.innerWidth, window.innerHeight);
-		ssaoPass.uniforms['cameraNear'].value = camera.near;
-		ssaoPass.uniforms['cameraFar'].value = camera.far;
-		ssaoPass.uniforms['onlyAO'].value = false;
-		ssaoPass.uniforms['aoClamp'].value = 0.3;
-		ssaoPass.uniforms['lumInfluence'].value = 0.5;
-
-		// Add pass to effect composer
-		let effectComposer = new THREE.EffectComposer(renderer);
-		effectComposer.addPass(renderPass);
-		effectComposer.addPass(ssaoPass);
-
-		// resize effects
-		window.addEventListener('resize', () => {
-			let width = window.innerWidth;
-			let height = window.innerHeight;
-
-			// Resize renderTargets
-			ssaoPass.uniforms['size'].value.set(width, height);
-			let pixelRatio = renderer.getPixelRatio();
-			let newWidth  = Math.floor(width / pixelRatio) || 1;
-			let newHeight = Math.floor(height / pixelRatio) || 1;
-			depthRenderTarget.setSize(newWidth, newHeight);
-			effectComposer.setSize(newWidth, newHeight);
-		});
-
-		// create controls
-		let controls = new THREE.OrbitControls(camera, renderer.domElement);
-		controls.target.set(1,0,1).multiplyScalar(BLOCK_SIZE*10);
-		controls.enableDamping = true;
-		controls.dampingFactor = 0.25;
-		controls.enableKeys = false;
-		controls.rotateSpeed = 0.5;
-		controls.mouseButtons.ORBIT = THREE.MOUSE.MIDDLE;
-		controls.mouseButtons.PAN = undefined;
-		controls.mouseButtons.ZOOM = undefined;
+		// set camera position
+		editor.camera.position.copy(ROOM_SIZE).multiply(editor.map.blockSize);
+		editor.camControls.target.set(0.5,0,0.5).multiply(editor.map.blockSize).multiply(ROOM_SIZE);
 
 		// disable orbit controls if ctrlKey is down
-		window.addEventListener('keydown', ev => controls.enabled = !ev.ctrlKey);
-		window.addEventListener('keyup', ev => controls.enabled = !ev.ctrlKey);
+		editor.camControls.enabled = true;
+		editor.keyboard.register_many([
+			{
+				keys: 'space',
+				on_keydown: () => {
+					editor.camLookAt.enabled = true;
+					editor.camControls.mouseButtons.ORBIT = THREE.MOUSE.LEFT;
+					editor.camControls.mouseButtons.PAN = THREE.MOUSE.MIDDLE;
 
-		// make custom camera pan
-		let panSpeed = 1;
-		let panControl = {
-			mouseDown: false,
-			mouseStart: new THREE.Vector2(),
-			controlStart: new THREE.Vector3(),
-			cameraRelPosition: new THREE.Vector3()
-		};
-		panControl.point = new THREE.Mesh(new THREE.SphereBufferGeometry(5, 32, 32), new THREE.MeshBasicMaterial({
-			color: 0x59fff3,
-			transparent: true,
-			depthTest: false
-		}));
-		panControl.point.visible = false;
-		scene.add(panControl.point);
+					editor.attachTool.enabled = false;
+				},
+				on_keyup: () => {
+					editor.camLookAt.enabled = false;
+					editor.camControls.mouseButtons.ORBIT = THREE.MOUSE.MIDDLE;
+					editor.camControls.mouseButtons.PAN = undefined;
 
-		renderer.domElement.addEventListener('mousedown', ev => {
-			if(ev.button == THREE.MOUSE.MIDDLE && ev.ctrlKey){
-				panControl.mouseDown = true;
-				panControl.mouseStart = new THREE.Vector2(ev.clientX, ev.clientY);
-				panControl.controlStart = controls.target.clone();
-				panControl.cameraRelPosition = camera.position.clone().sub(controls.target);
+					editor.attachTool.enabled = true;
+				},
 			}
-		})
-		renderer.domElement.addEventListener('mousemove', ev => {
-			if(panControl.mouseDown){
-				let mousePosition = new THREE.Vector2(ev.clientX, ev.clientY);
-				let moved = mousePosition.clone().sub(panControl.mouseStart);
-
-				// move camera
-				let dir = camera.getWorldDirection();
-				let angle = Math.atan2(dir.x, dir.z);
-				controls.target.copy(panControl.controlStart).add(new THREE.Vector3(moved.x * panSpeed, 0, moved.y * panSpeed).applyAxisAngle(camera.up, angle));
-				camera.position.copy(controls.target).add(panControl.cameraRelPosition);
-
-				// target point
-				panControl.point.position.copy(controls.target);
-
-				panControl.point.visible = true;
-			}
-		});
-		renderer.domElement.addEventListener('mouseup', ev => {
-			panControl.mouseDown = false;
-			panControl.point.visible = false;
-		})
-
-		// create gridWalls
-		let gridWalls = new GridCube(ROOM_SIZE/2, BLOCK_SIZE, 0x666666, 0x666666);
-		gridWalls.position.set(1,1,1).multiplyScalar(ROOM_SIZE/2*BLOCK_SIZE);
-		scene.add(gridWalls);
+		]);
 
 		// view walls
-		this.$watch('view.walls', v => gridWalls.visible = v);
-
-		let axes = new THREE.AxisHelper(BLOCK_SIZE*ROOM_SIZE);
-		axes.material.depthTest = false;
-		scene.add(axes);
-
-		// create the map
-		let blockManager = new VoxelBlockManager();
-		blockManager.registerBlock(blocks);
-		let map = new VoxelMap(blockManager);
-		scene.add(map);
+		editor.gridWalls.visible = this.view.walls;
+		this.$watch('view.walls', v => editor.gridWalls.visible = v);
 
 		// view blocks
-		this.$watch('view.blocks', v => map.visible = v);
-
-		// create edges
-		let edgesGroup = new THREE.Group();
-		let chunkEdges = new Map();
-		map.addEventListener('chunk:built', (ev) => {
-			// remove old helper
-			let helper = chunkEdges.get(ev.chunk);
-			chunkEdges.delete(ev.chunk);
-
-			if(helper && helper.parent)
-					helper.parent.remove(helper);
-
-			// build new helper
-			if(!ev.chunk.empty){
-				let helper = new THREE.EdgesHelper(ev.chunk.mesh);
-				helper.material.linewidth = 2;
-				edgesGroup.add(helper);
-				chunkEdges.set(ev.chunk, helper);
-			}
-		})
-		map.addEventListener('chunk:removed', ev => {
-			// remove helper
-			let helper = chunkEdges.get(ev.chunk);
-			chunkEdges.delete(ev.chunk);
-
-			if(helper && helper.parent)
-					helper.parent.remove(helper);
-		})
-		scene.add(edgesGroup);
+		editor.map.visible = this.view.blocks;
+		this.$watch('view.blocks', v => editor.map.visible = v);
 
 		// view edges
-		edgesGroup.visible = this.view.edges;
-		this.$watch('view.edges', v => edgesGroup.visible = v);
-
-		// create light
-		scene.add(new THREE.AmbientLight(0xffffff));
-
-		// create editor tools
-		let attachTool = new AttachTool(camera, map, renderer);
-		attachTool.placeBlockID = 'stone';
-		scene.add(attachTool);
-
-		// make sure we dont place blocks outside of the room
-		attachTool.checkPlace = (v) => {
-			return !(
-				v.x > ROOM_SIZE || v.x < 0 ||
-				v.y > ROOM_SIZE || v.y < 0 ||
-				v.z > ROOM_SIZE || v.z < 0
-			);
-		}
-
-		// create a cube with inverted normals
-		let wallsCube = new THREE.BoxGeometry(ROOM_SIZE, ROOM_SIZE, ROOM_SIZE);
-		for(let i = 0; i < wallsCube.faces.length; i ++){
-			let face = wallsCube.faces[i];
-			let temp = face.a;
-			face.a = face.c;
-			face.c = temp;
-		}
-
-		wallsCube.computeFaceNormals();
-		wallsCube.computeVertexNormals();
-
-		let faceVertexUvs = wallsCube.faceVertexUvs[ 0 ];
-		for(let i = 0; i < faceVertexUvs.length; i ++){
-			let temp = faceVertexUvs[ i ][ 0 ];
-			faceVertexUvs[ i ][ 0 ] = faceVertexUvs[ i ][ 2 ];
-			faceVertexUvs[ i ][ 2 ] = temp;
-		}
-
-		// create invisible cube so the tools can place blocks on the edge of the room
-		let wallsForTools = new THREE.Mesh(wallsCube, new THREE.MeshNormalMaterial({
-			visible: false
-		}));
-		wallsForTools.scale.copy(map.blockSize);
-		wallsForTools.position.set(ROOM_SIZE,ROOM_SIZE,ROOM_SIZE).divideScalar(2).multiply(map.blockSize);
-		attachTool.intersects.push(wallsForTools);
-		scene.add(wallsForTools);
-
+		editor.mapEdges.visible = this.view.edges;
+		this.$watch('view.edges', v => editor.mapEdges.visible = v);
 
 		// create clock
 		let clock = new THREE.Clock();
+
+		// main update
 		function update(){
 			let dtime = clock.getDelta();
 			if(this.enabled){
-				map.updateChunks();
-				controls.update();
+				editor.map.updateChunks();
+				editor.camControls.update();
 
-				gridWalls.updateViewingDirection(camera.getWorldDirection());
+				editor.gridWalls.updateViewingDirection(editor.camera.getWorldDirection());
 			}
 
 			// Render depth into depthRenderTarget
-			scene.overrideMaterial = depthMaterial;
-			renderer.render(scene, camera, depthRenderTarget, true);
+			editor.scene.overrideMaterial = editor.depthMaterial;
+			editor.renderer.render(editor.scene, editor.camera, editor.depthRenderTarget, true);
 			// Render renderPass and SSAO shaderPass
-			scene.overrideMaterial = null;
-			effectComposer.render();
-
-			// renderer.render(scene, camera);
+			editor.scene.overrideMaterial = null;
+			editor.effectComposer.render();
 
 			requestAnimationFrame(update.bind(this));
 		}
+
 		// save some stuff to vue controler
-		this._renderer = renderer;
-		this._keyboard = new Keyboard();
+		this.editor = editor;
 
 		// start
 		update.call(this);
 
 		// debug
-		if(process.env.NODE_ENV == 'dev'){
-			window.editorMap = map;
-			window.editorScene = scene;
-		}
+		if(process.env.NODE_ENV == 'dev')
+			window.editor = editor;
 	},
 	attached(){
 		//add it to my element
-		this.$els.canvas.appendChild(this._renderer.domElement);
-		this._keyboard.listen();
+		this.$els.canvas.appendChild(this.editor.renderer.domElement);
+		this.editor.keyboard.listen();
 		this.enabled = true;
 	},
 	detached(){
-		this._keyboard.stop_listening();
+		this.editor.keyboard.stop_listening();
 		this.enabled = false;
 	}
+}
+
+// create renderer
+function createRenderer(editor){
+	let renderer = editor.renderer = new THREE.WebGLRenderer();
+	renderer.setPixelRatio(window.devicePixelRatio);
+	renderer.setSize(window.innerWidth, window.innerHeight);
+	renderer.setClearColor(0x333333, 1);
+
+	// resize renderer
+	window.addEventListener('resize', () => {
+		renderer.setSize(window.innerWidth, window.innerHeight);
+	});
+}
+
+// create scene
+function createScene(editor){
+	let scene = editor.scene = new THREE.Scene();
+
+	// create camera
+	let camera = editor.camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 20000);
+
+	//resize camera when window resizes
+	window.addEventListener('resize', () => {
+		camera.aspect = window.innerWidth / window.innerHeight;
+		camera.updateProjectionMatrix();
+	});
+
+	// create the map
+	let blockManager = editor.blockManager = new VoxelBlockManager();
+	blockManager.registerBlock(blocks);
+	let map = editor.map = new VoxelMap(blockManager);
+	scene.add(map);
+
+	// create light
+	scene.add(new THREE.AmbientLight(0xffffff));
+
+	// add gridWalls
+	let gridWalls = editor.gridWalls = new GridCube(ROOM_SIZE.clone().divideScalar(2), map.blockSize, 0xffffff, 0x666666);
+	gridWalls.position.set(1,1,1).multiply(ROOM_SIZE).multiply(map.blockSize).divideScalar(2);
+	scene.add(gridWalls);
+
+	// create edges
+	let mapEdges = editor.mapEdges = new THREE.Group();
+	let chunkEdges = new Map();
+	map.addEventListener('chunk:built', (ev) => {
+		// remove old helper
+		let helper = chunkEdges.get(ev.chunk);
+		chunkEdges.delete(ev.chunk);
+
+		if(helper && helper.parent)
+				helper.parent.remove(helper);
+
+		// build new helper
+		if(!ev.chunk.empty){
+			let helper = new THREE.EdgesHelper(ev.chunk.mesh);
+			helper.material.linewidth = 2;
+			mapEdges.add(helper);
+			chunkEdges.set(ev.chunk, helper);
+		}
+	})
+	map.addEventListener('chunk:removed', ev => {
+		// remove helper
+		let helper = chunkEdges.get(ev.chunk);
+		chunkEdges.delete(ev.chunk);
+
+		if(helper && helper.parent)
+				helper.parent.remove(helper);
+	})
+	scene.add(mapEdges);
+
+	// add axis helper
+	let axes = editor.axes = new THREE.AxisHelper(map.blockSize.clone().multiply(ROOM_SIZE));
+	axes.material.depthTest = false;
+	scene.add(axes);
+}
+
+// create post processing effects
+function createRendererEffects(editor){
+	// create AO post processing effect
+	let renderPass = new THREE.RenderPass(editor.scene, editor.camera);
+
+	// Setup depth pass
+	let depthMaterial = editor.depthMaterial = new THREE.MeshDepthMaterial();
+	depthMaterial.depthPacking = THREE.RGBADepthPacking;
+	depthMaterial.blending = THREE.NoBlending;
+	let pars = {minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter};
+	let depthRenderTarget = editor.depthRenderTarget = new THREE.WebGLRenderTarget(window.innerWidth, window.innerHeight, pars);
+
+	// Setup SSAO pass
+	let ssaoPass = new THREE.ShaderPass(THREE.SSAOShader);
+	ssaoPass.renderToScreen = true;
+	//ssaoPass.uniforms[ "tDiffuse" ].value will be set by ShaderPass
+	ssaoPass.uniforms["tDepth"].value = depthRenderTarget.texture;
+	ssaoPass.uniforms['size'].value.set(window.innerWidth, window.innerHeight);
+	ssaoPass.uniforms['cameraNear'].value = editor.camera.near;
+	ssaoPass.uniforms['cameraFar'].value = editor.camera.far;
+	ssaoPass.uniforms['onlyAO'].value = false;
+	ssaoPass.uniforms['aoClamp'].value = 0.3;
+	ssaoPass.uniforms['lumInfluence'].value = 0.5;
+
+	// Add pass to effect composer
+	let effectComposer = editor.effectComposer = new THREE.EffectComposer(editor.renderer);
+	effectComposer.addPass(renderPass);
+	effectComposer.addPass(ssaoPass);
+
+	// resize effects
+	window.addEventListener('resize', () => {
+		let width = window.innerWidth;
+		let height = window.innerHeight;
+
+		// Resize renderTargets
+		ssaoPass.uniforms['size'].value.set(width, height);
+		let pixelRatio = editor.renderer.getPixelRatio();
+		let newWidth  = Math.floor(width / pixelRatio) || 1;
+		let newHeight = Math.floor(height / pixelRatio) || 1;
+		depthRenderTarget.setSize(newWidth, newHeight);
+		effectComposer.setSize(newWidth, newHeight);
+	});
+}
+
+// create editor tools
+function createTools(editor){
+	// create a cube with inverted normals
+	let wallsCube = new THREE.BoxGeometry(ROOM_SIZE.x, ROOM_SIZE.y, ROOM_SIZE.z);
+	for(let i = 0; i < wallsCube.faces.length; i ++){
+		let face = wallsCube.faces[i];
+		let temp = face.a;
+		face.a = face.c;
+		face.c = temp;
+	}
+
+	wallsCube.computeFaceNormals();
+	wallsCube.computeVertexNormals();
+
+	let faceVertexUvs = wallsCube.faceVertexUvs[ 0 ];
+	for(let i = 0; i < faceVertexUvs.length; i ++){
+		let temp = faceVertexUvs[ i ][ 0 ];
+		faceVertexUvs[ i ][ 0 ] = faceVertexUvs[ i ][ 2 ];
+		faceVertexUvs[ i ][ 2 ] = temp;
+	}
+
+	// create invisible cube so the tools can place blocks on the edge of the room
+	let roomWalls = editor.roomWalls = new THREE.Mesh(wallsCube, new THREE.MeshNormalMaterial({
+		visible: false
+	}));
+	roomWalls.scale.copy(editor.map.blockSize);
+	roomWalls.position.set(ROOM_SIZE.x, ROOM_SIZE.y, ROOM_SIZE.z).divideScalar(2).multiply(editor.map.blockSize);
+	editor.scene.add(roomWalls);
+
+	// create editor tools
+	let attachTool = editor.attachTool = new AttachTool(editor.camera, editor.map, editor.renderer);
+	attachTool.placeBlockID = 'stone';
+	attachTool.intersects.push(roomWalls);
+	editor.scene.add(attachTool);
+
+	// make sure we dont place blocks outside of the room
+	attachTool.checkPlace = (v) => {
+		return !(
+			v.x > ROOM_SIZE.x || v.x < 0 ||
+			v.y > ROOM_SIZE.y || v.y < 0 ||
+			v.z > ROOM_SIZE.z || v.z < 0
+		);
+	}
+}
+
+// create camera controls
+function createControls(editor){
+	// create controls
+	let camControls = editor.camControls = new THREE.OrbitControls(editor.camera, editor.renderer.domElement);
+	camControls.enableDamping = true;
+	camControls.dampingFactor = 0.25;
+	camControls.enableKeys = false;
+	camControls.rotateSpeed = 0.5;
+	camControls.mouseButtons.ORBIT = THREE.MOUSE.MIDDLE;
+	camControls.mouseButtons.PAN = undefined;
+	camControls.mouseButtons.ZOOM = undefined;
+	camControls.enabled = false;
+
+	// look at control
+	let camLookAt = editor.camLookAt = {
+		enabled: false,
+		mouseButtons: {
+			LOOK: THREE.MOUSE.RIGHT
+		}
+	}
+	editor.renderer.domElement.addEventListener('mousedown', event => {
+		if(camLookAt.enabled && event.button == camLookAt.mouseButtons.LOOK){
+			let raycaster = new THREE.Raycaster();
+			raycaster.setFromCamera(new THREE.Vector2(
+				(event.clientX / editor.renderer.domElement.clientWidth) * 2 - 1,
+				- (event.clientY / editor.renderer.domElement.clientHeight) * 2 + 1), editor.camera);
+
+			let intersects = raycaster.intersectObjects([editor.map, editor.roomWalls], true);
+
+			if(intersects[0]){
+				camControls.target.copy(intersects[0].point);
+			}
+		}
+	})
 }
 
 </script>

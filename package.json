@@ -20,7 +20,8 @@
 		"build": "set NODE_ENV=dev&& gulp build",
 		"start": "set NODE_ENV=dev&& gulp",
 		"test": "karma start karma.conf.js",
-		"production": "set NODE_ENV=production && gulp build"
+		"production": "set NODE_ENV=production && gulp build",
+		"serve-production": "set NODE_ENV=production && gulp"
 	},
 	"homepage": "https://github.com/rdfriedl/block-script#readme",
 	"devDependencies": {

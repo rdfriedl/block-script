@@ -16,8 +16,8 @@ export default class AttachTool extends EditorTool{
 		this.intersects = [this.map];
 		this.raycaster = new THREE.Raycaster();
 		this.mousePosition = new THREE.Vector2();
-		this.mousedown = false;
-		this.mousebutton = -1;
+		this._mousedown = false;
+		this._mousebutton = -1;
 
 		this.start = undefined;
 		this.end = undefined;
@@ -27,6 +27,10 @@ export default class AttachTool extends EditorTool{
 		this.checkRemove = undefined;
 
 		this.placeBlockID = '';
+		this.mouseButtons = {
+			PLACE: THREE.MOUSE.LEFT,
+			REMOVE: THREE.MOUSE.RIGHT
+		}
 
 		// bind events
 		renderer.domElement.addEventListener('mousemove', event => {
@@ -34,26 +38,28 @@ export default class AttachTool extends EditorTool{
 				(event.clientX / renderer.domElement.clientWidth) * 2 - 1,
 				- (event.clientY / renderer.domElement.clientHeight) * 2 + 1);
 
-			this.end = this.getTarget(this.mousePosition);
+			if(this.enabled)
+				this.end = this.getTarget(this.mousePosition);
 
 			this.updateObjects();
 		});
 
 		// place blocks
 		renderer.domElement.addEventListener('mousedown', event => {
-			if(event.button == THREE.MOUSE.LEFT || event.button == THREE.MOUSE.RIGHT){
+			if(this.enabled && event.button == this.mouseButtons.PLACE || event.button == this.mouseButtons.REMOVE){
 				this.start = this.getTarget(this.mousePosition);
-				this.mousedown = true;
-				this.mousebutton = event.button;
+				this._mousedown = true;
+				this._mousebutton = event.button;
 			}
 		});
 		renderer.domElement.addEventListener('mouseup', event => {
 			// place
 			if(
-				this.mousedown &&
+				this.enabled &&
+				this._mousedown &&
 				this.start && this.start.placeTarget &&
 				this.end && this.end.placeTarget &&
-				event.button == THREE.MOUSE.LEFT &&
+				event.button == this.mouseButtons.PLACE &&
 				(!this.checkPlace || (this.checkPlace(this.start.placeTarget) && this.checkPlace(this.end.placeTarget)))
 			){
 				let box = this.getSelectionBox(this.start.placeTarget, this.end.placeTarget);
@@ -63,10 +69,11 @@ export default class AttachTool extends EditorTool{
 
 			// remove
 			if(
-				this.mousedown &&
+				this.enabled &&
+				this._mousedown &&
 				this.start && this.start.target &&
 				this.end && this.end.target &&
-				event.button == THREE.MOUSE.RIGHT &&
+				event.button == this.mouseButtons.REMOVE &&
 				(!this.checkRemove || (this.checkRemove(this.start.target) && this.checkRemove(this.end.target)))
 			){
 				let box = this.getSelectionBox(this.start.target, this.end.target);
@@ -75,12 +82,12 @@ export default class AttachTool extends EditorTool{
 			}
 
 			this.start = undefined;
-			this.mousedown = false;
+			this._mousedown = false;
 		})
 
 		// create objects
 		this.selectionFace = new THREE.Mesh(new THREE.PlaneBufferGeometry(1, 1), new THREE.MeshBasicMaterial({
-			color: 0xff2222,
+			color: 0xff5555,
 			transparent: true,
 			opacity: 0.5,
 			depthTest: false
@@ -89,14 +96,10 @@ export default class AttachTool extends EditorTool{
 		this.selectionFace.scale.copy(this.map.blockSize);
 		this.add(this.selectionFace);
 
-		this.selectionBox = new THREE.Mesh(new THREE.BoxBufferGeometry(1,1,1), new THREE.MeshBasicMaterial({
-			color: 0xff2222,
-			transparent: true,
-			opacity: 0.5,
-			depthTest: false,
-			wireframe: true
-		}));//, 0xff2222);
-		// this.selectionBox.material.depthTest = false;
+		this.selectionBox = new THREE.BoxHelper(new THREE.Box3(new THREE.Vector3(-0.5,-0.5,-0.5), new THREE.Vector3(0.5,0.5,0.5)), 0xff5555);
+		this.selectionBox.material.transparent = true;
+		this.selectionBox.material.opacity = 0.8;
+		this.selectionBox.material.depthTest = false;
 		this.add(this.selectionBox);
 
 		// update
@@ -145,7 +148,7 @@ export default class AttachTool extends EditorTool{
 	}
 
 	updateObjects(){
-		if(this.end && this.end.target){
+		if(this.enabled && this.end && this.end.target){
 			this.selectionFace.visible = true;
 			this.selectionFace.position.copy(this.end.target.clone().add(new THREE.Vector3(0.5,0.5,0.5)).multiply(this.map.blockSize));
 			this.selectionFace.position.add(this.map.blockSize.clone().divideScalar(2).multiply(this.end.normal).multiplyScalar(1.05));
@@ -154,13 +157,12 @@ export default class AttachTool extends EditorTool{
 		else
 			this.selectionFace.visible = false;
 
-		if(this.start){
-			let type = this.mousebutton == THREE.MOUSE.LEFT? 'placeTarget' : 'target';
+		if(this.enabled && this.start){
+			let type = this._mousebutton == this.mouseButtons.PLACE? 'placeTarget' : 'target';
 			this.selectionBox.visible = true;
 			let box = this.getSelectionBox(this.start[type], this.end[type]);
 
-			this.selectionBox.position.copy(box.start).add(box.end.clone().sub(box.start).divideScalar(2)).multiply(this.map.blockSize);
-			this.selectionBox.scale.copy(box.end.clone().sub(box.start)).multiply(this.map.blockSize);
+			this.selectionBox.update(new THREE.Box3(box.start.clone().min(box.end).multiply(this.map.blockSize), box.start.clone().max(box.end).multiply(this.map.blockSize)));
 		}
 		else
 			this.selectionBox.visible = false;
