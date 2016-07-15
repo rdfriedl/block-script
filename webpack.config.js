@@ -128,7 +128,7 @@ module.exports = {
 				]
 			},
 			{
-				test: /\.dae$/,
+				test: /\.(dae|ply)$/,
 				loaders: [
 					'file-loader?name=res/model/[hash].[ext]'
 				]

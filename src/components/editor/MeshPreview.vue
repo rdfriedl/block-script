@@ -15,6 +15,10 @@ export default {
 		mesh:{
 			required: true
 		},
+		imageSize: {
+			type: Number,
+			default: 64
+		},
 		rotateOnHover: {
 			type: Boolean,
 			default: true
@@ -33,6 +37,7 @@ export default {
 
 			if(mesh instanceof THREE.Mesh)
 				return renderMesh(this.ctx, mesh, {
+					imageSize: this.imageSize,
 					rotation: this.rotation
 				});
 			else
@@ -56,7 +61,7 @@ export default {
 		let clock = new THREE.Clock();
 		let update = () => {
 			let dtime = clock.getDelta();
-			this.rotation.y += (Math.PI*2)/this.rotationTimesPerSecond * dtime;
+			this.rotation.y -= (Math.PI*2)/this.rotationTimesPerSecond * dtime;
 			this.render();
 		}
 		this.$watch('rotate', v => {
@@ -85,7 +90,10 @@ renderer.setClearColor(0x000000, 0);
 
 // create scene
 let scene = new THREE.Scene();
-scene.add(new THREE.AmbientLight(0xffffff));
+scene.add(new THREE.AmbientLight(0xffffff, 0.5));
+let light = new THREE.DirectionalLight(0xffffff);
+light.position.set(1,1,0);
+scene.add(light);
 let meshGroup = new THREE.Group();
 scene.add(meshGroup);
 
@@ -128,13 +136,19 @@ function renderMesh(ctx, mesh, opts){
 
 	camera.up = new THREE.Vector3(0,1,0);
 	camera.position.set(size,size,size).multiplyScalar(2);
-	camera.lookAt(meshGroup.position);
+
+	// look at the center of the mesh
+	mesh.geometry.computeBoundingBox();
+	let v = mesh.geometry.boundingBox.min.clone().add(mesh.geometry.boundingBox.max.clone().sub(mesh.geometry.boundingBox.min).divideScalar(2));
+	camera.lookAt(v.multiply(mesh.scale).applyQuaternion(mesh.quaternion).add(mesh.position));
 
 	helper.update();
 
-	renderer.setSize(size,size);
-	target.width = target.height = size;
-	ctx.canvas.width = ctx.canvas.height = size;
+	let imageSize = opts.imageSize || size;
+
+	renderer.setSize(imageSize,imageSize);
+	target.width = target.height = imageSize;
+	ctx.canvas.width = ctx.canvas.height = imageSize;
 
 	// // render
 	// renderer.render(scene, camera, target, true);

@@ -8,7 +8,7 @@
 			<dropdown>
 				<a class="dropdown-toggle btn btn-default" data-toggle="dropdown"><span>File</span></a>
 				<ul slot="dropdown-menu" class="dropdown-menu">
-					<li><a href="#"><i class="fa fa-plus"></i> New</a></li>
+					<li><a href="#" @click="clearRoom"><i class="fa fa-plus"></i> New</a></li>
 					<li><a href="#"><i class="fa fa-upload"></i> Load from file</a></li>
 					<li><a href="#"><i class="fa fa-download"></i> Export to file</a></li>
 					<li><a href="#"><i class="fa fa-cogs"></i> Options</a></li>
@@ -23,6 +23,13 @@
 				</ul>
 			</dropdown>
 		</div>
+
+		<!-- tools -->
+		<div class="btn-group padding-right-10">
+			<button type="button" class="btn btn-default" :class="{active: mode == 'place-blocks'}" @click="mode = 'place-blocks'"><i class="fa fa-cube"></i></button>
+			<button type="button" class="btn btn-default" :class="{active: mode == 'place-objects'}" @click="mode = 'place-objects'"><i class="fa fa-lightbulb-o"></i></button>
+			<button type="button" class="btn btn-default" :class="{active: mode == 'camera-controls'}" @click="mode = 'camera-controls'"><i class="fa fa-hand-paper-o"></i></button>
+		</div>
 	</div>
 
 	<div self="size-x1" layout="row stretch-stretch">
@@ -32,6 +39,13 @@
 					<div layout="rows top-spread">
 						<div class="block" self="size-1of8" v-for="(key, block) of blocks" @click="selectedBlockID = block.UID" :class="{active: selectedBlockID == block.UID}">
 							<mesh-preview class="fix-width" :mesh="getBlockMesh(block)"></mesh-preview>
+						</div>
+					</div>
+				</tab>
+				<tab header="Models">
+					<div layout="rows top-spread">
+						<div class="model" self="size-1of8" v-for="(index, model) in models">
+							<mesh-preview class="fix-width" v-if="model.loaded" :mesh="model.mesh"></mesh-preview>
 						</div>
 					</div>
 				</tab>
@@ -65,9 +79,13 @@ import 'imports?THREE=three!../lib/threejs/postprocessing/ShaderPass.js';
 import 'imports?THREE=three!../lib/threejs/shaders/CopyShader.js';
 import 'imports?THREE=three!../lib/threejs/shaders/SSAOShader.js';
 
+import ModelManager from '../js/ModelManager.js';
+
 import GridCube from '../js/objects/GridCube.js';
 import Keyboard from '../js/Keyboard.js';
 import * as blocks from '../js/blocks.js';
+import models from '../js/models.js';
+ModelManager.inst.registerMany(models);
 
 import VoxelMap from '../js/voxel/VoxelMap.js';
 import VoxelBlockManager from '../js/voxel/VoxelBlockManager.js';
@@ -86,7 +104,21 @@ export default {
 	data(){return {
 		selectedBlockID: 'dirt',
 		blocks: blocks,
-		mode: 'place',
+		models: ModelManager.inst.listModels().map(id => {
+			let model = {
+				id: id,
+				loaded: false,
+				mesh: () => mesh
+			}
+
+			// load models
+			let mesh = ModelManager.inst.getMesh(model.id, () => {
+				model.loaded = true;
+			});
+
+			return model;
+		}),
+		mode: '', //place-blocks, place-objects, camera-controls
 		view: {
 			edges: false,
 			axes: true,
@@ -95,6 +127,9 @@ export default {
 		}
 	}},
 	methods: {
+		clearRoom(){
+			this.editor.map.clearBlocks();
+		},
 		getBlockMesh(blockCls){
 			let block = new blockCls();
 			let mesh = new THREE.Mesh(block.geometry, block.material);
@@ -113,6 +148,9 @@ export default {
 				modes[newValue].enter();
 		});
 
+		// create modes
+		createModes.call(this, editor, modes);
+
 		// create keyboard
 		editor.keyboard = new Keyboard();
 
@@ -127,25 +165,12 @@ export default {
 		editor.camera.position.copy(ROOM_SIZE).multiply(editor.map.blockSize);
 		editor.camControls.target.set(0.5,0,0.5).multiply(editor.map.blockSize).multiply(ROOM_SIZE);
 
-		// disable orbit controls if ctrlKey is down
-		editor.camControls.enabled = true;
+		// set up keybindings
 		editor.keyboard.register_many([
 			{
 				keys: 'space',
-				on_keydown: () => {
-					editor.camLookAt.enabled = true;
-					editor.camControls.mouseButtons.ORBIT = THREE.MOUSE.LEFT;
-					editor.camControls.mouseButtons.PAN = THREE.MOUSE.MIDDLE;
-
-					editor.attachTool.enabled = false;
-				},
-				on_keyup: () => {
-					editor.camLookAt.enabled = false;
-					editor.camControls.mouseButtons.ORBIT = THREE.MOUSE.MIDDLE;
-					editor.camControls.mouseButtons.PAN = undefined;
-
-					editor.attachTool.enabled = true;
-				},
+				on_keydown: () => this.mode = 'camera-controls',
+				on_keyup: () => this.mode = 'place-blocks',
 			}
 		]);
 
@@ -199,6 +224,9 @@ export default {
 	},
 	ready(){
 		window.addEventListener('resize', Function.debounce(() => this.$emit('canvas-resize'), 150));
+
+		// default mode
+		this.mode = 'place-blocks';
 	},
 	attached(){
 		//add it to my element
@@ -385,7 +413,7 @@ function createControls(editor){
 	camControls.dampingFactor = 0.25;
 	camControls.enableKeys = false;
 	camControls.rotateSpeed = 0.5;
-	camControls.mouseButtons.ORBIT = THREE.MOUSE.MIDDLE;
+	camControls.mouseButtons.ORBIT = undefined;
 	camControls.mouseButtons.PAN = undefined;
 	camControls.mouseButtons.ZOOM = undefined;
 	camControls.enabled = false;
@@ -413,6 +441,54 @@ function createControls(editor){
 	})
 }
 
+// create the editor modes
+function createModes(editor, modes) {
+	modes['place-blocks'] = {
+		enter(){
+			editor.attachTool.enabled = true;
+
+			editor.camControls.enabled = true;
+			editor.camControls.mouseButtons.ORBIT = THREE.MOUSE.MIDDLE;
+		},
+		exit(){
+			editor.attachTool.enabled = false;
+
+			editor.camControls.enabled = false;
+			editor.camControls.mouseButtons.ORBIT = undefined;
+		}
+	}
+
+	modes['place-objects'] = {
+		enter(){
+			editor.camControls.enabled = true;
+			editor.camControls.mouseButtons.ORBIT = THREE.MOUSE.MIDDLE;
+		},
+		exit(){
+			editor.camControls.enabled = false;
+			editor.camControls.mouseButtons.ORBIT = undefined;
+		}
+	}
+
+	modes['camera-controls'] = {
+		enter(){
+			editor.camControls.enabled = true;
+			editor.camControls.mouseButtons.ORBIT = THREE.MOUSE.LEFT;
+			editor.camControls.mouseButtons.PAN = THREE.MOUSE.RIGHT;
+
+			editor.camLookAt.enabled = true;
+			editor.camLookAt.mouseButtons.LOOK = THREE.MOUSE.MIDDLE;
+		},
+		exit(){
+			editor.camControls.enabled = false;
+			editor.camControls.mouseButtons.ORBIT = undefined;
+			editor.camControls.mouseButtons.PAN = undefined;
+
+			editor.camLookAt.enabled = true;
+			editor.camLookAt.mouseButtons.LOOK = undefined;
+		}
+	}
+}
+
 </script>
 
 <style scoped>
@@ -421,15 +497,16 @@ function createControls(editor){
 	margin-right: 0;
 }
 
-.block{
+.block, .model{
 	box-sizing: border-box;
 	background: rgba(0,0,0,0.5);
 	border: 2px solid grey;
 	margin: 5px;
 	cursor: pointer;
+	padding: 2px;
 }
 
-.block.active{
+.block.active, .model.active{
 	border-color: black;
 }
 
