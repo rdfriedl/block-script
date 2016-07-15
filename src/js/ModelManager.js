@@ -8,21 +8,21 @@ export default class ModelManager{
 	constructor(){
 		/**
 		 * the cache for all the registed models
-		 * @type {Object}
+		 * @var {Object}
 		 * @private
 		 */
 		this.models = {};
 
 		/**
 		 * the geometry to use while the model is loading
-		 * @type {THREE.Geometry)
+		 * @var {THREE.Geometry)
 		 * @private
 		 */
 		this.tmpGeometry = new THREE.Geometry();
 
 		/**
 		 * the material to use while the model is loading
-		 * @type {THREE.Material)
+		 * @var {THREE.Material)
 		 * @private
 		 */
 		this.tmpMaterial = new THREE.MeshNormalMaterial();

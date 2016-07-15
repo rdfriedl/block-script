@@ -39,6 +39,9 @@ export default class VoxelBlock{
 	 * @returns {this}
 	 */
 	addTo(parent, pos){
+		if(this.parent)
+			this.parent.removeBlock(this);
+
 		if(parent.addBlock)
 			parent.addBlock(this, pos);
 
@@ -50,9 +53,9 @@ export default class VoxelBlock{
 	 * @return {this}
 	 */
 	remove(){
-		if(this.parent){
+		if(this.parent)
 			this.parent.removeBlock(this);
-		}
+
 		return this;
 	}
 

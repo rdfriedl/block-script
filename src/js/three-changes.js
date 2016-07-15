@@ -101,3 +101,29 @@ THREE.GridHelper = function ( size, step, color1, color2 ) {
 
 THREE.GridHelper.prototype = Object.create( THREE.LineSegments.prototype );
 THREE.GridHelper.prototype.constructor = THREE.GridHelper;
+
+// fix up vector classes
+THREE.Vector2.prototype.multiply = function(v){
+	this.x *= v.x;
+	this.y *= v.y;
+	return this;
+}
+THREE.Vector4.prototype.multiply = function(v){
+	this.x *= v.x;
+	this.y *= v.y;
+	this.z *= v.z;
+	this.w *= v.w;
+	return this;
+}
+THREE.Vector2.prototype.divide = function(v){
+	this.x /= v.x;
+	this.y /= v.y;
+	return this;
+}
+THREE.Vector4.prototype.divide = function(v){
+	this.x /= v.x;
+	this.y /= v.y;
+	this.z /= v.z;
+	this.w /= v.w;
+	return this;
+}
