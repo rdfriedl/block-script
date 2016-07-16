@@ -271,7 +271,11 @@ export default class VoxelChunk extends THREE.Group{
 
 			let str = pos.toArray().join(',');
 			let oldBlock = this.blocks.get(str);
-			block.remove(); //remove the block from its parent if it has one
+
+			//remove the block from its parent if it has one
+			if(block.parent)
+				block.parent.removeBlock(block);
+
 			this.blocks.set(str,block);
 			this.blocksPositions.set(block, pos.clone()); //clone the pos so we are not storing the original vec
 

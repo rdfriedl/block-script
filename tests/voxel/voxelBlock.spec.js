@@ -58,7 +58,7 @@ describe('VoxelBlock', function() {
 		});
 
 		it('returns empty Vec3 when not in a map', function() {
-			this.block.remove();
+			this.block.parent.removeBlock(this.block);
 			expect(this.block.worldPosition.toArray().join(',')).toBe('0,0,0');
 		});
 	});
@@ -70,7 +70,7 @@ describe('VoxelBlock', function() {
 		});
 
 		it('returns empty Vec3 when not in a map or selection', function() {
-			this.block.remove();
+			this.block.parent.removeBlock(this.block);
 			expect(this.block.position.toArray().join(',')).toBe('0,0,0');
 		});
 	});

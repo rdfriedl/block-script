@@ -14,13 +14,35 @@ describe('VoxelBlockManager', function() {
 		});
 	});
 
-	it('getBlock', function() {
-		expect(this.manager.getBlock('dirt') instanceof Function).toBe(true);
+	describe('getBlock', function() {
+		it('getBlock(String)', function() {
+			expect(this.manager.getBlock('dirt')).toBe(blocks.Dirt);
+		});
+
+		it('getBlock(Class)', function() {
+			expect(this.manager.getBlock(blocks.Dirt)).toBe(blocks.Dirt);
+		});
+
+		it('getBlock(VoxelBlock)', function() {
+			expect(this.manager.getBlock(new blocks.Dirt)).toBe(blocks.Dirt);
+		});
 	});
 
 	describe('createBlock', function() {
-		it('returns new VoxelBlock', function() {
+		it('createBlock(String)', function() {
 			expect(this.manager.createBlock('dirt') instanceof VoxelBlock).toBe(true);
+		});
+
+		it('createBlock(Class)', function() {
+			expect(this.manager.createBlock(blocks.Dirt) instanceof VoxelBlock).toBe(true);
+		});
+
+		it('createBlock(VoxelBlock)', function() {
+			expect(this.manager.createBlock(new blocks.Dirt) instanceof VoxelBlock).toBe(true);
+		});
+
+		it('returns undefined if the manager dose not have the block', function() {
+			expect(this.manager.createBlock('adfahad')).toBe(undefined);
 		});
 
 		it('get block from pool if pool is enabled', function() {

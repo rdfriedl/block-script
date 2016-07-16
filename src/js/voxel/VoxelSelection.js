@@ -159,7 +159,11 @@ export default class VoxelSelection extends THREE.EventDispatcher{
 			pos = this.tmpVec.copy(pos).round();
 			let str = pos.toArray().join(',');
 			let oldBlock = this.blocks.get(str);
-			block.remove(); //remove the block from its parent if it has one
+
+			//remove the block from its parent if it has one
+			if(block.parent)
+				block.parent.removeBlock(block);
+
 			this.blocks.set(str,block);
 			this.blocksPositions.set(block, pos.clone());
 
@@ -252,7 +256,7 @@ export default class VoxelSelection extends THREE.EventDispatcher{
 		this.blocks.forEach(block => {
 			this.tmpVec.copy(this.getBlockPosition(block)).add(offset);
 
-			other.setBlock(cloneBlocks? block.clone() : block, this.tmpVec);
+			other.setBlock(cloneBlocks? this.blockManager.cloneBlock(block) : block, this.tmpVec);
 		})
 	}
 
@@ -278,7 +282,7 @@ export default class VoxelSelection extends THREE.EventDispatcher{
 					let block = other.getBlock(this.tmpVec.set(x,y,z));
 
 					if(block)
-						this.setBlock(cloneBlocks? block.clone() : block, this.tmpVec.set(x - min.x, y - min.y, z - min.z));
+						this.setBlock(cloneBlocks? this.blockManager.cloneBlock(block) : block, this.tmpVec.set(x - min.x, y - min.y, z - min.z));
 				}
 			}
 		}

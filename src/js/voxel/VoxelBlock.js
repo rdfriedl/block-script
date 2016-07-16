@@ -33,33 +33,6 @@ export default class VoxelBlock{
 	}
 
 	/**
-	 * add this block to a parent
-	 * @param {VoxelChunk|VoxelSelection|VoxelMap} parent
-	 * @param {THREE.Vector3|String} pos
-	 * @returns {this}
-	 */
-	addTo(parent, pos){
-		if(this.parent)
-			this.parent.removeBlock(this);
-
-		if(parent.addBlock)
-			parent.addBlock(this, pos);
-
-		return this;
-	}
-
-	/**
-	 * removes this block from its parent
-	 * @return {this}
-	 */
-	remove(){
-		if(this.parent)
-			this.parent.removeBlock(this);
-
-		return this;
-	}
-
-	/**
 	 * @param  {THREE.Vector3} direction - the direction to check
 	 * @return {VoxelBlock}
 	 */
@@ -139,7 +112,7 @@ export default class VoxelBlock{
 	toJSON(){
 		return {
 			type: this.id,
-			properties: Reflect.hasOwnProperty(this, 'properties')? this.properties : undefined
+			properties: this.hasOwnProperty('properties')? this.properties : undefined
 		};
 	}
 
@@ -154,16 +127,6 @@ export default class VoxelBlock{
 			this.setProp(json.properties);
 
 		return this;
-	}
-
-	/**
-	 * copies this block
-	 * @return {VoxelBlock}
-	 */
-	clone(){
-		let block = new this.constructor;
-		block.fromJSON(this.toJSON());
-		return block;
 	}
 
 	/**

@@ -36,40 +36,46 @@ export default class VoxelBlockManager{
 	}
 
 	/**
-	 * @param  {VoxelBlock|String} - a UID of a block or a {@link VoxelBlock} class
+	 * @param  {String|VoxelBlock|Class} - a UID of a block or a {@link VoxelBlock} or a class
 	 * @return {Boolean}
 	 */
 	hasBlock(id){
-		if(id instanceof VoxelBlock){
-			let blocks = this.blocks.values();
-			let block;
-			while(block = blocks.next()){
-				if(id instanceof block || id === block)
-					return true;
-			}
+		if(String.isString(id)){
+			return this.blocks.has(id);
 		}
-		else if(this.blocks.has(id)){
-			return true;
+		else {
+			for(let [UID, block] of this.blocks){
+				if(id instanceof block || id === block){
+					return true;
+				}
+			}
 		}
 		return false;
 	}
 
 	/**
 	 * returns the block class registered with that UID
-	 * @param  {String} id - a UID of a block
-	 * @return {VoxelBlock}
+	 * @param  {String|VoxelBlock|Class} id - a UID of a block or a instance of a {@link VoxelBlock} or a class
+	 * @return {VoxelBlock} returns a {@link VoxelBlock} class
 	 */
 	getBlock(id){
-		if(this.hasBlock(id)){
+		if(String.isString(id)){
 			return this.blocks.get(id);
+		}
+		else{
+			for(let [UID, block] of this.blocks){
+				if(id instanceof block || id === block){
+					return block;
+				}
+			}
 		}
 	}
 
 	/**
 	 * gets a block from the pool or creates a new one
-	 * @param  {String} id - the UID of the block to create
-	 * @param {Object} data - a object that is passed to {@link VoxelBlock#fromJSON}
-	 * @return {VoxelBlock}
+	 * @param  {String|VoxelBlock|Class} id - the UID of the block to create
+	 * @param  {Object} data - a object that is passed to {@link VoxelBlock#fromJSON}
+	 * @return {VoxelBlock} returns a {@link VoxelBlock} instance
 	 */
 	createBlock(id, data){
 		if(this.usePool)
@@ -79,8 +85,23 @@ export default class VoxelBlockManager{
 	}
 
 	/**
+	 * returns a clone of the block
+	 * @param  {VoxelBlock} block
+	 * @return {VoxelBlock}
+	 */
+	cloneBlock(block){
+		let newBlock = this.createBlock(block);
+		if(block.hasOwnProperty('properties')){
+			let props = {};
+			Reflect.ownKeys(block.properties).forEach(key => props[key] = block.properties[key]);
+			newBlock.setProp(props);
+		}
+		return newBlock;
+	}
+
+	/**
 	 * returns a new block
-	 * @param  {String} id - the UID of the block to create
+	 * @param  {String|VoxelBlock|Class} id - the UID of the block to create
 	 * @param  {Object} data - a object that is passed to {@link VoxelBlock#fromJSON}
 	 * @private
 	 * @return {VoxelBlock}
@@ -125,6 +146,16 @@ export default class VoxelBlockManager{
 	}
 
 	/**
+	 * returns the UID of the block, returns undefined if block is not in this manager
+	 * @param  {String|VoxelBlock|Class} id - a UID of a block or a instance of a {@link VoxelBlock} or a class
+	 * @return {String}
+	 */
+	resolveID(block){
+		let cls = this.getBlock(block);
+		return cls && cls.UID;
+	}
+
+	/**
 	 * get a new block of "type" from the pool.
 	 * if there is none it will create one
 	 * @param  {String} id - the UID of the block to create
@@ -132,7 +163,8 @@ export default class VoxelBlockManager{
 	 * @return {VoxelBlock}
 	 */
 	newBlock(id, data){
-		if(this.blockPool[id]){
+		id = this.resolveID(id);
+		if(id && this.blockPool[id]){
 			let block = this.blockPool[id].shift();
 			if(block && data)
 				block.fromJSON(data);
@@ -148,12 +180,13 @@ export default class VoxelBlockManager{
 	 * @return {this}
 	 */
 	disposeBlock(block){
-		if(block instanceof VoxelBlock){
+		let id = this.resolveID(block);
+		if(id && block instanceof VoxelBlock){
 			this._resetBlock(block);
-			if(!this.blockPool[block.id])
-				this.blockPool[block.id] = [];
+			if(!this.blockPool[id])
+				this.blockPool[id] = [];
 
-			this.blockPool[block.id].push(block);
+			this.blockPool[id].push(block);
 		}
 		return this;
 	}
