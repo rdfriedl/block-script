@@ -1,3 +1,5 @@
+import VoxelMap from '../../src/js/voxel/VoxelMap.js';
+import VoxelChunk from '../../src/js/voxel/VoxelChunk.js';
 import VoxelSelection from '../../src/js/voxel/VoxelSelection.js';
 import VoxelBlock from '../../src/js/voxel/VoxelBlock.js';
 import VoxelBlockManager from '../../src/js/voxel/VoxelBlockManager.js';
@@ -20,6 +22,20 @@ describe('VoxelChunk', function() {
 		it('is true if selection is empty', function() {
 			this.selection.clearBlocks();
 			expect(this.selection.empty).toBe(true);
+		});
+	});
+
+	describe('size', function() {
+		it('returns the size in blocks', function() {
+			this.selection.clearBlocks();
+			this.selection.createBlock('block', '0,0,0');
+			this.selection.createBlock('block', '1,1,1');
+			expect(this.selection.size.equals(new THREE.Vector3(2,2,2))).toBe(true);
+		});
+
+		it('returns an empty vector if there are not blocks', function() {
+			this.selection.clearBlocks();
+			expect(this.selection.size.empty()).toBe(true);
 		});
 	});
 
@@ -110,6 +126,60 @@ describe('VoxelChunk', function() {
 
 		it('removes all blocks in map', function() {
 			expect(this.selection.getBlock('0,0,0')).toBe(undefined);
+		});
+	});
+
+	describe('addTo', function() {
+		beforeAll(function(){
+			this.selection.clearBlocks();
+			this.selection.createBlock('block', '0,0,0');
+			this.selection.createBlock('block', '1,1,1');
+		})
+
+		it('addTo(VoxelMap)', function() {
+			let map = new VoxelMap();
+			this.selection.addTo(map, new THREE.Vector3(1,1,1));
+
+			expect(map.getBlock('1,1,1') instanceof VoxelBlock).toBe(true);
+			expect(map.getBlock('2,2,2') instanceof VoxelBlock).toBe(true);
+		});
+
+		it('addTo(VoxelSelection)', function() {
+			let selection = new VoxelSelection();
+			this.selection.addTo(selection, new THREE.Vector3(1,1,1));
+
+			expect(selection.getBlock('1,1,1') instanceof VoxelBlock).toBe(true);
+			expect(selection.getBlock('2,2,2') instanceof VoxelBlock).toBe(true);
+			expect(selection.size.equals(new THREE.Vector3(2,2,2))).toBe(true);
+		});
+	});
+
+	describe('copyFrom', function() {
+		it('copyFrom(VoxelSelection)', function() {
+			this.selection.clearBlocks();
+			let selection = new VoxelSelection();
+			selection.createBlock('block', '0,0,0');
+			selection.createBlock('block', '1,1,1');
+
+			this.selection.copyFrom(selection, new THREE.Vector3(0,0,0), new THREE.Vector3(1,1,1));
+
+			expect(this.selection.getBlock('0,0,0') instanceof VoxelBlock).toBe(true);
+			expect(this.selection.getBlock('1,1,1') instanceof VoxelBlock).toBe(true);
+			expect(this.selection.size.equals(new THREE.Vector3(2,2,2))).toBe(true);
+		});
+
+		it('dont clone', function() {
+			this.selection.clearBlocks();
+			let selection = new VoxelSelection();
+			selection.createBlock('block', '0,0,0');
+			selection.createBlock('block', '1,1,1');
+
+			this.selection.copyFrom(selection, new THREE.Vector3(0,0,0), new THREE.Vector3(1,1,1), false);
+
+			expect(this.selection.getBlock('0,0,0') instanceof VoxelBlock).toBe(true);
+			expect(this.selection.getBlock('1,1,1') instanceof VoxelBlock).toBe(true);
+			expect(this.selection.size.equals(new THREE.Vector3(2,2,2))).toBe(true);
+			expect(selection.size.empty()).toBe(true);
 		});
 	});
 });

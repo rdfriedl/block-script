@@ -11,8 +11,6 @@ export default class AttachTool extends EditorTool{
 		this.map = map;
 		this.renderer;
 
-		this.enabled = true;
-
 		this.intersects = [this.map];
 		this.raycaster = new THREE.Raycaster();
 		this.mousePosition = new THREE.Vector2();
@@ -38,8 +36,10 @@ export default class AttachTool extends EditorTool{
 				(event.offsetX / renderer.domElement.clientWidth) * 2 - 1,
 				- (event.offsetY / renderer.domElement.clientHeight) * 2 + 1);
 
-			if(this.enabled)
-				this.end = this.getTarget(this.mousePosition);
+			if(this.enabled){
+				let target = this.getTarget(this.mousePosition);
+				this.end = target || this.end;
+			}
 
 			this.updateObjects();
 		});
@@ -157,7 +157,7 @@ export default class AttachTool extends EditorTool{
 		else
 			this.selectionFace.visible = false;
 
-		if(this.enabled && this.start){
+		if(this.enabled && this.start && this.end){
 			let type = this._mousebutton == this.mouseButtons.PLACE? 'placeTarget' : 'target';
 			this.selectionBox.visible = true;
 			let box = this.getSelectionBox(this.start[type], this.end[type]);

@@ -277,6 +277,11 @@ export default class VoxelMap extends THREE.Group{
 				chunk = pos;
 			}
 
+			// remove all its block from the visibliy cache
+			chunk.listBlocks().forEach(block => {
+				this.blockVisibilityCache.delete(block);
+			})
+
 			// remove it from the maps
 			this.chunks.delete(chunk.chunkPosition.toArray().join(','));
 			this.chunksPositions.delete(chunk);

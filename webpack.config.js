@@ -12,7 +12,6 @@ module.exports = {
 			'stats': 'stats.js/build/stats.min.js',
 
  			//fit bootstrap
-			'bootstrap-js': 'imports-loader?jQuery=jquery!bootstrap',
 			'bootstrap-toggle-js': 'imports-loader?jQuery=jquery!bootstrap-toggle',
 			'bootstrap-dialog-js': 'imports-loader?jQuery=jquery!bootstrap-dialog',
 
@@ -28,11 +27,10 @@ module.exports = {
 	entry: {
 		app: ['./src/app.js'],
 		vendor: [
-			'jquery',
-			'jquery.mousewheel',
+			'script!jquery',
 			'vue',
 			'vue-router',
-			'bootstrap-js',
+			'script!bootstrap/dist/js/bootstrap.min.js',
 			'bootstrap-toggle-js',
 			'bootstrap-dialog-js',
 			'dexie',
@@ -45,15 +43,15 @@ module.exports = {
 			'bootstrap-toggle-css',
 			'bootstrap-dialog-css',
 			'flex-layout-attribute',
-			'vue-strap'
+			'vue-strap',
+			'file-saver'
 		]
 	},
 	externals: {
-		'jquery': 'jQuery',
-		'jquery.mousewheel': 'undefined',
+		'script!jquery': 'jQuery',
 		'vue': 'Vue',
 		'vue-router': 'VueRouter',
-		'bootstrap-js': 'undefined',
+		'script!bootstrap/dist/js/bootstrap.min.js': 'undefined',
 		'bootstrap-toggle-js': 'undefined',
 		'bootstrap-dialog-js': 'undefined',
 		'dexie': 'Dexie',
@@ -66,7 +64,8 @@ module.exports = {
 		'bootstrap-toggle-css': 'undefined',
 		'bootstrap-dialog-css': 'undefined',
 		'flex-layout-attribute ': 'undefined',
-		'vue-strap': 'VueStrap'
+		'vue-strap': 'VueStrap',
+		'file-saver': 'saveAs'
     },
 	output: {
         path: path.resolve("./dist"),

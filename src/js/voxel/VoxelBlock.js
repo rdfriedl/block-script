@@ -139,8 +139,7 @@ export default class VoxelBlock{
 	toJSON(){
 		return {
 			type: this.id,
-			rotation: this.rotation.toArray(),
-			parameters: this.properties? this.properties : {}
+			properties: Reflect.hasOwnProperty(this, 'properties')? this.properties : undefined
 		};
 	}
 
@@ -151,13 +150,20 @@ export default class VoxelBlock{
 	 * @return {this}
 	 */
 	fromJSON(json){
-		if(json.rotation)
-			this.rotation = new THREE.Euler().fromArray(json.rotation);
-
 		if(json.properties)
 			this.setProp(json.properties);
 
 		return this;
+	}
+
+	/**
+	 * copies this block
+	 * @return {VoxelBlock}
+	 */
+	clone(){
+		let block = new this.constructor;
+		block.fromJSON(this.toJSON());
+		return block;
 	}
 
 	/**

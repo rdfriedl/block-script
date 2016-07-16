@@ -1,4 +1,3 @@
-import $ from 'jquery';
 import THREE from 'three';
 // extentions
 import 'imports?THREE=three!../../lib/threejs/controls/PointerLockControls.js';

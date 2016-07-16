@@ -17,7 +17,6 @@
 <!-- JS -->
 <script>
 
-import $ from 'jquery';
 import THREE from 'three';
 import Stats from 'stats';
 import gameScene from '../js/scenes/game.js';

@@ -66,7 +66,6 @@ import MapLoaderIndexedDB from '../../js/maps/MapLoaderIndexedDB.js';
 import MapManager from '../../js/maps/MapManager.js';
 import Dexie from 'dexie';
 import {modal} from 'vue-strap';
-import BootstrapDialog from 'bootstrap-dialog-js';
 
 export default {
 	components: {modal},

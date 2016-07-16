@@ -96,6 +96,9 @@ export default class VoxelBlockManager{
 	 * @return {this}
 	 */
 	registerBlock(block){
+		if(this.hasBlock(block))
+			return this;
+
 		if(Function.isFunction(block) && block.UID){
 			this.blocks.set(block.UID, block);
 		}

@@ -28,7 +28,7 @@ export function drawLine(chunk, fromV, toV, block){
  * @param  {String} [type='solid'] the type of cube ('solide', 'hollow', 'frame')
  */
 export function drawCube(chunk, fromV, toV, block, type = 'solid'){
-	let pos = new THREE.Vector3().copy(fromV);
+	let pos = new THREE.Vector3();
 	let min = new THREE.Vector3(Infinity,Infinity,Infinity).min(fromV).min(toV);
 	let max = new THREE.Vector3(-Infinity,-Infinity,-Infinity).max(fromV).max(toV);
 

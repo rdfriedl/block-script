@@ -1,5 +1,118 @@
 import THREE from 'three';
 
+// URL utils
+Blob.fromURL = URL.urlToBlob = function(url){
+	return new Promise((resolve, reject) => {
+		var xhr = new XMLHttpRequest();
+		xhr.onreadystatechange = () => {
+			if(xhr.readyState == XMLHttpRequest.DONE){
+				if(xhr.status == 200){
+					resolve(xhr.response);
+				}
+				else reject();
+			}
+		}
+		xhr.open('GET', url);
+		xhr.responseType = 'blob';
+		xhr.send();
+	})
+}
+Blob.fromDataURI = function(dataURI){
+	// NOTE: copied from http://stackoverflow.com/questions/6850276/how-to-convert-dataurl-to-file-object-in-javascript
+
+	// convert base64 to raw binary data held in a string
+    // doesn't handle URLEncoded DataURIs - see SO answer #6850276 for code that does this
+    var byteString = atob(dataURI.split(',')[1]);
+
+    // separate out the mime component
+    var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+
+    // write the bytes of the string to an ArrayBuffer
+    var ab = new ArrayBuffer(byteString.length);
+    var ia = new Uint8Array(ab);
+    for (var i = 0; i < byteString.length; i++) {
+        ia[i] = byteString.charCodeAt(i);
+    }
+
+    // write the ArrayBuffer to a blob, and you're done
+    return Promise.resolve(new Blob([ab],{type: mimeString}));
+}
+URL.urlToDataURI = function(url){
+	return URL.urlToBlob(url).then(blob => {
+		return new Promise((resolve) => {
+			var reader = new window.FileReader();
+			reader.readAsDataURL(blob);
+			reader.onloadend = function() {
+				resolve(reader.result);
+			}
+		})
+	});
+}
+URL.isDataURI = function(url) {
+    return (/^data:/).test(url);
+}
+URL.fromBlob = function(blob){
+	return new Promise((resolve, reject) => {
+		let reader = new FileReader();
+		reader.onload = () => {
+			resolve(reader.result);
+		};
+		reader.onerror = reject;
+		reader.readAsDataURL(blob);
+	})
+}
+URL.parseSearch = function(url){
+    url = url || location.href;
+    URL.parseSearch.cache = URL.parseSearch.cache || {};
+    if(!URL.parseSearch.cache[url]){
+        var search = URL.indexOf('?') !== -1? URL.substr(URL.indexOf('?')+1,URL.length+1) : '';
+        var queries = search.replace(/^\?/, '').replace(/\+/g,' ').split('&');
+        URL.parseSearch.cache[url] = {};
+        for( var i = 0; i < queries.length; i++ ) {
+            var split = queries[i].split('=');
+            if(split[0] !== '') URL.parseSearch.cache[url][split[0]] = window.unescape(split[1]);
+        }
+    }
+    return URL.parseSearch.cache[url];
+}
+
+// JSON utils
+JSON.fromBlob = function(blob){
+	return new Promise((resolve, reject) => {
+		let reader = new FileReader();
+		reader.onload = () => {
+			// if parsing fails it will throw
+			try{
+				let json = JSON.parse(reader.result);
+				resolve(json);
+			}
+			catch(e){reject(e)}
+		};
+		reader.onerror = reject;
+		reader.readAsText(blob);
+	})
+}
+JSON.fromURL = function(url){
+	return new Promise((resolve, reject) => {
+		var xhr = new XMLHttpRequest();
+		xhr.onreadystatechange = () => {
+			if(xhr.readyState == XMLHttpRequest.DONE){
+				if(xhr.status == 200){
+					try{
+						resolve(JSON.parse(xhr.response));
+					}
+					catch(e){
+						reject(e);
+					}
+				}
+				else reject();
+			}
+		}
+		xhr.open('GET', url);
+		xhr.send();
+	})
+}
+
 // Object
 Object.clone = function(obj,deep,ignore){
 	if(!obj) return {};

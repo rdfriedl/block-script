@@ -99,12 +99,12 @@ export default class VoxelChunk extends THREE.Group{
 
 		//filter all the blocks
 		let blocks = Array.from(this.blocks).map(b => b[1]).filter(block => {
-			if(this.map.blockVisibilityCache.has(block)){
+			if(this.map && this.map.blockVisibilityCache.has(block)){
 				return this.map.blockVisibilityCache.get(block);
 			}
 			else{
 				let v = block.visible;
-				this.map.blockVisibilityCache.set(block,v);
+				if(this.map) this.map.blockVisibilityCache.set(block,v);
 				return v;
 			}
 		});
@@ -271,6 +271,7 @@ export default class VoxelChunk extends THREE.Group{
 
 			let str = pos.toArray().join(',');
 			let oldBlock = this.blocks.get(str);
+			block.remove(); //remove the block from its parent if it has one
 			this.blocks.set(str,block);
 			this.blocksPositions.set(block, pos.clone()); //clone the pos so we are not storing the original vec
 
@@ -352,11 +353,13 @@ export default class VoxelChunk extends THREE.Group{
 			if(!block) return this;
 
 			// remove it from the cache, and update its neighbors
-			this.map.blockVisibilityCache.delete(block);
-			block.getNeighbors().forEach(b => {
-				if(b instanceof VoxelBlock)
-					this.map.blockVisibilityCache.delete(b);
-			});
+			if(this.map){
+				this.map.blockVisibilityCache.delete(block);
+				block.getNeighbors().forEach(b => {
+					if(b instanceof VoxelBlock)
+						this.map.blockVisibilityCache.delete(b);
+				});
+			}
 
 			// remove it from the maps
 			this.blocks.delete(block.position.toArray().join(','));

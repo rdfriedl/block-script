@@ -6,16 +6,16 @@
 		<div class="btn-group">
 			<a v-link="'/menu'" class="btn btn-info"><i class="fa fa-arrow-left"></i> Back</a>
 			<dropdown>
-				<a class="dropdown-toggle btn btn-default" data-toggle="dropdown"><span>File</span></a>
+				<a class="dropdown-toggle btn btn-default" data-toggle="dropdown"><i class="fa fa-home"></i> Room</a>
 				<ul slot="dropdown-menu" class="dropdown-menu">
 					<li><a href="#" @click="clearRoom"><i class="fa fa-plus"></i> New</a></li>
-					<li><a href="#"><i class="fa fa-upload"></i> Load from file</a></li>
-					<li><a href="#"><i class="fa fa-download"></i> Export to file</a></li>
+					<li><a href="#" @click="importFile"><i class="fa fa-upload"></i> Load from file</a></li>
+					<li><a href="#" @click="exportFile"><i class="fa fa-download"></i> Export to file</a></li>
 					<li><a href="#"><i class="fa fa-cogs"></i> Options</a></li>
 				</ul>
 			</dropdown>
 			<dropdown>
-				<a class="dropdown-toggle btn btn-default" data-toggle="dropdown"><span>View</span></a>
+				<a class="dropdown-toggle btn btn-default" data-toggle="dropdown"><i class="fa fa-eye"></i> View</a>
 				<ul slot="dropdown-menu" class="dropdown-menu">
 					<li><a @click="view.edges = !view.edges">Edges <i class="fa fa-check" v-show="view.edges"></i></a></li>
 					<li><a @click="view.blocks = !view.blocks">Blocks <i class="fa fa-check" v-show="view.blocks"></i></a></li>
@@ -49,9 +49,6 @@
 						</div>
 					</div>
 				</tab>
-				<tab header="Options">
-
-				</tab>
 			</tabs>
 		</div>
 		<div self="size-3of4">
@@ -65,11 +62,12 @@
 <!-- JS -->
 <script>
 
-import $ from 'jquery';
 import THREE from 'three';
+import FileSaver from 'file-saver';
 
 import MeshPreviewComponent from './editor/MeshPreview.vue';
 import * as VueStrap from 'vue-strap';
+import BSDropdown from './bootstrap/dropdown.vue';
 
 // three plugins
 import 'imports?THREE=three!../lib/threejs/controls/OrbitControls.js';
@@ -89,6 +87,7 @@ ModelManager.inst.registerMany(models);
 
 import VoxelMap from '../js/voxel/VoxelMap.js';
 import VoxelBlockManager from '../js/voxel/VoxelBlockManager.js';
+import VoxelSelection from '../js/voxel/VoxelSelection.js';
 
 import AttachTool from '../js/editor-tools/AttachTool.js';
 
@@ -96,7 +95,7 @@ const ROOM_SIZE = new THREE.Vector3(32,16,32);
 
 export default {
 	components: {
-		dropdown: VueStrap.dropdown,
+		dropdown: BSDropdown,
 		tabs: VueStrap.tabset,
 		tab: VueStrap.tab,
 		meshPreview: MeshPreviewComponent
@@ -128,13 +127,39 @@ export default {
 	}},
 	methods: {
 		clearRoom(){
-			this.editor.map.clearBlocks();
+			if(confirm('are you sure you want to reset the room?')){
+				this.editor.map.clearBlocks();
+			}
 		},
 		getBlockMesh(blockCls){
 			let block = new blockCls();
 			let mesh = new THREE.Mesh(block.geometry, block.material);
 			mesh.scale.set(32,32,32);
 			return () => mesh;
+		},
+		exportFile(){
+			let selection = new VoxelSelection();
+			selection.copyFrom(this.editor.map, new THREE.Vector3(0,0,0), new THREE.Vector3(1,1,1).multiply(ROOM_SIZE));
+			let json = {
+				selection: selection.toJSON()
+			}
+			let blob = new Blob([JSON.stringify(json, null, 4)], {type: 'text/plain'});
+			FileSaver.saveAs(blob, 'room.json');
+		},
+		importFile(){
+			let $input = $('<input>');
+			$input.attr('type','file').on('change', event => {
+				if(event.target.files.length){
+					JSON.fromBlob(event.target.files[0]).then(json => {
+						let selection = new VoxelSelection();
+						selection.fromJSON(json.selection);
+						this.editor.map.clearBlocks();
+						selection.addTo(this.editor.map);
+					}).catch(err => {
+						console.warn('failed to load room', err);
+					})
+				}
+			}).trigger('click');
 		}
 	},
 	created(){
@@ -269,9 +294,8 @@ function createScene(editor){
 	});
 
 	// create the map
-	let blockManager = editor.blockManager = new VoxelBlockManager();
-	blockManager.registerBlock(blocks);
-	let map = editor.map = new VoxelMap(blockManager);
+	let map = editor.map = new VoxelMap();
+	map.blockManager.registerBlock(blocks);
 	scene.add(map);
 
 	// create light

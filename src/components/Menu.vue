@@ -28,7 +28,6 @@
 <!-- JS -->
 <script>
 
-import $ from 'jquery';
 import THREE from 'three';
 import CssCube from './CssCube.vue';
 import VoxelMap from '../js/voxel/VoxelMap.js';

@@ -2,10 +2,10 @@ import MazeGenerator from './MazeGenerator.js';
 
 /**
  * @class
- * @name RecursiveBacktracking
+ * @name RecursiveBacktracker
  * @extends {MazeGenerator}
  */
-export default class RecursiveBacktracking extends MazeGenerator{
+export default class RecursiveBacktracker extends MazeGenerator{
 	/**
 	 * @param  {Object} opts
 	 * @param  {Number} [opts.paths=1] - the number of posible paths from "start" to "end"

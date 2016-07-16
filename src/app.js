@@ -1,9 +1,8 @@
 // import libraries
-import $ from 'jquery';
+import 'script!jquery';
 import Vue from 'vue';
 import VueRouter from 'vue-router';
-import 'bootstrap-js';
-import 'bootstrap-toggle-js';
+import 'script!bootstrap/dist/js/bootstrap.min.js';
 
 // three.js
 import THREE from 'three';
@@ -80,13 +79,13 @@ $(document).ready(function() {
 
 // test methods
 import MazeGenerator from './js/maze-generators/MazeGenerator.js';
-import RecursiveBacktracking from './js/maze-generators/RecursiveBacktracking.js';
+import RecursiveBacktracker from './js/maze-generators/RecursiveBacktracker.js';
 if(process.env.NODE_ENV == 'dev'){
 	window.printMaze = function(sizeX,sizeY){
 		sizeX = sizeX || 10;
 		sizeY = sizeY || sizeX;
 		let str = '';
-		let maze = new RecursiveBacktracking(THREE.Vector2, new THREE.Vector2(sizeX, sizeY));
+		let maze = new RecursiveBacktracker(THREE.Vector2, new THREE.Vector2(sizeX, sizeY));
 		// maze.start.set(0,0);
 		maze.generate();
 
