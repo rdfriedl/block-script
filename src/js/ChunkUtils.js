@@ -43,26 +43,26 @@ export function drawCube(chunk, fromV, toV, block, type = 'solid'){
 			chunk.setBlock(b, pos);
 	}
 
-	for (let x = min.x; x < max.x; x++) {
-		for (let y = min.y; y < max.y; y++) {
-			for (let z = min.z; z < max.z; z++) {
+	for (let x = min.x; x <= max.x; x++) {
+		for (let y = min.y; y <= max.y; y++) {
+			for (let z = min.z; z <= max.z; z++) {
 				pos.set(x,y,z);
 
 				switch(type){
 					case 'frame':
 						if(
-							(pos.x == min.x || pos.x == toV.x -1) +
-							(pos.y == min.y || pos.y == toV.y -1) +
-							(pos.z == min.z || pos.z == toV.z -1) >= 2
+							(pos.x == min.x || pos.x == max.x) +
+							(pos.y == min.y || pos.y == max.y) +
+							(pos.z == min.z || pos.z == max.z) >= 2
 						){
 							setBlock(pos);
 						}
 						break;
 					case 'hollow':
 						if(
-							(pos.x == min.x || pos.x == toV.x -1) ||
-							(pos.y == min.y || pos.y == toV.y -1) ||
-							(pos.z == min.z || pos.z == toV.z -1)
+							(pos.x == min.x || pos.x == max.x) ||
+							(pos.y == min.y || pos.y == max.y) ||
+							(pos.z == min.z || pos.z == max.z)
 						){
 							setBlock(pos);
 						}

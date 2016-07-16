@@ -26,6 +26,10 @@ describe('VoxelBlockManager', function() {
 		it('getBlock(VoxelBlock)', function() {
 			expect(this.manager.getBlock(new blocks.Dirt)).toBe(blocks.Dirt);
 		});
+
+		it('getBlock(String with props)', function() {
+			expect(this.manager.getBlock('dirt?type=test')).toBe(blocks.Dirt);
+		});
 	});
 
 	describe('createBlock', function() {
@@ -65,13 +69,36 @@ describe('VoxelBlockManager', function() {
 			// with pool
 			this.manager.usePool = true;
 			this.manager.disposeBlock(new blocks.Dirt());
-			block = this.manager.createBlock('dirt',{properties: {testing: 'test'}});
+			block = this.manager.createBlock('dirt',{testing: 'test'});
 			expect(block.getProp('testing')).toBe('test');
 
 			// without pool
 			this.manager.usePool = false;
-			block = this.manager.createBlock('dirt',{properties: {testing: 'test'}});
+			block = this.manager.createBlock('dirt',{testing: 'test'});
 			expect(block.getProp('testing')).toBe('test');
+		});
+
+		it('createBlock(String with props)', function() {
+			let block = this.manager.createBlock('dirt?type=test');
+			expect(block.getProp('type')).toBe('test');
+		});
+	});
+
+	describe('resolveID', function() {
+		it('resolveID(String)', function() {
+			expect(this.manager.resolveID('dirt')).toBe('dirt');
+		});
+
+		it('resolveID(string with props)', function() {
+			expect(this.manager.resolveID('dirt?type=test')).toBe('dirt');
+		});
+
+		it('resolveID(Class)', function() {
+			expect(this.manager.resolveID(blocks.Dirt)).toBe('dirt');
+		});
+
+		it('resolveID(VoxelBlock)', function() {
+			expect(this.manager.resolveID(new blocks.Dirt)).toBe('dirt');
 		});
 	});
 });

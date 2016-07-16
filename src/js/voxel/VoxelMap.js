@@ -239,13 +239,17 @@ export default class VoxelMap extends THREE.Group{
 	}
 
 	/**
-	 * removes all the chunks in this map
+	 * removes all the chunks and all the blocks in then from the map
+	 * @param {Boolean} [disposeBlocks=true] - whether to put all the blocks in the chunk back into the blockManagers pool
 	 * @return {this}
 	 *
 	 * @fires VoxelMap#chunks:cleared
 	 */
-	clearChunks(){
-		this.listChunks().forEach(c => c.parent = undefined);
+	clearChunks(disposeBlocks = true){
+		this.listChunks().forEach(chunk => {
+			chunk.clearBlocks(disposeBlocks);
+			chunk.parent = undefined;
+		});
 		this.chunks.clear();
 
 		// fire event
@@ -408,11 +412,12 @@ export default class VoxelMap extends THREE.Group{
 
 	/**
 	 * removes all the blocks in this map, but keeps the chunks
+	 * @param {Boolean} [disposeBlocks=true]
 	 * @return {this}
 	 */
-	clearBlocks(){
+	clearBlocks(disposeBlocks = true){
 		this.listChunks().forEach(chunk => {
-			chunk.clearBlocks();
+			chunk.clearBlocks(disposeBlocks);
 		})
 
 		return this;
@@ -421,9 +426,10 @@ export default class VoxelMap extends THREE.Group{
 	/**
 	 * removes a block from the map
 	 * @param  {THREE.Vector3|String|VoxelBlock} posision
+	 * @param {Boolean} [disposeBlock=true]
 	 * @return {this}
 	 */
-	removeBlock(pos){
+	removeBlock(pos, disposeBlock = true){
 		//string to vector
 		if(String.isString(pos))
 			pos = new THREE.Vector3().fromArray(pos.split(','));
@@ -433,13 +439,13 @@ export default class VoxelMap extends THREE.Group{
 			let chunk = this.getChunk(chunkPos);
 
 			if(chunk)
-				chunk.removeBlock(this.tmpVec.copy(pos).sub(chunk.worldPosition));
+				chunk.removeBlock(this.tmpVec.copy(pos).sub(chunk.worldPosition), disposeBlock);
 		}
 		else if(pos instanceof VoxelBlock){
 			let chunks = this.listChunks();
 			for(let chunk of chunks){
 				if(chunk.hasBlock(pos))
-					chunk.removeBlock(pos);
+					chunk.removeBlock(pos, disposeBlock);
 			}
 		}
 

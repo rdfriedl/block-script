@@ -11,7 +11,6 @@
 					<li><a href="#" @click="clearRoom"><i class="fa fa-plus"></i> New</a></li>
 					<li><a href="#" @click="importFile"><i class="fa fa-upload"></i> Load from file</a></li>
 					<li><a href="#" @click="exportFile"><i class="fa fa-download"></i> Export to file</a></li>
-					<li><a href="#"><i class="fa fa-cogs"></i> Options</a></li>
 				</ul>
 			</dropdown>
 			<dropdown>
@@ -30,26 +29,66 @@
 			<button type="button" class="btn btn-default" :class="{active: mode == 'place-objects'}" @click="mode = 'place-objects'"><i class="fa fa-lightbulb-o"></i></button>
 			<button type="button" class="btn btn-default" :class="{active: mode == 'camera-controls'}" @click="mode = 'camera-controls'"><i class="fa fa-hand-paper-o"></i></button>
 		</div>
+
+		<!-- attachTool fill type -->
+		<dropdown v-show="mode == 'place-blocks'">
+			<a class="dropdown-toggle btn btn-default" data-toggle="dropdown">Fill Type</a>
+			<ul slot="dropdown-menu" class="dropdown-menu">
+				<li><a @click="placeBlocks.fillType = 'solid'">Solid <i class="fa fa-check" v-show="placeBlocks.fillType == 'solid'"></i></a></li>
+				<li><a @click="placeBlocks.fillType = 'hollow'">Hollow <i class="fa fa-check" v-show="placeBlocks.fillType == 'hollow'"></i></a></li>
+				<li><a @click="placeBlocks.fillType = 'frame'">Frame <i class="fa fa-check" v-show="placeBlocks.fillType == 'frame'"></i></a></li>
+			</ul>
+		</dropdown>
+
+		<div class="pull-right" style="margin-right: 10px;" v-show="targetBlock.enabled">
+			<h5>XYZ: {{targetBlock.x}}, {{targetBlock.y}}, {{targetBlock.z}}</h5>
+		</div>
 	</div>
 
 	<div self="size-x1" layout="row stretch-stretch">
-		<div self="size-1of4">
-			<tabs :active="0">
-				<tab header="Blocks">
-					<div layout="rows top-spread">
-						<div class="block" self="size-1of8" v-for="(key, block) of blocks" @click="selectedBlockID = block.UID" :class="{active: selectedBlockID == block.UID}">
-							<mesh-preview class="fix-width" :mesh="getBlockMesh(block)"></mesh-preview>
-						</div>
+		<div self="size-1of4" layout="column top-stretch">
+			<div class="btn-group no-margin">
+				<button type="button" class="btn btn-default" @click="tab='blocks'"><i class="fa fa-cube"></i> Blocks</button>
+				<button type="button" class="btn btn-default" @click="tab='models'">Models</button>
+				<button type="button" class="btn btn-default" @click="tab='doors'">Doors</button>
+			</div>
+
+			<!-- blocks -->
+			<div v-show="tab=='blocks'" self="size-x1" layout="rows top-spread" style="overflow: auto">
+				<div class="block" self="size-1of8" v-for="block in blocks" @click="placeBlocks.selected = block.id" :class="{active: placeBlocks.selected == block.id}">
+					<div v-if="block.loaded">
+						<mesh-preview class="fix-width" :mesh="block.mesh"></mesh-preview>
 					</div>
-				</tab>
-				<tab header="Models">
-					<div layout="rows top-spread">
-						<div class="model" self="size-1of8" v-for="(index, model) in models">
-							<mesh-preview class="fix-width" v-if="model.loaded" :mesh="model.mesh"></mesh-preview>
-						</div>
+				</div>
+			</div>
+
+			<!-- models -->
+			<div v-show="tab=='models'" self="size-x1" layout="rows top-spread">
+				<div class="model" self="size-1of8" v-for="(index, model) in models">
+					<mesh-preview class="fix-width" v-if="model.loaded" :mesh="model.mesh"></mesh-preview>
+				</div>
+			</div>
+
+			<!-- doors -->
+			<div v-show="tab=='doors'" class="panel panel-default" v-for="(axis_id, axis) in doors">
+				<div class="panel-heading">
+					<h3 class="panel-title">{{axis.title}}</h3>
+				</div>
+				<div class="panel-body">
+					<div class="input-group">
+						<div class="input-group-addon">Positive</div>
+						<select class="form-control" v-model="axis.sides[0]">
+							<option v-for="type in doorTypes[axis_id]" :value="type">{{type}}</option>
+						</select>
 					</div>
-				</tab>
-			</tabs>
+					<div class="input-group">
+						<div class="input-group-addon">Negative</div>
+						<select class="form-control" v-model="axis.sides[1]">
+							<option v-for="type in doorTypes[axis_id]" :value="type">{{type}}</option>
+						</select>
+					</div>
+				</div>
+			</div>
 		</div>
 		<div self="size-3of4">
 			<div v-el:canvas class="canvas-container"></div>
@@ -83,13 +122,14 @@ import GridCube from '../js/objects/GridCube.js';
 import Keyboard from '../js/Keyboard.js';
 import * as blocks from '../js/blocks.js';
 import models from '../js/models.js';
+import DOOR_TYPES from '../data/doorTypes.json';
 ModelManager.inst.registerMany(models);
 
 import VoxelMap from '../js/voxel/VoxelMap.js';
 import VoxelBlockManager from '../js/voxel/VoxelBlockManager.js';
 import VoxelSelection from '../js/voxel/VoxelSelection.js';
 
-import AttachTool from '../js/editor-tools/AttachTool.js';
+import AttachTool from '../js/editor/AttachTool.js';
 
 const ROOM_SIZE = new THREE.Vector3(32,16,32);
 
@@ -101,28 +141,42 @@ export default {
 		meshPreview: MeshPreviewComponent
 	},
 	data(){return {
-		selectedBlockID: 'dirt',
-		blocks: blocks,
-		models: ModelManager.inst.listModels().map(id => {
-			let model = {
-				id: id,
-				loaded: false,
-				mesh: () => mesh
-			}
-
-			// load models
-			let mesh = ModelManager.inst.getMesh(model.id, () => {
-				model.loaded = true;
-			});
-
-			return model;
-		}),
+		placeBlocks: {
+			selected: 'dirt',
+			fillType: 'solid'
+		},
+		tab: 'blocks',
+		blocks: [],
+		models: [],
 		mode: '', //place-blocks, place-objects, camera-controls
 		view: {
 			edges: false,
 			axes: true,
 			walls: true,
 			blocks: true
+		},
+		doors: {
+			x: {
+				title: 'X axis',
+				sides: ['none','none']
+			},
+			y: {
+				title: 'Y axis',
+				sides: ['none','none']
+			},
+			z: {
+				title: 'Z axis',
+				sides: ['none','none']
+			},
+			w: {
+				title: 'Time axis',
+				sides: ['none','none']
+			}
+		},
+		doorTypes: DOOR_TYPES,
+		targetBlock: {
+			enabled: false,
+			x: 0, y: 0, z: 0
 		}
 	}},
 	methods: {
@@ -131,18 +185,19 @@ export default {
 				this.editor.map.clearBlocks();
 			}
 		},
-		getBlockMesh(blockCls){
-			let block = new blockCls();
-			let mesh = new THREE.Mesh(block.geometry, block.material);
-			mesh.scale.set(32,32,32);
-			return () => mesh;
-		},
 		exportFile(){
 			let selection = new VoxelSelection();
 			selection.copyFrom(this.editor.map, new THREE.Vector3(0,0,0), new THREE.Vector3(1,1,1).multiply(ROOM_SIZE));
 			let json = {
-				selection: selection.toJSON()
+				selection: selection.toJSON(),
+				doors: {}
 			}
+
+			// doors
+			for(let i in this.doors){
+				json.doors[i] = this.doors[i].sides;
+			}
+
 			let blob = new Blob([JSON.stringify(json, null, 4)], {type: 'text/plain'});
 			FileSaver.saveAs(blob, 'room.json');
 		},
@@ -151,10 +206,18 @@ export default {
 			$input.attr('type','file').on('change', event => {
 				if(event.target.files.length){
 					JSON.fromBlob(event.target.files[0]).then(json => {
-						let selection = new VoxelSelection();
-						selection.fromJSON(json.selection);
-						this.editor.map.clearBlocks();
-						selection.addTo(this.editor.map);
+						if(json.selection){
+							let selection = new VoxelSelection();
+							selection.fromJSON(json.selection);
+							this.editor.map.clearBlocks();
+							selection.addTo(this.editor.map);
+						}
+
+						if(json.doors){
+							for(let i in json.doors){
+								this.doors[i].sides = json.doors[i];
+							}
+						}
 					}).catch(err => {
 						console.warn('failed to load room', err);
 					})
@@ -199,8 +262,10 @@ export default {
 			}
 		]);
 
-		editor.attachTool.placeBlockID = this.selectedBlockID;
-		this.$watch('selectedBlockID', v => editor.attachTool.placeBlockID = v);
+		editor.attachTool.placeBlockID = this.placeBlocks.selected;
+		this.$watch('placeBlocks.selected', v => editor.attachTool.placeBlockID = v);
+		editor.attachTool.fillType = this.placeBlocks.fillType;
+		this.$watch('placeBlocks.fillType', v => editor.attachTool.fillType = v);
 
 		// view walls
 		editor.gridWalls.visible = this.view.walls;
@@ -252,6 +317,53 @@ export default {
 
 		// default mode
 		this.mode = 'place-blocks';
+
+		// get models
+		this.models = ModelManager.inst.listModels().map(id => {
+			let model = {
+				id: id,
+				loaded: false,
+				mesh: () => mesh
+			}
+
+			// load models
+			let mesh = ModelManager.inst.getMesh(model.id, () => {
+				model.loaded = true;
+			});
+
+			return model;
+		})
+
+		// get blocks
+		for(let i in blocks){
+			let types = blocks[i].prototype.properties && blocks[i].prototype.properties.TYPES;
+			function addBlock(type){
+				let id = blocks[i].UID+'?type='+type;
+				let block = this.editor.map.blockManager.createBlock(id);
+				if(!block) return;
+
+				let mesh = new THREE.Mesh(block.geometry, block.material);
+				mesh.scale.set(32,32,32);
+
+				let data = {
+					id: id,
+					loaded: false,
+					mesh: () => mesh
+				};
+
+				this.blocks.push(data);
+			}
+			if(types)
+				types.forEach(addBlock.bind(this));
+			else
+				addBlock.call(this,'normal');
+		}
+
+		THREE.DefaultLoadingManager.onLoad = () => {
+			setTimeout(() => {
+				this.blocks.forEach(block => block.loaded = true);
+			}, 50);
+		}
 	},
 	attached(){
 		//add it to my element
@@ -428,6 +540,14 @@ function createTools(editor){
 			v.z > ROOM_SIZE.z || v.z < 0
 		);
 	}
+
+	// display info about attack tool
+	window.addEventListener('mousemove', () => {
+		this.targetBlock.enabled = attachTool.enabled;
+		this.targetBlock.x = attachTool.end? attachTool.end.target.x : 0;
+		this.targetBlock.y = attachTool.end? attachTool.end.target.y : 0;
+		this.targetBlock.z = attachTool.end? attachTool.end.target.z : 0;
+	})
 }
 
 // create camera controls

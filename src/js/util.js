@@ -65,12 +65,13 @@ URL.parseSearch = function(url){
     url = url || location.href;
     URL.parseSearch.cache = URL.parseSearch.cache || {};
     if(!URL.parseSearch.cache[url]){
-        var search = URL.indexOf('?') !== -1? URL.substr(URL.indexOf('?')+1,URL.length+1) : '';
+        var search = url.indexOf('?') !== -1? url.substr(url.indexOf('?')+1,url.length+1) : '';
         var queries = search.replace(/^\?/, '').replace(/\+/g,' ').split('&');
         URL.parseSearch.cache[url] = {};
         for( var i = 0; i < queries.length; i++ ) {
             var split = queries[i].split('=');
-            if(split[0] !== '') URL.parseSearch.cache[url][split[0]] = window.unescape(split[1]);
+            if(split[0] !== '')
+            	URL.parseSearch.cache[url][split[0]] = split[1].length? window.unescape(split[1]) : true;
         }
     }
     return URL.parseSearch.cache[url];

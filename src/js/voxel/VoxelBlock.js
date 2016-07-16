@@ -263,7 +263,7 @@ export default class VoxelBlock{
 	get material(){
 		if(!this.constructor._materialCache){
 			//create it
-			this.constructor._materialCache = this.CreateMaterial();;
+			this.constructor._materialCache = this.CreateMaterial();
 		}
 		return this.constructor._materialCache;
 	}

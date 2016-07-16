@@ -306,12 +306,14 @@ export default class VoxelChunk extends THREE.Group{
 
 	/**
 	 * removes all blocks from this chunk
+	 * @param {Boolean} [disposeBlocks=true]
 	 * @return {this}
 	 *
 	 * @fires VoxelChunk#blocks:cleared
 	 */
-	clearBlocks(){
-		this.listBlocks().forEach(b => {
+	clearBlocks(disposeBlocks = true){
+		let blocks = this.listBlocks();
+		blocks.forEach(b => {
 			b.parent = undefined;
 			if(this.map)
 				this.map.blockVisibilityCache.delete(b);
@@ -319,6 +321,11 @@ export default class VoxelChunk extends THREE.Group{
 		this.blocks.clear();
 		this.materials.clear();
 		this.needsBuild = true;
+
+		// add blocks to pool
+		// NOTE: we have to call this AFTER we remove the block from this chunk, otherwise we get an inifite loop because the blockManager tries to remove the block
+		if(disposeBlocks && this.map)
+			blocks.forEach(block => this.map.blockManager.disposeBlock(block));
 
 		// fire event
 		this.dispatchEvent({
@@ -338,11 +345,12 @@ export default class VoxelChunk extends THREE.Group{
 	/**
 	 * removes block at position
 	 * @param  {THREE.Vector3|String|VoxelBlock} position - the position of the block to remove, or the {@link VoxelBlock} to remove
+	 * @param {Boolean} [disposeBlock=true]
 	 * @return {this}
 	 *
 	 * @fires VoxelChunk#block:removed
 	 */
-	removeBlock(pos){
+	removeBlock(pos, disposeBlock = true){
 		if(String.isString(pos))
 			pos = this.tmpVec.fromArray(pos.split(','));
 
@@ -370,6 +378,11 @@ export default class VoxelChunk extends THREE.Group{
 			this.blocksPositions.delete(block);
 
 			block.parent = undefined;
+
+			// add blocks to pool
+			// NOTE: we have to call this AFTER we remove the block from this chunk, otherwise we get an inifite loop because the blockManager tries to remove the block
+			if(disposeBlock && this.map)
+				this.map.blockManager.disposeBlock(block);
 
 			//tell the map that we need to rebuild this chunk
 			this.needsBuild = true;

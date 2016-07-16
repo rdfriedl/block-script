@@ -46,9 +46,9 @@ export default {
 	data() {
 		return {
 			enabled: false,
-			cubeSide: require('../res/img/blocks/grass_side.png'),
-			cubeTop: require('../res/img/blocks/grass_top.png'),
-			cubeBottom: require('../res/img/blocks/dirt.png')
+			cubeSide: require('../res/img/menu_block.png'),
+			cubeTop: require('../res/img/menu_block.png'),
+			cubeBottom: require('../res/img/menu_block.png')
 		}
 	},
 	created(){
