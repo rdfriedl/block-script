@@ -1,5 +1,14 @@
 import THREE from 'three';
 
+const NEIGHBORS_DIRS = [
+	[1,0,0],
+	[0,1,0],
+	[0,0,1],
+	[-1,0,0],
+	[0,-1,0],
+	[0,0,-1]
+];
+
 /**
  * @name VoxelChunk
  * @class
@@ -42,13 +51,7 @@ export default class VoxelChunk extends THREE.Group{
 		 * @var {THREE.MultiMaterial}
 		 * @private
 		 */
-		this.material = undefined;
-
-		/**
-		 * a Set of all the materials on all the blocks in this chunk
-		 * @var {Set}
-		 */
-		this.materials = new Set();
+		this.material = new THREE.MultiMaterial();
 
 		/**
 		 * a tmp Vector3 the chunk uses so it dose not have to create new instances
@@ -92,63 +95,123 @@ export default class VoxelChunk extends THREE.Group{
 	 * @fires VoxelChunk#built
 	 */
 	build(){
-		if(this.mesh)
-			this.mesh.geometry.dispose();
+		this.disposeGeometry();
 
 		let geometry = new THREE.Geometry();
 
 		//filter all the blocks
 		let blocks = Array.from(this.blocks).map(b => b[1]).filter(block => {
-			if(this.map && this.map.blockVisibilityCache.has(block)){
-				return this.map.blockVisibilityCache.get(block);
-			}
-			else{
-				let v = block.visible;
-				if(this.map) this.map.blockVisibilityCache.set(block,v);
-				return v;
-			}
-		});
+			if(!this.map) return true;
 
-		//get all the materials
-		this.materials.clear();
-		blocks.forEach(block => {
-			if(block.material instanceof THREE.MultiMaterial){
-				block.material.materials.forEach(mat => this.materials.add(mat));
-			}
-			else if(block.material instanceof THREE.Material){
-				this.materials.add(block.material);
-			}
-		});
+			// recalculate the cache if we have to
+			let neighbors = VoxelChunk.BlockNeighborCache.get(block);
+			if(!neighbors){
+				neighbors = {};
+				NEIGHBORS_DIRS.forEach(dir => {
+					this.tmpVec.fromArray(dir);
+					neighbors[this.tmpVec.toString()] = block.getNeighbor(this.tmpVec);
+				})
 
-		//update or create the mat
-		if(this.material){
-			this.material.materials = Array.from(this.materials);
-			this.material.needsUpdate = true;
-		}
-		else{
-			this.material = new THREE.MultiMaterial(Array.from(this.materials));
-		}
+				// only add it to the cache if we are using the cache
+				if(this.useNeighborCache)
+					VoxelChunk.BlockNeighborCache.set(block, neighbors);
+			}
+
+			VoxelChunk.BuildBlockNeighborCache.set(block, neighbors);
+
+			for(let i in neighbors){
+				if(neighbors[i] === undefined || neighbors[i].properties.transparent == true)
+					return true;
+			}
+			return false;
+		})
+
+		this.material.materials = [];
+		this.material.needsUpdate = true;
 
 		//merge the geometries
-		let v = new THREE.Vector3(0.5,0.5,0.5);
+		let blockPositionOffset = new THREE.Vector3(0.5,0.5,0.5);
+		let matrix = new THREE.Matrix4();
 		blocks.forEach(block => {
-			let pos = this.tmpVec.copy(block.position).add(v);
-			let matrix = new THREE.Matrix4();
+			matrix.identity();
+
+			// add the material
+			let materialOffset = VoxelChunk.materialOffsetCache.get(block.material);
+			if(materialOffset == undefined){
+				materialOffset = this.material.materials.length;
+				if(block.material instanceof THREE.MultiMaterial){
+					for(let i in block.material.materials){
+						this.material.materials.push(block.material.materials[i]);
+					}
+				}
+				else if(block.material instanceof THREE.Material)
+					this.material.materials.push(block.material);
+				VoxelChunk.materialOffsetCache.set(block.material, materialOffset);
+			}
 
 			// set rotation
 			if(block.properties.rotation instanceof THREE.Euler)
 				matrix.makeRotationFromEuler(block.properties.rotation);
 
 			// set position
-			matrix.setPosition(pos);
+			matrix.setPosition(this.tmpVec.copy(block.position).add(blockPositionOffset));
 
-			if(block.material instanceof THREE.MultiMaterial){
-				geometry.merge(block.geometry, matrix, this.material.materials.indexOf(block.material.materials[0]));
+			// merge the geometry
+			if(block.geometry instanceof THREE.BoxGeometry){
+				// its just a box, loop though the faces and only add some of them
+				let neighbors = VoxelChunk.BuildBlockNeighborCache.get(block);
+
+				// merge the vertices
+				let verticesOffset = geometry.vertices.length;
+				for(let i in block.geometry.vertices){
+					let point = VoxelChunk.VertexPool.pop() || new THREE.Vector3();
+					point.copy(block.geometry.vertices[i]).applyMatrix4(matrix);
+					geometry.vertices.push(point);
+				}
+
+				// merge the faces
+				block.geometry.faces.forEach((face, faceIndex) => {
+					let normalString = face.normal.toString();
+
+					// check to see if this face is visible
+					if(neighbors[normalString] instanceof VoxelBlock == false || neighbors[normalString].properties.transparent == true){
+						let newFace = VoxelChunk.FacePool.pop() || new THREE.Face3();
+						newFace.copy(face);
+
+						// change the points
+						newFace.a += verticesOffset;
+						newFace.b += verticesOffset;
+						newFace.c += verticesOffset;
+
+						// set the material
+						newFace.materialIndex += materialOffset;
+
+						// add uvs
+						let UVs = [];
+						for (let i = 0; i < block.geometry.faceVertexUvs[0][faceIndex].length; i++) {
+							let uv = VoxelChunk.UVPool.pop() || new THREE.Vector2();
+							uv.copy(block.geometry.faceVertexUvs[0][faceIndex][i]);
+							UVs.push(uv);
+						}
+						geometry.faceVertexUvs[0].push(UVs);
+
+						// add the face
+						geometry.faces.push(newFace);
+					}
+				})
 			}
-			else if(block.material instanceof THREE.Material){
-				geometry.merge(block.geometry, matrix, this.material.materials.indexOf(block.material));
+			else{
+				// its a diffent shape, merge everything
+				if(block.material instanceof THREE.MultiMaterial){
+					geometry.merge(block.geometry, matrix, materialOffset);
+				}
+				else if(block.material instanceof THREE.Material){
+					geometry.merge(block.geometry, matrix, materialOffset);
+				}
 			}
 		});
+		VoxelChunk.materialOffsetCache.clear();
+		VoxelChunk.BuildBlockNeighborCache.clear();
 
 		geometry.mergeVertices();
 		geometry.computeFaceNormals();
@@ -179,15 +242,27 @@ export default class VoxelChunk extends THREE.Group{
 	}
 
 	/**
+	 * dispose this chunks mesh and geometry and adds the vertices and faces into the chunk vertex and face pool
+	 * @return {this}
+	 */
+	disposeGeometry(){
+		if(this.mesh){
+			this.mesh.geometry.dispose();
+
+			this.mesh.geometry.vertices.forEach(v => VoxelChunk.VertexPool.push(v));
+			this.mesh.geometry.faceVertexUvs[0].forEach(a => {
+				a.forEach(uv => VoxelChunk.UVPool.push(uv));
+			});
+			this.mesh.geometry.faces.forEach(face => VoxelChunk.FacePool.push(face));
+		}
+	}
+
+	/**
 	 * checks to see if we have a block at position, or if the block is in this chunk
-	 * @param  {THREE.Vector3|String|VoxelBlock} position - the position to check, or the block to check for
+	 * @param  {THREE.Vector3|VoxelBlock} position - the position to check, or the block to check for
 	 * @return {Boolean}
 	 */
 	hasBlock(pos){
-		//string to vector
-		if(String.isString(pos))
-			pos = this.tmpVec.fromString(pos);
-
 		if(pos instanceof THREE.Vector3){
 			pos = this.tmpVec.copy(pos).round();
 			return this.blocks.has(pos.toString());
@@ -204,13 +279,10 @@ export default class VoxelChunk extends THREE.Group{
 	/**
 	 * returns the block at "position".
 	 * if the Vector3 is negative it will get the block from the edge of the chunk
-	 * @param  {(THREE.Vector3|String|VoxelBlock)} position
+	 * @param  {(THREE.Vector3|VoxelBlock)} position
 	 * @return {VoxelBlock}
 	 */
 	getBlock(pos){
-		if(String.isString(pos))
-			pos = this.tmpVec.fromString(pos);
-
 		if(pos instanceof THREE.Vector3){
 			pos = this.tmpVec.copy(pos).round();
 			return this.blocks.get(pos.toString());
@@ -233,16 +305,13 @@ export default class VoxelChunk extends THREE.Group{
 	/**
 	 * creates a block with id and adds it to the chunk
 	 * @param  {String} id - the UID of the block to create
-	 * @param  {THREE.Vector3|String} position - the position to add the block to
+	 * @param  {THREE.Vector3} position - the position to add the block to
 	 * @returns {VoxelBlock}
 	 */
 	createBlock(id,pos){
 		let block;
 		if(String.isString(id))
 			block = this.map && this.map.blockManager.createBlock(id);
-
-		if(String.isString(pos))
-			pos = this.tmpVec.fromString(pos);
 
 		if(block && pos){
 			this.setBlock(block, pos);
@@ -254,17 +323,14 @@ export default class VoxelChunk extends THREE.Group{
 	 * adds a block to the chunk at position.
 	 * if "block" is a String it will create a new block with using the parents maps {@link VoxelBlockManager#createBlock}
 	 * @param {VoxelBlock|String} block
-	 * @param {(THREE.Vector3|String)} position
+	 * @param {(THREE.Vector3)} position
 	 * @returns {this}
 	 *
 	 * @fires VoxelChunk#block:set
 	 */
-	setBlock(block,pos){
+	setBlock(block, pos){
 		if(String.isString(block))
 			block = this.map && this.map.blockManager.createBlock(block);
-
-		if(String.isString(pos))
-			pos = this.tmpVec.fromString(pos);
 
 		if(pos instanceof THREE.Vector3 && block instanceof VoxelBlock){
 			pos = this.tmpVec.copy(pos).round();
@@ -273,13 +339,23 @@ export default class VoxelChunk extends THREE.Group{
 			let oldBlock = this.blocks.get(str);
 
 			//remove the block from its parent if it has one
-			if(block.parent)
-				block.parent.removeBlock(block);
+			if(block.parent){
+				// remove the block and its neighbors from thier cache
+				if(this.useNeighborCache)
+					VoxelChunk.removeBlockFromNeighborCache(oldBlock, true);
 
+				block.parent.removeBlock(block);
+			}
+
+			// add it to this chunk
 			this.blocks.set(str,block);
 			this.blocksPositions.set(block, pos.clone()); //clone the pos so we are not storing the original vec
 
 			block.parent = this;
+
+			// remove this blocks neighbors from the cache
+			if(this.useNeighborCache)
+				VoxelChunk.removeBlockFromNeighborCache(block, true);
 
 			//tell the map that we need to rebuild this chunk
 			this.needsBuild = true;
@@ -315,11 +391,11 @@ export default class VoxelChunk extends THREE.Group{
 		let blocks = this.listBlocks();
 		blocks.forEach(b => {
 			b.parent = undefined;
-			if(this.map)
-				this.map.blockVisibilityCache.delete(b);
+
+			if(this.useNeighborCache)
+				VoxelChunk.removeBlockFromNeighborCache(b, false);
 		});
 		this.blocks.clear();
-		this.materials.clear();
 		this.needsBuild = true;
 
 		// add blocks to pool
@@ -344,16 +420,13 @@ export default class VoxelChunk extends THREE.Group{
 
 	/**
 	 * removes block at position
-	 * @param  {THREE.Vector3|String|VoxelBlock} position - the position of the block to remove, or the {@link VoxelBlock} to remove
+	 * @param  {THREE.Vector3|VoxelBlock} position - the position of the block to remove, or the {@link VoxelBlock} to remove
 	 * @param {Boolean} [disposeBlock=true]
 	 * @return {this}
 	 *
 	 * @fires VoxelChunk#block:removed
 	 */
 	removeBlock(pos, disposeBlock = true){
-		if(String.isString(pos))
-			pos = this.tmpVec.fromString(pos);
-
 		if(this.hasBlock(pos)){
 			let block;
 			if(pos instanceof THREE.Vector3){
@@ -365,13 +438,7 @@ export default class VoxelChunk extends THREE.Group{
 			if(!block) return this;
 
 			// remove it from the cache, and update its neighbors
-			if(this.map){
-				this.map.blockVisibilityCache.delete(block);
-				block.getNeighbors().forEach(b => {
-					if(b instanceof VoxelBlock)
-						this.map.blockVisibilityCache.delete(b);
-				});
-			}
+			VoxelChunk.removeBlockFromNeighborCache(block, true);
 
 			// remove it from the maps
 			this.blocks.delete(block.position.toString());
@@ -403,6 +470,36 @@ export default class VoxelChunk extends THREE.Group{
 		}
 
 		return this;
+	}
+
+	/**
+	 * removes a block and its neighbors from the {@link VoxelChunk#BlockNeighborCache}
+	 * @param  {VoxelBlock} block
+	 * @param  {Boolean} setBuild - whether to set the build flag on the parent chunk
+	 * @static
+	 */
+	static removeBlockFromNeighborCache(block, removeNeighbors = true, setBuild = false){
+		if(block.map){
+			let neighbors = VoxelChunk.BlockNeighborCache.get(block);
+			VoxelChunk.BlockNeighborCache.delete(block);
+
+			if(removeNeighbors){
+				if(neighbors){
+					for(let i in neighbors){
+						VoxelChunk.BlockNeighborCache.delete(neighbors[i]);
+						if(setBuild && neighbors[i] && neighbors[i].chunk)
+							neighbors[i].chunk.needsBuild = true;
+					}
+				}
+				else{
+					block.getNeighbors().forEach(b => {
+						VoxelChunk.BlockNeighborCache.delete(block);
+						if(setBuild && block && block.chunk)
+							block.chunk.needsBuild = true;
+					});
+				}
+			}
+		}
 	}
 
 	/**
@@ -442,8 +539,9 @@ export default class VoxelChunk extends THREE.Group{
 				blockTypes[str] = json.blockTypes.length;
 				json.blockTypes.push(blockData);
 			}
-			block[1] = blockTypes[str];
-			return block;
+			let data = block[0].split(',');
+			data.push(blockTypes[str]);
+			return data; //[x,y,z,typeID]
 		});
 		return json;
 	}
@@ -455,14 +553,18 @@ export default class VoxelChunk extends THREE.Group{
 	 * @return {this}
 	 */
 	fromJSON(json){
+		let tmpVec = new THREE.Vector3();
 		if(json.blocks && json.blockTypes){
 			json.blocks.forEach(data => {
-				let blockData = json.blockTypes[data[1]];
-				let block = this.blockManager.createBlock(blockData.type);
+				// data is in format [x,y,z,typeID]
+				let blockData = json.blockTypes[data[3]];
+				if(blockData){
+					let block = this.blockManager.createBlock(blockData.type);
 
-				if(block){
-					block.fromJSON(blockData);
-					this.setBlock(block, data[0]);
+					if(block){
+						block.fromJSON(blockData);
+						this.setBlock(block, tmpVec.set(data[0],data[1],data[2]));
+					}
 				}
 			})
 		}
@@ -532,7 +634,52 @@ export default class VoxelChunk extends THREE.Group{
 	get blockManager(){
 		return this.map? this.map.blockManager : undefined;
 	}
+
+	get useNeighborCache(){
+		return !!this.map && this.map.useNeighborCache;
+	}
 }
+
+// pools used when building chunks
+
+/**
+ * @type {Map}
+ * @memberOf VoxelChunk
+ */
+VoxelChunk.materialOffsetCache = new Map();
+
+/**
+ * a cache for block neighbors used when building a chunk
+ * @type {Map}
+ * @memberOf VoxelChunk
+ */
+VoxelChunk.BuildBlockNeighborCache = new Map();
+
+/**
+ * @type {THREE.Vector3[]}
+ * @memberOf VoxelChunk
+ */
+VoxelChunk.VertexPool = [];
+
+/**
+ * @type {THREE.Face3[]}
+ * @memberOf VoxelChunk
+ */
+VoxelChunk.FacePool = [];
+
+/**
+ * @type {THREE.Vector2[]}
+ * @memberOf VoxelChunk
+ */
+VoxelChunk.UVPool = [];
+
+/**
+ * a cache for block neighbors
+ * @type {WeakMap}
+ * @memberOf VoxelChunk
+ */
+VoxelChunk.BlockNeighborCache = new WeakMap();
+
 
 //import block for runtime
 import VoxelBlock from './VoxelBlock.js';

@@ -11,7 +11,7 @@ describe('VoxelBlock', function() {
 
 		// register default block
 		this.map.blockManager.registerBlock(VoxelBlock);
-		this.block = this.map.createBlock('block', '0,0,0');
+		this.block = this.map.createBlock('block', new THREE.Vector3());
 	})
 
 	describe('UID', function() {
@@ -27,51 +27,51 @@ describe('VoxelBlock', function() {
 			this.block = new VoxelBlock();
 		})
 		it('"parent" points to parent chunk or selection', function() {
-			this.selection.setBlock(this.block, '0,0,0');
+			this.selection.setBlock(this.block, new THREE.Vector3());
 			expect(this.block.parent).toBe(this.selection);
 
-			this.chunk.setBlock(this.block, '0,0,0');
+			this.chunk.setBlock(this.block, new THREE.Vector3());
 			expect(this.block.parent).toBe(this.chunk);
 		});
 
 		it('"chunk" points to parent chunk, but not parent selection', function() {
-			this.selection.setBlock(this.block, '0,0,0');
+			this.selection.setBlock(this.block, new THREE.Vector3());
 			expect(this.block.chunk).toBe(undefined);
 
-			this.chunk.setBlock(this.block, '0,0,0');
+			this.chunk.setBlock(this.block, new THREE.Vector3());
 			expect(this.block.chunk).toBe(this.chunk);
 		});
 
 		it('"selection" points to parent selection, but not parent chunk', function() {
-			this.selection.setBlock(this.block, '0,0,0');
+			this.selection.setBlock(this.block, new THREE.Vector3());
 			expect(this.block.selection).toBe(this.selection);
 
-			this.chunk.setBlock(this.block, '0,0,0');
+			this.chunk.setBlock(this.block, new THREE.Vector3());
 			expect(this.block.selection).toBe(undefined);
 		});
 	});
 
 	describe('worldPosition', function() {
 		it('returns THREE.Vector3', function() {
-			this.map.setBlock(this.block, '0,0,0');
+			this.map.setBlock(this.block, new THREE.Vector3());
 			expect(this.block.worldPosition instanceof THREE.Vector3).toBe(true);
 		});
 
 		it('returns empty Vec3 when not in a map', function() {
 			this.block.parent.removeBlock(this.block);
-			expect(this.block.worldPosition.toArray().join(',')).toBe('0,0,0');
+			expect(this.block.worldPosition instanceof THREE.Vector3).toBe(true);
 		});
 	});
 
 	describe('position', function() {
 		it('returns THREE.Vector3', function() {
-			this.map.setBlock(this.block, '0,0,0');
+			this.map.setBlock(this.block, new THREE.Vector3());
 			expect(this.block.position instanceof THREE.Vector3).toBe(true);
 		});
 
 		it('returns empty Vec3 when not in a map or selection', function() {
 			this.block.parent.removeBlock(this.block);
-			expect(this.block.position.toArray().join(',')).toBe('0,0,0');
+			expect(this.block.position instanceof THREE.Vector3).toBe(true);
 		});
 	});
 

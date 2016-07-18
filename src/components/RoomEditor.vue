@@ -420,6 +420,7 @@ function createScene(editor){
 	let map = editor.map = new VoxelMap();
 	map.blockManager.registerBlock(blocks);
 	map.blockManager.usePool = true;
+	map.useNeighborCache = false;
 	scene.add(map);
 
 	// create light

@@ -28,8 +28,8 @@ describe('VoxelChunk', function() {
 	describe('size', function() {
 		it('returns the size in blocks', function() {
 			this.selection.clearBlocks();
-			this.selection.createBlock('block', '0,0,0');
-			this.selection.createBlock('block', '1,1,1');
+			this.selection.createBlock('block', new THREE.Vector3());
+			this.selection.createBlock('block', new THREE.Vector3(1,1,1));
 			expect(this.selection.size.equals(new THREE.Vector3(2,2,2))).toBe(true);
 		});
 
@@ -42,18 +42,18 @@ describe('VoxelChunk', function() {
 	// blocks
 	describe('createBlock', function() {
 		it('returns created block', function() {
-			expect(this.selection.createBlock('block', '1,1,1') instanceof VoxelBlock).toBe(true);
+			expect(this.selection.createBlock('block', new THREE.Vector3(1,1,1)) instanceof VoxelBlock).toBe(true);
 		});
 
 		it('creates a block at position', function() {
-			let block = this.selection.createBlock('block', '0,0,0');
-			expect(this.selection.getBlock('0,0,0')).toBe(block);
+			let block = this.selection.createBlock('block', new THREE.Vector3());
+			expect(this.selection.getBlock(new THREE.Vector3())).toBe(block);
 		});
 	});
 
 	describe('hasBlock', function() {
 		beforeAll(function(){
-			this.block = this.selection.createBlock('block', '0,0,0');
+			this.block = this.selection.createBlock('block', new THREE.Vector3());
 		});
 
 		it('hasBlock(THREE.Vector3)', function() {
@@ -61,7 +61,7 @@ describe('VoxelChunk', function() {
 		});
 
 		it('hasBlock("x,y,z")', function() {
-			expect(this.selection.hasBlock('0,0,0')).toBe(true);
+			expect(this.selection.hasBlock(new THREE.Vector3())).toBe(true);
 		});
 
 		it('hasBlock(VoxelBlock)', function() {
@@ -71,7 +71,7 @@ describe('VoxelChunk', function() {
 
 	describe('getBlock', function() {
 		beforeAll(function(){
-			this.block = this.selection.createBlock('block', '0,0,0');
+			this.block = this.selection.createBlock('block', new THREE.Vector3());
 		});
 
 		it('getBlock(THREE.Vector3)', function() {
@@ -79,7 +79,7 @@ describe('VoxelChunk', function() {
 		});
 
 		it('getBlock("x,y,z")', function() {
-			expect(this.selection.getBlock('0,0,0')).toBe(this.block);
+			expect(this.selection.getBlock(new THREE.Vector3())).toBe(this.block);
 		});
 
 		describe('getBlock(VoxelBlock)', function() {
@@ -95,7 +95,7 @@ describe('VoxelChunk', function() {
 
 	describe('removeBlock', function() {
 		beforeEach(function(){
-			this.block = this.selection.createBlock('0,0,0');
+			this.block = this.selection.createBlock(new THREE.Vector3());
 		});
 
 		it('removeBlock(THREE.Vector3)', function() {
@@ -106,9 +106,9 @@ describe('VoxelChunk', function() {
 		});
 
 		it('removeBlock("x,y,z")', function() {
-			this.selection.removeBlock('0,0,0');
-			expect(this.selection.hasBlock('0,0,0')).toBe(false);
-			expect(this.selection.getBlock('0,0,0')).toBe(undefined);
+			this.selection.removeBlock(new THREE.Vector3());
+			expect(this.selection.hasBlock(new THREE.Vector3())).toBe(false);
+			expect(this.selection.getBlock(new THREE.Vector3())).toBe(undefined);
 		});
 
 		it('removeBlock(VoxelBlock)', function() {
@@ -120,36 +120,36 @@ describe('VoxelChunk', function() {
 
 	describe('clearBlocks', function() {
 		beforeAll(function(){
-			this.selection.createBlock('block', '0,0,0');
+			this.selection.createBlock('block', new THREE.Vector3());
 			this.selection.clearBlocks();
 		});
 
 		it('removes all blocks in map', function() {
-			expect(this.selection.getBlock('0,0,0')).toBe(undefined);
+			expect(this.selection.getBlock(new THREE.Vector3())).toBe(undefined);
 		});
 	});
 
 	describe('addTo', function() {
 		beforeAll(function(){
 			this.selection.clearBlocks();
-			this.selection.createBlock('block', '0,0,0');
-			this.selection.createBlock('block', '1,1,1');
+			this.selection.createBlock('block', new THREE.Vector3());
+			this.selection.createBlock('block', new THREE.Vector3(1,1,1));
 		})
 
 		it('addTo(VoxelMap)', function() {
 			let map = new VoxelMap();
 			this.selection.addTo(map, new THREE.Vector3(1,1,1));
 
-			expect(map.getBlock('1,1,1') instanceof VoxelBlock).toBe(true);
-			expect(map.getBlock('2,2,2') instanceof VoxelBlock).toBe(true);
+			expect(map.getBlock(new THREE.Vector3(1,1,1)) instanceof VoxelBlock).toBe(true);
+			expect(map.getBlock(new THREE.Vector3(2,2,2)) instanceof VoxelBlock).toBe(true);
 		});
 
 		it('addTo(VoxelSelection)', function() {
 			let selection = new VoxelSelection();
 			this.selection.addTo(selection, new THREE.Vector3(1,1,1));
 
-			expect(selection.getBlock('1,1,1') instanceof VoxelBlock).toBe(true);
-			expect(selection.getBlock('2,2,2') instanceof VoxelBlock).toBe(true);
+			expect(selection.getBlock(new THREE.Vector3(1,1,1)) instanceof VoxelBlock).toBe(true);
+			expect(selection.getBlock(new THREE.Vector3(2,2,2)) instanceof VoxelBlock).toBe(true);
 			expect(selection.size.equals(new THREE.Vector3(2,2,2))).toBe(true);
 		});
 	});
@@ -158,26 +158,26 @@ describe('VoxelChunk', function() {
 		it('copyFrom(VoxelSelection)', function() {
 			this.selection.clearBlocks();
 			let selection = new VoxelSelection();
-			selection.createBlock('block', '0,0,0');
-			selection.createBlock('block', '1,1,1');
+			selection.createBlock('block', new THREE.Vector3());
+			selection.createBlock('block', new THREE.Vector3(1,1,1));
 
 			this.selection.copyFrom(selection, new THREE.Vector3(0,0,0), new THREE.Vector3(1,1,1));
 
-			expect(this.selection.getBlock('0,0,0') instanceof VoxelBlock).toBe(true);
-			expect(this.selection.getBlock('1,1,1') instanceof VoxelBlock).toBe(true);
+			expect(this.selection.getBlock(new THREE.Vector3()) instanceof VoxelBlock).toBe(true);
+			expect(this.selection.getBlock(new THREE.Vector3(1,1,1)) instanceof VoxelBlock).toBe(true);
 			expect(this.selection.size.equals(new THREE.Vector3(2,2,2))).toBe(true);
 		});
 
 		it('dont clone', function() {
 			this.selection.clearBlocks();
 			let selection = new VoxelSelection();
-			selection.createBlock('block', '0,0,0');
-			selection.createBlock('block', '1,1,1');
+			selection.createBlock('block', new THREE.Vector3());
+			selection.createBlock('block', new THREE.Vector3(1,1,1));
 
 			this.selection.copyFrom(selection, new THREE.Vector3(0,0,0), new THREE.Vector3(1,1,1), false);
 
-			expect(this.selection.getBlock('0,0,0') instanceof VoxelBlock).toBe(true);
-			expect(this.selection.getBlock('1,1,1') instanceof VoxelBlock).toBe(true);
+			expect(this.selection.getBlock(new THREE.Vector3()) instanceof VoxelBlock).toBe(true);
+			expect(this.selection.getBlock(new THREE.Vector3(1,1,1)) instanceof VoxelBlock).toBe(true);
 			expect(this.selection.size.equals(new THREE.Vector3(2,2,2))).toBe(true);
 			expect(selection.size.empty()).toBe(true);
 		});

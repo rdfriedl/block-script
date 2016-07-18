@@ -69,14 +69,10 @@ export default class VoxelSelection extends THREE.EventDispatcher{
 
 	/**
 	 * checks to see if we have a block at position, or if the block is in this selection
-	 * @param  {THREE.Vector3|String|VoxelBlock} position - the position to check, or the block to check for
+	 * @param  {THREE.Vector3|VoxelBlock} position - the position to check, or the block to check for
 	 * @return {Boolean}
 	 */
 	hasBlock(pos){
-		//string to vector
-		if(String.isString(pos))
-			pos = this.tmpVec.fromString(pos);
-
 		if(pos instanceof THREE.Vector3){
 			pos = this.tmpVec.copy(pos).round();
 			return this.blocks.has(pos.toString());
@@ -92,13 +88,10 @@ export default class VoxelSelection extends THREE.EventDispatcher{
 
 	/**
 	 * returns the block at position
-	 * @param  {(THREE.Vector3|String)} position
+	 * @param  {(THREE.Vector3)} position
 	 * @return {VoxelBlock}
 	 */
 	getBlock(pos){
-		if(String.isString(pos))
-			pos = this.tmpVec.fromString(pos);
-
 		if(pos instanceof THREE.Vector3){
 			pos = this.tmpVec.copy(pos).round();
 			return this.blocks.get(pos.toString());
@@ -121,16 +114,13 @@ export default class VoxelSelection extends THREE.EventDispatcher{
 	/**
 	 * creates a block with id and adds it to the selection
 	 * @param  {String} id - the UID of the block to create
-	 * @param  {THREE.Vector3|String} position - the position to add the block to
+	 * @param  {THREE.Vector3} position - the position to add the block to
 	 * @returns {VoxelBlock}
 	 */
 	createBlock(id,pos){
 		let block;
 		if(String.isString(id))
 			block = this.blockManager.createBlock(id);
-
-		if(String.isString(pos))
-			pos = this.tmpVec.fromString(pos);
 
 		if(block && pos){
 			this.setBlock(block, pos);
@@ -142,7 +132,7 @@ export default class VoxelSelection extends THREE.EventDispatcher{
 	 * adds a block to the chunk at position
 	 * if "block" is a String it will create a new block with using {@link VoxelBlockManager#createBlock}
 	 * @param {VoxelBlock|String} block
-	 * @param {(THREE.Vector3|String)} position
+	 * @param {(THREE.Vector3)} position
 	 * @returns {this}
 	 *
 	 * @fires VoxelSelection#block:set
@@ -150,10 +140,6 @@ export default class VoxelSelection extends THREE.EventDispatcher{
 	setBlock(block,pos){
 		if(String.isString(block))
 			block = this.blockManager.createBlock(block);
-
-		//string to vector
-		if(String.isString(pos))
-			pos = this.tmpVec.fromString(pos);
 
 		if(pos instanceof THREE.Vector3 && block instanceof VoxelBlock){
 			pos = this.tmpVec.copy(pos).round();
@@ -200,15 +186,12 @@ export default class VoxelSelection extends THREE.EventDispatcher{
 
 	/**
 	 * removes block at position
-	 * @param  {(THREE.Vector3|String)} position
+	 * @param  {(THREE.Vector3)} position
 	 * @return {this}
 	 *
 	 * @fires VoxelSelection#block:removed
 	 */
 	removeBlock(pos){
-		if(String.isString(pos))
-			pos = this.tmpVec.fromString(pos);
-
 		if(this.hasBlock(pos)){
 			let block;
 			if(pos instanceof THREE.Vector3){
@@ -309,8 +292,9 @@ export default class VoxelSelection extends THREE.EventDispatcher{
 				blockTypes[str] = json.blockTypes.length;
 				json.blockTypes.push(blockData);
 			}
-			block[1] = blockTypes[str];
-			return block;
+			let data = block[0].split(',');
+			data.push(blockTypes[str]);
+			return data; //[x,y,z,typeID]
 		});
 		return json;
 	}
@@ -322,14 +306,18 @@ export default class VoxelSelection extends THREE.EventDispatcher{
 	 * @return {this}
 	 */
 	fromJSON(json){
+		let tmpVec = new THREE.Vector3();
 		if(json.blocks && json.blockTypes){
 			json.blocks.forEach(data => {
-				let blockData = json.blockTypes[data[1]];
-				let block = this.blockManager.createBlock(blockData.type);
+				// data is in format [x,y,z,typeID]
+				let blockData = json.blockTypes[data[3]];
+				if(blockData){
+					let block = this.blockManager.createBlock(blockData.type);
 
-				if(block){
-					block.fromJSON(blockData);
-					this.setBlock(block, data[0]);
+					if(block){
+						block.fromJSON(blockData);
+						this.setBlock(block, tmpVec.set(data[0],data[1],data[2]));
+					}
 				}
 			})
 		}

@@ -133,7 +133,7 @@ export default function gameScene(opts = {}){
 	let map = new VoxelMap();
 	map.blockManager.registerBlock(blocks);
 	map.blockManager.usePool = true;
-	map.updateChunks();
+	map.useNeighborCache = false;
 	scene.add(map);
 
 	// add map to collision world
@@ -196,6 +196,9 @@ export default function gameScene(opts = {}){
 				if(dist[i] > view_range){
 					// unload chunk
 					map.removeChunk(chunk);
+
+					// dispose of the geometry
+					chunk.disposeGeometry();
 
 					// dispose of all the blocks
 					let blocks = chunk.listBlocks();

@@ -12,7 +12,7 @@ describe('VoxelChunk', function() {
 		this.map.blockManager.registerBlock(VoxelBlock);
 
 		//create chunk
-		this.chunk = this.map.createChunk('0,0,0');
+		this.chunk = this.map.createChunk(new THREE.Vector3());
 	});
 
 	it('is an instance of THREE.Group', function() {
@@ -64,18 +64,18 @@ describe('VoxelChunk', function() {
 	// blocks
 	describe('createBlock', function() {
 		it('returns created block', function() {
-			expect(this.chunk.createBlock('block', '1,1,1') instanceof VoxelBlock).toBe(true);
+			expect(this.chunk.createBlock('block', new THREE.Vector3(1,1,1)) instanceof VoxelBlock).toBe(true);
 		});
 
 		it('creates a block at position', function() {
-			let block = this.chunk.createBlock('block', '0,0,0');
-			expect(this.chunk.getBlock('0,0,0')).toBe(block);
+			let block = this.chunk.createBlock('block', new THREE.Vector3(0,0,0));
+			expect(this.chunk.getBlock(new THREE.Vector3())).toBe(block);
 		});
 	});
 
 	describe('hasBlock', function() {
 		beforeAll(function(){
-			this.block = this.chunk.createBlock('block', '0,0,0');
+			this.block = this.chunk.createBlock('block', new THREE.Vector3());
 		});
 
 		it('hasBlock(THREE.Vector3)', function() {
@@ -83,7 +83,7 @@ describe('VoxelChunk', function() {
 		});
 
 		it('hasBlock("x,y,z")', function() {
-			expect(this.chunk.hasBlock('0,0,0')).toBe(true);
+			expect(this.chunk.hasBlock(new THREE.Vector3())).toBe(true);
 		});
 
 		it('hasBlock(VoxelBlock)', function() {
@@ -93,7 +93,7 @@ describe('VoxelChunk', function() {
 
 	describe('getBlock', function() {
 		beforeAll(function(){
-			this.block = this.chunk.createBlock('block', '0,0,0');
+			this.block = this.chunk.createBlock('block', new THREE.Vector3());
 		});
 
 		it('getBlock(THREE.Vector3)', function() {
@@ -101,7 +101,7 @@ describe('VoxelChunk', function() {
 		});
 
 		it('getBlock("x,y,z")', function() {
-			expect(this.chunk.getBlock('0,0,0')).toBe(this.block);
+			expect(this.chunk.getBlock(new THREE.Vector3())).toBe(this.block);
 		});
 
 		describe('getBlock(VoxelBlock)', function() {
@@ -117,7 +117,7 @@ describe('VoxelChunk', function() {
 
 	describe('removeBlock', function() {
 		beforeEach(function(){
-			this.block = this.chunk.createBlock('0,0,0');
+			this.block = this.chunk.createBlock(new THREE.Vector3());
 		});
 
 		it('removeBlock(THREE.Vector3)', function() {
@@ -128,9 +128,9 @@ describe('VoxelChunk', function() {
 		});
 
 		it('removeBlock("x,y,z")', function() {
-			this.chunk.removeBlock('0,0,0');
-			expect(this.chunk.hasBlock('0,0,0')).toBe(false);
-			expect(this.chunk.getBlock('0,0,0')).toBe(undefined);
+			this.chunk.removeBlock(new THREE.Vector3());
+			expect(this.chunk.hasBlock(new THREE.Vector3())).toBe(false);
+			expect(this.chunk.getBlock(new THREE.Vector3())).toBe(undefined);
 		});
 
 		it('removeBlock(VoxelBlock)', function() {
@@ -142,12 +142,12 @@ describe('VoxelChunk', function() {
 
 	describe('clearBlocks', function() {
 		beforeAll(function(){
-			this.chunk.createBlock('block', '0,0,0');
+			this.chunk.createBlock('block', new THREE.Vector3());
 			this.chunk.clearBlocks();
 		});
 
 		it('removes all blocks in chunk', function() {
-			expect(this.chunk.getBlock('0,0,0')).toBe(undefined);
+			expect(this.chunk.getBlock(new THREE.Vector3())).toBe(undefined);
 		});
 	});
 });

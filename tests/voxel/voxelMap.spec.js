@@ -35,7 +35,7 @@ describe('VoxelMap', function() {
 	// chunks
 	describe('createChunk', function() {
 		beforeAll(function(){
-			this.chunk = this.map.createChunk('0,0,0');
+			this.chunk = this.map.createChunk(new THREE.Vector3());
 		});
 
 		it('returns a new VoxelChunk', function() {
@@ -43,13 +43,13 @@ describe('VoxelMap', function() {
 		});
 
 		it('add the chunk to the map', function() {
-			expect(this.map.getChunk('0,0,0')).toBe(this.chunk);
+			expect(this.map.getChunk(new THREE.Vector3())).toBe(this.chunk);
 		});
 	});
 
 	describe('hasChunk', function() {
 		beforeAll(function(){
-			this.chunk = this.map.createChunk('0,0,0');
+			this.chunk = this.map.createChunk(new THREE.Vector3());
 		});
 
 		it('hasChunk(THREE.Vector3)', function() {
@@ -57,7 +57,7 @@ describe('VoxelMap', function() {
 		});
 
 		it('hasChunk("x,y,z")', function() {
-			expect(this.map.hasChunk('0,0,0')).toBe(true);
+			expect(this.map.hasChunk(new THREE.Vector3())).toBe(true);
 		});
 
 		it('hasChunk(VoxelChunk)', function() {
@@ -67,7 +67,7 @@ describe('VoxelMap', function() {
 
 	describe('getChunk', function() {
 		beforeAll(function(){
-			this.chunk = this.map.createChunk('0,0,0');
+			this.chunk = this.map.createChunk(new THREE.Vector3());
 		});
 
 		describe('getChunk(THREE.Vector3)', function() {
@@ -78,7 +78,7 @@ describe('VoxelMap', function() {
 
 		describe('getChunk("x,y,z")', function() {
 			it('returns chunk at that position', function() {
-				expect(this.map.getChunk('0,0,0')).toBe(this.chunk);
+				expect(this.map.getChunk(new THREE.Vector3())).toBe(this.chunk);
 			});
 		});
 
@@ -95,7 +95,7 @@ describe('VoxelMap', function() {
 
 	describe('removeChunk', function() {
 		beforeEach(function(){
-			this.chunk = this.map.createChunk('0,0,0');
+			this.chunk = this.map.createChunk(new THREE.Vector3());
 		});
 
 		it('removeChunk(THREE.Vector3)', function() {
@@ -106,9 +106,9 @@ describe('VoxelMap', function() {
 		});
 
 		it('removeChunk("x,y,z")', function() {
-			this.map.removeChunk('0,0,0');
-			expect(this.map.hasChunk('0,0,0')).toBe(false);
-			expect(this.map.getChunk('0,0,0')).toBe(undefined);
+			this.map.removeChunk(new THREE.Vector3());
+			expect(this.map.hasChunk(new THREE.Vector3())).toBe(false);
+			expect(this.map.getChunk(new THREE.Vector3())).toBe(undefined);
 		});
 
 		it('removeChunk(VoxelChunk)', function() {
@@ -120,7 +120,7 @@ describe('VoxelMap', function() {
 
 	describe('clearChunks', function() {
 		it('removes all chunks in map', function() {
-			this.map.createChunk('0,0,0');
+			this.map.createChunk(new THREE.Vector3());
 			this.map.clearChunks();
 			expect(this.map.listChunks().length).toBe(0);
 		});
@@ -128,7 +128,7 @@ describe('VoxelMap', function() {
 
 	describe('getChunkPosition', function() {
 		beforeAll(function(){
-			this.chunk = this.map.createChunk('0,0,0');
+			this.chunk = this.map.createChunk(new THREE.Vector3());
 		});
 
 		it('returns the position of the chunk', function() {
@@ -143,9 +143,9 @@ describe('VoxelMap', function() {
 	describe('listChunks', function() {
 		it('returns array of chunks', function() {
 			this.map.clearChunks();
-			this.map.createChunk('0,0,0');
-			this.map.createChunk('0,1,0');
-			this.map.createChunk('0,2,0');
+			this.map.createChunk(new THREE.Vector3());
+			this.map.createChunk(new THREE.Vector3(0,1,0));
+			this.map.createChunk(new THREE.Vector3(0,2,0));
 			expect(this.map.listChunks().length).toBe(3);
 		});
 	});
@@ -153,18 +153,18 @@ describe('VoxelMap', function() {
 	// blocks
 	describe('createBlock', function() {
 		it('returns created block', function() {
-			expect(this.map.createBlock('block', '1,1,1') instanceof VoxelBlock).toBe(true);
+			expect(this.map.createBlock('block', new THREE.Vector3(1,1,1)) instanceof VoxelBlock).toBe(true);
 		});
 
 		it('creates a block at position', function() {
-			let block = this.map.createBlock('block', '0,0,0');
-			expect(this.map.getBlock('0,0,0')).toBe(block);
+			let block = this.map.createBlock('block', new THREE.Vector3());
+			expect(this.map.getBlock(new THREE.Vector3())).toBe(block);
 		});
 	});
 
 	describe('hasBlock', function() {
 		beforeAll(function(){
-			this.block = this.map.createBlock('block', '0,0,0');
+			this.block = this.map.createBlock('block', new THREE.Vector3());
 		});
 
 		it('hasBlock(THREE.Vector3)', function() {
@@ -172,7 +172,7 @@ describe('VoxelMap', function() {
 		});
 
 		it('hasBlock("x,y,z")', function() {
-			expect(this.map.hasBlock('0,0,0')).toBe(true);
+			expect(this.map.hasBlock(new THREE.Vector3())).toBe(true);
 		});
 
 		it('hasBlock(VoxelBlock)', function() {
@@ -182,7 +182,7 @@ describe('VoxelMap', function() {
 
 	describe('getBlock', function() {
 		beforeAll(function(){
-			this.block = this.map.createBlock('block', '0,0,0');
+			this.block = this.map.createBlock('block', new THREE.Vector3());
 		});
 
 		it('getBlock(THREE.Vector3)', function() {
@@ -190,7 +190,7 @@ describe('VoxelMap', function() {
 		});
 
 		it('getBlock("x,y,z")', function() {
-			expect(this.map.getBlock('0,0,0')).toBe(this.block);
+			expect(this.map.getBlock(new THREE.Vector3())).toBe(this.block);
 		});
 
 		describe('getBlock(VoxelBlock)', function() {
@@ -206,7 +206,7 @@ describe('VoxelMap', function() {
 
 	describe('removeBlock', function() {
 		beforeEach(function(){
-			this.block = this.map.createBlock('0,0,0');
+			this.block = this.map.createBlock(new THREE.Vector3());
 		});
 
 		it('removeBlock(THREE.Vector3)', function() {
@@ -217,9 +217,9 @@ describe('VoxelMap', function() {
 		});
 
 		it('removeBlock("x,y,z")', function() {
-			this.map.removeBlock('0,0,0');
-			expect(this.map.hasBlock('0,0,0')).toBe(false);
-			expect(this.map.getBlock('0,0,0')).toBe(undefined);
+			this.map.removeBlock(new THREE.Vector3());
+			expect(this.map.hasBlock(new THREE.Vector3())).toBe(false);
+			expect(this.map.getBlock(new THREE.Vector3())).toBe(undefined);
 		});
 
 		it('removeBlock(VoxelBlock)', function() {
@@ -231,12 +231,12 @@ describe('VoxelMap', function() {
 
 	describe('clearBlocks', function() {
 		beforeAll(function(){
-			this.map.createBlock('block', '0,0,0');
+			this.map.createBlock('block', new THREE.Vector3());
 			this.map.clearBlocks();
 		});
 
 		it('removes all blocks in map', function() {
-			expect(this.map.getBlock('0,0,0')).toBe(undefined);
+			expect(this.map.getBlock(new THREE.Vector3())).toBe(undefined);
 		});
 
 		it('keeps the chunks', function() {
