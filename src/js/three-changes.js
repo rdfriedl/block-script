@@ -127,3 +127,39 @@ THREE.Vector4.prototype.divide = function(v){
 	this.w /= v.w;
 	return this;
 }
+
+// vec to / from string
+THREE.Vector2.prototype.toString = function(){
+	return `${this.x},${this.y}`;
+}
+THREE.Vector2.prototype.fromString = function(str){
+	return this.fromArray(str.split(','));
+}
+THREE.Vector3.prototype.toString = function(){
+	return `${this.x},${this.y},${this.z}`;
+}
+THREE.Vector3.prototype.fromString = function(str){
+	return this.fromArray(str.split(','));
+}
+THREE.Vector4.prototype.toString = function(){
+	return `${this.x},${this.y},${this.z},${this.w}`;
+}
+THREE.Vector4.prototype.fromString = function(str){
+	return this.fromArray(str.split(','));
+}
+
+THREE.Vector3.prototype.sign = function(){
+	this.x = Math.sign(this.x);
+	this.y = Math.sign(this.y);
+	this.z = Math.sign(this.z);
+	return this;
+};
+THREE.Vector3.prototype.empty = function(){
+	return !this.x && !this.y && !this.z;
+};
+THREE.Vector3.prototype.abs = function(){
+	this.x = Math.abs(this.x);
+	this.y = Math.abs(this.y);
+	this.z = Math.abs(this.z);
+	return this;
+};

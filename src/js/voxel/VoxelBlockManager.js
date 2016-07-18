@@ -41,7 +41,7 @@ export default class VoxelBlockManager{
 	 */
 	hasBlock(id){
 		if(String.isString(id)){
-			return this.blocks.has(this.resolveID(id));
+			return this.blocks.has(VoxelBlockManager.resolveID(id));
 		}
 		else {
 			for(let [UID, block] of this.blocks){
@@ -60,7 +60,7 @@ export default class VoxelBlockManager{
 	 */
 	getBlock(id){
 		if(String.isString(id)){
-			return this.blocks.get(this.resolveID(id));
+			return this.blocks.get(VoxelBlockManager.resolveID(id));
 		}
 		else{
 			for(let [UID, block] of this.blocks){
@@ -81,12 +81,12 @@ export default class VoxelBlockManager{
 		// if the id is a string get the props out of it
 		if(String.isString(id)){
 			if(props)
-				props = Object.assign({}, props, this.parseProps(id));
+				props = Object.assign({}, props, VoxelBlockManager.parseProps(id));
 			else
-				props = Object.assign({}, this.parseProps(id));
+				props = Object.assign({}, VoxelBlockManager.parseProps(id));
 		}
 
-		id = this.resolveID(id);
+		id = VoxelBlockManager.resolveID(id);
 		if(this.usePool)
 			return this.newBlock(id, props);
 		else
@@ -163,8 +163,9 @@ export default class VoxelBlockManager{
 	 * returns the UID of the block, if the block is not in the manager it will still return the blocks UID
 	 * @param  {String|VoxelBlock|Class} id - a UID of a block or a instance of a {@link VoxelBlock} or a class
 	 * @return {String}
+	 * @static
 	 */
-	resolveID(id){
+	static resolveID(id){
 		// if its a string, extract the id out of the string just in case there are properties in the string
 		if(String.isString(id))
 			return id.match(/^[^\?]+(?=\?)?/)[0];
@@ -175,16 +176,42 @@ export default class VoxelBlockManager{
 	}
 
 	/**
+	 * returns the id with the props appended onto it
+	 * @param  {String|VoxelBlock|Class} id
+	 * @param  {Object} props
+	 * @return {String}
+	 * @static
+	 */
+	static createID(id, props){
+		props = props || {};
+		let blockID = VoxelBlockManager.resolveID(id);
+		if(String.isString(id)){
+			Object.assign(props, VoxelBlockManager.parseProps(id));
+		}
+		else if(id instanceof VoxelBlock && id.hasOwnProperty('properties')){
+			Reflect.ownKeys(id.properties).forEach(key => {
+				props[key] = id.getProp(key);
+			})
+		}
+		let a = [];
+		for(let i in props){
+			a.push(`${i}=${props[i]}`);
+		}
+		return a.length? blockID+'?'+a.join('&') : blockID;
+	}
+
+	/**
 	 * returns a object with all the props that are in this id string.
 	 * props are in url search parameter format
 	 * @param  {String} id
 	 * @return {Object}
+	 * @static
 	 *
 	 * @example
 	 * "glass?type=green"
 	 * "dirt?rotation=[1,0,0]"
 	 */
-	parseProps(id){
+	static parseProps(id){
 		return URL.parseSearch(id);
 	}
 
@@ -199,12 +226,12 @@ export default class VoxelBlockManager{
 		// if the id is a string get the props out of it
 		if(String.isString(id)){
 			if(props)
-				props = Object.assign({}, props, this.parseProps(id));
+				props = Object.assign({}, props, VoxelBlockManager.parseProps(id));
 			else
-				props = Object.assign({}, this.parseProps(id));
+				props = Object.assign({}, VoxelBlockManager.parseProps(id));
 		}
 
-		id = this.resolveID(id);
+		id = VoxelBlockManager.resolveID(id);
 		if(id && this.blockPool[id]){
 			let block;
 			while(block = this.blockPool[id].shift()){
@@ -233,7 +260,7 @@ export default class VoxelBlockManager{
 	 * @return {this}
 	 */
 	disposeBlock(block){
-		let id = this.resolveID(block);
+		let id = VoxelBlockManager.resolveID(block);
 		if(id && block instanceof VoxelBlock){
 			this._resetBlock(block);
 			if(!this.blockPool[id])

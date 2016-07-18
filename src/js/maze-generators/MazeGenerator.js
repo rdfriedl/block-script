@@ -130,7 +130,8 @@ export default class MazeGenerator{
 	 * @return {this}
 	 */
 	generate(opts){
-		this.cells = {};
+		if(Reflect.ownKeys(this.cells).length > 0)
+			throw new Error('MazeGenerator.generate() has already been called');
 	}
 }
 

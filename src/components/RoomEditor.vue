@@ -26,6 +26,7 @@
 		<!-- tools -->
 		<div class="btn-group padding-right-10">
 			<button type="button" class="btn btn-default" :class="{active: mode == 'place-blocks'}" @click="mode = 'place-blocks'"><i class="fa fa-cube"></i></button>
+			<button type="button" class="btn btn-default" :class="{active: mode == 'pick-block'}" @click="mode = 'pick-block'"><i class="fa fa-eyedropper"></i></button>
 			<button type="button" class="btn btn-default" :class="{active: mode == 'place-objects'}" @click="mode = 'place-objects'"><i class="fa fa-lightbulb-o"></i></button>
 			<button type="button" class="btn btn-default" :class="{active: mode == 'camera-controls'}" @click="mode = 'camera-controls'"><i class="fa fa-hand-paper-o"></i></button>
 		</div>
@@ -116,20 +117,18 @@ import 'imports?THREE=three!../lib/threejs/postprocessing/ShaderPass.js';
 import 'imports?THREE=three!../lib/threejs/shaders/CopyShader.js';
 import 'imports?THREE=three!../lib/threejs/shaders/SSAOShader.js';
 
-import ModelManager from '../js/ModelManager.js';
-
 import GridCube from '../js/objects/GridCube.js';
 import Keyboard from '../js/Keyboard.js';
 import * as blocks from '../js/blocks.js';
-import models from '../js/models.js';
+import MODELS from '../js/models.js';
 import DOOR_TYPES from '../data/doorTypes.json';
-ModelManager.inst.registerMany(models);
 
 import VoxelMap from '../js/voxel/VoxelMap.js';
 import VoxelBlockManager from '../js/voxel/VoxelBlockManager.js';
 import VoxelSelection from '../js/voxel/VoxelSelection.js';
 
 import AttachTool from '../js/editor/AttachTool.js';
+import PickBlockTool from '../js/editor/PickBlockTool.js';
 
 const ROOM_SIZE = new THREE.Vector3(32,16,32);
 
@@ -149,6 +148,7 @@ export default {
 		blocks: [],
 		models: [],
 		mode: '', //place-blocks, place-objects, camera-controls
+		prevMode: '',
 		view: {
 			edges: false,
 			axes: true,
@@ -195,10 +195,13 @@ export default {
 
 			// doors
 			for(let i in this.doors){
-				json.doors[i] = this.doors[i].sides;
+				json.doors[i] = {
+					p: this.doors[i].sides[0] != 'none'? this.doors[i].sides[0] : false,
+					n: this.doors[i].sides[1] != 'none'? this.doors[i].sides[1] : false
+				}
 			}
 
-			let blob = new Blob([JSON.stringify(json, null, 4)], {type: 'text/plain'});
+			let blob = new Blob([JSON.stringify(json)], {type: 'text/plain'});
 			FileSaver.saveAs(blob, 'room.json');
 		},
 		importFile(){
@@ -215,7 +218,9 @@ export default {
 
 						if(json.doors){
 							for(let i in json.doors){
-								this.doors[i].sides = json.doors[i];
+								this.doors[i].sides = [
+									json.doors[i].p || 'none', json.doors[i].n || 'none'
+								]
 							}
 						}
 					}).catch(err => {
@@ -229,6 +234,7 @@ export default {
 		let editor = {};
 		let modes = editor.modes = {};
 		this.$watch('mode', (newValue, oldValue) => {
+			this.prevMode = oldValue;
 			if(modes[oldValue])
 				modes[oldValue].exit();
 
@@ -258,7 +264,12 @@ export default {
 			{
 				keys: 'space',
 				on_keydown: () => this.mode = 'camera-controls',
-				on_keyup: () => this.mode = 'place-blocks',
+				on_keyup: () => this.mode = this.prevMode
+			},
+			{
+				keys: 'alt',
+				on_keydown: () => this.mode = 'pick-block',
+				on_keyup: () => this.mode = this.prevMode
 			}
 		]);
 
@@ -319,7 +330,7 @@ export default {
 		this.mode = 'place-blocks';
 
 		// get models
-		this.models = ModelManager.inst.listModels().map(id => {
+		this.models = MODELS.listModels().map(id => {
 			let model = {
 				id: id,
 				loaded: false,
@@ -327,7 +338,7 @@ export default {
 			}
 
 			// load models
-			let mesh = ModelManager.inst.getMesh(model.id, () => {
+			let mesh = MODELS.getMesh(model.id, () => {
 				model.loaded = true;
 			});
 
@@ -541,13 +552,20 @@ function createTools(editor){
 		);
 	}
 
-	// display info about attack tool
+	// display info about attach tool
 	window.addEventListener('mousemove', () => {
 		this.targetBlock.enabled = attachTool.enabled;
 		this.targetBlock.x = attachTool.end? attachTool.end.target.x : 0;
 		this.targetBlock.y = attachTool.end? attachTool.end.target.y : 0;
 		this.targetBlock.z = attachTool.end? attachTool.end.target.z : 0;
 	})
+
+	// create editor tools
+	let pickBlockTool = editor.pickBlockTool = new PickBlockTool(editor.camera, editor.map, editor.renderer);
+	pickBlockTool.onPick = (block) => {
+		this.placeBlocks.selected = VoxelBlockManager.createID(block);
+	}
+	editor.scene.add(pickBlockTool);
 }
 
 // create camera controls
@@ -597,6 +615,21 @@ function createModes(editor, modes) {
 		},
 		exit(){
 			editor.attachTool.enabled = false;
+
+			editor.camControls.enabled = false;
+			editor.camControls.mouseButtons.ORBIT = undefined;
+		}
+	}
+
+	modes['pick-block'] = {
+		enter(){
+			editor.pickBlockTool.enabled = true;
+
+			editor.camControls.enabled = true;
+			editor.camControls.mouseButtons.ORBIT = THREE.MOUSE.MIDDLE;
+		},
+		exit(){
+			editor.pickBlockTool.enabled = false;
 
 			editor.camControls.enabled = false;
 			editor.camControls.mouseButtons.ORBIT = undefined;

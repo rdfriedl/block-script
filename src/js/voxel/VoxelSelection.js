@@ -75,11 +75,11 @@ export default class VoxelSelection extends THREE.EventDispatcher{
 	hasBlock(pos){
 		//string to vector
 		if(String.isString(pos))
-			pos = this.tmpVec.fromArray(pos.split(','));
+			pos = this.tmpVec.fromString(pos);
 
 		if(pos instanceof THREE.Vector3){
 			pos = this.tmpVec.copy(pos).round();
-			return this.blocks.has(pos.toArray().join(','));
+			return this.blocks.has(pos.toString());
 		}
 		else if(pos instanceof VoxelBlock){
 			for(let block of this.blocks){
@@ -97,11 +97,11 @@ export default class VoxelSelection extends THREE.EventDispatcher{
 	 */
 	getBlock(pos){
 		if(String.isString(pos))
-			pos = this.tmpVec.fromArray(pos.split(','));
+			pos = this.tmpVec.fromString(pos);
 
 		if(pos instanceof THREE.Vector3){
 			pos = this.tmpVec.copy(pos).round();
-			return this.blocks.get(pos.toArray().join(','));
+			return this.blocks.get(pos.toString());
 		}
 		else if(pos instanceof VoxelBlock){
 			if(this.hasBlock(pos))
@@ -130,7 +130,7 @@ export default class VoxelSelection extends THREE.EventDispatcher{
 			block = this.blockManager.createBlock(id);
 
 		if(String.isString(pos))
-			pos = this.tmpVec.fromArray(pos.split(','));
+			pos = this.tmpVec.fromString(pos);
 
 		if(block && pos){
 			this.setBlock(block, pos);
@@ -153,11 +153,11 @@ export default class VoxelSelection extends THREE.EventDispatcher{
 
 		//string to vector
 		if(String.isString(pos))
-			pos = this.tmpVec.fromArray(pos.split(','));
+			pos = this.tmpVec.fromString(pos);
 
 		if(pos instanceof THREE.Vector3 && block instanceof VoxelBlock){
 			pos = this.tmpVec.copy(pos).round();
-			let str = pos.toArray().join(',');
+			let str = pos.toString();
 			let oldBlock = this.blocks.get(str);
 
 			//remove the block from its parent if it has one
@@ -207,7 +207,7 @@ export default class VoxelSelection extends THREE.EventDispatcher{
 	 */
 	removeBlock(pos){
 		if(String.isString(pos))
-			pos = this.tmpVec.fromArray(pos.split(','));
+			pos = this.tmpVec.fromString(pos);
 
 		if(this.hasBlock(pos)){
 			let block;
@@ -220,7 +220,7 @@ export default class VoxelSelection extends THREE.EventDispatcher{
 			if(!block) return this;
 
 			// remove it from the maps
-			this.blocks.delete(block.position.toArray().join(','));
+			this.blocks.delete(block.position.toString());
 			this.blocksPositions.delete(block);
 
 			block.parent = undefined;
@@ -298,12 +298,18 @@ export default class VoxelSelection extends THREE.EventDispatcher{
 	toJSON(){
 		let json = {};
 
-		// blocks array looks like this
-		/*
-			[['x,y,z',block.toJSON()], ['x,y,z',block.toJSON()], ['x,y,z',block.toJSON()]]
-		 */
+		// build list of block types
+		let blockTypes = {};
+		json.blockTypes = [];
+
 		json.blocks = Array.from(this.blocks).map(block => {
-			block[1] = block[1].toJSON();
+			let blockData = block[1].toJSON();
+			let str = JSON.stringify(blockData);
+			if(!blockTypes[str]){
+				blockTypes[str] = json.blockTypes.length;
+				json.blockTypes.push(blockData);
+			}
+			block[1] = blockTypes[str];
 			return block;
 		});
 		return json;
@@ -316,13 +322,15 @@ export default class VoxelSelection extends THREE.EventDispatcher{
 	 * @return {this}
 	 */
 	fromJSON(json){
-		if(json.blocks){
+		if(json.blocks && json.blockTypes){
 			json.blocks.forEach(data => {
-				let type = data[1].type;
-				this.setBlock(type, data[0]);
+				let blockData = json.blockTypes[data[1]];
+				let block = this.blockManager.createBlock(blockData.type);
 
-				let block = this.getBlock(data[0]);
-				if(block) block.fromJSON(data[1]);
+				if(block){
+					block.fromJSON(blockData);
+					this.setBlock(block, data[0]);
+				}
 			})
 		}
 

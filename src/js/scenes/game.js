@@ -11,7 +11,7 @@ import ChunkGeneratorFlat from '../generators/ChunkGeneratorFlat.js';
 import ChunkGeneratorRooms from '../generators/ChunkGeneratorRooms.js';
 
 import Keyboard from '../Keyboard.js';
-import Player from '../Player.js';
+import Player from '../objects/Player.js';
 
 import CollisionWorld from '../collisions/CollisionWorld.js';
 import CollisionEntityVoxelMap from '../collisions/types/voxelMap.js';

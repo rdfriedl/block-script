@@ -1,6 +1,5 @@
 import THREE from 'three';
 import VoxelBlock from '../voxel/VoxelBlock.js';
-import VoxelChunk from '../voxel/VoxelChunk.js';
 import * as ChunkUtils from '../ChunkUtils.js';
 
 export default class AttachTool extends THREE.Group{
@@ -9,10 +8,11 @@ export default class AttachTool extends THREE.Group{
 		this.enabled = false;
 		this.camera = camera;
 		this.map = map;
-		this.renderer;
+		this.renderer = renderer;
 
 		this.intersects = [this.map];
 		this.raycaster = new THREE.Raycaster();
+		this.useMousePosition = true;
 		this.mousePosition = new THREE.Vector2();
 		this._mousedown = false;
 		this._mousebutton = -1;
@@ -38,7 +38,7 @@ export default class AttachTool extends THREE.Group{
 				- (event.offsetY / renderer.domElement.clientHeight) * 2 + 1);
 
 			if(this.enabled){
-				let target = this.getTarget(this.mousePosition);
+				let target = this.getTarget(this.useMousePosition? this.mousePosition : new THREE.Vector2());
 				if(target.target)
 					this.end = target;
 				else
@@ -127,10 +127,6 @@ export default class AttachTool extends THREE.Group{
 					info.target = intersection.point.clone().sub(n).divide(this.map.blockSize).floor();
 					//get place target
 					info.placeTarget = intersection.point.clone().add(n).divide(this.map.blockSize).floor();
-
-					// get target block
-					if(intersection.object.parent instanceof VoxelChunk)
-						info.block = intersection.object.parent.getBlock(info.target.clone().sub(intersection.object.parent.worldPosition));
 
 					break;
 				}

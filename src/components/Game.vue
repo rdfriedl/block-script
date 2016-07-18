@@ -20,6 +20,9 @@
 import THREE from 'three';
 import Stats from 'stats';
 import gameScene from '../js/scenes/game.js';
+import RecursiveBacktracker from '../js/maze-generators/RecursiveBacktracker.js';
+import RoomMaze from '../js/rooms/RoomMaze.js';
+import DefaultRooms from '../js/rooms.js';
 
 export default {
 	data() {
@@ -55,6 +58,9 @@ export default {
 		// create scene
 		let scene = gameScene();
 
+		let maze = scene.maze = new RecursiveBacktracker(THREE.Vector3, new THREE.Vector3(5,5,5));
+		let rooms = scene.rooms = new RoomMaze(maze, DefaultRooms);
+
 		// create clock
 		let clock = new THREE.Clock();
 		function update(){
@@ -85,8 +91,7 @@ export default {
 
 		// debug
 		if(process.env.NODE_ENV == 'dev'){
-			window.player = scene.player;
-			window.map = scene.map;
+			window.game = scene;
 		}
 	},
 	attached(){

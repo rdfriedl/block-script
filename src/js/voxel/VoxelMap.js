@@ -133,11 +133,11 @@ export default class VoxelMap extends THREE.Group{
 	createChunk(pos){
 		//string to vector
 		if(String.isString(pos))
-			pos = this.tmpVec.fromArray(pos.split(','));
+			pos = this.tmpVec.fromString(pos);
 
 		if(pos instanceof THREE.Vector3){
 			pos = this.tmpVec.copy(pos).round();
-			let chunk = this.chunks.get(pos.toArray().join(','));
+			let chunk = this.chunks.get(pos.toString());
 			if(chunk)
 				return chunk;
 			else{
@@ -156,11 +156,11 @@ export default class VoxelMap extends THREE.Group{
 	hasChunk(pos){
 		//string to vector
 		if(String.isString(pos))
-			pos = this.tmpVec.fromArray(pos.split(','));
+			pos = this.tmpVec.fromString(pos);
 
 		if(pos instanceof THREE.Vector3){
 			pos = this.tmpVec.copy(pos).round();
-			return !!this.chunks.has(pos.toArray().join(','));
+			return !!this.chunks.has(pos.toString());
 		}
 		else if(pos instanceof VoxelChunk){
 			// check to see if we have this chunk
@@ -181,11 +181,11 @@ export default class VoxelMap extends THREE.Group{
 	getChunk(pos){
 		//string to vector
 		if(String.isString(pos))
-			pos = this.tmpVec.fromArray(pos.split(','));
+			pos = this.tmpVec.fromString(pos);
 
 		if(pos instanceof THREE.Vector3){
 			pos = this.tmpVec.copy(pos).round();
-			return this.chunks.get(pos.toArray().join(','));
+			return this.chunks.get(pos.toString());
 		}
 		else if(pos instanceof VoxelChunk){
 			if(this.hasChunk(pos))
@@ -214,7 +214,7 @@ export default class VoxelMap extends THREE.Group{
 			chunk = new VoxelChunk().fromJSON(chunk);
 
 		if(String.isString(pos))
-			pos = this.tmpVec.fromArray(pos.split(','));
+			pos = this.tmpVec.fromString(pos);
 
 		if(pos instanceof THREE.Vector3){
 			pos = this.tmpVec.copy(pos).round();
@@ -270,7 +270,7 @@ export default class VoxelMap extends THREE.Group{
 	removeChunk(pos){
 		//string to vector
 		if(String.isString(pos))
-			pos = this.tmpVec.fromArray(pos.split(','));
+			pos = this.tmpVec.fromString(pos);
 
 		if(this.hasChunk(pos)){
 			let chunk;
@@ -287,7 +287,7 @@ export default class VoxelMap extends THREE.Group{
 			})
 
 			// remove it from the maps
-			this.chunks.delete(chunk.chunkPosition.toArray().join(','));
+			this.chunks.delete(chunk.chunkPosition.toString());
 			this.chunksPositions.delete(chunk);
 
 			chunk.map = undefined;
@@ -324,7 +324,7 @@ export default class VoxelMap extends THREE.Group{
 			block = this.blockManager.createBlock(id);
 
 		if(String.isString(pos))
-			pos = this.tmpVec.fromArray(pos.split(','));
+			pos = this.tmpVec.fromString(pos);
 
 		if(block && pos){
 			this.setBlock(block, pos);
@@ -340,7 +340,7 @@ export default class VoxelMap extends THREE.Group{
 	hasBlock(pos){
 		//string to vector
 		if(String.isString(pos))
-			pos = new THREE.Vector3().fromArray(pos.split(',')); // dont use tmpVec here
+			pos = new THREE.Vector3().fromString(pos); // dont use tmpVec here
 
 		if(pos instanceof THREE.Vector3){
 			let chunkPos = this.tmpVec.copy(pos).divide(this.chunkSize).floor();
@@ -367,7 +367,7 @@ export default class VoxelMap extends THREE.Group{
 	getBlock(pos){
 		//string to vector
 		if(String.isString(pos))
-			pos = new THREE.Vector3().fromArray(pos.split(',')); // dont use tmpVec here
+			pos = new THREE.Vector3().fromString(pos); // dont use tmpVec here
 
 		if(pos instanceof THREE.Vector3){
 			let chunkPos = this.tmpVec.copy(pos).divide(this.chunkSize).floor();
@@ -392,7 +392,7 @@ export default class VoxelMap extends THREE.Group{
 	setBlock(block,pos){
 		//string to vector
 		if(String.isString(pos))
-			pos = new THREE.Vector3().fromArray(pos.split(',')); // dont use tmpVec here
+			pos = new THREE.Vector3().fromString(pos); // dont use tmpVec here
 
 		if(pos instanceof THREE.Vector3){
 			let chunkPos = this.tmpVec.copy(pos).divide(this.chunkSize).floor();
@@ -432,7 +432,7 @@ export default class VoxelMap extends THREE.Group{
 	removeBlock(pos, disposeBlock = true){
 		//string to vector
 		if(String.isString(pos))
-			pos = new THREE.Vector3().fromArray(pos.split(','));
+			pos = new THREE.Vector3().fromString(pos);
 
 		if(pos instanceof THREE.Vector3){
 			let chunkPos = this.tmpVec.copy(pos).divide(this.chunkSize).floor();

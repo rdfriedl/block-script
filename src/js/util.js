@@ -215,40 +215,6 @@ function loadTexture(url,prop,dontmap){ //texture image is not copied
 
     return tex;
 }
-THREE.Vector3.prototype.sign = function(){
-	this.x = Math.sign(this.x);
-	this.y = Math.sign(this.y);
-	this.z = Math.sign(this.z);
-	return this;
-};
-THREE.Vector3.prototype.empty = function(){
-	return !this.x && !this.y && !this.z;
-};
-THREE.Vector3.prototype.split = function(dirs){
-	if(!dirs){
-		//4
-		var a = [];
-		if(this.x!==0) a.push(new THREE.Vector3(this.x,0,0));
-		if(this.y!==0) a.push(new THREE.Vector3(0,this.y,0));
-		if(this.z!==0) a.push(new THREE.Vector3(0,0,this.z));
-		return a;
-	}
-	else{
-		//8
-	}
-};
-THREE.Vector3.prototype.abs = function(){
-	this.x = Math.abs(this.x);
-	this.y = Math.abs(this.y);
-	this.z = Math.abs(this.z);
-	return this;
-}
-THREE.Vector3.prototype.toString = function(){
-	return this.x+'|'+this.y+'|'+this.z;
-};
-THREE.Vector3.prototype.fromString = function(str){
-	return this.fromArray(str.split('|'));
-};
 
 THREE.Object3D.prototype.getMaterialById = function(a) {
     return this.getMaterialByProperty("id", a);
