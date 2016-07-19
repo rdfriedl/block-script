@@ -148,6 +148,12 @@ THREE.Vector4.prototype.fromString = function(str){
 	return this.fromArray(str.split(','));
 }
 
+THREE.Vector3.prototype.map = function(fn){
+	this.x = fn(this.x, 'x');
+	this.y = fn(this.y, 'y');
+	this.z = fn(this.z, 'z');
+	return this;
+};
 THREE.Vector3.prototype.sign = function(){
 	this.x = Math.sign(this.x);
 	this.y = Math.sign(this.y);

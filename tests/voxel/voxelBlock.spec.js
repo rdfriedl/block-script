@@ -27,25 +27,31 @@ describe('VoxelBlock', function() {
 			this.block = new VoxelBlock();
 		})
 		it('"parent" points to parent chunk or selection', function() {
+			if(this.block.parent) this.block.parent.removeBlock(this.block);
 			this.selection.setBlock(this.block, new THREE.Vector3());
 			expect(this.block.parent).toBe(this.selection);
 
+			if(this.block.parent) this.block.parent.removeBlock(this.block);
 			this.chunk.setBlock(this.block, new THREE.Vector3());
 			expect(this.block.parent).toBe(this.chunk);
 		});
 
 		it('"chunk" points to parent chunk, but not parent selection', function() {
+			if(this.block.parent) this.block.parent.removeBlock(this.block);
 			this.selection.setBlock(this.block, new THREE.Vector3());
 			expect(this.block.chunk).toBe(undefined);
 
+			if(this.block.parent) this.block.parent.removeBlock(this.block);
 			this.chunk.setBlock(this.block, new THREE.Vector3());
 			expect(this.block.chunk).toBe(this.chunk);
 		});
 
 		it('"selection" points to parent selection, but not parent chunk', function() {
+			if(this.block.parent) this.block.parent.removeBlock(this.block);
 			this.selection.setBlock(this.block, new THREE.Vector3());
 			expect(this.block.selection).toBe(this.selection);
 
+			if(this.block.parent) this.block.parent.removeBlock(this.block);
 			this.chunk.setBlock(this.block, new THREE.Vector3());
 			expect(this.block.selection).toBe(undefined);
 		});
@@ -53,24 +59,26 @@ describe('VoxelBlock', function() {
 
 	describe('worldPosition', function() {
 		it('returns THREE.Vector3', function() {
+			if(this.block.parent) this.block.parent.removeBlock(this.block);
 			this.map.setBlock(this.block, new THREE.Vector3());
 			expect(this.block.worldPosition instanceof THREE.Vector3).toBe(true);
 		});
 
 		it('returns empty Vec3 when not in a map', function() {
-			this.block.parent.removeBlock(this.block);
+			if(this.block.parent) this.block.parent.removeBlock(this.block);
 			expect(this.block.worldPosition instanceof THREE.Vector3).toBe(true);
 		});
 	});
 
 	describe('position', function() {
 		it('returns THREE.Vector3', function() {
+			if(this.block.parent) this.block.parent.removeBlock(this.block);
 			this.map.setBlock(this.block, new THREE.Vector3());
 			expect(this.block.position instanceof THREE.Vector3).toBe(true);
 		});
 
 		it('returns empty Vec3 when not in a map or selection', function() {
-			this.block.parent.removeBlock(this.block);
+			if(this.block.parent) this.block.parent.removeBlock(this.block);
 			expect(this.block.position instanceof THREE.Vector3).toBe(true);
 		});
 	});

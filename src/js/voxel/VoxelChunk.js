@@ -329,6 +329,9 @@ export default class VoxelChunk extends THREE.Group{
 	 * @fires VoxelChunk#block:set
 	 */
 	setBlock(block, pos){
+		if(block instanceof VoxelBlock && block.parent)
+			throw new Error('cant add block that already has a parent');
+
 		if(String.isString(block))
 			block = this.map && this.map.blockManager.createBlock(block);
 
@@ -337,15 +340,6 @@ export default class VoxelChunk extends THREE.Group{
 
 			let str = pos.toString();
 			let oldBlock = this.blocks.get(str);
-
-			//remove the block from its parent if it has one
-			if(block.parent){
-				// remove the block and its neighbors from thier cache
-				if(this.useNeighborCache)
-					VoxelChunk.removeBlockFromNeighborCache(oldBlock, true);
-
-				block.parent.removeBlock(block);
-			}
 
 			// add it to this chunk
 			this.blocks.set(str,block);

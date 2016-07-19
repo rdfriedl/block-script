@@ -6,9 +6,8 @@
 		<div class="btn-group">
 			<a v-link="'/menu'" class="btn btn-info"><i class="fa fa-arrow-left"></i> Back</a>
 			<dropdown>
-				<a class="dropdown-toggle btn btn-default" data-toggle="dropdown"><i class="fa fa-home"></i> Room</a>
+				<a class="dropdown-toggle btn btn-default" data-toggle="dropdown"><i class="fa fa-file"></i> File</a>
 				<ul slot="dropdown-menu" class="dropdown-menu">
-					<li><a href="#" @click="clearRoom"><i class="fa fa-plus"></i> New</a></li>
 					<li><a href="#" @click="importFile"><i class="fa fa-upload"></i> Load from file</a></li>
 					<li><a href="#" @click="exportFile"><i class="fa fa-download"></i> Export to file</a></li>
 				</ul>
@@ -19,6 +18,13 @@
 					<li><a @click="view.edges = !view.edges">Edges <i class="fa fa-check" v-show="view.edges"></i></a></li>
 					<li><a @click="view.blocks = !view.blocks">Blocks <i class="fa fa-check" v-show="view.blocks"></i></a></li>
 					<li><a @click="view.walls = !view.walls">Walls <i class="fa fa-check" v-show="view.walls"></i></a></li>
+				</ul>
+			</dropdown>
+			<dropdown>
+				<a class="dropdown-toggle btn btn-default" data-toggle="dropdown"><i class="fa fa-pencil"></i> Edit</a>
+				<ul slot="dropdown-menu" class="dropdown-menu">
+					<li><a @click="clearRoom"><i class="fa fa-trash"></i> Clear Room</a></li>
+					<li><a @click="shiftBlocks.open = true"><i class="fa fa-arrows-alt"></i> Shift Blocks</a></li>
 				</ul>
 			</dropdown>
 		</div>
@@ -95,6 +101,43 @@
 			<div v-el:canvas class="canvas-container"></div>
 		</div>
 	</div>
+
+	<!-- shift blocks modal -->
+	<modal :show.sync="shiftBlocks.open" effect="fade">
+		<div slot="modal-header" class="modal-header">
+			<h4 class="modal-title">Shift Blocks</h4>
+		</div>
+		<div slot="modal-body" class="modal-body">
+			<div class="input-group">
+				<div class="input-group-addon">X</div>
+				<input type="number" class="form-control" v-model="shiftBlocks.dir.x">
+				<div class="input-group-btn">
+					<button type="button" class="btn btn-default" @click="shiftBlocks.dir.x -= 1"><i class="fa fa-chevron-left"></i></button>
+					<button type="button" class="btn btn-default" @click="shiftBlocks.dir.x += 1"><i class="fa fa-chevron-right"></i></button>
+				</div>
+			</div>
+			<div class="input-group">
+				<div class="input-group-addon">Y</div>
+				<input type="number" class="form-control" v-model="shiftBlocks.dir.y">
+				<div class="input-group-btn">
+					<button type="button" class="btn btn-default" @click="shiftBlocks.dir.y -= 1"><i class="fa fa-chevron-left"></i></button>
+					<button type="button" class="btn btn-default" @click="shiftBlocks.dir.y += 1"><i class="fa fa-chevron-right"></i></button>
+				</div>
+			</div>
+			<div class="input-group">
+				<div class="input-group-addon">Z</div>
+				<input type="number" class="form-control" v-model="shiftBlocks.dir.z">
+				<div class="input-group-btn">
+					<button type="button" class="btn btn-default" @click="shiftBlocks.dir.z -= 1"><i class="fa fa-chevron-left"></i></button>
+					<button type="button" class="btn btn-default" @click="shiftBlocks.dir.z += 1"><i class="fa fa-chevron-right"></i></button>
+				</div>
+			</div>
+		</div>
+		<div slot="modal-footer" class="modal-footer">
+			<button type="button" class="btn btn-default" @click="shiftBlocks.open = false">Cancel</button>
+			<button type="button" class="btn btn-success" @click="loopBlocks(shiftBlocks.dir)">Ok</button>
+		</div>
+	</modal>
 </div>
 
 </template>
@@ -135,6 +178,8 @@ const ROOM_SIZE = new THREE.Vector3(32,16,32);
 export default {
 	components: {
 		dropdown: BSDropdown,
+		modal: VueStrap.modal,
+		tooltip: VueStrap.tooltip,
 		tabs: VueStrap.tabset,
 		tab: VueStrap.tab,
 		meshPreview: MeshPreviewComponent
@@ -154,6 +199,10 @@ export default {
 			axes: true,
 			walls: true,
 			blocks: true
+		},
+		shiftBlocks: {
+			open: false,
+			dir: new THREE.Vector3
 		},
 		doors: {
 			x: {
@@ -228,6 +277,36 @@ export default {
 					})
 				}
 			}).trigger('click');
+		},
+		loopBlocks(dir){
+			let offset = new THREE.Vector3().copy(dir);
+			let selection = new VoxelSelection();
+			let selection2 = new VoxelSelection();
+
+			// move all the blocks from the map into a new selection
+			selection.copyFrom(this.editor.map, new THREE.Vector3(), ROOM_SIZE, false);
+
+			// move blocks
+			selection.listBlocks().forEach(block => {
+				let pos = block.position.clone().add(offset);
+				block.parent.removeBlock(block, false);
+
+				// loop
+				pos.map((v, axis) => {
+					while(v >= ROOM_SIZE[axis]) v -= ROOM_SIZE[axis];
+					while(v < 0) v += ROOM_SIZE[axis];
+					return v;
+				})
+
+				// add to the new selection
+				selection2.setBlock(block, pos);
+			})
+
+			// add back to map
+			selection2.addTo(this.editor.map, new THREE.Vector3(), false);
+
+			this.shiftBlocks.dir = new THREE.Vector3();
+			this.shiftBlocks.open = false;
 		}
 	},
 	created(){

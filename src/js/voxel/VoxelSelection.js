@@ -138,6 +138,9 @@ export default class VoxelSelection extends THREE.EventDispatcher{
 	 * @fires VoxelSelection#block:set
 	 */
 	setBlock(block,pos){
+		if(block instanceof VoxelBlock && block.parent)
+			throw new Error('cant add block that already has a parent');
+
 		if(String.isString(block))
 			block = this.blockManager.createBlock(block);
 
@@ -145,10 +148,6 @@ export default class VoxelSelection extends THREE.EventDispatcher{
 			pos = this.tmpVec.copy(pos).round();
 			let str = pos.toString();
 			let oldBlock = this.blocks.get(str);
-
-			//remove the block from its parent if it has one
-			if(block.parent)
-				block.parent.removeBlock(block);
 
 			this.blocks.set(str,block);
 			this.blocksPositions.set(block, pos.clone());
@@ -238,8 +237,13 @@ export default class VoxelSelection extends THREE.EventDispatcher{
 
 		this.blocks.forEach(block => {
 			this.tmpVec.copy(this.getBlockPosition(block)).add(offset);
+			if(cloneBlocks)
+				block = this.blockManager.cloneBlock(block);
+			else
+				this.removeBlock(block, false); // dont dispose of the block since we still want to use it
 
-			other.setBlock(cloneBlocks? this.blockManager.cloneBlock(block) : block, this.tmpVec);
+			if(block)
+				other.setBlock(block, this.tmpVec);
 		})
 	}
 
@@ -264,8 +268,15 @@ export default class VoxelSelection extends THREE.EventDispatcher{
 				for (let z = min.z; z <= max.z; z++) {
 					let block = other.getBlock(this.tmpVec.set(x,y,z));
 
-					if(block)
-						this.setBlock(cloneBlocks? this.blockManager.cloneBlock(block) : block, this.tmpVec.set(x - min.x, y - min.y, z - min.z));
+					if(block){
+						if(cloneBlocks)
+							block = this.blockManager.cloneBlock(block);
+						else
+							block.parent.removeBlock(block, false); // dont dispose of the block since we still want to use it
+
+						if(block)
+							this.setBlock(block, this.tmpVec.set(x - min.x, y - min.y, z - min.z));
+					}
 				}
 			}
 		}
