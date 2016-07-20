@@ -57,9 +57,9 @@ export default class GridCube extends THREE.Group{
 	updateViewingDirection(viewingDirection){
 		this.sides.forEach(side => {
 			this.walls[side] = this.walls[side] || {};
-			let s = Math.sign(viewingDirection[side]);
+			let s = viewingDirection? Math.sign(viewingDirection[side]) : 0;
 			for(let i in this.walls[side]){
-				this.walls[side][i].visible = parseInt(i) == s;
+				this.walls[side][i].visible = (s!=0? parseInt(i) == s : true);
 			}
 		})
 	}

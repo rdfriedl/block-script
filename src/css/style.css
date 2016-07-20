@@ -1,6 +1,6 @@
 @font-face {
     font-family: Font;
-    src: url(../fonts/cubicfive10.ttf);
+    src: url(../res/fonts/cubicfive10.ttf);
 }
 html, body {
 	width: 100%;

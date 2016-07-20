@@ -36,22 +36,12 @@ export default class AttachTool extends THREE.Group{
 			this.mousePosition.set(
 				(event.offsetX / renderer.domElement.clientWidth) * 2 - 1,
 				- (event.offsetY / renderer.domElement.clientHeight) * 2 + 1);
-
-			if(this.enabled){
-				let target = this.getTarget(this.useMousePosition? this.mousePosition : new THREE.Vector2());
-				if(target.target)
-					this.end = target;
-				else
-					this.end = undefined;
-			}
-
-			this.updateObjects();
 		});
 
 		// place blocks
 		renderer.domElement.addEventListener('mousedown', event => {
 			if(this.enabled && event.button == this.mouseButtons.PLACE || event.button == this.mouseButtons.REMOVE){
-				this.start = this.getTarget(this.mousePosition);
+				this.start = this.getTarget(this.useMousePosition? this.mousePosition : new THREE.Vector3());
 				this._mousedown = true;
 				this._mousebutton = event.button;
 			}
@@ -166,5 +156,17 @@ export default class AttachTool extends THREE.Group{
 			this.selectionBox.visible = false;
 
 		return this;
+	}
+
+	update(){
+		if(this.enabled){
+			let target = this.getTarget(this.useMousePosition? this.mousePosition : new THREE.Vector2());
+			if(target.target)
+				this.end = target;
+			else
+				this.end = undefined;
+		}
+
+		this.updateObjects();
 	}
 }
