@@ -65,6 +65,14 @@ export default class RoomManager{
 		if(data)
 			return new Room(data.selection, data.doors);
 	}
+
+	listRooms(){
+		let arr = [];
+		for(let i in this.rooms){
+			arr.push(this.rooms[i]);
+		}
+		return arr;
+	}
 }
 
 RoomManager.DOOR_INDEX_POSITIVE = 0;

@@ -1,7 +1,7 @@
 import THREE from 'three';
 import VoxelBlock from '../voxel/VoxelBlock.js';
 
-export default class AttachTool extends THREE.Group{
+export default class PickBlockTool extends THREE.Group{
 	constructor(camera, map, renderer){
 		super();
 		this.enabled = false;
@@ -28,19 +28,17 @@ export default class AttachTool extends THREE.Group{
 				(event.offsetX / renderer.domElement.clientWidth) * 2 - 1,
 				- (event.offsetY / renderer.domElement.clientHeight) * 2 + 1);
 
-			if(this.enabled){
-				let target = this.getTarget(this.useMousePosition? this.mousePosition : new THREE.Vector2());
-				if(target.target)
-					this.target = target;
-				else
-					this.target = undefined;
-			}
-
-			this.updateObjects();
+			this.update();
 		});
 
 		// pick block
 		renderer.domElement.addEventListener('mouseup', event => {
+			this.mousePosition.set(
+				(event.offsetX / renderer.domElement.clientWidth) * 2 - 1,
+				- (event.offsetY / renderer.domElement.clientHeight) * 2 + 1);
+
+			this.update();
+
 			// pick
 			if(
 				this.enabled &&
@@ -105,5 +103,17 @@ export default class AttachTool extends THREE.Group{
 			this.selectionFace.visible = false;
 
 		return this;
+	}
+
+	update(){
+		if(this.enabled){
+			let target = this.getTarget(this.useMousePosition? this.mousePosition : new THREE.Vector2());
+			if(target.target)
+				this.target = target;
+			else
+				this.target = undefined;
+		}
+
+		this.updateObjects();
 	}
 }

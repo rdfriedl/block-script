@@ -1,6 +1,6 @@
 {
-	"x": ["none","center-center-4x5"],
-	"y": ["none","center-center-4x5"],
-	"z": ["none","center-center-4x5"],
+	"x": ["none","center-center-4x4"],
+	"y": ["none"],
+	"z": ["none","center-center-4x4"],
 	"w": ["none","center-center"]
 }

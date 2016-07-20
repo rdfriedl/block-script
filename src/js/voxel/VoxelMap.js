@@ -46,9 +46,9 @@ export default class VoxelMap extends THREE.Group{
 		 * the size of the chunks in this map.
 		 * NOTE: you will have to manualy remove and recreate all the chunks in the map if this is changed
 		 * @type {THREE.Vector3}
-		 * @default [10,10,10]
+		 * @default [8,8,8]
 		 */
-		this.chunkSize = new THREE.Vector3(10,10,10);
+		this.chunkSize = new THREE.Vector3(8,8,8);
 
 		/**
 		 * a tmp Vector3 the chunk uses so it dose not have to create new instances

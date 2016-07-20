@@ -17,7 +17,9 @@
 				<ul slot="dropdown-menu" class="dropdown-menu">
 					<li><a @click="view.edges = !view.edges">Edges <i class="fa fa-check" v-show="view.edges"></i></a></li>
 					<li><a @click="view.blocks = !view.blocks">Blocks <i class="fa fa-check" v-show="view.blocks"></i></a></li>
+					<li><a @click="view.axes = !view.axes">Axes <i class="fa fa-check" v-show="view.axes"></i></a></li>
 					<li><a @click="view.walls = !view.walls">Walls <i class="fa fa-check" v-show="view.walls"></i></a></li>
+					<li><a @click="view.doors = !view.doors">Doors <i class="fa fa-check" v-show="view.doors"></i></a></li>
 				</ul>
 			</dropdown>
 			<dropdown>
@@ -123,44 +125,44 @@
 			</div>
 		</div>
 	</div>
-
-	<!-- shift blocks modal -->
-	<modal :show.sync="shiftBlocks.open" effect="fade">
-		<div slot="modal-header" class="modal-header">
-			<h4 class="modal-title">Shift Blocks</h4>
-		</div>
-		<div slot="modal-body" class="modal-body">
-			<div class="input-group">
-				<div class="input-group-addon">X</div>
-				<input type="number" class="form-control" v-model="shiftBlocks.dir.x">
-				<div class="input-group-btn">
-					<button type="button" class="btn btn-default" @click="shiftBlocks.dir.x -= 1"><i class="fa fa-chevron-left"></i></button>
-					<button type="button" class="btn btn-default" @click="shiftBlocks.dir.x += 1"><i class="fa fa-chevron-right"></i></button>
-				</div>
-			</div>
-			<div class="input-group">
-				<div class="input-group-addon">Y</div>
-				<input type="number" class="form-control" v-model="shiftBlocks.dir.y">
-				<div class="input-group-btn">
-					<button type="button" class="btn btn-default" @click="shiftBlocks.dir.y -= 1"><i class="fa fa-chevron-left"></i></button>
-					<button type="button" class="btn btn-default" @click="shiftBlocks.dir.y += 1"><i class="fa fa-chevron-right"></i></button>
-				</div>
-			</div>
-			<div class="input-group">
-				<div class="input-group-addon">Z</div>
-				<input type="number" class="form-control" v-model="shiftBlocks.dir.z">
-				<div class="input-group-btn">
-					<button type="button" class="btn btn-default" @click="shiftBlocks.dir.z -= 1"><i class="fa fa-chevron-left"></i></button>
-					<button type="button" class="btn btn-default" @click="shiftBlocks.dir.z += 1"><i class="fa fa-chevron-right"></i></button>
-				</div>
-			</div>
-		</div>
-		<div slot="modal-footer" class="modal-footer">
-			<button type="button" class="btn btn-default" @click="shiftBlocks.open = false">Cancel</button>
-			<button type="button" class="btn btn-success" @click="loopBlocks(shiftBlocks.dir)">Ok</button>
-		</div>
-	</modal>
 </div>
+
+<!-- shift blocks modal -->
+<modal :show.sync="shiftBlocks.open" effect="fade">
+	<div slot="modal-header" class="modal-header">
+		<h4 class="modal-title">Shift Blocks</h4>
+	</div>
+	<div slot="modal-body" class="modal-body">
+		<div class="input-group">
+			<div class="input-group-addon">X</div>
+			<input type="number" class="form-control" v-model="shiftBlocks.dir.x">
+			<div class="input-group-btn">
+				<button type="button" class="btn btn-default" @click="shiftBlocks.dir.x -= 1"><i class="fa fa-chevron-left"></i></button>
+				<button type="button" class="btn btn-default" @click="shiftBlocks.dir.x += 1"><i class="fa fa-chevron-right"></i></button>
+			</div>
+		</div>
+		<div class="input-group">
+			<div class="input-group-addon">Y</div>
+			<input type="number" class="form-control" v-model="shiftBlocks.dir.y">
+			<div class="input-group-btn">
+				<button type="button" class="btn btn-default" @click="shiftBlocks.dir.y -= 1"><i class="fa fa-chevron-left"></i></button>
+				<button type="button" class="btn btn-default" @click="shiftBlocks.dir.y += 1"><i class="fa fa-chevron-right"></i></button>
+			</div>
+		</div>
+		<div class="input-group">
+			<div class="input-group-addon">Z</div>
+			<input type="number" class="form-control" v-model="shiftBlocks.dir.z">
+			<div class="input-group-btn">
+				<button type="button" class="btn btn-default" @click="shiftBlocks.dir.z -= 1"><i class="fa fa-chevron-left"></i></button>
+				<button type="button" class="btn btn-default" @click="shiftBlocks.dir.z += 1"><i class="fa fa-chevron-right"></i></button>
+			</div>
+		</div>
+	</div>
+	<div slot="modal-footer" class="modal-footer">
+		<button type="button" class="btn btn-default" @click="shiftBlocks.open = false">Cancel</button>
+		<button type="button" class="btn btn-success" @click="loopBlocks(shiftBlocks.dir)">Ok</button>
+	</div>
+</modal>
 
 </template>
 
@@ -195,6 +197,7 @@ import VoxelSelection from '../js/voxel/VoxelSelection.js';
 
 import AttachTool from '../js/editor/AttachTool.js';
 import PickBlockTool from '../js/editor/PickBlockTool.js';
+import DoorHelper from '../js/editor/DoorHelper.js';
 
 const ROOM_SIZE = new THREE.Vector3(32,16,32);
 
@@ -224,7 +227,8 @@ export default {
 			edges: false,
 			axes: true,
 			walls: true,
-			blocks: true
+			blocks: true,
+			doors: true
 		},
 		shiftBlocks: {
 			open: false,
@@ -384,23 +388,6 @@ export default {
 		editor.orbitCam.position.copy(ROOM_SIZE).multiply(editor.map.blockSize);
 		editor.orbitControls.target.set(0.5,0,0.5).multiply(editor.map.blockSize).multiply(ROOM_SIZE);
 
-		editor.attachTool.placeBlockID = this.placeBlocks.selected;
-		this.$watch('placeBlocks.selected', v => editor.attachTool.placeBlockID = v);
-		editor.attachTool.fillType = this.placeBlocks.fillType;
-		this.$watch('placeBlocks.fillType', v => editor.attachTool.fillType = v);
-
-		// view walls
-		editor.gridWalls.visible = this.view.walls;
-		this.$watch('view.walls', v => editor.gridWalls.visible = v);
-
-		// view blocks
-		editor.map.visible = this.view.blocks;
-		this.$watch('view.blocks', v => editor.map.visible = v);
-
-		// view edges
-		editor.mapEdges.visible = this.view.edges;
-		this.$watch('view.edges', v => editor.mapEdges.visible = v);
-
 		// create clock
 		let clock = new THREE.Clock();
 
@@ -537,6 +524,10 @@ function createScene(editor){
 	map.useNeighborCache = false;
 	scene.add(map);
 
+	// view blocks
+	editor.map.visible = this.view.blocks;
+	this.$watch('view.blocks', v => editor.map.visible = v);
+
 	// create light
 	scene.add(new THREE.AmbientLight(0xffffff));
 
@@ -552,6 +543,10 @@ function createScene(editor){
 		else
 			gridWalls.updateViewingDirection();
 	})
+
+	// view grid walls
+	editor.gridWalls.visible = this.view.walls;
+	this.$watch('view.walls', v => editor.gridWalls.visible = v);
 
 	// create edges
 	let mapEdges = editor.mapEdges = new THREE.Group();
@@ -582,10 +577,35 @@ function createScene(editor){
 	})
 	scene.add(mapEdges);
 
+	// view edges
+	editor.mapEdges.visible = this.view.edges;
+	this.$watch('view.edges', v => editor.mapEdges.visible = v);
+
 	// add axis helper
 	let axes = editor.axes = new THREE.AxisHelper(map.blockSize.clone().multiply(ROOM_SIZE));
-	axes.material.depthTest = false;
+	// axes.material.depthTest = false;
 	scene.add(axes);
+	axes.visible = this.view.axes;
+
+	// update axes helper
+	this.$watch('view.axes', v => axes.visible = v);
+
+	// door helper
+	let doorHelper = editor.doorHelper = new DoorHelper(map, ROOM_SIZE);
+	scene.add(doorHelper);
+	doorHelper.visible = this.view.doors;
+	doorHelper.scale.copy(map.blockSize);
+	doorHelper.position.copy(ROOM_SIZE).divideScalar(2).multiply(map.blockSize);
+
+	// update door helper
+	this.$watch('view.doors', v => doorHelper.visible = v);
+	this.$watch('doors', doors => {
+		doorHelper.doors.x = doors.x.sides;
+		doorHelper.doors.y = doors.y.sides;
+		doorHelper.doors.z = doors.z.sides;
+		doorHelper.doors.w = doors.w.sides;
+		doorHelper.update();
+	}, {deep: true})
 }
 
 // create post processing effects
@@ -677,6 +697,12 @@ function createTools(editor){
 			v.z > ROOM_SIZE.z || v.z < 0
 		);
 	}
+
+	// sync with vue
+	editor.attachTool.placeBlockID = this.placeBlocks.selected;
+	this.$watch('placeBlocks.selected', v => editor.attachTool.placeBlockID = v);
+	editor.attachTool.fillType = this.placeBlocks.fillType;
+	this.$watch('placeBlocks.fillType', v => editor.attachTool.fillType = v);
 
 	// display info about attach tool
 	window.addEventListener('mousemove', () => {
@@ -833,8 +859,8 @@ function createControls(editor){
 		},
 		{
 			keys: 'q',
-			on_keydown: () => pointerLockControls.movement.up = true,
-			on_keyup: () => pointerLockControls.movement.up = false
+			on_keydown: () => pointerLockControls.movement.down = true,
+			on_keyup: () => pointerLockControls.movement.down = false
 		},
 		{
 			keys: 'space',
@@ -848,8 +874,8 @@ function createControls(editor){
 		},
 		{
 			keys: 'e',
-			on_keydown: () => pointerLockControls.movement.down = true,
-			on_keyup: () => pointerLockControls.movement.down = false
+			on_keydown: () => pointerLockControls.movement.up = true,
+			on_keyup: () => pointerLockControls.movement.up = false
 		},
 		{
 			keys: 'shift',
@@ -939,6 +965,21 @@ function createModes(editor, modes) {
 			}
 		},
 		{
+			keys: 'MMB',
+			on_keydown: () => {
+				if(this.cameraMode == 'first-person'){
+					this.editor.pickBlockTool.mouseButtons.PICK = THREE.MOUSE.MIDDLE;
+					this.mode = 'pick-block';
+				}
+			},
+			on_keyup: () => {
+				if(this.cameraMode == 'first-person'){
+					this.mode = this.prevMode;
+					this.editor.pickBlockTool.mouseButtons.PICK = THREE.MOUSE.LEFT;
+				}
+			}
+		},
+		{
 			keys: '1',
 			on_keydown: () => this.mode = 'place-blocks'
 		},
@@ -956,7 +997,7 @@ function createModes(editor, modes) {
 				if(this.cameraMode != 'first-person')
 					this.mode = 'camera-controls'
 			}
-		},
+		}
 	]);
 }
 

@@ -47,6 +47,12 @@ export default class AttachTool extends THREE.Group{
 			}
 		});
 		renderer.domElement.addEventListener('mouseup', event => {
+			this.mousePosition.set(
+				(event.offsetX / renderer.domElement.clientWidth) * 2 - 1,
+				- (event.offsetY / renderer.domElement.clientHeight) * 2 + 1);
+
+			this.update();
+
 			// place
 			if(
 				this.enabled &&
