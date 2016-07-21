@@ -28,7 +28,6 @@ import MenuComponent from './components/Menu.vue';
 import CreditsMenuComponent from './components/menu/Credits.vue';
 import HelpMenuComponent from './components/menu/Help.vue';
 import SettingsMenuComponent from './components/menu/Settings.vue';
-import MapsMenuComponent from './components/menu/Maps.vue';
 import RoomEditorComponent from './components/RoomEditor.vue';
 
 // set up the config
@@ -44,14 +43,12 @@ let router = new VueRouter();
 router.map({
 	'': {component: MenuComponent},
 	'/menu': {component: MenuComponent},
-	'/play/:mapID': {component: GameComponent},
+	'/play': {component: GameComponent},
 	'/credits': {component: CreditsMenuComponent},
 	'/help': {component: HelpMenuComponent},
 	'/help/:topic': {component: HelpMenuComponent},
 	'/settings': {component: SettingsMenuComponent},
 	'/settings/:topic': {component: SettingsMenuComponent},
-	'/maps': {component: MapsMenuComponent},
-	'/maps/:modal': {component: MapsMenuComponent},
 	'/editor': {component: RoomEditorComponent},
 	'/editor/:room': {component: RoomEditorComponent}
 });

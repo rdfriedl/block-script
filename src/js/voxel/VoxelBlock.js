@@ -301,7 +301,7 @@ export default class VoxelBlock{
 		//make sure we extend a class the has properties
 		if(_super._setUpProperties){
 			//if my parent dose not have a properties object, create one
-			if(!_super.prototype.properties)
+			if(!_super.prototype.hasOwnProperty('properties'))
 				_super._setUpProperties();
 
 			this.prototype.properties = this.hasOwnProperty('DefalutProperties')? this.DefalutProperties : {};

@@ -1,5 +1,5 @@
 @font-face {
-    font-family: Font;
+    font-family: CubicFive10;
     src: url(../res/fonts/cubicfive10.ttf);
 }
 html, body {
@@ -8,7 +8,7 @@ html, body {
     overflow: hidden;
 }
 body, *{
-	font-family: Font;
+	font-family: CubicFive10;
 }
 
 /* custom scrollbar */

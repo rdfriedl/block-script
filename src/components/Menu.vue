@@ -13,7 +13,7 @@
 		Block-Script
 	</h1>
 	<div class="col-xs-12 col-sm-8 col-md-6 col-lg-4" style="margin: 40px 0;">
-		<button type="button" class="btn btn-lg btn-block btn-success" v-link="'/maps'"><i class="fa fa-gamepad"></i> Play</button>
+		<button type="button" class="btn btn-lg btn-block btn-success" v-link="'/play'"><i class="fa fa-gamepad"></i> Play</button>
 		<button type="button" class="btn btn-lg btn-block btn-info" v-link="'/editor'"><i class="fa fa-cubes"></i> Editor</button>
 		<button type="button" class="btn btn-lg btn-block btn-default" v-link="'/help'"><i class="fa fa-question"></i> Help</button>
 		<button type="button" class="btn btn-lg btn-block btn-default" v-link="'/settings'"><i class="fa fa-cogs"></i> Settings</button>

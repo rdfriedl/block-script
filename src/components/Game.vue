@@ -9,7 +9,7 @@
 
 <div v-el:stats class="stats-container"></div>
 <div class="col-xs-12">
-	<a class="btn btn-md btn-info pull-right" v-link="'/maps'"><i class="fa fa-arrow-left"></i> Back</a>
+	<a class="btn btn-md btn-info pull-right" v-link="'/menu'"><i class="fa fa-arrow-left"></i> Back</a>
 </div>
 
 </template>
@@ -155,12 +155,16 @@ function initScene(game){
 		}
 	})
 
+	let time = Math.floor(Math.random()*5);
 	let room = DefaultRooms.createRoom({
 		doors: {
 			x:{p:true,n:true},
 			z:{p:true,n:true}
 		}
 	});
+	room.selection.listBlocks().forEach(block => {
+		block.setProp('time', time);
+	})
 	room.selection.addTo(map);
 	map.updateChunks();
 }

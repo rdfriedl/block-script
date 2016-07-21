@@ -1,5 +1,6 @@
 import THREE from 'three';
 import VoxelBlock from '../voxel/VoxelBlock.js';
+import VoxelBlockManager from '../voxel/VoxelBlockManager.js';
 import * as ChunkUtils from '../ChunkUtils.js';
 
 export default class AttachTool extends THREE.Group{
@@ -25,6 +26,7 @@ export default class AttachTool extends THREE.Group{
 		this.checkRemove = undefined;
 
 		this.placeBlockID = '';
+		this.placeBlockProps = {};
 		this.fillType = 'solid';
 		this.mouseButtons = {
 			PLACE: THREE.MOUSE.LEFT,
@@ -62,7 +64,8 @@ export default class AttachTool extends THREE.Group{
 				event.button == this.mouseButtons.PLACE &&
 				(!this.checkPlace || (this.checkPlace(this.start.placeTarget) && this.checkPlace(this.end.placeTarget)))
 			){
-				ChunkUtils.drawCube(this.map, this.start.placeTarget, this.end.placeTarget, this.placeBlockID, this.fillType);
+				let id = VoxelBlockManager.createID(this.placeBlockID, this.placeBlockProps);
+				ChunkUtils.drawCube(this.map, this.start.placeTarget, this.end.placeTarget, id, this.fillType);
 				this.map.updateChunks();
 			}
 

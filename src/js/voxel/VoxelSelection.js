@@ -303,7 +303,7 @@ export default class VoxelSelection extends THREE.EventDispatcher{
 				blockTypes[str] = json.blockTypes.length;
 				json.blockTypes.push(blockData);
 			}
-			let data = block[0].split(',');
+			let data = block[0].split(',').map(parseInt);
 			data.push(blockTypes[str]);
 			return data; //[x,y,z,typeID]
 		});

@@ -20,6 +20,8 @@
 					<li><a @click="view.axes = !view.axes">Axes <i class="fa fa-check" v-show="view.axes"></i></a></li>
 					<li><a @click="view.walls = !view.walls">Walls <i class="fa fa-check" v-show="view.walls"></i></a></li>
 					<li><a @click="view.doors = !view.doors">Doors <i class="fa fa-check" v-show="view.doors"></i></a></li>
+					<li role="separator" class="divider"></li>
+					<li><a @click="changeTime.open = true">Change Time</a></li>
 				</ul>
 			</dropdown>
 			<dropdown>
@@ -84,7 +86,9 @@
 			<div v-show="tab=='blocks'" self="size-x1" layout="rows top-spread" style="overflow: auto">
 				<div class="block" self="size-1of8" v-for="block in blocks" @click="placeBlocks.selected = block.id" :class="{active: placeBlocks.selected == block.id}">
 					<div v-if="block.loaded">
-						<mesh-preview class="fix-width" :mesh="block.mesh"></mesh-preview>
+						<tooltip placement="right" :content="block.name">
+							<mesh-preview class="fix-width" :mesh="block.mesh"></mesh-preview>
+						</tooltip>
 					</div>
 				</div>
 			</div>
@@ -164,6 +168,29 @@
 	</div>
 </modal>
 
+<!-- change time modal -->
+<modal :show.sync="changeTime.open" effect="fade">
+	<div slot="modal-header" class="modal-header">
+		<h4 class="modal-title">Change time</h4>
+	</div>
+	<div slot="modal-body" class="modal-body">
+		<div class="input-group">
+			<div class="input-group-addon">Time</div>
+			<select class="form-control" v-model="changeTime.time">
+				<option value="0">1</option>
+				<option value="1">2</option>
+				<option value="2">3</option>
+				<option value="3">4</option>
+				<option value="4">5</option>
+			</select>
+		</div>
+	</div>
+	<div slot="modal-footer" class="modal-footer">
+		<button type="button" class="btn btn-default" @click="changeTime.open = false">Cancel</button>
+		<button type="button" class="btn btn-success" @click="setTime(changeTime.time)">Ok</button>
+	</div>
+</modal>
+
 </template>
 
 <!-- JS -->
@@ -222,7 +249,7 @@ export default {
 		prevMode: '',
 		cameraMode: '',
 		hasPointerLock: false,
-		firtsPersonControlType: 'fly',
+		firtsPersonControlType: 'mc',
 		view: {
 			edges: false,
 			axes: true,
@@ -234,6 +261,11 @@ export default {
 			open: false,
 			dir: new THREE.Vector3
 		},
+		changeTime: {
+			open: false,
+			time: 2
+		},
+		roomTime: 2,
 		doors: {
 			x: {
 				title: 'X axis',
@@ -292,6 +324,11 @@ export default {
 							let selection = new VoxelSelection();
 							selection.fromJSON(json.selection);
 							this.editor.map.clearBlocks();
+
+							// set the time on all the blocks
+							selection.listBlocks().forEach(block => block.setProp('time', this.roomTime));
+
+							// add the blocks to the map
 							selection.addTo(this.editor.map);
 						}
 
@@ -337,6 +374,10 @@ export default {
 
 			this.shiftBlocks.dir = new THREE.Vector3();
 			this.shiftBlocks.open = false;
+		},
+		setTime(time){
+			this.roomTime = parseInt(time);
+			this.changeTime.open = false;
 		},
 		requestPointerLock: function(){
 			this.editor.renderer.domElement.requestPointerLock();
@@ -459,15 +500,20 @@ export default {
 		for(let i in blocks){
 			let types = blocks[i].prototype.properties && blocks[i].prototype.properties.TYPES;
 			function addBlock(type){
-				let id = blocks[i].UID+'?type='+type;
-				let block = this.editor.map.blockManager.createBlock(id);
+				let props = {
+					time: this.roomTime
+				};
+				if(type) props.type = type;
+
+				let block = this.editor.map.blockManager.createBlock(blocks[i].UID, props);
 				if(!block) return;
 
 				let mesh = new THREE.Mesh(block.geometry, block.material);
 				mesh.scale.set(32,32,32);
 
 				let data = {
-					id: id,
+					name: block.id,
+					id: VoxelBlockManager.createID(block),
 					loaded: false,
 					mesh: () => mesh
 				};
@@ -477,7 +523,7 @@ export default {
 			if(types)
 				types.forEach(addBlock.bind(this));
 			else
-				addBlock.call(this,'normal');
+				addBlock.call(this);
 		}
 
 		THREE.DefaultLoadingManager.onLoad = () => {
@@ -527,6 +573,14 @@ function createScene(editor){
 	// view blocks
 	editor.map.visible = this.view.blocks;
 	this.$watch('view.blocks', v => editor.map.visible = v);
+
+	// change the blocks time if the room time changes
+	this.$watch('roomTime', time => {
+		let selection = new VoxelSelection();
+		selection.copyFrom(map, new THREE.Vector3(), ROOM_SIZE, false);
+		selection.listBlocks().forEach(block => block.setProp('time', time));
+		selection.addTo(map, new THREE.Vector3(), false);
+	})
 
 	// create light
 	scene.add(new THREE.AmbientLight(0xffffff));
@@ -703,6 +757,8 @@ function createTools(editor){
 	this.$watch('placeBlocks.selected', v => editor.attachTool.placeBlockID = v);
 	editor.attachTool.fillType = this.placeBlocks.fillType;
 	this.$watch('placeBlocks.fillType', v => editor.attachTool.fillType = v);
+	editor.attachTool.placeBlockProps.time = this.roomTime;
+	this.$watch('roomTime', v => editor.attachTool.placeBlockProps.time = v);
 
 	// display info about attach tool
 	window.addEventListener('mousemove', () => {
