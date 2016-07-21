@@ -65,7 +65,7 @@ module.exports = {
 		'bootstrap-dialog-css': 'undefined',
 		'flex-layout-attribute ': 'undefined',
 		'vue-strap': 'VueStrap',
-		'file-saver': 'saveAs'
+		'file-saver': '{saveAs: saveAs}'
     },
 	output: {
         path: path.resolve("./dist"),
