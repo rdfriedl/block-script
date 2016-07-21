@@ -44,7 +44,7 @@ export default class RoomManager{
 	}
 
 	/**
-	 * returns an array of doors that match the searchg
+	 * returns an array of rooms that match the searchg
 	 * @param  {Object} search
 	 * @return {Object[]} an array of room objects
 	 */

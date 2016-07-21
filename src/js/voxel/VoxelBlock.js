@@ -297,27 +297,18 @@ export default class VoxelBlock{
 	UpdateProps(){}
 
 	static _setUpProperties(){
-		if(!this.prototype.hasOwnProperty('properties')){
+		let _super = this.prototype.__proto__.constructor;
+		//make sure we extend a class the has properties
+		if(_super._setUpProperties){
+			//if my parent dose not have a properties object, create one
+			if(!_super.prototype.properties)
+				_super._setUpProperties();
+
+			this.prototype.properties = this.hasOwnProperty('DefalutProperties')? this.DefalutProperties : {};
+			this.prototype.properties.__proto__ = _super.prototype.properties;
+		}
+		else{
 			this.prototype.properties = this.DefalutProperties || {};
-
-			function checkProperties(){
-				//make sure we extend a class the has properties
-				if(this.prototype.__proto__.constructor._setUpProperties){
-					//if my parent dose not have a properties object, create one
-					if(!this.prototype.__proto__.properties)
-						this.prototype.__proto__.constructor._setUpProperties();
-
-					// make sure i extend another class, and make sure that my properties are not set up yet
-					if(this.prototype.__proto__ !== Object.prototype && this.prototype.properties.__proto__ === Object.prototype){
-						this.prototype.properties = this.defalutProperties || {};
-						this.prototype.properties.__proto__ = this.prototype.__proto__.properties;
-					}
-				}
-				else{
-					this.prototype.properties = this.defalutProperties || {};
-				}
-			}
-			checkProperties.call(this);
 		}
 	}
 }
@@ -347,7 +338,7 @@ VoxelBlock.UID = 'block';
  * @property {Array} placeSound an array of sound ids to play if the player places this block
  * @property {Array} removeSound an array of sound ids to play if the player destroys this block
  */
-VoxelBlock.prototype.properties = {
+VoxelBlock.DefalutProperties = {
 	rotation: new THREE.Euler(),
 	transparent: false,
 	canCollide: true,

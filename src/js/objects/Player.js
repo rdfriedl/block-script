@@ -14,7 +14,7 @@ class Player extends THREE.Group{
 		 * the {@link CollisionEntity} the play will use
 		 * @var {CollisionEntityBox}
 		 */
-		this.collision = new CollisionEntityBox(new THREE.Vector3(32*1.75,32*2.75,32*1.75), new THREE.Vector3(0,-(32*2.75)/2 + 32*0.25,0));
+		this.collision = new CollisionEntityBox(new THREE.Vector3(20,58,20), new THREE.Vector3(0,-58/2 + 8,0));
 		this.collision.onCollision = (entity, normal) => {
 			if(normal.y !== 0){
 				this.collision.velocity.y = 0;
@@ -63,18 +63,6 @@ class Player extends THREE.Group{
 		this._movementVelocity = new THREE.Vector2();
 		this._viewBobbing = 0;
 		this._viewBobbingDir = 1;
-
-		// add mesh for debugging
-		if(process.env.NODE_ENV == 'dev'){
-			let mat = new THREE.MeshBasicMaterial({
-				color:'#ffffff',
-				wireframe: true
-			});
-			let geo = new THREE.BoxGeometry(32*1.75,32*2.75,32*1.75);
-			let mesh = new THREE.Mesh(geo,mat);
-			this.add(mesh);
-			mesh.position.y = -(32*2.75)/2 + 32*0.25;
-		}
 	}
 
 	// short hand to the collision`s velocity

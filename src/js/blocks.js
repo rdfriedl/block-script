@@ -99,7 +99,7 @@ export class Brick extends VoxelBlock {
 	}
 }
 Brick.UID = 'brick';
-Brick.prototype.properties = {
+Brick.DefalutProperties = {
 	type: 'normal',
 	TYPES: Reflect.ownKeys(BRICK_TYPES)
 }
@@ -134,7 +134,7 @@ export class Tile extends VoxelBlock {
 	}
 }
 Tile.UID = 'tile';
-Tile.prototype.properties = {
+Tile.DefalutProperties = {
 	type: 'normal',
 	TYPES: Reflect.ownKeys(TILE_TYPES)
 }
@@ -193,7 +193,7 @@ export class Log extends VoxelBlock{
 	}
 }
 Log.UID = 'log';
-Log.prototype.properties = {
+Log.DefalutProperties = {
 	type: 'normal',
 	TYPES: Reflect.ownKeys(LOG_TYPES)
 }
@@ -228,7 +228,7 @@ export class Wood extends VoxelBlock{
 	}
 }
 Wood.UID = 'wood';
-Wood.prototype.properties = {
+Wood.DefalutProperties = {
 	type: 'normal',
 	TYPES: Reflect.ownKeys(WOOD_TYPES)
 }
@@ -352,7 +352,7 @@ export class Glass extends VoxelBlock{
 	}
 }
 Glass.UID = 'glass';
-Glass.prototype.properties = {
+Glass.DefalutProperties = {
 	transparent: true,
 	type: 'normal',
 	TYPES: Reflect.ownKeys(GLASS_TYPES)
@@ -398,7 +398,7 @@ export class Clay extends VoxelBlock{
 	}
 }
 Clay.UID = 'clay';
-Clay.prototype.properties = {
+Clay.DefalutProperties = {
 	type: 'normal',
 	TYPES: Reflect.ownKeys(CLAY_TYPES)
 }
@@ -443,7 +443,7 @@ export class Wool extends VoxelBlock{
 	}
 }
 Wool.UID = 'wool';
-Wool.prototype.properties = {
+Wool.DefalutProperties = {
 	type: 'white',
 	TYPES: Reflect.ownKeys(WOOL_TYPES)
 }
