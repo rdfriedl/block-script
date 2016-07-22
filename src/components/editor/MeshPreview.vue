@@ -55,7 +55,7 @@ export default {
 
 		this.ctx = this.$els.canvas.getContext('2d');
 		this.render();
-		this.$watch('mesh', this.render());
+		this.$watch('mesh', () => this.render());
 
 		const FPS = 1/30;
 		let clock = new THREE.Clock();
@@ -76,6 +76,11 @@ export default {
 				this.interval = NaN;
 			}
 		});
+
+		// if we receive an event to render
+		this.$on('mesh-preview-render', () => {
+			this.render();
+		})
 	},
 	detached(){
 		clearInterval(this.interval);

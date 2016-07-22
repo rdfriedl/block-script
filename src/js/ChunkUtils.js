@@ -156,6 +156,8 @@ export function copyBlocks(fromChunk, toChunk, fromV, toV, opts){
 				if(block){
 					if(opts.cloneBlocks && toChunk.blockManager)
 						block = toChunk.blockManager.cloneBlock(block);
+					else if(block.parent)
+						block.parent.removeBlock(block);
 
 					toChunk.setBlock(block, pos);
 				}

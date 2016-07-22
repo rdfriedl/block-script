@@ -88,6 +88,7 @@ import Stats from 'stats';
 import VoxelMap from '../js/voxel/VoxelMap.js';
 import VoxelBlockManager from '../js/voxel/VoxelBlockManager.js';
 import * as blocks from '../js/blocks.js';
+import * as ChunkUtils from '../js/ChunkUtils.js';
 
 window.blocks = blocks;
 
@@ -162,7 +163,8 @@ function initScene(game){
 			z:{p:true,n:true}
 		}
 	});
-	room.selection.addTo(map);
+	let box = room.selection.boundingBox;
+	ChunkUtils.copyBlocks(room.selection, map, box.min, box.max);
 	map.time = time;
 	map.updateChunks();
 }

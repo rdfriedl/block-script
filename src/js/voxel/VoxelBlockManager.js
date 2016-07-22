@@ -248,7 +248,7 @@ export default class VoxelBlockManager{
 				block = this._createBlock(id, props);
 			}
 
-			if(props)
+			if(props && Reflect.ownKeys(props).length);
 				block.setProp(props);
 
 			return block;

@@ -91,11 +91,9 @@
 			<!-- blocks -->
 			<div v-show="tab=='blocks'" self="size-x1" layout="rows top-spread" style="overflow: auto">
 				<div class="block" self="size-1of8" v-for="block in blocks" @click="placeBlocks.selected = block.id" :class="{active: placeBlocks.selected == block.id}">
-					<div v-if="block.loaded">
-						<tooltip placement="right" :content="block.name">
-							<mesh-preview class="fix-width" :mesh="block.mesh"></mesh-preview>
-						</tooltip>
-					</div>
+					<tooltip placement="right" :content="block.name">
+						<mesh-preview class="fix-width" :mesh="block.mesh"></mesh-preview>
+					</tooltip>
 				</div>
 			</div>
 
@@ -228,6 +226,7 @@ import DOOR_TYPES from '../data/doorTypes.json';
 import VoxelMap from '../js/voxel/VoxelMap.js';
 import VoxelBlockManager from '../js/voxel/VoxelBlockManager.js';
 import VoxelSelection from '../js/voxel/VoxelSelection.js';
+import * as ChunkUtils from '../js/ChunkUtils.js';
 
 import AttachTool from '../js/editor/AttachTool.js';
 import PickBlockTool from '../js/editor/PickBlockTool.js';
@@ -306,10 +305,16 @@ export default {
 
 				this.editor.undoManager.add({
 					redo: () => {
-						selection.copyFrom(this.editor.map, new THREE.Vector3(), ROOM_SIZE, false);
+						ChunkUtils.copyBlocks(this.editor.map, selection, new THREE.Vector3(), ROOM_SIZE, {
+							cloneBlocks: false,
+							copyEmpty: true
+						})
 					},
 					undo: () => {
-						selection.addTo(this.editor.map, new THREE.Vector3(), false);
+						ChunkUtils.copyBlocks(selection, this.editor.map, new THREE.Vector3(), ROOM_SIZE, {
+							cloneBlocks: false,
+							copyEmpty: true
+						})
 					}
 				})
 
@@ -319,7 +324,7 @@ export default {
 		},
 		exportFile(){
 			let selection = new VoxelSelection();
-			selection.copyFrom(this.editor.map, new THREE.Vector3(0,0,0), new THREE.Vector3(1,1,1).multiply(ROOM_SIZE));
+			ChunkUtils.copyBlocks(this.editor.map, selection, new THREE.Vector3(), ROOM_SIZE)
 			let json = {
 				selection: selection.toJSON(),
 				doors: {}
@@ -347,7 +352,8 @@ export default {
 							this.editor.map.clearBlocks();
 
 							// add the blocks to the map
-							selection.addTo(this.editor.map);
+							let box = selection.boundingBox;
+							ChunkUtils.copyBlocks(selection, this.editor.map, box.min, box.max);
 						}
 
 						if(json.doors){
@@ -372,7 +378,9 @@ export default {
 			let selection2 = new VoxelSelection();
 
 			// move all the blocks from the map into a new selection
-			selection.copyFrom(this.editor.map, new THREE.Vector3(), ROOM_SIZE, false);
+			ChunkUtils.copyBlocks(this.editor.map, selection, new THREE.Vector3(), ROOM_SIZE, {
+				cloneBlocks: false
+			})
 
 			// move blocks
 			selection.listBlocks().forEach(block => {
@@ -391,7 +399,10 @@ export default {
 			})
 
 			// add back to map
-			selection2.addTo(this.editor.map, new THREE.Vector3(), false);
+			let box = selection2.boundingBox;
+			ChunkUtils.copyBlocks(selection2, this.editor.map, box.min, box.max, {
+				cloneBlocks: false
+			});
 
 			this.shiftBlocks.dir = new THREE.Vector3();
 			this.shiftBlocks.open = false;
@@ -550,11 +561,18 @@ export default {
 		})
 
 		// get blocks
+		let blockHolder = new VoxelSelection();
+		blockHolder.time = this.roomTime;
+
+		let position = 0;
 		for(let i in blocks){
 			let types = blocks[i].prototype.properties && blocks[i].prototype.properties.TYPES;
+
 			function addBlock(type){
 				let block = this.editor.map.blockManager.createBlock(type? blocks[i].UID+'?type='+type : blocks[i].UID);
 				if(!block) return;
+
+				blockHolder.setBlock(block, new THREE.Vector3().setX(position++));
 
 				let mesh = new THREE.Mesh(block.geometry, block.material);
 				mesh.scale.set(32,32,32);
@@ -562,21 +580,38 @@ export default {
 				let data = {
 					name: block.id,
 					id: VoxelBlockManager.createID(block),
-					loaded: false,
-					mesh: () => mesh
+					mesh: () => mesh,
+					block: () => block
 				};
 
 				this.blocks.push(data);
 			}
+
 			if(types)
 				types.forEach(addBlock.bind(this));
 			else
 				addBlock.call(this);
 		}
 
-		THREE.DefaultLoadingManager.onLoad = () => {
+		// update the block preview when roomTime changes
+		this.$watch('roomTime', time => {
+			blockHolder.time = time;
+
+			// create new meshes for all the blocks
+			this.blocks.forEach(data => {
+				let block = data.block();
+				let mesh = new THREE.Mesh(block.geometry, block.material);
+				mesh.scale.set(32,32,32);
+
+				data.mesh = () => mesh;
+			})
+
+			// we dont need to tell the MeshPreview to rerender since we just changed the "mesh" property on the block
+			// this.$broadcast('mesh-preview-render');
+		});
+		THREE.DefaultLoadingManager.onProgress = () => {
 			setTimeout(() => {
-				this.blocks.forEach(block => block.loaded = true);
+				this.$broadcast('mesh-preview-render');
 			}, 50);
 		}
 	},

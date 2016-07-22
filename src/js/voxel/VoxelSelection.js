@@ -225,66 +225,6 @@ export default class VoxelSelection extends THREE.EventDispatcher{
 	}
 
 	/**
-	 * adds this selection to a another {@link VoxelSelection}, {@link VoxelChunk}, or {@link VoxelMap}
-	 * @param  {VoxelSelection|VoxelMap|VoxelChunk} other
-	 * @param  {THREE.Vector3} offset - the offset to start at
-	 * @param  {Boolean} cloneBlocks
-	 * @return {this}
-	 */
-	addTo(other, offset = new THREE.Vector3(), cloneBlocks = true){
-		if(String.isString(offset))
-			offset = this.tmpVec.fromArray(offset.split(','));
-
-		this.blocks.forEach(block => {
-			this.tmpVec.copy(this.getBlockPosition(block)).add(offset);
-			if(cloneBlocks)
-				block = this.blockManager.cloneBlock(block);
-			else
-				this.removeBlock(block, false); // dont dispose of the block since we still want to use it
-
-			if(block)
-				other.setBlock(block, this.tmpVec);
-		})
-	}
-
-	/**
-	 * clears this selections and opies blocks from another {@link VoxelSelection}, {@link VoxelChunk}, or {@link VoxelMap}
-	 * @param  {VoxelSelection|VoxelMap|VoxelChunk} other
-	 * @param  {THREE.Vector3|String} from
-	 * @param  {THREE.Vector3|String} to
-	 * @param  {Boolean} cloneBlocks
-	 * @return {this}
-	 */
-	copyFrom(other, fromV, toV, cloneBlocks = true){
-		let min = new THREE.Vector3(Infinity,Infinity,Infinity).min(fromV).min(toV);
-		let max = new THREE.Vector3(-Infinity,-Infinity,-Infinity).max(fromV).max(toV);
-
-		if(!Number.isFinite(min.length()) || !Number.isFinite(max.length()))
-			return;
-
-		this.clearBlocks();
-		for (let x = min.x; x <= max.x; x++) {
-			for (let y = min.y; y <= max.y; y++) {
-				for (let z = min.z; z <= max.z; z++) {
-					let block = other.getBlock(this.tmpVec.set(x,y,z));
-
-					if(block){
-						if(cloneBlocks)
-							block = this.blockManager.cloneBlock(block);
-						else
-							block.parent.removeBlock(block, false); // dont dispose of the block since we still want to use it
-
-						if(block)
-							this.setBlock(block, this.tmpVec.set(x - min.x, y - min.y, z - min.z));
-					}
-				}
-			}
-		}
-
-		return this;
-	}
-
-	/**
 	 * exports chunk to json format
 	 * @return {Object}
 	 * @property {Array} blocks an array of Objects from {@link VoxelBlock.toJSON}
@@ -345,8 +285,8 @@ export default class VoxelSelection extends THREE.EventDispatcher{
 	}
 
 	/**
-	 * returns the height of the selection
-	 * @return {THREE.Vector3} the height in blocks of this selection
+	 * returns the size of the selection
+	 * @return {THREE.Vector3} the size in blocks of this selection
 	 * @readOnly
 	 */
 	get size(){
@@ -361,6 +301,27 @@ export default class VoxelSelection extends THREE.EventDispatcher{
 		}
 		else
 			return new THREE.Vector3();
+	}
+
+	/**
+	 * returns the bounding box of the selection
+	 * @return {THREE.Box3}
+	 * @readOnly
+	 */
+	get boundingBox(){
+		let box = new THREE.Box3(new THREE.Vector3(Infinity,Infinity,Infinity), new THREE.Vector3(-Infinity,-Infinity,-Infinity));
+		if(this.blocks.size){
+			this.blocks.forEach(block => {
+				let pos = this.getBlockPosition(block);
+				box.min.min(pos);
+				box.max.max(pos);
+			})
+
+			if(Number.isFinite(box.size().length()))
+				return box;
+		}
+
+		return new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
 	}
 }
 
