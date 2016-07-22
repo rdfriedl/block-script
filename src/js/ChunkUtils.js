@@ -78,6 +78,29 @@ export function drawCube(chunk, fromV, toV, block, type = 'solid'){
 }
 
 /**
+ * removes all blocks in a cube
+ * @param  {VoxelChunk|VoxelMap} chunk the chunk or map to use
+ * @param  {THREE.Vector3} from the start position
+ * @param  {THREE.Vector3} to the end position
+ */
+export function clearCube(chunk, fromV, toV){
+	let pos = new THREE.Vector3();
+	let min = new THREE.Vector3(Infinity,Infinity,Infinity).min(fromV).min(toV);
+	let max = new THREE.Vector3(-Infinity,-Infinity,-Infinity).max(fromV).max(toV);
+
+	if(!Number.isFinite(min.length()) || !Number.isFinite(max.length()))
+		return;
+
+	for (let x = min.x; x <= max.x; x++) {
+		for (let y = min.y; y <= max.y; y++) {
+			for (let z = min.z; z <= max.z; z++) {
+				chunk.removeBlock(pos.set(x,y,z));
+			}
+		}
+	}
+}
+
+/**
  * draws a sphere in blocks
  * @param  {VoxelChunk|VoxelMap} chunk - the chunk or map to use
  * @param  {THREE.Vector3} center - the center of the sphere
@@ -88,4 +111,58 @@ export function drawCube(chunk, fromV, toV, block, type = 'solid'){
  */
 export function drawSphere(chunk, center, radius, block, type = 'solid'){
 
+}
+
+/**
+ * copies blocks from one chunk to another
+ * @param  {VoxelMap|VoxelChunk|VoxelSelection} fromChunk
+ * @param  {VoxelMap|VoxelChunk|VoxelSelection} toChunk
+ * @param  {THREE.Vector3} from the start position
+ * @param  {THREE.Vector3} to the end position
+ * @param  {Object} [opts]
+ * @param  {THREE.Vector3} [opts.offset] - offset to by applied to the blocks
+ * @param  {Boolean} [opts.cloneBlocks=true] - wether or not to clone the blocks, by default it will use the blockManager on toChunk
+ * @param  {Boolean} [opts.copyEmpty=false] - wether it should only copy the empty spaces
+ * @param  {Boolean} [opts.keepOffset=true] - if it should keep the original position of the blocks or place them reletive to fromV in toChunk
+ */
+export function copyBlocks(fromChunk, toChunk, fromV, toV, opts){
+	opts = opts || {};
+	opts.__proto__ = {
+		cloneBlocks: true,
+		copyEmpty: false,
+		keepOffset: true,
+		offset: new THREE.Vector3()
+	}
+
+	let pos = new THREE.Vector3();
+	let min = new THREE.Vector3(Infinity,Infinity,Infinity).min(fromV).min(toV);
+	let max = new THREE.Vector3(-Infinity,-Infinity,-Infinity).max(fromV).max(toV);
+
+	if(!Number.isFinite(min.length()) || !Number.isFinite(max.length()))
+		return;
+
+	for (let x = min.x; x <= max.x; x++) {
+		for (let y = min.y; y <= max.y; y++) {
+			for (let z = min.z; z <= max.z; z++) {
+				if(opts.keepOffset)
+					pos.set(x,y,z);
+				else
+					pos.set(x,y,z).sub(min);
+
+				// add the offset
+				pos.add(opts.offset);
+
+				let block = fromChunk.getBlock(pos);
+				if(block){
+					if(opts.cloneBlocks && toChunk.blockManager)
+						block = toChunk.blockManager.cloneBlock(block);
+
+					toChunk.setBlock(block, pos);
+				}
+				else if(opts.copyEmpty){
+					toChunk.removeBlock(pos);
+				}
+			}
+		}
+	}
 }

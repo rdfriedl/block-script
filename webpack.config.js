@@ -44,7 +44,8 @@ module.exports = {
 			'bootstrap-dialog-css',
 			'flex-layout-attribute',
 			'vue-strap',
-			'file-saver'
+			'file-saver',
+			'undo-manager'
 		]
 	},
 	externals: {
@@ -65,7 +66,8 @@ module.exports = {
 		'bootstrap-dialog-css': 'undefined',
 		'flex-layout-attribute ': 'undefined',
 		'vue-strap': 'VueStrap',
-		'file-saver': '{saveAs: saveAs}'
+		'file-saver': '{saveAs: saveAs}',
+		'undo-manager': 'UndoManager'
     },
 	output: {
         path: path.resolve("./dist"),

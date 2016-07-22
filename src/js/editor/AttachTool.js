@@ -1,15 +1,17 @@
 import THREE from 'three';
 import VoxelBlock from '../voxel/VoxelBlock.js';
+import VoxelSelection from '../voxel/VoxelSelection.js';
 import VoxelBlockManager from '../voxel/VoxelBlockManager.js';
 import * as ChunkUtils from '../ChunkUtils.js';
 
 export default class AttachTool extends THREE.Group{
-	constructor(camera, map, renderer){
+	constructor(camera, map, renderer, undoManager){
 		super();
 		this.enabled = false;
 		this.camera = camera;
 		this.map = map;
 		this.renderer = renderer;
+		this.undoManager = undoManager;
 
 		this.intersects = [this.map];
 		this.raycaster = new THREE.Raycaster();
@@ -65,8 +67,35 @@ export default class AttachTool extends THREE.Group{
 				(!this.checkPlace || (this.checkPlace(this.start.placeTarget) && this.checkPlace(this.end.placeTarget)))
 			){
 				let id = VoxelBlockManager.createID(this.placeBlockID, this.placeBlockProps);
-				ChunkUtils.drawCube(this.map, this.start.placeTarget, this.end.placeTarget, id, this.fillType);
-				this.map.updateChunks();
+				let newBlocks = new VoxelSelection();
+				let oldBlocks = new VoxelSelection();
+				let start = this.start.placeTarget.clone();
+				let end = this.end.placeTarget.clone();
+
+				// copy old blocks
+				ChunkUtils.copyBlocks(this.map, oldBlocks, start, end);
+
+				// build new blocks
+				ChunkUtils.drawCube(newBlocks, start, end, id, this.fillType);
+
+				// add command
+				this.undoManager.add({
+					redo: () => {
+						// copy the new blocks onto the map
+						ChunkUtils.copyBlocks(newBlocks, this.map, start, end, {
+							copyEmpty: true
+						})
+					},
+					undo: () => {
+						// copy the new blocks onto the map
+						ChunkUtils.copyBlocks(oldBlocks, this.map, start, end, {
+							copyEmpty: true
+						})
+					}
+				})
+
+				// run command
+				this.undoManager.getCommands()[this.undoManager.getIndex()].redo();
 			}
 
 			// remove
@@ -78,8 +107,29 @@ export default class AttachTool extends THREE.Group{
 				event.button == this.mouseButtons.REMOVE &&
 				(!this.checkRemove || (this.checkRemove(this.start.target) && this.checkRemove(this.end.target)))
 			){
-				ChunkUtils.drawCube(this.map, this.start.target, this.end.target, null, this.fillType);
-				this.map.updateChunks();
+				let oldBlocks = new VoxelSelection();
+				let start = this.start.target.clone();
+				let end = this.end.target.clone();
+
+				// copy old blocks
+				ChunkUtils.copyBlocks(this.map, oldBlocks, start, end);
+
+				// add command
+				this.undoManager.add({
+					redo: () => {
+						// clear the blocks
+						ChunkUtils.clearCube(this.map, start, end);
+					},
+					undo: () => {
+						// put the old blocks back
+						ChunkUtils.copyBlocks(oldBlocks, this.map, start, end, {
+							copyEmpty: true
+						})
+					}
+				})
+
+				// run command
+				this.undoManager.getCommands()[this.undoManager.getIndex()].redo();
 			}
 
 			this.start = undefined;

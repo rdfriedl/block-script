@@ -33,6 +33,12 @@
 			</dropdown>
 		</div>
 
+		<!-- undo / redo -->
+		<div class="btn-group">
+			<button type="button" class="btn btn-default" @click="undo" :disabled="!hasUndo"><i class="fa fa-undo"></i></button>
+			<button type="button" class="btn btn-default" @click="redo" :disabled="!hasRedo"><i class="fa fa-repeat"></i></button>
+		</div>
+
 		<!-- tools -->
 		<div class="btn-group padding-right-10">
 			<button type="button" class="btn btn-default" :class="{active: mode == 'place-blocks'}" @click="mode = 'place-blocks'"><i class="fa fa-cube"></i></button>
@@ -198,6 +204,7 @@
 
 import THREE from 'three';
 import FileSaver from 'file-saver';
+import UndoManager from 'undo-manager';
 
 import MeshPreviewComponent from './editor/MeshPreview.vue';
 import * as VueStrap from 'vue-strap';
@@ -288,12 +295,26 @@ export default {
 		targetBlock: {
 			enabled: false,
 			x: 0, y: 0, z: 0
-		}
+		},
+		hasUndo: false,
+		hasRedo: false
 	}},
 	methods: {
 		clearRoom(){
 			if(confirm('are you sure you want to reset the room?')){
-				this.editor.map.clearBlocks();
+				let selection = new VoxelSelection();
+
+				this.editor.undoManager.add({
+					redo: () => {
+						selection.copyFrom(this.editor.map, new THREE.Vector3(), ROOM_SIZE, false);
+					},
+					undo: () => {
+						selection.addTo(this.editor.map, new THREE.Vector3(), false);
+					}
+				})
+
+				// run command
+				this.editor.undoManager.getCommands()[this.editor.undoManager.getIndex()].redo();
 			}
 		},
 		exportFile(){
@@ -339,6 +360,9 @@ export default {
 								]
 							}
 						}
+
+						// clear commands since we loaded a new file
+						this.editor.undoManager.clear();
 					}).catch(err => {
 						console.warn('failed to load room', err);
 					})
@@ -384,6 +408,14 @@ export default {
 		},
 		exitPointerLock: function(){
 			document.exitPointerLock();
+		},
+
+		// undo / redo
+		undo(){
+			this.editor.undoManager.undo();
+		},
+		redo(){
+			this.editor.undoManager.redo();
 		}
 	},
 	created(){
@@ -413,6 +445,30 @@ export default {
 
 		// create keyboard
 		editor.keyboard = new Keyboard();
+
+		// create undo manager
+		editor.undoManager = new UndoManager();
+		editor.undoManager.setCallback(() => {
+			this.hasUndo = editor.undoManager.hasUndo();
+			this.hasRedo = editor.undoManager.hasRedo();
+		})
+		editor.undoManager.setLimit(20);
+
+		// undo / redo keys
+		editor.keyboard.register_many([
+			{
+				keys: 'meta z',
+				on_keydown: this.undo
+			},
+			{
+				keys: 'meta y',
+				on_keydown: this.redo
+			},
+			{
+				keys: 'meta shift y',
+				on_keydown: this.redo
+			}
+		])
 
 		// init
 		createRenderer.call(this, editor);
@@ -736,7 +792,7 @@ function createTools(editor){
 	editor.scene.add(roomWalls);
 
 	// create editor tools
-	let attachTool = editor.attachTool = new AttachTool(editor.orbitCam, editor.map, editor.renderer);
+	let attachTool = editor.attachTool = new AttachTool(editor.orbitCam, editor.map, editor.renderer, editor.undoManager);
 	attachTool.intersects.push(roomWalls);
 	editor.scene.add(attachTool);
 
@@ -746,9 +802,9 @@ function createTools(editor){
 	// make sure we dont place blocks outside of the room
 	attachTool.checkPlace = (v) => {
 		return !(
-			v.x > ROOM_SIZE.x || v.x < 0 ||
-			v.y > ROOM_SIZE.y || v.y < 0 ||
-			v.z > ROOM_SIZE.z || v.z < 0
+			v.x >= ROOM_SIZE.x || v.x < 0 ||
+			v.y >= ROOM_SIZE.y || v.y < 0 ||
+			v.z >= ROOM_SIZE.z || v.z < 0
 		);
 	}
 
