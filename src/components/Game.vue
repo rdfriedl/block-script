@@ -162,10 +162,8 @@ function initScene(game){
 			z:{p:true,n:true}
 		}
 	});
-	room.selection.listBlocks().forEach(block => {
-		block.setProp('time', time);
-	})
 	room.selection.addTo(map);
+	map.time = time;
 	map.updateChunks();
 }
 

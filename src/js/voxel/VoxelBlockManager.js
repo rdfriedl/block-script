@@ -103,7 +103,10 @@ export default class VoxelBlockManager{
 		if(block.hasOwnProperty('properties')){
 			let props = {};
 			Reflect.ownKeys(block.properties).forEach(key => props[key] = block.properties[key]);
-			newBlock.setProp(props);
+
+			// only set the props if there are any
+			if(Reflect.ownKeys(props).length)
+				newBlock.setProp(props);
 		}
 		return newBlock;
 	}
@@ -118,7 +121,7 @@ export default class VoxelBlockManager{
 	_createBlock(id, props){
 		if(this.hasBlock(id)){
 			let block = new (this.getBlock(id));
-			if(props)
+			if(props && Reflect.ownKeys(props).length)
 				block.setProp(props);
 
 			return block;

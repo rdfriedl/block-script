@@ -523,18 +523,18 @@ export default class VoxelChunk extends THREE.Group{
 		let json = {};
 
 		// build list of block types
-		let blockTypes = {};
+		let typeCache = new Map();
 		json.blockTypes = [];
 
 		json.blocks = Array.from(this.blocks).map(block => {
 			let blockData = block[1].toJSON();
 			let str = JSON.stringify(blockData);
-			if(!blockTypes[str]){
-				blockTypes[str] = json.blockTypes.length;
+			if(!typeCache.has(str)){
+				typeCache.set(str, json.blockTypes.length);
 				json.blockTypes.push(blockData);
 			}
 			let data = block[0].split(',').map(v => parseInt(v));
-			data.push(blockTypes[str]);
+			data.push(typeCache.get(str));
 			return data; //[x,y,z,typeID]
 		});
 		return json;

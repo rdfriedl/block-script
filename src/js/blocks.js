@@ -54,7 +54,7 @@ class TimeBlock extends VoxelBlock{
 		if(!this.constructor._materialCache)
 			this.constructor._materialCache = {};
 
-		let time = this.properties.time;
+		let time = (this.map && this.map.time) || (this.parent && this.parent.time) || 0;
 		let cache = this.constructor._materialCache;
 		if(Array.isArray(TIMES[time])){
 			// let index = Math.floor(Math.random() * TIMES[time].length);
@@ -83,9 +83,6 @@ class TimeBlock extends VoxelBlock{
 		if(TIMES)
 			return basicMaterial(TIMES[time] || TIMES[0]);
 	}
-}
-TimeBlock.DefalutProperties = {
-	time: 0
 }
 
 /**

@@ -346,9 +346,6 @@ export default {
 							selection.fromJSON(json.selection);
 							this.editor.map.clearBlocks();
 
-							// set the time on all the blocks
-							selection.listBlocks().forEach(block => block.setProp('time', this.roomTime));
-
 							// add the blocks to the map
 							selection.addTo(this.editor.map);
 						}
@@ -556,12 +553,7 @@ export default {
 		for(let i in blocks){
 			let types = blocks[i].prototype.properties && blocks[i].prototype.properties.TYPES;
 			function addBlock(type){
-				let props = {
-					time: this.roomTime
-				};
-				if(type) props.type = type;
-
-				let block = this.editor.map.blockManager.createBlock(blocks[i].UID, props);
+				let block = this.editor.map.blockManager.createBlock(type? blocks[i].UID+'?type='+type : blocks[i].UID);
 				if(!block) return;
 
 				let mesh = new THREE.Mesh(block.geometry, block.material);
@@ -631,11 +623,10 @@ function createScene(editor){
 	this.$watch('view.blocks', v => editor.map.visible = v);
 
 	// change the blocks time if the room time changes
+	map.time = this.roomTime;
 	this.$watch('roomTime', time => {
-		let selection = new VoxelSelection();
-		selection.copyFrom(map, new THREE.Vector3(), ROOM_SIZE, false);
-		selection.listBlocks().forEach(block => block.setProp('time', time));
-		selection.addTo(map, new THREE.Vector3(), false);
+		map.time = time;
+		map.listChunks().forEach(chunk => chunk.needsBuild = true);
 	})
 
 	// create light
@@ -813,8 +804,6 @@ function createTools(editor){
 	this.$watch('placeBlocks.selected', v => editor.attachTool.placeBlockID = v);
 	editor.attachTool.fillType = this.placeBlocks.fillType;
 	this.$watch('placeBlocks.fillType', v => editor.attachTool.fillType = v);
-	editor.attachTool.placeBlockProps.time = this.roomTime;
-	this.$watch('roomTime', v => editor.attachTool.placeBlockProps.time = v);
 
 	// display info about attach tool
 	window.addEventListener('mousemove', () => {
