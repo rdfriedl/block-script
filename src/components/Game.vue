@@ -271,7 +271,7 @@ function initPlayer(game){
 	let light = new THREE.PointLight(0xffffff, 0.2, 500);
 	player.add(light);
 
-	let flashLight = game.flashLight = new THREE.SpotLight(0xffffff, 1, 800, 0.5, 0.5, 1);
+	let flashLight = game.flashLight = new THREE.SpotLight(0xffffff, 1, 800, 0.5, 0.3, 1);
 	player.camera.add(flashLight);
 	player.camera.add(flashLight.target);
 	flashLight.position.set(16,-16,16);

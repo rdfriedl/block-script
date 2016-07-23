@@ -13,7 +13,7 @@ function basicMaterial(url,props,texProps){
 		return new THREE.MeshNormalMaterial();
 	}
 
-	let mat = new THREE.MeshLambertMaterial({
+	let mat = new THREE.MeshPhongMaterial({
 		reflectivity: 0,
 		map: loader.load(url, tex => {
 			tex.magFilter = THREE.NearestFilter;
