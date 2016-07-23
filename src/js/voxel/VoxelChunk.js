@@ -338,6 +338,11 @@ export default class VoxelChunk extends THREE.Group{
 		if(pos instanceof THREE.Vector3 && block instanceof VoxelBlock){
 			pos = this.tmpVec.copy(pos).round();
 
+			// dont place the block outside of the chunk
+			let chunkSize = this.chunkSize;
+			if(pos.x < 0 || pos.y < 0 || pos.z < 0 || pos.x >= chunkSize.x || pos.y >= chunkSize.y || pos.z >= chunkSize.z)
+				return this;
+
 			let str = pos.toString();
 			let oldBlock = this.blocks.get(str);
 

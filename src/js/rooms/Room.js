@@ -28,8 +28,16 @@ export default class Room{
 	get selection(){
 		if(!this._selection){
 			this._selection = new VoxelSelection(this.blockManager);
-			this._selection.fromJSON(this.blocks);
+
+			if(this.blocks)
+				this._selection.fromJSON(this.blocks);
 		}
 		return this._selection;
 	}
+
+	get size(){
+		return Room.SIZE;
+	}
 }
+
+Room.SIZE = new THREE.Vector3(32,16,32);

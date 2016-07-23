@@ -27,9 +27,6 @@ export default class RoomMaze{
 	}
 
 	hasRoom(pos){
-		if(String.isString(pos))
-			pos = this.tmpVec.fromString(pos);
-
 		if(pos instanceof this.vec){
 			return this.rooms.has(pos.toString());
 		}
@@ -43,9 +40,6 @@ export default class RoomMaze{
 	}
 
 	getRoom(pos){
-		if(String.isString(pos))
-			pos = this.tmpVec.fromString(pos);
-
 		if(pos instanceof this.vec){
 			if(!this.hasRoom(pos))
 				this.createRoom(pos);
@@ -64,7 +58,7 @@ export default class RoomMaze{
 	 * @return {RoomMaze#vec}
 	 */
 	getRoomPosition(room){
-		return this.roomsPositions.get(room) || new this.vec;
+		return this.roomPositions.get(room) || new this.vec;
 	}
 
 	/**
@@ -90,19 +84,30 @@ export default class RoomMaze{
 		})
 
 		let room = this.roomManager.createRoom({
-			doors: doors
+			doors: {
+				x: {p: true, n: true},
+				z: {p: true, n: true}
+			}
 		});
-		room.parent = this;
 
-		if(room){
-			this.rooms.set(pos.toString(), room);
+		if(!room){
+			console.warn('failed to create room at', pos.toArray(), 'with doors', cell);
+
+			// create empty room
+			room = new Room();
 		}
-		else
-			console.warn('failed to create room at ', pos.toArray())
+
+		room.parent = this;
+		this.rooms.set(pos.toString(), room);
+		this.roomPositions.set(room, pos.clone());
 	}
 
 	get size(){
 		return this.maze.size.clone();
+	}
+
+	get roomSize(){
+		return Room.SIZE;
 	}
 
 	get axes(){

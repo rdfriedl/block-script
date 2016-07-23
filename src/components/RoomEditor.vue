@@ -195,6 +195,8 @@
 	</div>
 </modal>
 
+<input type="file" v-el:fileinput style="display: none;"/>
+
 </template>
 
 <!-- JS -->
@@ -342,8 +344,7 @@ export default {
 			FileSaver.saveAs(blob, 'room.json');
 		},
 		importFile(){
-			let $input = $('<input>');
-			$input.attr('type','file').on('change', event => {
+			this.$els.fileinput.onchange = event => {
 				if(event.target.files.length){
 					JSON.fromBlob(event.target.files[0]).then(json => {
 						if(json.selection){
@@ -370,7 +371,8 @@ export default {
 						console.warn('failed to load room', err);
 					})
 				}
-			}).trigger('click');
+			};
+			$(this.$els.fileinput).trigger('click');
 		},
 		loopBlocks(dir){
 			let offset = new THREE.Vector3().copy(dir);
@@ -473,8 +475,8 @@ export default {
 				on_keydown: this.redo
 			},
 			{
-				keys: 'meta shift y',
-				on_keydown: this.redo
+				keys: 'meta o',
+				on_keydown: this.importFile
 			}
 		])
 

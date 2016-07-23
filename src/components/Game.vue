@@ -157,16 +157,99 @@ function initScene(game){
 	})
 
 	let time = Math.floor(Math.random()*5);
-	let room = DefaultRooms.createRoom({
-		doors: {
-			x:{p:true,n:true},
-			z:{p:true,n:true}
+	map.time = time;
+
+	// create maze
+	let generator = game.generator = new RecursiveBacktracker(THREE.Vector3, new THREE.Vector3(5,5,5));
+	let maze = game.maze = new RoomMaze(generator, DefaultRooms);
+
+	// load chunks from maze
+	const VIEW_RANGE = new THREE.Vector3(2,2,2);
+	const UNLOAD_RANGE = new THREE.Vector3(3,3,3);
+
+	function loadChunk(pos){
+		let roomSize = maze.roomSize.clone().map(v => v-=1);
+		let chunkSize = map.chunkSize.clone().map(v => v-=1);
+
+		let chunk = map.createChunk(pos);
+		let chunkPosition = chunk.worldPosition; // the position of the chunk in blocks
+		let chunkRoomBBox = new THREE.Box3();
+		chunkRoomBBox.min.copy(chunk.worldPosition).divide(maze.roomSize).floor();
+		chunkRoomBBox.max.copy(chunk.worldPosition).add(chunkSize).divide(maze.roomSize).floor();
+
+		// find all the rooms we overlap
+		let roomPosition = new THREE.Vector3();
+		for (let x = chunkRoomBBox.min.x; x <= chunkRoomBBox.max.x; x++) {
+			for (let y = chunkRoomBBox.min.y; y <= chunkRoomBBox.max.y; y++) {
+				for (let z = chunkRoomBBox.min.z; z <= chunkRoomBBox.max.z; z++) {
+					let room = maze.getRoom(roomPosition.set(x,y,z));
+					if(!room){
+						continue;
+					}
+
+					roomPosition.set(x,y,z).multiply(maze.roomSize); //convert room position into blocks
+
+					// get overlap
+					let overlap = new THREE.Box3();
+					overlap.min.set(-Infinity,-Infinity,-Infinity).max(chunkPosition).max(roomPosition);
+					overlap.max.set(Infinity,Infinity,Infinity).min(chunkPosition.clone().add(map.chunkSize)).min(roomPosition.clone().add(roomSize));
+
+					ChunkUtils.copyBlocks(room.selection, chunk, overlap.min.clone().sub(roomPosition), overlap.max.clone().sub(roomPosition), {
+						offset: overlap.min.clone().sub(chunkPosition),
+						keepOffset: false
+					})
+				}
+			}
+		}
+
+		map.updateChunks();
+	}
+	function findUnloadedChunk(){
+		let playerChunkPos = game.player.getPosition().clone().divide(map.blockSize).divide(map.chunkSize).floor();
+		let min = playerChunkPos.clone().sub(VIEW_RANGE);
+		let max = playerChunkPos.clone().add(VIEW_RANGE);
+
+		let pos = new THREE.Vector3();
+		for (let x = min.x; x <= max.x; x++) {
+			for (let y = min.y; y <= max.y; y++) {
+				for (let z = min.z; z <= max.z; z++) {
+					pos.set(x,y,z);
+
+					if(!map.hasChunk(pos)){
+						loadChunk(pos);
+						return;
+					}
+				}
+			}
+		}
+	}
+	function unloadChunks(){
+		let playerChunkPos = game.player.getPosition().clone().divide(map.blockSize).divide(map.chunkSize).floor();
+		map.listChunks().forEach(chunk => {
+			let dist = chunk.chunkPosition.clone().sub(playerChunkPos).abs();
+			if(dist.x > UNLOAD_RANGE.x || dist.y > UNLOAD_RANGE.y || dist.z > UNLOAD_RANGE.z){
+				// dispose of the blocks
+				chunk.clearBlocks();
+
+				// remove the chunk from the map
+				map.removeChunk(chunk);
+			}
+		})
+	}
+
+	let loadTimer = 0, unloadTimer = 0;
+	const loadEvery = 1/60, unloadEvery = 1/4;
+	game.updates.push(dtime => {
+		if((loadTimer += dtime) > loadEvery){
+			loadTimer = 0;
+			findUnloadedChunk();
+		}
+
+		if((unloadTimer += dtime) > unloadEvery){
+			unloadTimer = 0;
+			unloadChunks();
 		}
 	});
-	let box = room.selection.boundingBox;
-	ChunkUtils.copyBlocks(room.selection, map, box.min, box.max);
-	map.time = time;
-	map.updateChunks();
 }
 
 function initPlayer(game){
@@ -269,7 +352,7 @@ function initPlayer(game){
 
 	// add player to the collision world
 	game.world.addEntity(player.collision);
-	player.getPosition().set(7,15,16).multiply(game.map.blockSize);
+	player.getPosition().set(32/2,16/2,1).multiply(game.map.blockSize);
 }
 
 </script>

@@ -134,7 +134,8 @@ export function copyBlocks(fromChunk, toChunk, fromV, toV, opts){
 		offset: new THREE.Vector3()
 	}
 
-	let pos = new THREE.Vector3();
+	let fromPos = new THREE.Vector3();
+	let toPos = new THREE.Vector3();
 	let min = new THREE.Vector3(Infinity,Infinity,Infinity).min(fromV).min(toV);
 	let max = new THREE.Vector3(-Infinity,-Infinity,-Infinity).max(fromV).max(toV);
 
@@ -144,25 +145,25 @@ export function copyBlocks(fromChunk, toChunk, fromV, toV, opts){
 	for (let x = min.x; x <= max.x; x++) {
 		for (let y = min.y; y <= max.y; y++) {
 			for (let z = min.z; z <= max.z; z++) {
-				if(opts.keepOffset)
-					pos.set(x,y,z);
-				else
-					pos.set(x,y,z).sub(min);
+				fromPos.set(x,y,z);
+				toPos.copy(fromPos);
 
-				// add the offset
-				pos.add(opts.offset);
+				if(!opts.keepOffset)
+					toPos.sub(min);
 
-				let block = fromChunk.getBlock(pos);
+				toPos.add(opts.offset);
+
+				let block = fromChunk.getBlock(fromPos);
 				if(block){
 					if(opts.cloneBlocks && toChunk.blockManager)
 						block = toChunk.blockManager.cloneBlock(block);
 					else if(block.parent)
 						block.parent.removeBlock(block);
 
-					toChunk.setBlock(block, pos);
+					toChunk.setBlock(block, toPos);
 				}
 				else if(opts.copyEmpty){
-					toChunk.removeBlock(pos);
+					toChunk.removeBlock(toPos);
 				}
 			}
 		}
