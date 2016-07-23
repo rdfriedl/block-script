@@ -40,6 +40,9 @@ export default {
 		initScene.call(this, game);
 		initPlayer.call(this, game);
 
+		if(process.env.NODE_ENV == 'dev')
+			initDebug.call(this, game);
+
 		// create clock
 		let clock = new THREE.Clock();
 		function update(){
@@ -110,6 +113,8 @@ function initRenderer(game){
 	let renderer = game.renderer = new THREE.WebGLRenderer();
 	renderer.setPixelRatio(window.devicePixelRatio);
 	renderer.setSize(window.innerWidth, window.innerHeight);
+	renderer.shadowMap.enabled = true;
+	renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 	// resize renderer
 	window.addEventListener('resize', () => {
@@ -132,7 +137,7 @@ function initScene(game){
 	let scene = game.scene = new THREE.Scene();
 
 	// create light
-	// scene.add(new THREE.AmbientLight(0xffffff));
+	scene.add(new THREE.AmbientLight(0xffffff, 0.05));
 
 	// create collision world
 	let world = game.world = new CollisionWorld();
@@ -143,6 +148,11 @@ function initScene(game){
 	map.blockManager.usePool = true;
 	map.useNeighborCache = false;
 	scene.add(map);
+
+	map.addEventListener('chunk:built', event => {
+		event.chunk.mesh.castShadow = true;
+		event.chunk.mesh.receiveShadow = true;
+	})
 
 	// add map to collision world
 	map.collision = new CollisionEntityVoxelMap(map);
@@ -160,7 +170,7 @@ function initScene(game){
 	map.time = time;
 
 	// create maze
-	let generator = game.generator = new RecursiveBacktracker(THREE.Vector3, new THREE.Vector3(5,5,5));
+	let generator = game.generator = new RecursiveBacktracker(THREE.Vector2, new THREE.Vector2(5,5));
 	let maze = game.maze = new RoomMaze(generator, DefaultRooms);
 
 	// load chunks from maze
@@ -257,15 +267,21 @@ function initPlayer(game){
 	let player = game.player = new Player();
 	game.scene.add(player);
 
- 	// light
- 	let light = new THREE.PointLight(0xffffff, 0.2, 500);
- 	player.add(light);
+	// light
+	let light = new THREE.PointLight(0xffffff, 0.2, 500);
+	player.add(light);
 
- 	let flashLight = game.flashLight = new THREE.SpotLight(0xffffff, 1, 600, 0.5, 0.5, 1);
- 	player.camera.add(flashLight);
- 	player.camera.add(flashLight.target);
- 	flashLight.position.set(10,-10,0);
- 	flashLight.target.position.set(0,0,-flashLight.distance);
+	let flashLight = game.flashLight = new THREE.SpotLight(0xffffff, 1, 800, 0.5, 0.5, 1);
+	player.camera.add(flashLight);
+	player.camera.add(flashLight.target);
+	flashLight.position.set(16,-16,16);
+	flashLight.target.position.set(0,0,-flashLight.distance);
+
+	flashLight.caseShadow = true;
+	flashLight.shadow.mapSize.width = 1024;
+	flashLight.shadow.mapSize.height = 1024;
+	flashLight.shadow.camera.near = 0.5;
+	flashLight.shadow.camera.far = flashLight.distance;
 
 	// create controls
 	let controls = game.controls = new THREE.PointerLockControls(player.camera);
@@ -352,7 +368,15 @@ function initPlayer(game){
 
 	// add player to the collision world
 	game.world.addEntity(player.collision);
-	player.getPosition().set(32/2,16/2,1).multiply(game.map.blockSize);
+	player.getPosition().set(32/2,16/2,32/2).multiply(game.map.blockSize);
+}
+
+function initDebug(game){
+	window.playerRoom = function(){
+		let playerRoomPosition = game.player.position.clone().divide(game.map.blockSize).divide(game.maze.roomSize).floor();
+		let room = game.maze.getRoom(playerRoomPosition);
+		console.log(room, playerRoomPosition);
+	}
 }
 
 </script>

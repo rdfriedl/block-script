@@ -27,6 +27,9 @@ export default class RoomMaze{
 	}
 
 	hasRoom(pos){
+		if(pos instanceof THREE.Vector3)
+			pos = new THREE.Vector2(pos.x, pos.z);
+
 		if(pos instanceof this.vec){
 			return this.rooms.has(pos.toString());
 		}
@@ -40,6 +43,9 @@ export default class RoomMaze{
 	}
 
 	getRoom(pos){
+		if(pos instanceof THREE.Vector3)
+			pos = new THREE.Vector2(pos.x, pos.z);
+
 		if(pos instanceof this.vec){
 			if(!this.hasRoom(pos))
 				this.createRoom(pos);
@@ -68,6 +74,9 @@ export default class RoomMaze{
 	 * @private
 	 */
 	createRoom(position){
+		if(position instanceof THREE.Vector3)
+			position = new THREE.Vector2(position.x, position.z);
+
 		if(this.hasRoom(position))
 			throw new Error('cant create a room where one already exists');
 
@@ -85,8 +94,14 @@ export default class RoomMaze{
 
 		let room = this.roomManager.createRoom({
 			doors: {
-				x: {p: true, n: true},
-				z: {p: true, n: true}
+				x: {
+					p: !!(cell.x & MazeGenerator.DOOR_POSITIVE),
+					n: !!(cell.x & MazeGenerator.DOOR_NEGATIVE),
+				},
+				z: {
+					p: !!(cell.y & MazeGenerator.DOOR_POSITIVE),
+					n: !!(cell.y & MazeGenerator.DOOR_NEGATIVE),
+				}
 			}
 		});
 
@@ -115,5 +130,11 @@ export default class RoomMaze{
 	}
 	get vec(){
 		return this.maze.vec;
+	}
+	get start(){
+		return this.maze.start;
+	}
+	get end(){
+		return this.maze.end;
 	}
 }

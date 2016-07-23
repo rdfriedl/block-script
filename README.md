@@ -22,15 +22,6 @@ Play it online [here](http://rdfriedl.github.io/block-script/)
  - [Safari](http://www.apple.com/safari)
 
 
-###Todo
- - Update Threejs to the latest version, currently uses (r71)
- - Finish interface (Settings, Maps, Help)
- - Add objects the player can place (torches, flowers, doors, windows)
- - Improve lighting
- - Improve terrain generator
- - Add mutiplayer
-
-
 ###Credits
 
 ----------
