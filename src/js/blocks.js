@@ -7,6 +7,12 @@ import THREE from 'three';
 
 const loader = new THREE.TextureLoader();
 
+function pixelate(tex){
+	tex.magFilter = THREE.NearestFilter;
+	tex.minFilter = THREE.LinearMipMapLinearFilter;
+	return tex;
+}
+
 function basicMaterial(url,props,texProps){
 	if(!url){
 		console.trace('tried to create block material without texture url');
@@ -14,7 +20,7 @@ function basicMaterial(url,props,texProps){
 	}
 
 	let mat = new THREE.MeshPhongMaterial({
-		reflectivity: 0,
+		shininess: 0,
 		map: loader.load(url, tex => {
 			tex.magFilter = THREE.NearestFilter;
 			tex.minFilter = THREE.LinearMipMapLinearFilter;
@@ -25,9 +31,6 @@ function basicMaterial(url,props,texProps){
 		        	tex[i] = texProps[i];
 		        }
 			}
-
-			tex.needsUpdate = true;
-			mat.needsUpdate = true;
 		})
 	});
 
@@ -66,22 +69,46 @@ class TimeBlock extends VoxelBlock{
 
 			// create material
 			if(!cache[time][index])
-				cache[time][index] = basicMaterial(TIMES[time][index]);
+				cache[time][index] = this.CreateMaterial(TIMES[time][index]);
 
 			return cache[time][index];
 		}
 		else{
 			// create material
 			if(!cache[time])
-				cache[time] = basicMaterial(TIMES[time]);
+				cache[time] = this.CreateMaterial(TIMES[time]);
 
 			return cache[time];
 		}
 	}
 	CreateMaterial(time){
-		let TIMES = this.constructor.TIMES;
-		if(TIMES)
-			return basicMaterial(TIMES[time] || TIMES[0]);
+		if(!time)
+			return;
+
+		if(String.isString(time)){
+			return new THREE.MeshPhongMaterial({
+				shininess: 0,
+				map: loader.load(time, pixelate)
+			})
+		}
+		else if(Object.isObject(time)){
+			let mat = {
+				shininess: 0
+			};
+
+			// copy props
+			for(let i in time) mat[i] = time[i];
+
+			// load texture if its a string
+			if(String.isString(time.map))
+				mat.map = loader.load(time.map, pixelate);
+
+			// load bump map if its a string
+			if(String.isString(time.bumpMap))
+				mat.bumpMap = loader.load(time.bumpMap);
+
+			return new THREE.MeshPhongMaterial(mat);
+		}
 	}
 }
 
@@ -92,7 +119,11 @@ class TimeBlock extends VoxelBlock{
  */
 export class Dirt extends VoxelBlock{
 	CreateMaterial(){
-		return basicMaterial(require('../res/blocks/dirt.png'));
+		return new THREE.MeshPhongMaterial({
+			shininess: 0,
+			map: loader.load(require('../res/blocks/dirt.png'), pixelate),
+			bumpMap: loader.load(require('../res/blocks/dirt-bump.png'))
+		});
 	}
 }
 Dirt.UID = 'dirt';
@@ -127,10 +158,22 @@ BricksLarge.TIMES = [
 		require('../res/blocks/bricks-large/time-1-4.png'),
 		require('../res/blocks/bricks-large/time-1-5.png')
 	],
-	require('../res/blocks/bricks-large/time-2.png'),
-	require('../res/blocks/bricks-large/time-3-1.png'),
-	require('../res/blocks/bricks-large/time-4.png'),
-	require('../res/blocks/bricks-large/time-5-1.png')
+	{
+		map: require('../res/blocks/bricks-large/time-2.png'),
+		bumpMap: require('../res/blocks/bricks-large/time-2-bump.png')
+	},
+	{
+		map: require('../res/blocks/bricks-large/time-3-1.png'),
+		bumpMap: require('../res/blocks/bricks-large/time-3-1-bump.png')
+	},
+	{
+		map: require('../res/blocks/bricks-large/time-4.png'),
+		bumpMap: require('../res/blocks/bricks-large/time-4-bump.png')
+	},
+	{
+		map: require('../res/blocks/bricks-large/time-5-1.png'),
+		bumpMap: require('../res/blocks/bricks-large/time-3-1-bump.png')
+	}
 ];
 
 /**
@@ -158,7 +201,10 @@ Tiles.UID = 'tiles';
 Tiles.TIMES = [
 	require('../res/blocks/tiles/time-1.png'),
 	require('../res/blocks/tiles/time-2.png'),
-	require('../res/blocks/tiles/time-3.png'),
+	{
+		map: require('../res/blocks/tiles/time-3.png'),
+		bumpMap: require('../res/blocks/tiles/time-3-bump.png')
+	},
 	require('../res/blocks/tiles/time-4.png'),
 	require('../res/blocks/tiles/time-5.png')
 ];
@@ -172,13 +218,31 @@ export class TilesLarge extends TimeBlock {}
 TilesLarge.UID = 'tiles-large';
 TilesLarge.TIMES = [
 	[
-		require('../res/blocks/tiles-large/time-1-1.png'),
-		require('../res/blocks/tiles-large/time-1-2.png')
+		{
+			map: require('../res/blocks/tiles-large/time-1-1.png'),
+			bumpMap: require('../res/blocks/tiles-large/bump.png')
+		},
+		{
+			map: require('../res/blocks/tiles-large/time-1-2.png'),
+			bumpMap: require('../res/blocks/tiles-large/bump.png')
+		}
 	],
-	require('../res/blocks/tiles-large/time-2.png'),
-	require('../res/blocks/tiles-large/time-3.png'),
-	require('../res/blocks/tiles-large/time-4.png'),
-	require('../res/blocks/tiles-large/time-5.png')
+	{
+		map: require('../res/blocks/tiles-large/time-2.png'),
+		bumpMap: require('../res/blocks/tiles-large/bump.png')
+	},
+	{
+		map: require('../res/blocks/tiles-large/time-3.png'),
+		bumpMap: require('../res/blocks/tiles-large/bump.png')
+	},
+	{
+		map: require('../res/blocks/tiles-large/time-4.png'),
+		bumpMap: require('../res/blocks/tiles-large/bump.png')
+	},
+	{
+		map: require('../res/blocks/tiles-large/time-5.png'),
+		bumpMap: require('../res/blocks/tiles-large/bump.png')
+	}
 ];
 
 /**
@@ -258,9 +322,24 @@ TilesDetail.TIMES = [
 export class Planks extends TimeBlock{}
 Planks.UID = 'planks';
 Planks.TIMES = [
-	require('../res/blocks/planks/time-1-1.png'),
-	require('../res/blocks/planks/time-2.png'),
-	require('../res/blocks/planks/time-3.png'),
-	require('../res/blocks/planks/time-4.png'),
-	require('../res/blocks/planks/time-5.png')
+	{
+		map: require('../res/blocks/planks/time-1-1.png'),
+		bumpMap: require('../res/blocks/planks/bump.png')
+	},
+	{
+		map: require('../res/blocks/planks/time-2.png'),
+		bumpMap: require('../res/blocks/planks/bump.png')
+	},
+	{
+		map: require('../res/blocks/planks/time-3.png'),
+		bumpMap: require('../res/blocks/planks/bump.png')
+	},
+	{
+		map: require('../res/blocks/planks/time-4.png'),
+		bumpMap: require('../res/blocks/planks/bump.png')
+	},
+	{
+		map: require('../res/blocks/planks/time-5.png'),
+		bumpMap: require('../res/blocks/planks/bump.png')
+	}
 ]

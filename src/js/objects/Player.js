@@ -30,6 +30,29 @@ class Player extends THREE.Group{
 		this.camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 20000);
 		this.add(this.camera);
 
+		// create lights
+		const flashLightRange = 800;
+		this.flashLight = new THREE.Group();
+		this.add(this.flashLight);
+
+		let flashLight = new THREE.SpotLight(0xffffff, 0.8, flashLightRange, 0.5, 0.3, 1);
+		flashLight.position.set(16,-16,16);
+		flashLight.target.position.set(0,0,-flashLightRange);
+		this.flashLight.add(flashLight);
+		this.flashLight.add(flashLight.target);
+
+		let outterRing = new THREE.SpotLight(0xffffff, 0.1, flashLightRange, 0.64, 0.15, 1);
+		outterRing.position.set(16,-16,16);
+		outterRing.target.position.set(0,0,-flashLightRange);
+		this.flashLight.add(outterRing);
+		this.flashLight.add(outterRing.target);
+
+		// flashLight.caseShadow = true;
+		// flashLight.shadow.mapSize.width = 1024;
+		// flashLight.shadow.mapSize.height = 1024;
+		// flashLight.shadow.camera.near = 0.5;
+		// flashLight.shadow.camera.far = flashLightRange;
+
 		//resize camera when window resizes
 		window.addEventListener('resize', () => {
 			this.camera.aspect = window.innerWidth / window.innerHeight;
@@ -134,18 +157,21 @@ class Player extends THREE.Group{
 		this.velocity.x = velocity.x;
 		this.velocity.z = velocity.z;
 
-		// //view Bobbing
-		// if(this._onGround){ //this is going to need to be moved below the collisions so when we push against a wall we dont walk
-		// 	this._viewBobbing += (Math.sqrt(this._movementVelocity.x*this._movementVelocity.x + this._movementVelocity.y*this._movementVelocity.y) / (28*60)) * this._viewBobbingDir;
+		//view Bobbing
+		if(this._onGround){ //this is going to need to be moved below the collisions so when we push against a wall we dont walk
+			this._viewBobbing += (Math.sqrt(this._movementVelocity.x*this._movementVelocity.x + this._movementVelocity.y*this._movementVelocity.y) / (30*60)) * this._viewBobbingDir;
 
-		// 	if(Math.abs(this._viewBobbing) > 1){
-		// 		this._viewBobbing = Math.sign(this._viewBobbing);
-		// 		this._viewBobbingDir = -this._viewBobbingDir;
-		// 	}
+			if(Math.abs(this._viewBobbing) > 1){
+				this._viewBobbing = Math.sign(this._viewBobbing);
+				this._viewBobbingDir = -this._viewBobbingDir;
+			}
 
-		// 	this.camera.position.x = 1.8 * this._viewBobbing;
-		// 	this.camera.position.y = - 2 * Math.abs(this._viewBobbing);
-		// }
+			this.camera.position.x = 2 * this._viewBobbing;
+			this.camera.position.y = - 2.2 * Math.abs(this._viewBobbing);
+		}
+
+		// update flashLight
+		this.flashLight.quaternion.slerp(this.camera.getWorldQuaternion(), 1/4);
 
 		// reset on ground boolean
 		this._onGround = false;

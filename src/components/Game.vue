@@ -137,7 +137,7 @@ function initScene(game){
 	let scene = game.scene = new THREE.Scene();
 
 	// create light
-	scene.add(new THREE.AmbientLight(0xffffff, 0.05));
+	scene.add(new THREE.AmbientLight(0xffffff, 0.03));
 
 	// create collision world
 	let world = game.world = new CollisionWorld();
@@ -266,22 +266,6 @@ function initPlayer(game){
 	// create player
 	let player = game.player = new Player();
 	game.scene.add(player);
-
-	// light
-	let light = new THREE.PointLight(0xffffff, 0.2, 500);
-	player.add(light);
-
-	let flashLight = game.flashLight = new THREE.SpotLight(0xffffff, 1, 800, 0.5, 0.3, 1);
-	player.camera.add(flashLight);
-	player.camera.add(flashLight.target);
-	flashLight.position.set(16,-16,16);
-	flashLight.target.position.set(0,0,-flashLight.distance);
-
-	flashLight.caseShadow = true;
-	flashLight.shadow.mapSize.width = 1024;
-	flashLight.shadow.mapSize.height = 1024;
-	flashLight.shadow.camera.near = 0.5;
-	flashLight.shadow.camera.far = flashLight.distance;
 
 	// create controls
 	let controls = game.controls = new THREE.PointerLockControls(player.camera);
