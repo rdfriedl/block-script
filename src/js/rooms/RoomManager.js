@@ -2,6 +2,8 @@ import THREE from 'three';
 import Room from './Room.js';
 import MazeGenerator from '../maze-generators/MazeGenerator.js';
 
+const ROOM_ROTATIONS = [0,1,2,3];
+
 export default class RoomManager{
 	constructor(){
 		this.rooms = {};
@@ -13,46 +15,62 @@ export default class RoomManager{
 		this.rooms[id] = {
 			id: id,
 			selection: selection,
-			doors: doors
+			doors: new THREE.Vector4().copy(doors)
 		};
 	}
 
+	/**
+	 * test to see if this search matches this room
+	 * @param  {Object} room - the data on the room
+	 * @param  {Object} search
+	 * @return {boolean|Number} returns false if it dose not match, else it will return the rotation
+	 */
 	_matchSearch(room, search){
-		if(String.isString(search)){
-			return search == room.id;
+		search = search || {};
+		search.__proto__ = {
+			rotate: true
 		}
-		else if(Object.isObject(search)){
-			// check doors
-			if(search.doors){
-				for(let axis in search.doors){
-					for(let side in search.doors[axis]){
-						if(search.doors[axis][side] === true){
-							// if its true, they are looking for any type of door on this side
-							if(room.doors[axis][side] === false)
-								return false;
-						}
-						else if(String.isString(search.doors[axis][side]) || search.doors[axis][side] === false){
-							// else they want a specific type of door or they dont want a door at all on this side
-							if(search.doors[axis][side] !== room.doors[axis][side])
-								return false;
-						}
-					}
+
+		// check doors
+		if(search.doors){
+			if(search.rotate){
+				for (var i = 0; i < ROOM_ROTATIONS.length; i++) {
+					if(Room.rotateDoors(room.doors, ROOM_ROTATIONS[i]).equals(search.doors))
+						return rotation
 				}
 			}
-			return true;
+			else if(!new THREE.Vector4().copy(room.doors).equals(search.doors))
+					return 0;
 		}
+
+		return false;
 	}
 
 	/**
-	 * returns an array of rooms that match the searchg
+	 * returns an array of rooms with rotations that match the searchg
 	 * @param  {Object} search
-	 * @return {Object[]} an array of room objects
+	 * @return {Array[]}
 	 */
 	searchRooms(search){
+		search = search || {};
+		search.__proto__ = {
+			rotate: true
+		}
+
 		let rooms = [];
 		for(let id in this.rooms){
-			if(this._matchSearch(this.rooms[id], search)){
-				rooms.push(this.rooms[id]);
+			let room = this.rooms[id];
+			// check doors
+			if(search.doors){
+				if(search.rotate){
+					for (var i = 0; i < ROOM_ROTATIONS.length; i++) {
+						if(Room.rotateDoors(room.doors, ROOM_ROTATIONS[i]).equals(search.doors))
+							rooms.push([room, ROOM_ROTATIONS[i]]);
+					}
+				}
+				else if(new THREE.Vector4().copy(room.doors).equals(search.doors)){
+					rooms.push([room, 0]);
+				}
 			}
 		}
 
@@ -62,8 +80,11 @@ export default class RoomManager{
 	createRoom(search){
 		let rooms = this.searchRooms(search);
 		let data = rooms[Math.floor(Math.random()*rooms.length)];
-		if(data)
-			return new Room(data.selection, data.doors);
+		if(data){
+			let room = new Room(data[0].selection, data[0].doors);
+			room.rotation = data[1];
+			return room;
+		}
 	}
 
 	listRooms(){

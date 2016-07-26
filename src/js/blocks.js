@@ -137,10 +137,19 @@ export class Stone extends TimeBlock{}
 Stone.UID = 'stone';
 Stone.TIMES = [
 	require('../res/blocks/stone/time-1.png'),
-	require('../res/blocks/stone/time-2.png'),
+	{
+		map: require('../res/blocks/stone/time-2.png'),
+		bumpMap: require('../res/blocks/stone/time-2-5-bump.png')
+	},
 	require('../res/blocks/stone/time-3.png'),
-	require('../res/blocks/stone/time-4.png'),
-	require('../res/blocks/stone/time-5.png'),
+	{
+		map: require('../res/blocks/stone/time-4.png'),
+		bumpMap: require('../res/blocks/stone/time-4-bump.png')
+	},
+	{
+		map: require('../res/blocks/stone/time-5.png'),
+		bumpMap: require('../res/blocks/stone/time-2-5-bump.png')
+	}
 ];
 
 /**

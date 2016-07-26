@@ -120,9 +120,9 @@ export function drawSphere(chunk, center, radius, block, type = 'solid'){
  * @param  {THREE.Vector3} from the start position
  * @param  {THREE.Vector3} to the end position
  * @param  {Object} [opts]
- * @param  {THREE.Vector3} [opts.offset] - offset to by applied to the blocks
- * @param  {Boolean} [opts.cloneBlocks=true] - wether or not to clone the blocks, by default it will use the blockManager on toChunk
- * @param  {Boolean} [opts.copyEmpty=false] - wether it should only copy the empty spaces
+ * @param  {THREE.Vector3} [opts.offset] - offset to be applied to the blocks
+ * @param  {Boolean} [opts.cloneBlocks=true] - whether or not to clone the blocks, by default it will use the blockManager on toChunk
+ * @param  {Boolean} [opts.copyEmpty=false] - whether it should only copy the empty spaces
  * @param  {Boolean} [opts.keepOffset=true] - if it should keep the original position of the blocks or place them reletive to fromV in toChunk
  */
 export function copyBlocks(fromChunk, toChunk, fromV, toV, opts){
@@ -168,4 +168,59 @@ export function copyBlocks(fromChunk, toChunk, fromV, toV, opts){
 			}
 		}
 	}
+}
+
+/**
+ * @param  {VoxelMap|VoxelChunk|VoxelSelection} chunk
+ * @param  {THREE.Box3} box - a box that is used to select the blocks to rotate
+ * @param  {THREE.Vector3} around - the point to rotate around
+ * @param  {THREE.Quaternion} quaternion
+ * @param  {Object} [opts] - additional options
+ * @param  {THREE.Vector3} [opts.offset] - offset to be applied to the blocks after its been rotated
+ * @param  {Boolean} [opts.cloneBlocks=false] - whether or not to clone the blocks, by default it will use the blockManager on chunk
+ * @param  {Boolean} [opts.ignoreEmpty=false] - whether to ignore the empty spaces
+ */
+export function rotateBlocks(chunk, box, around, quaternion, opts) {
+	opts = opts || {};
+	opts.__proto__ = {
+		cloneBlocks: false,
+		ignoreEmpty: false,
+		offset: new THREE.Vector3()
+	}
+
+	let blocks = [];
+	let pos = new THREE.Vector3();
+	for (let x = box.min.x; x <= box.max.x; x++) {
+		for (let y = box.min.y; y <= box.max.y; y++) {
+			for (let z = box.min.z; z <= box.max.z; z++) {
+				let block = chunk.getBlock(pos.set(x,y,z));
+
+				if(block){
+					// clone the block, or remove it from its parent
+					if(opts.cloneBlocks && chunk.blockManager)
+						block = chunk.blockManager.cloneBlock(block);
+					else
+						block.parent.removeBlock(block);
+				}
+
+				if(opts.ignoreEmpty? !!block : true)
+					blocks.push([block, pos.toString()]);
+			}
+		}
+	}
+
+	let half = new THREE.Vector3(0.5,0.5,0.5);
+	blocks.forEach(data => {
+		let block = data[0];
+		pos.fromString(data[1]);
+
+		// apply transform
+		pos.add(half).sub(around).applyQuaternion(quaternion).add(around).sub(half).add(opts.offset).round();
+
+		// set the block
+		if(block)
+			chunk.setBlock(block, pos);
+		else
+			chunk.removeBlock(pos);
+	})
 }

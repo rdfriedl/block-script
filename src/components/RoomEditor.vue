@@ -27,8 +27,9 @@
 			<dropdown>
 				<a class="dropdown-toggle btn btn-default" data-toggle="dropdown"><i class="fa fa-pencil"></i> Edit</a>
 				<ul slot="dropdown-menu" class="dropdown-menu">
-					<li><a @click="clearRoom"><i class="fa fa-trash"></i> Clear Room</a></li>
+					<li><a @click="clearBlocks"><i class="fa fa-trash"></i> Clear Blocks</a></li>
 					<li><a @click="shiftBlocks.open = true"><i class="fa fa-arrows-alt"></i> Shift Blocks</a></li>
+					<li><a @click="rotateBlocksModal.open = true"><i class="fa fa-repeat"></i> Rotate Blocks</a></li>
 				</ul>
 			</dropdown>
 		</div>
@@ -113,13 +114,15 @@
 					<div class="input-group">
 						<div class="input-group-addon">Positive</div>
 						<select class="form-control" v-model="axis.sides[0]">
-							<option v-for="type in doorTypes[axis_id]" :value="type">{{type}}</option>
+							<option :value="false">None</option>
+							<option :value="true">Open</option>
 						</select>
 					</div>
 					<div class="input-group">
 						<div class="input-group-addon">Negative</div>
 						<select class="form-control" v-model="axis.sides[1]">
-							<option v-for="type in doorTypes[axis_id]" :value="type">{{type}}</option>
+							<option :value="false">None</option>
+							<option :value="true">Open</option>
 						</select>
 					</div>
 				</div>
@@ -172,6 +175,35 @@
 	</div>
 </modal>
 
+<!-- rotate blocks modal -->
+<modal :show.sync="rotateBlocksModal.open" effect="fade">
+	<div slot="modal-header" class="modal-header">
+		<h4 class="modal-title">Rotate Blocks</h4>
+	</div>
+	<div slot="modal-body" class="modal-body">
+		<div class="input-group">
+			<div class="input-group-addon">Axis</div>
+			<select class="form-control" v-model="rotateBlocksModal.axis">
+				<option value="x">X</option>
+				<option value="y">Y</option>
+				<option value="z">Z</option>
+			</select>
+		</div>
+		<div class="input-group">
+			<div class="input-group-addon">Times (360*)</div>
+			<input type="number" class="form-control" v-model="rotateBlocksModal.times" step="0.25">
+			<div class="input-group-btn">
+				<button type="button" class="btn btn-default" @click="rotateBlocksModal.times -= 0.25"><i class="fa fa-chevron-left"></i></button>
+				<button type="button" class="btn btn-default" @click="rotateBlocksModal.times += 0.25"><i class="fa fa-chevron-right"></i></button>
+			</div>
+		</div>
+	</div>
+	<div slot="modal-footer" class="modal-footer">
+		<button type="button" class="btn btn-default" @click="rotateBlocksModal.open = false">Cancel</button>
+		<button type="button" class="btn btn-success" @click="rotateBlocks(rotateBlocksModal.axis, rotateBlocksModal.times)">Ok</button>
+	</div>
+</modal>
+
 <!-- change time modal -->
 <modal :show.sync="changeTime.open" effect="fade">
 	<div slot="modal-header" class="modal-header">
@@ -219,11 +251,11 @@ import 'imports?THREE=three!../lib/threejs/postprocessing/ShaderPass.js';
 import 'imports?THREE=three!../lib/threejs/shaders/CopyShader.js';
 import 'imports?THREE=three!../lib/threejs/shaders/SSAOShader.js';
 
+import Room from '../js/rooms/Room.js';
 import GridCube from '../js/objects/GridCube.js';
 import Keyboard from '../js/Keyboard.js';
 import * as blocks from '../js/blocks.js';
 import MODELS from '../js/models.js';
-import DOOR_TYPES from '../data/doorTypes.json';
 
 import VoxelMap from '../js/voxel/VoxelMap.js';
 import VoxelBlockManager from '../js/voxel/VoxelBlockManager.js';
@@ -269,6 +301,11 @@ export default {
 			open: false,
 			dir: new THREE.Vector3
 		},
+		rotateBlocksModal: {
+			open: false,
+			axis: 'y',
+			times: 0
+		},
 		changeTime: {
 			open: false,
 			time: 2
@@ -277,22 +314,21 @@ export default {
 		doors: {
 			x: {
 				title: 'X axis',
-				sides: ['none','none']
+				sides: [false,false],
 			},
 			y: {
 				title: 'Y axis',
-				sides: ['none','none']
+				sides: [false,false]
 			},
 			z: {
 				title: 'Z axis',
-				sides: ['none','none']
+				sides: [false,false]
 			},
 			w: {
 				title: 'Time axis',
-				sides: ['none','none']
+				sides: [false,false]
 			}
 		},
-		doorTypes: DOOR_TYPES,
 		targetBlock: {
 			enabled: false,
 			x: 0, y: 0, z: 0
@@ -301,7 +337,7 @@ export default {
 		hasRedo: false
 	}},
 	methods: {
-		clearRoom(){
+		clearBlocks(){
 			if(confirm('are you sure you want to reset the room?')){
 				let selection = new VoxelSelection();
 
@@ -334,10 +370,8 @@ export default {
 
 			// doors
 			for(let i in this.doors){
-				json.doors[i] = {
-					p: this.doors[i].sides[0] != 'none'? this.doors[i].sides[0] : false,
-					n: this.doors[i].sides[1] != 'none'? this.doors[i].sides[1] : false
-				}
+				let door = this.doors[i];
+				json.doors[i] = (door.sides[0]? Room.DOOR_POSITIVE : Room.DOOR_NONE) | (door.sides[1]? Room.DOOR_NEGATIVE : Room.DOOR_NONE);
 			}
 
 			let blob = new Blob([JSON.stringify(json)], {type: 'text/plain'});
@@ -360,8 +394,9 @@ export default {
 						if(json.doors){
 							for(let i in json.doors){
 								this.doors[i].sides = [
-									json.doors[i].p || 'none', json.doors[i].n || 'none'
-								]
+									!!(json.doors[i] & Room.DOOR_POSITIVE),
+									!!(json.doors[i] & Room.DOOR_NEGATIVE)
+								];
 							}
 						}
 
@@ -408,6 +443,12 @@ export default {
 
 			this.shiftBlocks.dir = new THREE.Vector3();
 			this.shiftBlocks.open = false;
+		},
+		rotateBlocks(axis, times){
+			let v = new THREE.Vector3();
+			v[axis] = 1;
+			let quat = new THREE.Quaternion().setFromAxisAngle(v, Math.PI*2*times);
+			ChunkUtils.rotateBlocks(this.editor.map, new THREE.Box3(new THREE.Vector3(), ROOM_SIZE), ROOM_SIZE.clone().divideScalar(2), quat);
 		},
 		setTime(time){
 			this.roomTime = parseInt(time);

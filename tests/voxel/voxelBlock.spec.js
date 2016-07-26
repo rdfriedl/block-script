@@ -23,7 +23,7 @@ describe('VoxelBlock', function() {
 	describe('parent', function() {
 		beforeAll(function(){
 			this.selection = new VoxelSelection();
-			this.chunk = new VoxelChunk();
+			this.chunk = this.map.createChunk(new THREE.Vector3(1,1,1));
 			this.block = new VoxelBlock();
 		})
 		it('"parent" points to parent chunk or selection', function() {

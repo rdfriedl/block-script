@@ -150,4 +150,16 @@ describe('VoxelChunk', function() {
 			expect(this.chunk.getBlock(new THREE.Vector3())).toBe(undefined);
 		});
 	});
+
+	describe('chunkSize', function() {
+		it('returns THREE.Vector3', function() {
+			expect(this.chunk.chunkSize instanceof THREE.Vector3).toBe(true);
+		});
+		it('returns empty vector if the chunk dose not have a map', function() {
+			let pos = this.chunkPosition;
+			this.map.removeChunk(this.chunk);
+			expect(this.chunk.chunkSize.equals(new THREE.Vector3)).toBe(true);
+			this.map.setChunk(this.chunk, pos);
+		});
+	});
 });

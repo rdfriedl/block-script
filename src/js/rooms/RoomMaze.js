@@ -3,6 +3,8 @@ import Room from './Room.js';
 import RoomManager from './RoomManager.js';
 import MazeGenerator from '../maze-generators/MazeGenerator.js';
 
+const up = new THREE.Vector3(0,1,0);
+
 /**
  * @class takes a {@link MazeGenerator} and a {@link RoomManager} and builds a maze out of {@link Room}s
  * @name RoomMaze
@@ -84,25 +86,8 @@ export default class RoomMaze{
 		let cell = this.maze.getCell(position);
 		if(!cell) return this;
 
-		let doors = {};
-		this.axes.forEach(axis => {
-			doors[axis] = {
-				p: !!(cell[axis] & MazeGenerator.DOOR_POSITIVE),
-				n: !!(cell[axis] & MazeGenerator.DOOR_NEGATIVE)
-			}
-		})
-
 		let room = this.roomManager.createRoom({
-			doors: {
-				x: {
-					p: !!(cell.x & MazeGenerator.DOOR_POSITIVE),
-					n: !!(cell.x & MazeGenerator.DOOR_NEGATIVE),
-				},
-				z: {
-					p: !!(cell.y & MazeGenerator.DOOR_POSITIVE),
-					n: !!(cell.y & MazeGenerator.DOOR_NEGATIVE),
-				}
-			}
+			doors: new THREE.Vector4(cell.x, 0, cell.y, 0)//cell
 		});
 
 		if(!room){

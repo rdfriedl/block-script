@@ -133,19 +133,19 @@ THREE.Vector2.prototype.toString = function(){
 	return `${this.x},${this.y}`;
 }
 THREE.Vector2.prototype.fromString = function(str){
-	return this.fromArray(str.split(','));
+	return this.fromArray(str.split(',').map(v => parseFloat(v)));
 }
 THREE.Vector3.prototype.toString = function(){
 	return `${this.x},${this.y},${this.z}`;
 }
 THREE.Vector3.prototype.fromString = function(str){
-	return this.fromArray(str.split(','));
+	return this.fromArray(str.split(',').map(v => parseFloat(v)));
 }
 THREE.Vector4.prototype.toString = function(){
 	return `${this.x},${this.y},${this.z},${this.w}`;
 }
 THREE.Vector4.prototype.fromString = function(str){
-	return this.fromArray(str.split(','));
+	return this.fromArray(str.split(',').map(v => parseFloat(v)));
 }
 
 THREE.Vector3.prototype.map = function(fn){
