@@ -12,13 +12,11 @@ module.exports = {
 			'stats': 'stats.js/build/stats.min.js',
 
  			//fit bootstrap
-			'bootstrap-toggle-js': 'imports-loader?jQuery=jquery!bootstrap-toggle',
-			'bootstrap-dialog-js': 'imports-loader?jQuery=jquery!bootstrap-dialog',
+			'bootstrap-switch-js': 'bootstrap-switch/dist/js/bootstrap-switch.min.js',
 
 			'bootstrap-css': 'bootstrap/dist/css/bootstrap.min.css',
+			'bootstrap-switch-css': 'bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.min.css',
 			'bootswatch-superhero': 'bootswatch/superhero/bootstrap.min.css',
-			'bootstrap-toggle-css': 'bootstrap-toggle/css/bootstrap-toggle.min.css',
-			'bootstrap-dialog-css': 'bootstrap-dialog/dist/css/bootstrap-dialog.min.css'
 		},
 		root: [
 			path.resolve('./node_modules/')
@@ -31,8 +29,7 @@ module.exports = {
 			'vue',
 			'vue-router',
 			'script!bootstrap/dist/js/bootstrap.min.js',
-			'bootstrap-toggle-js',
-			'bootstrap-dialog-js',
+			'bootstrap-switch-js',
 			'dexie',
 			'keypress',
 			'stats',
@@ -40,8 +37,7 @@ module.exports = {
 			'font-awesome',
 			'bootstrap-css',
 			'bootswatch-superhero',
-			'bootstrap-toggle-css',
-			'bootstrap-dialog-css',
+			'bootstrap-switch-css',
 			'flex-layout-attribute',
 			'vue-strap',
 			'file-saver',
@@ -53,8 +49,6 @@ module.exports = {
 		'vue': 'Vue',
 		'vue-router': 'VueRouter',
 		'script!bootstrap/dist/js/bootstrap.min.js': 'undefined',
-		'bootstrap-toggle-js': 'undefined',
-		'bootstrap-dialog-js': 'undefined',
 		'dexie': 'Dexie',
 		'keypress': 'keypress',
 		'stats': 'Stats',
@@ -62,8 +56,8 @@ module.exports = {
 		'font-awesome': 'undefined',
 		'bootstrap-css': 'undefined',
 		'bootswatch-superhero': 'undefined',
-		'bootstrap-toggle-css': 'undefined',
-		'bootstrap-dialog-css': 'undefined',
+		'bootstrap-switch-js': 'undefined',
+		'bootstrap-switch-css': 'undefined',
 		'flex-layout-attribute ': 'undefined',
 		'vue-strap': 'VueStrap',
 		'file-saver': '{saveAs: saveAs}',

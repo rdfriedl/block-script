@@ -106,25 +106,20 @@
 			</div>
 
 			<!-- doors -->
-			<div v-show="tab=='doors'" class="panel panel-default" v-for="(axis_id, axis) in doors">
+			<div v-show="tab=='doors'" class="panel panel-default no-margin" v-for="(axis_id, axis) in doors">
 				<div class="panel-heading">
 					<h3 class="panel-title">{{axis.title}}</h3>
 				</div>
 				<div class="panel-body">
-					<div class="input-group">
-						<div class="input-group-addon">Positive</div>
-						<select class="form-control" v-model="axis.sides[0]">
-							<option :value="false">None</option>
-							<option :value="true">Open</option>
-						</select>
-					</div>
-					<div class="input-group">
-						<div class="input-group-addon">Negative</div>
-						<select class="form-control" v-model="axis.sides[1]">
-							<option :value="false">None</option>
-							<option :value="true">Open</option>
-						</select>
-					</div>
+					<label>
+						<span>Positive</span>
+						<switch :state.sync="axis.sides[0]" size="mini"></switch>
+					</label>
+					<br>
+					<label>
+						<span>Negative</span>
+						<switch :state.sync="axis.sides[1]" size="mini"></switch>
+					</label>
 				</div>
 			</div>
 		</div>
@@ -241,6 +236,7 @@ import UndoManager from 'undo-manager';
 import MeshPreviewComponent from './editor/MeshPreview.vue';
 import * as VueStrap from 'vue-strap';
 import BSDropdown from './bootstrap/dropdown.vue';
+import BS_Switch from './bootstrap/bootstrap-switch.vue';
 
 // three plugins
 import 'imports?THREE=three!../lib/threejs/controls/OrbitControls.js';
@@ -271,6 +267,7 @@ const ROOM_SIZE = new THREE.Vector3(32,16,32);
 export default {
 	components: {
 		dropdown: BSDropdown,
+		switch: BS_Switch,
 		modal: VueStrap.modal,
 		tooltip: VueStrap.tooltip,
 		tabs: VueStrap.tabset,
@@ -779,10 +776,9 @@ function createScene(editor){
 	// update door helper
 	this.$watch('view.doors', v => doorHelper.visible = v);
 	this.$watch('doors', doors => {
-		doorHelper.doors.x = doors.x.sides;
-		doorHelper.doors.y = doors.y.sides;
-		doorHelper.doors.z = doors.z.sides;
-		doorHelper.doors.w = doors.w.sides;
+		Reflect.ownKeys(doorHelper.doors).forEach(axis => {
+			doorHelper.doors[axis] = (doors[axis].sides[0]? Room.DOOR_POSITIVE : 0) | (doors[axis].sides[1]? Room.DOOR_NEGATIVE : 0);
+		})
 		doorHelper.update();
 	}, {deep: true})
 }

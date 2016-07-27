@@ -1,18 +1,18 @@
 import THREE from 'three';
+import Room from '../rooms/Room.js';
 
-const DOOR_TYPES = {
-	'center-center-4x4': (size, side) => {
-		let mesh = new THREE.Mesh(new THREE.BoxBufferGeometry(4,4,1).translate(0,0,0.5), new THREE.MeshLambertMaterial({
-			color: 0x55ff55,
-			transparent: true,
-			opacity: 0.3
-		}))
+const DOOR_TYPES = {};
+DOOR_TYPES.x = DOOR_TYPES.z = (size, side) => {
+	let mesh = new THREE.Mesh(new THREE.BoxBufferGeometry(4,4,1).translate(0,0,0.5), new THREE.MeshLambertMaterial({
+		color: 0x55ff55,
+		transparent: true,
+		opacity: 0.3
+	}))
 
-		mesh.position.copy(size).divideScalar(2).multiply(side);
-		mesh.lookAt(new THREE.Vector3());
+	mesh.position.copy(size).divideScalar(2).multiply(side);
+	mesh.lookAt(new THREE.Vector3());
 
-		return mesh;
-	}
+	return mesh;
 }
 
 export default class DoorHelper extends THREE.Group{
@@ -21,12 +21,7 @@ export default class DoorHelper extends THREE.Group{
 
 		this.map = map;
 		this.roomSize = new THREE.Vector3();
-		this.doors = {
-			x: ['none','none'],
-			y: ['none','none'],
-			z: ['none','none'],
-			w: ['none','none']
-		}
+		this.doors = new THREE.Vector4();
 
 		if(roomSize instanceof THREE.Vector3)
 			this.roomSize.copy(roomSize);
@@ -35,18 +30,19 @@ export default class DoorHelper extends THREE.Group{
 	update(){
 		this.children = [];
 
+		let side = new THREE.Vector3();
 		for(let axis in this.doors){
-			[1,-1].forEach((s, i) => {
-				let side = new THREE.Vector4().set(0,0,0,0);
-				side[axis] = s;
+			if(!DOOR_TYPES[axis])
+				continue;
 
-				let type = DOOR_TYPES[this.doors[axis][i]];
-				if(type){
-					let mesh = type(this.roomSize, side);
-					if(mesh instanceof THREE.Object3D)
-						this.add(mesh);
-				}
-			})
+			if(this.doors[axis] & Room.DOOR_POSITIVE){
+				side.set(0,0,0)[axis] = 1;
+				this.add(DOOR_TYPES[axis](this.roomSize, side));
+			}
+			if(this.doors[axis] & Room.DOOR_NEGATIVE){
+				side.set(0,0,0)[axis] = -1;
+				this.add(DOOR_TYPES[axis](this.roomSize, side));
+			}
 		}
 
 		return this;

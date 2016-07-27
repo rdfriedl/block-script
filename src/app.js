@@ -3,6 +3,7 @@ import 'script!jquery';
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 import 'script!bootstrap/dist/js/bootstrap.min.js';
+import 'bootstrap-switch-js';
 
 // three.js
 import THREE from 'three';
@@ -13,8 +14,7 @@ if(process.env.NODE_ENV == 'dev') window.THREE = THREE;
 import 'font-awesome';
 import 'bootstrap-css';
 import 'bootswatch-superhero';
-import 'bootstrap-toggle-css';
-import 'bootstrap-dialog-css';
+import 'bootstrap-switch-css';
 import 'flex-layout-attribute';
 
 import './css/style.css';
