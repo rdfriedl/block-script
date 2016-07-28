@@ -193,11 +193,20 @@ BricksLarge.TIMES = [
 export class Bricks extends TimeBlock {}
 Bricks.UID = 'bricks';
 Bricks.TIMES = [
-	require('../res/blocks/bricks/time-1.png'),
-	require('../res/blocks/bricks/time-2.png'),
+	{
+		map: require('../res/blocks/bricks/time-1.png'),
+		bumpMap: require('../res/blocks/bricks/time-1-bump.png')
+	},
+	{
+		map: require('../res/blocks/bricks/time-2.png'),
+		bumpMap: require('../res/blocks/bricks/time-2-bump.png')
+	},
 	require('../res/blocks/bricks/time-3.png'),
 	require('../res/blocks/bricks/time-4.png'),
-	require('../res/blocks/bricks/time-5.png')
+	{
+		map: require('../res/blocks/bricks/time-5.png'),
+		bumpMap: require('../res/blocks/bricks/time-5-bump.png')
+	}
 ];
 
 /**

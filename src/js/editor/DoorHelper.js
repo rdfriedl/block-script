@@ -2,7 +2,7 @@ import THREE from 'three';
 import Room from '../rooms/Room.js';
 
 const DOOR_TYPES = {};
-DOOR_TYPES.x = DOOR_TYPES.z = (size, side) => {
+DOOR_TYPES.x = DOOR_TYPES.z = DOOR_TYPES.y = (size, side) => {
 	let mesh = new THREE.Mesh(new THREE.BoxBufferGeometry(4,4,1).translate(0,0,0.5), new THREE.MeshLambertMaterial({
 		color: 0x55ff55,
 		transparent: true,
