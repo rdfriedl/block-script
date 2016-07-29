@@ -18,7 +18,7 @@ coming soon...
  - [Opra](http://www.opera.com)
  - [Edge](http://www.microsoft.com/en-us/windows/microsoft-edge)
 
-***Dose not support***
+***Does not support***
  - [Safari](http://www.apple.com/safari)
  - [Internet Explorer](http://windows.microsoft.com/en-us/internet-explorer)
 

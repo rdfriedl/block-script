@@ -17,6 +17,8 @@
 <!-- JS -->
 <script>
 
+const MAZE_SIZE = new THREE.Vector3(5,5,5);
+
 export default {
 	data() {
 		return {
@@ -170,7 +172,7 @@ function initScene(game){
 	map.time = time;
 
 	// create maze
-	let generator = game.generator = new RecursiveBacktracker(THREE.Vector2, new THREE.Vector2(5,5));
+	let generator = game.generator = new RecursiveBacktracker(THREE.Vector3, MAZE_SIZE);
 	let maze = game.maze = new RoomMaze(generator, DefaultRooms);
 
 	// load chunks from maze

@@ -30,7 +30,7 @@ export default class RoomMaze{
 
 	hasRoom(pos){
 		if(pos instanceof THREE.Vector3)
-			pos = new THREE.Vector2(pos.x, pos.z);
+			pos = new THREE.Vector3(pos.x, pos.y, pos.z);
 
 		if(pos instanceof this.vec){
 			return this.rooms.has(pos.toString());
@@ -46,7 +46,7 @@ export default class RoomMaze{
 
 	getRoom(pos){
 		if(pos instanceof THREE.Vector3)
-			pos = new THREE.Vector2(pos.x, pos.z);
+			pos = new THREE.Vector3(pos.x, pos.y, pos.z);
 
 		if(pos instanceof this.vec){
 			if(!this.hasRoom(pos))
@@ -77,7 +77,7 @@ export default class RoomMaze{
 	 */
 	createRoom(position){
 		if(position instanceof THREE.Vector3)
-			position = new THREE.Vector2(position.x, position.z);
+			position = new THREE.Vector3(position.x, position.y, position.z);
 
 		if(this.hasRoom(position))
 			throw new Error('cant create a room where one already exists');
@@ -87,7 +87,7 @@ export default class RoomMaze{
 		if(!cell) return this;
 
 		let room = this.roomManager.createRoom({
-			doors: new THREE.Vector4(cell.x, 0, cell.y, 0)//cell
+			doors: new THREE.Vector4(cell.x, cell.y, cell.z, 0)//cell
 		});
 
 		if(!room){

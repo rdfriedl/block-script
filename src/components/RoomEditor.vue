@@ -372,7 +372,7 @@ export default {
 			}
 
 			let blob = new Blob([JSON.stringify(json)], {type: 'text/plain'});
-			FileSaver.saveAs(blob, 'room.json');
+			FileSaver.saveAs(blob, `x${json.doors.x}-y${json.doors.y}-z${json.doors.z}-w${json.doors.w}.json`);
 		},
 		importFile(){
 			this.$els.fileinput.onchange = event => {
@@ -662,10 +662,16 @@ export default {
 		this.enabled = true;
 
 		this.$emit('canvas-resize');
+
+		window.onbeforeunload = function(){
+			return true;
+		}
 	},
 	detached(){
 		this.editor.keyboard.stop_listening();
 		this.enabled = false;
+
+		window.onbeforeunload = undefined;
 	}
 }
 
