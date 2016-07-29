@@ -93,6 +93,7 @@ gulp.task('build:docs', function(){
 });
 gulp.task('watch:docs', function(){
 	gulp.watch('src/**/*', gulp.parallel('build:docs'))
+	gulp.watch('README.md', gulp.parallel('build:docs'))
 });
 gulp.task('clean:docs', function(done){
 	del(['docs']).then(() => done());

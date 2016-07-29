@@ -10,6 +10,15 @@
 	"opts": {
 		"destination": "./docs/",
 		"recurse": true,
-		"access": "all"
+		"access": "all",
+		"template": "node_modules/ink-docstrap/template"
+	},
+	"templates":{
+		"systemName": "Block - Script",
+		"theme": "simplex",
+		"linenums": true,
+		"collapseSymbols": true,
+		"inverseNav": true,
+		"syntaxTheme": "light"
 	}
 }

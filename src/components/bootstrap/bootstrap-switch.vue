@@ -75,7 +75,7 @@ export default {
 		this.update();
 	},
 	detached(){
-		$(this.$el).bootstrapSwitch('distory');
+		$(this.$el).bootstrapSwitch('destroy');
 	}
 }
 </script>

@@ -199,13 +199,13 @@ Bricks.TIMES = [
 	},
 	{
 		map: require('../res/blocks/bricks/time-2.png'),
-		bumpMap: require('../res/blocks/bricks/time-2-bump.png')
+		bumpMap: require('../res/blocks/bricks/time-2-5-bump.png')
 	},
 	require('../res/blocks/bricks/time-3.png'),
 	require('../res/blocks/bricks/time-4.png'),
 	{
 		map: require('../res/blocks/bricks/time-5.png'),
-		bumpMap: require('../res/blocks/bricks/time-5-bump.png')
+		bumpMap: require('../res/blocks/bricks/time-2-5-bump.png')
 	}
 ];
 
