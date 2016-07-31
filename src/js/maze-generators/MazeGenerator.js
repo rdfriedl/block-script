@@ -31,8 +31,15 @@ export default class MazeGenerator{
 		 * the size of the maze
 		 * @type {MazeGenerator#vec}
 		 */
-		this.size = new this.vec(1,1,1);
+		this.size = new this.vec();
 		if(size) this.size.copy(size);
+		this.size.round();
+
+		// make sure the maze is bigger then 2
+		for (var i = 0; i < this.axes.length; i++) {
+			if(this.size[this.axes[i]] <= 2)
+				throw new Error('the maze has to be bigger then 2 on the '+this.axes[i]+' axis');
+		}
 
 		/**
 		 * the starting point
@@ -143,6 +150,11 @@ MazeGenerator.DOOR_NEGATIVE = MazeGenerator.DOOR_DOWN = 1; //bits: 01
 // debug functions
 if(process.env.NODE_ENV == 'dev'){
 	window.print2DMaze = function(maze){
+		if(!(maze instanceof MazeGenerator)){
+			maze = new RecursiveBacktracker(THREE.Vector2, new THREE.Vector2(arguments[0] || 10, arguments[1] || 10));
+			maze.generate(arguments[2]);
+		}
+
 		let str = '';
 		let tmpVec = new THREE.Vector2();
 		let X = MazeGenerator.DOOR_NONE;
@@ -188,3 +200,5 @@ if(process.env.NODE_ENV == 'dev'){
 		console.log('%c'+str, 'font-size: 2em; background-color: white; color: black;');
 	}
 }
+
+import RecursiveBacktracker from './RecursiveBacktracker.js';

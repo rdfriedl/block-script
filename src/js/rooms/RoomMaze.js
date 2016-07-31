@@ -16,20 +16,22 @@ export default class RoomMaze{
 		if(!mazeGenerator instanceof MazeGenerator)
 			throw new Error('RoomMaze requires a MazeGenerator as the first argument');
 
-		this.maze = mazeGenerator;
+		this.generator = mazeGenerator;
 		this.roomManager = roomManager;
 
 		this.rooms = new Map();
 		this.roomPositions = new WeakMap();
 
+		this.visitedRooms = new WeakMap();
+
 		this.tmpVec = new this.vec;
 
-		if(!this.maze.data)
-			this.maze.generate();
+		if(!this.generator.cells)
+			this.generator.generate();
 	}
 
 	hasRoom(pos){
-		if(pos instanceof THREE.Vector3)
+		if(pos instanceof THREE.Vector4)
 			pos = new THREE.Vector3(pos.x, pos.y, pos.z);
 
 		if(pos instanceof this.vec){
@@ -45,7 +47,7 @@ export default class RoomMaze{
 	}
 
 	getRoom(pos){
-		if(pos instanceof THREE.Vector3)
+		if(pos instanceof THREE.Vector4)
 			pos = new THREE.Vector3(pos.x, pos.y, pos.z);
 
 		if(pos instanceof this.vec){
@@ -76,14 +78,14 @@ export default class RoomMaze{
 	 * @private
 	 */
 	createRoom(position){
-		if(position instanceof THREE.Vector3)
+		if(position instanceof THREE.Vector4)
 			position = new THREE.Vector3(position.x, position.y, position.z);
 
 		if(this.hasRoom(position))
 			throw new Error('cant create a room where one already exists');
 
 		let pos = this.tmpVec.copy(position);
-		let cell = this.maze.getCell(position);
+		let cell = this.generator.getCell(position);
 		if(!cell) return this;
 
 		let room = this.roomManager.createRoom({
@@ -102,8 +104,27 @@ export default class RoomMaze{
 		this.roomPositions.set(room, pos.clone());
 	}
 
+	/**
+	 * returns an array of all the rooms in this maze
+	 * @return {Room[]}
+	 */
+	listRooms(){
+		return Array.from(this.rooms).map(d => d[1]);
+	}
+
+	getRoomVisited(pos){
+		let room = this.getRoom(pos);
+		return !!this.visitedRooms.get(room);
+	}
+
+	setRoomVisited(pos, visited = true){
+		let room = this.getRoom(pos);
+		this.visitedRooms.set(room, visited);
+		return this;
+	}
+
 	get size(){
-		return this.maze.size.clone();
+		return this.generator.size.clone();
 	}
 
 	get roomSize(){
@@ -111,15 +132,15 @@ export default class RoomMaze{
 	}
 
 	get axes(){
-		return this.maze.axes;
+		return this.generator.axes;
 	}
 	get vec(){
-		return this.maze.vec;
+		return this.generator.vec;
 	}
 	get start(){
-		return this.maze.start;
+		return this.generator.start;
 	}
 	get end(){
-		return this.maze.end;
+		return this.generator.end;
 	}
 }

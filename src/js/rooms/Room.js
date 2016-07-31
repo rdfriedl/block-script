@@ -12,9 +12,6 @@ export const ROOM_ROTATION_AXIS = new THREE.Vector3(0,1,0);
  */
 export default class Room{
 	constructor(blocks, doors){
-		if(!!doors instanceof THREE.Vector4)
-			throw new Error('Room requires the doors to be a instanceof THREE.Vector4')
-
 		/**
 		 * the block manager used when creating the {@link VoxelSelection} for this room
 		 * @type {VoxelBlockManager}
@@ -40,6 +37,15 @@ export default class Room{
 
 	get position(){
 		return this.parent.getRoomPosition(this);
+	}
+
+	get visited(){
+		return this.parent.getRoomVisited(this);
+	}
+
+	set visited(visited){
+		this.parent.getRoomVisited(this, visited);
+		return visited;
 	}
 
 	/**
@@ -78,7 +84,7 @@ export default class Room{
 	 * @return {THREE.Vector4}
 	 */
 	get doors(){
-		return Room.rotateDoors(this.rawDoors, this.rotation);
+		return this.rawDoors? Room.rotateDoors(this.rawDoors, this.rotation) : new THREE.Vector4();
 	}
 
 	static rotateDoors(vec, rotation){
