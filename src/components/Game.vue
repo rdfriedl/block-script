@@ -17,7 +17,7 @@
 <!-- JS -->
 <script>
 
-const MAZE_SIZE = new THREE.Vector3(5,5,5);
+const MAZE_SIZE = new THREE.Vector3(1, 1, 1).multiplyScalar(5);
 
 export default {
 	data() {
@@ -376,7 +376,7 @@ function initPlayer(game){
 
 	// add player to the collision world
 	game.world.addEntity(player.collision);
-	player.getPosition().set(32/2,16/2,32/2).add(game.maze.generator.start).multiply(game.voxelMap.blockSize);
+	player.getPosition().copy(game.maze.generator.start).multiply(game.maze.rooms.roomSize).add(game.maze.rooms.roomSize.clone().divideScalar(2)).multiply(game.voxelMap.blockSize);
 }
 
 function initMazeMap(game){
