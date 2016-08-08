@@ -40,8 +40,8 @@ export default class CollisionWorld{
 		//update all entities
 		let entities = this.listEntities().filter(e => !e.isStatic).forEach(entity => {
 			// add gravity
-			// NOTE: dont multiply gravity by dtime sincethe velocity of the entity is already modified by it
-			entity.velocity.add(this.gravity);
+			// NOTE: multiply gravity by dtime since its a type of acceleration and is effected by time
+			entity.velocity.add(this.gravity.clone().multiplyScalar(dtime*60));
 
 			// step
 			entity.step(dtime);

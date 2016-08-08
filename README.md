@@ -22,6 +22,12 @@ coming soon...
  - [Safari](http://www.apple.com/safari)
  - [Internet Explorer](http://windows.microsoft.com/en-us/internet-explorer)
 
+## To-Do
+ - add functional minimap
+ - add objects and modals to the rooms
+ - add objects and modals to the editor
+ - add forth dimension to the maze
+
 ## Credits
 
 ***Images / Textures***

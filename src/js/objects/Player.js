@@ -27,7 +27,7 @@ class Player extends THREE.Group{
 		/**
 		 * @var {THREE.PerspectiveCamera}
 		 */
-		this.camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 20000);
+		this.camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 10000);
 		this.add(this.camera);
 
 		// create lights
@@ -97,7 +97,7 @@ class Player extends THREE.Group{
 		return v;
 	}
 
-	update(){
+	update(dtime){
 		this.position.copy(this.collision.position);
 
 		// movment
@@ -106,34 +106,34 @@ class Player extends THREE.Group{
 
 		//jump
 		if(this._onGround && this.movement.jump)
-			this.velocity.y = Player.JUMP_POWER;
+			this.velocity.y = Player.JUMP_POWER; //this is not effected by dtime since its not acceleration
 
 		// forward / back
 		if(this.movement.forward){
-			this._movementVelocity.y += Player.MOVEMENT_ACCELERATION;
+			this._movementVelocity.y += Player.MOVEMENT_ACCELERATION * (dtime*60);
 		}
 		else if(this.movement.back){
-			this._movementVelocity.y -= Player.MOVEMENT_ACCELERATION;
+			this._movementVelocity.y -= Player.MOVEMENT_ACCELERATION * (dtime*60);
 		}
 		else{ //ease back to 0
-			if(Math.sign(this._movementVelocity.y + -Math.sign(this._movementVelocity.y)*drag) !== Math.sign(this._movementVelocity.y)){
+			if(Math.sign(this._movementVelocity.y + -Math.sign(this._movementVelocity.y) * drag * (dtime*60)) !== Math.sign(this._movementVelocity.y)){
 				this._movementVelocity.y = 0;
 			}
-			else this._movementVelocity.y += -Math.sign(this._movementVelocity.y)*drag;
+			else this._movementVelocity.y += -Math.sign(this._movementVelocity.y) * drag * (dtime*60);
 		}
 
 		// left / right
 		if(this.movement.left){
-			this._movementVelocity.x += Player.MOVEMENT_ACCELERATION;
+			this._movementVelocity.x += Player.MOVEMENT_ACCELERATION * (dtime*60);
 		}
 		else if(this.movement.right){
-			this._movementVelocity.x -= Player.MOVEMENT_ACCELERATION;
+			this._movementVelocity.x -= Player.MOVEMENT_ACCELERATION * (dtime*60);
 		}
 		else{ //ease back to 0
-			if(Math.sign(this._movementVelocity.x + -Math.sign(this._movementVelocity.x)*drag) !== Math.sign(this._movementVelocity.x)){
+			if(Math.sign(this._movementVelocity.x + -Math.sign(this._movementVelocity.x) * drag * (dtime*60)) !== Math.sign(this._movementVelocity.x)){
 				this._movementVelocity.x = 0;
 			}
-			else this._movementVelocity.x += -Math.sign(this._movementVelocity.x)*drag;
+			else this._movementVelocity.x += -Math.sign(this._movementVelocity.x) * drag * (dtime*60);
 		}
 
 		//clamp players walk speed
@@ -146,7 +146,7 @@ class Player extends THREE.Group{
 				this._movementVelocity.y = speed * Player.WALK_BACK_SPEED * Math.sign(this._movementVelocity.y);
 		}
 
-		// left / right
+		// clamp players walk left / right speed
 		if(Math.abs(this._movementVelocity.x) > speed * Player.STRAFE_SPEED)
 			this._movementVelocity.x = speed * Player.STRAFE_SPEED * Math.sign(this._movementVelocity.x);
 
@@ -159,7 +159,7 @@ class Player extends THREE.Group{
 
 		//view Bobbing
 		if(this._onGround){ //this is going to need to be moved below the collisions so when we push against a wall we dont walk
-			this._viewBobbing += (Math.sqrt(this._movementVelocity.x*this._movementVelocity.x + this._movementVelocity.y*this._movementVelocity.y) / (30*60)) * this._viewBobbingDir;
+			this._viewBobbing += (Math.sqrt(this._movementVelocity.x*this._movementVelocity.x + this._movementVelocity.y*this._movementVelocity.y) / (30*60)) * this._viewBobbingDir * (dtime*60);
 
 			if(Math.abs(this._viewBobbing) > 1){
 				this._viewBobbing = Math.sign(this._viewBobbing);
