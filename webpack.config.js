@@ -90,7 +90,9 @@ module.exports = {
 				test: /\.js$/,
 				exclude: /(node_modules|web_modules)/,
 				loader: 'babel',
-				query: JSON.parse(fs.readFileSync('./.babelrc'))
+				query: Object.assign({}, JSON.parse(fs.readFileSync('./.babelrc')), {
+					cacheDirectory: ''
+				})
 			},
 			{
 				test: /\.css$/,
