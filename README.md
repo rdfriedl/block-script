@@ -1,35 +1,39 @@
-# **Block - Script**
+# Block-Script
 
-A simple minecraft like [threejs](http://threejs.org) example.
+A 4 Dimensional voxel maze game, built with [threejs](http://threejs.org).
 
-![Block-Script](http://rdfriedl.github.io/img/games/block-script/block-script3.png)
+![Screen Shot](screenshot.png)
 
+## Play now
 
-###Demo
+coming soon...
 
-Play it online [here](http://rdfriedl.github.io/block-script/)
+## Browser Support
 
-***Browser Support***
+***Runs fine in***
+ - [Google Chrome 51](https://www.google.com/chrome)
 
-As of now it only works in [Chrome](http://www.google.com/chrome/).
+***Planed Browser Support***
+ - [FireFox](https://www.mozilla.org/en-US/firefox/new)
+ - [Opra](http://www.opera.com)
+ - [Edge](http://www.microsoft.com/en-us/windows/microsoft-edge)
 
-Later on I plan to add support for the following browsers:
-
- - [Fire Fox](https://www.mozilla.org/en-US/firefox/new/)
+***Does not support***
+ - [Safari](http://www.apple.com/safari)
  - [Internet Explorer](http://windows.microsoft.com/en-us/internet-explorer)
 
+## To-Do
+ - add functional minimap
+ - add objects and modals to the rooms
+ - add objects and modals to the editor
+ - add forth dimension to the maze
 
-###Credits
+## Credits
 
-----------
-####*Images / Textures*
+***Images / Textures***
 
  - All block textures are from: [Dokucraft](http://dokucraft.co.uk/)
 
-####*Sound / Music*
-
- - None yet
-
-####*Fonts*
+***Fonts***
 
  - All fonts are from: [iamcal.com](http://www.iamcal.com/misc/fonts)

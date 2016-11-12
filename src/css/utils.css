@@ -1,0 +1,153 @@
+/* flex */
+.flex-v{
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+}
+.flex-h{
+	display: flex;
+	flex-direction: row;
+	width: 100%;
+}
+.flex-no-shrink{
+	flex-shrink: 0;
+}
+.flex-center-container{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* no margin */
+.no-margin {
+	margin: 0 !important;
+}
+.no-margin-right {
+	margin-right: 0 !important;
+}
+.no-margin-left {
+	margin-left: 0 !important;
+}
+.no-margin-top{
+	margin-top: 0 !important;
+}
+.no-margin-bottom{
+	margin-bottom: 0 !important;
+}
+/* no padding */
+.no-padding{
+	padding: 0 !important;
+}
+.no-padding-right{
+	padding-right: 0 !important;
+}
+.no-padding-left{
+	padding-left: 0 !important;
+}
+.no-padding-top{
+	padding-top: 0 !important;
+}
+.no-padding-bottom{
+	padding-bottom: 0 !important;
+}
+
+.no-select{
+	user-select: none;
+}
+
+.padding-5{
+	padding: 5px !important;
+}
+.padding-10{
+	padding: 10px !important;
+}
+.margin-5{
+	margin: 5px !important;
+}
+.margin-10{
+	margin: 10px !important;
+}
+
+/* top */
+.padding-5-top{
+	padding-top: 5px !important;
+}
+.padding-10-top{
+	padding-top: 10px !important;
+}
+.margin-5-top{
+	margin-top: 5px !important;
+}
+.margin-10-top{
+	margin-top: 10px !important;
+}
+
+/* bottom */
+.padding-5-bottom{
+	padding-bottom: 5px !important;
+}
+.padding-10-bottom{
+	padding-bottom: 10px !important;
+}
+.margin-5-bottom{
+	margin-bottom: 5px !important;
+}
+.margin-10-bottom{
+	margin-bottom: 10px !important;
+}
+
+/* right */
+.padding-5-right{
+	padding-right: 5px !important;
+}
+.padding-10-right{
+	padding-right: 10px !important;
+}
+.margin-5-right{
+	margin-right: 5px !important;
+}
+.margin-10-right{
+	margin-right: 10px !important;
+}
+
+/* left */
+.padding-5-left{
+	padding-left: 5px !important;
+}
+.padding-10-left{
+	padding-left: 10px !important;
+}
+.margin-5-left{
+	margin-left: 5px !important;
+}
+.margin-10-left{
+	margin-left: 10px !important;
+}
+
+/* fixes */
+a:not([href]){
+    cursor: pointer;
+}
+img.fix-width{
+	width: 100%;
+}
+
+/* scroll */
+.scroll{
+	overflow: auto;
+}
+.scroll-v{
+	overflow-y: auto;
+	overflow-x: hidden;
+}
+.scroll-h{
+	overflow-y: hidden;
+	overflow-x: auto;
+}
+
+.truncate {
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

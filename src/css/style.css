@@ -1,0 +1,42 @@
+@font-face {
+    font-family: "CubicFive10";
+    src: url("../res/fonts/cubicfive10.woff");
+}
+html, body {
+	width: 100%;
+	height: 100%;
+    overflow: hidden;
+}
+body, *{
+	font-family: CubicFive10;
+}
+
+/* custom scrollbar */
+/* scrollbar */
+.scroll-custom::-webkit-scrollbar {
+	width: 12px;
+}
+
+/* track */
+.scroll-custom::-webkit-scrollbar-track {
+	background: hsl(176, 45%, 50%);
+}
+
+/* handle */
+.scroll-custom::-webkit-scrollbar-thumb {
+	background: rgba(0,0,0,0.3);
+}
+.scroll-custom::-webkit-scrollbar-thumb:window-inactive {
+	background: rgba(0,0,0,0.3);
+}
+
+.git_fork_link{
+	position: absolute;
+	right: 0px;
+	top: 0px;
+	transition: all 0.5s;
+	width: 10%;
+}
+.git_fork_link img{
+	width: 100%;
+}
