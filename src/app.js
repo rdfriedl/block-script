@@ -1,5 +1,5 @@
 // import libraries
-import 'script!jquery';
+import $ from 'script!jquery';
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 import 'script!bootstrap/dist/js/bootstrap.min.js';
@@ -38,7 +38,7 @@ Vue.filter('nl-to-br', function(value){
 	return String(value).replace(/\n/g,'<br>');
 })
 
-//create the router
+// create the router
 let router = new VueRouter();
 router.map({
 	'': {component: MenuComponent},
@@ -57,18 +57,18 @@ router.map({
 router.start(Vue.extend({}), 'body');
 
 $(document).ready(function() {
-	//fix middle click
+	// fix middle click
 	$(document).on('mousedown',function(event){
 		if(event.button == 1) event.preventDefault();
 	});
 
-	//dont allow the user to drag images
+	// dont allow the user to drag images
 	$(document).on('dragstart','img',function(event){
 		event.preventDefault();
 		return false;
 	});
 
-	//stop blank links
+	// stop blank links
 	$(document).on('click','a[href="#"]',function(event){
 		event.preventDefault();
 	});

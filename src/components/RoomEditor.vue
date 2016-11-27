@@ -1,228 +1,230 @@
 <!-- HTML -->
 <template>
 
-<div layout="column" style="height:100%;">
-	<div>
-		<div class="btn-group">
-			<a v-link="'/menu'" class="btn btn-info"><i class="fa fa-arrow-left"></i> Back</a>
+<div>
+	<div layout="column" style="height:100%;">
+		<div>
+			<div class="btn-group">
+				<router-link to="/menu" class="btn btn-info"><i class="fa fa-arrow-left"></i> Back</router-link>
+				<dropdown>
+					<a class="dropdown-toggle btn btn-default" data-toggle="dropdown"><i class="fa fa-file"></i> File</a>
+					<ul slot="dropdown-menu" class="dropdown-menu">
+						<li><a href="#" @click="importFile"><i class="fa fa-upload"></i> Load from file</a></li>
+						<li><a href="#" @click="exportFile"><i class="fa fa-download"></i> Export to file</a></li>
+					</ul>
+				</dropdown>
+				<dropdown>
+					<a class="dropdown-toggle btn btn-default" data-toggle="dropdown"><i class="fa fa-eye"></i> View</a>
+					<ul slot="dropdown-menu" class="dropdown-menu">
+						<li><a @click="view.edges = !view.edges">Edges <i class="fa fa-check" v-show="view.edges"></i></a></li>
+						<li><a @click="view.blocks = !view.blocks">Blocks <i class="fa fa-check" v-show="view.blocks"></i></a></li>
+						<li><a @click="view.axes = !view.axes">Axes <i class="fa fa-check" v-show="view.axes"></i></a></li>
+						<li><a @click="view.walls = !view.walls">Walls <i class="fa fa-check" v-show="view.walls"></i></a></li>
+						<li><a @click="view.doors = !view.doors">Doors <i class="fa fa-check" v-show="view.doors"></i></a></li>
+						<li role="separator" class="divider"></li>
+						<li><a @click="changeTime.open = true">Change Time</a></li>
+					</ul>
+				</dropdown>
+				<dropdown>
+					<a class="dropdown-toggle btn btn-default" data-toggle="dropdown"><i class="fa fa-pencil"></i> Edit</a>
+					<ul slot="dropdown-menu" class="dropdown-menu">
+						<li><a @click="clearBlocks"><i class="fa fa-trash"></i> Clear Blocks</a></li>
+						<li><a @click="shiftBlocks.open = true"><i class="fa fa-arrows-alt"></i> Shift Blocks</a></li>
+						<li><a @click="rotateBlocksModal.open = true"><i class="fa fa-repeat"></i> Rotate Blocks</a></li>
+					</ul>
+				</dropdown>
+			</div>
+
+			<!-- undo / redo -->
+			<div class="btn-group">
+				<button type="button" class="btn btn-default" @click="undo" :disabled="!hasUndo"><i class="fa fa-undo"></i></button>
+				<button type="button" class="btn btn-default" @click="redo" :disabled="!hasRedo"><i class="fa fa-repeat"></i></button>
+			</div>
+
+			<!-- tools -->
+			<div class="btn-group padding-right-10">
+				<button type="button" class="btn btn-default" :class="{active: mode == 'place-blocks'}" @click="mode = 'place-blocks'"><i class="fa fa-cube"></i></button>
+				<button type="button" class="btn btn-default" :class="{active: mode == 'pick-block'}" @click="mode = 'pick-block'"><i class="fa fa-eyedropper"></i></button>
+				<button type="button" class="btn btn-default" :class="{active: mode == 'place-objects'}" @click="mode = 'place-objects'"><i class="fa fa-lightbulb-o"></i></button>
+				<button type="button" class="btn btn-default" :class="{active: mode == 'camera-controls'}" @click="mode = 'camera-controls'" v-show="cameraMode != 'first-person'"><i class="fa fa-hand-paper-o"></i></button>
+			</div>
+
+			<!-- camera type -->
 			<dropdown>
-				<a class="dropdown-toggle btn btn-default" data-toggle="dropdown"><i class="fa fa-file"></i> File</a>
+				<a class="dropdown-toggle btn btn-default" data-toggle="dropdown">Camera</a>
 				<ul slot="dropdown-menu" class="dropdown-menu">
-					<li><a href="#" @click="importFile"><i class="fa fa-upload"></i> Load from file</a></li>
-					<li><a href="#" @click="exportFile"><i class="fa fa-download"></i> Export to file</a></li>
+					<li><a @click="cameraMode = 'orbit'">Orbit <i class="fa fa-check" v-show="cameraMode == 'orbit'"></i></a></li>
+					<li><a @click="cameraMode = 'first-person'">First Person <i class="fa fa-check" v-show="cameraMode == 'first-person'"></i></a></li>
 				</ul>
 			</dropdown>
-			<dropdown>
-				<a class="dropdown-toggle btn btn-default" data-toggle="dropdown"><i class="fa fa-eye"></i> View</a>
+
+			<!-- attachTool fill type -->
+			<dropdown v-show="mode == 'place-blocks'">
+				<a class="dropdown-toggle btn btn-default" data-toggle="dropdown">Fill Type</a>
 				<ul slot="dropdown-menu" class="dropdown-menu">
-					<li><a @click="view.edges = !view.edges">Edges <i class="fa fa-check" v-show="view.edges"></i></a></li>
-					<li><a @click="view.blocks = !view.blocks">Blocks <i class="fa fa-check" v-show="view.blocks"></i></a></li>
-					<li><a @click="view.axes = !view.axes">Axes <i class="fa fa-check" v-show="view.axes"></i></a></li>
-					<li><a @click="view.walls = !view.walls">Walls <i class="fa fa-check" v-show="view.walls"></i></a></li>
-					<li><a @click="view.doors = !view.doors">Doors <i class="fa fa-check" v-show="view.doors"></i></a></li>
-					<li role="separator" class="divider"></li>
-					<li><a @click="changeTime.open = true">Change Time</a></li>
+					<li><a @click="placeBlocks.fillType = 'solid'">Solid <i class="fa fa-check" v-show="placeBlocks.fillType == 'solid'"></i></a></li>
+					<li><a @click="placeBlocks.fillType = 'hollow'">Hollow <i class="fa fa-check" v-show="placeBlocks.fillType == 'hollow'"></i></a></li>
+					<li><a @click="placeBlocks.fillType = 'frame'">Frame <i class="fa fa-check" v-show="placeBlocks.fillType == 'frame'"></i></a></li>
 				</ul>
 			</dropdown>
-			<dropdown>
-				<a class="dropdown-toggle btn btn-default" data-toggle="dropdown"><i class="fa fa-pencil"></i> Edit</a>
+
+			<!-- camera type -->
+			<dropdown v-show="cameraMode == 'first-person'">
+				<a class="dropdown-toggle btn btn-default" data-toggle="dropdown">Control Type</a>
 				<ul slot="dropdown-menu" class="dropdown-menu">
-					<li><a @click="clearBlocks"><i class="fa fa-trash"></i> Clear Blocks</a></li>
-					<li><a @click="shiftBlocks.open = true"><i class="fa fa-arrows-alt"></i> Shift Blocks</a></li>
-					<li><a @click="rotateBlocksModal.open = true"><i class="fa fa-repeat"></i> Rotate Blocks</a></li>
+					<li><a @click="firtsPersonControlType = 'fly'">Fly <i class="fa fa-check" v-show="firtsPersonControlType == 'fly'"></i></a></li>
+					<li><a @click="firtsPersonControlType = 'mc'">MC <i class="fa fa-check" v-show="firtsPersonControlType == 'mc'"></i></a></li>
 				</ul>
 			</dropdown>
+
+			<div class="pull-right" style="margin-right: 10px;" v-show="targetBlock.enabled">
+				<h5>XYZ: {{targetBlock.x}}, {{targetBlock.y}}, {{targetBlock.z}}</h5>
+			</div>
 		</div>
 
-		<!-- undo / redo -->
-		<div class="btn-group">
-			<button type="button" class="btn btn-default" @click="undo" :disabled="!hasUndo"><i class="fa fa-undo"></i></button>
-			<button type="button" class="btn btn-default" @click="redo" :disabled="!hasRedo"><i class="fa fa-repeat"></i></button>
-		</div>
+		<div self="size-x1" layout="row stretch-stretch">
+			<div self="size-1of4" layout="column top-stretch">
+				<div class="btn-group no-margin">
+					<button type="button" class="btn btn-default" @click="tab='blocks'"><i class="fa fa-cube"></i> Blocks</button>
+					<button type="button" class="btn btn-default" @click="tab='models'">Models</button>
+					<button type="button" class="btn btn-default" @click="tab='doors'">Doors</button>
+				</div>
 
-		<!-- tools -->
-		<div class="btn-group padding-right-10">
-			<button type="button" class="btn btn-default" :class="{active: mode == 'place-blocks'}" @click="mode = 'place-blocks'"><i class="fa fa-cube"></i></button>
-			<button type="button" class="btn btn-default" :class="{active: mode == 'pick-block'}" @click="mode = 'pick-block'"><i class="fa fa-eyedropper"></i></button>
-			<button type="button" class="btn btn-default" :class="{active: mode == 'place-objects'}" @click="mode = 'place-objects'"><i class="fa fa-lightbulb-o"></i></button>
-			<button type="button" class="btn btn-default" :class="{active: mode == 'camera-controls'}" @click="mode = 'camera-controls'" v-show="cameraMode != 'first-person'"><i class="fa fa-hand-paper-o"></i></button>
-		</div>
+				<!-- blocks -->
+				<div v-show="tab=='blocks'" self="size-x1" layout="rows top-spread" style="overflow: auto">
+					<div class="block" self="size-1of8" v-for="block in blocks" @click="placeBlocks.selected = block.id" :class="{active: placeBlocks.selected == block.id}">
+						<tooltip placement="right" :content="block.name">
+							<mesh-preview class="fix-width" :mesh="block.mesh"></mesh-preview>
+						</tooltip>
+					</div>
+				</div>
 
-		<!-- camera type -->
-		<dropdown>
-			<a class="dropdown-toggle btn btn-default" data-toggle="dropdown">Camera</a>
-			<ul slot="dropdown-menu" class="dropdown-menu">
-				<li><a @click="cameraMode = 'orbit'">Orbit <i class="fa fa-check" v-show="cameraMode == 'orbit'"></i></a></li>
-				<li><a @click="cameraMode = 'first-person'">First Person <i class="fa fa-check" v-show="cameraMode == 'first-person'"></i></a></li>
-			</ul>
-		</dropdown>
+				<!-- models -->
+				<div v-show="tab=='models'" self="size-x1" layout="rows top-spread">
+					<div class="model" self="size-1of8" v-for="(model, index) in models">
+						<mesh-preview class="fix-width" v-if="model.loaded" :mesh="model.mesh"></mesh-preview>
+					</div>
+				</div>
 
-		<!-- attachTool fill type -->
-		<dropdown v-show="mode == 'place-blocks'">
-			<a class="dropdown-toggle btn btn-default" data-toggle="dropdown">Fill Type</a>
-			<ul slot="dropdown-menu" class="dropdown-menu">
-				<li><a @click="placeBlocks.fillType = 'solid'">Solid <i class="fa fa-check" v-show="placeBlocks.fillType == 'solid'"></i></a></li>
-				<li><a @click="placeBlocks.fillType = 'hollow'">Hollow <i class="fa fa-check" v-show="placeBlocks.fillType == 'hollow'"></i></a></li>
-				<li><a @click="placeBlocks.fillType = 'frame'">Frame <i class="fa fa-check" v-show="placeBlocks.fillType == 'frame'"></i></a></li>
-			</ul>
-		</dropdown>
-
-		<!-- camera type -->
-		<dropdown v-show="cameraMode == 'first-person'">
-			<a class="dropdown-toggle btn btn-default" data-toggle="dropdown">Control Type</a>
-			<ul slot="dropdown-menu" class="dropdown-menu">
-				<li><a @click="firtsPersonControlType = 'fly'">Fly <i class="fa fa-check" v-show="firtsPersonControlType == 'fly'"></i></a></li>
-				<li><a @click="firtsPersonControlType = 'mc'">MC <i class="fa fa-check" v-show="firtsPersonControlType == 'mc'"></i></a></li>
-			</ul>
-		</dropdown>
-
-		<div class="pull-right" style="margin-right: 10px;" v-show="targetBlock.enabled">
-			<h5>XYZ: {{targetBlock.x}}, {{targetBlock.y}}, {{targetBlock.z}}</h5>
+				<!-- doors -->
+				<div v-show="tab=='doors'" class="panel panel-default no-margin" v-for="(axis_id, axis) in doors">
+					<div class="panel-heading">
+						<h3 class="panel-title">{{axis.title}}</h3>
+					</div>
+					<div class="panel-body">
+						<label>
+							<span>Positive</span>
+							<switch :state="axis.sides[0]" @input="axis.sides[0] = $event.value" size="mini"></switch>
+						</label>
+						<br>
+						<label>
+							<span>Negative</span>
+							<switch :state="axis.sides[1]" @input="axis.sides[0] = $event.value" size="mini"></switch>
+						</label>
+					</div>
+				</div>
+			</div>
+			<div self="size-3of4" style="position: relative">
+				<div ref="canvas" class="canvas-container"></div>
+				<img class="first-person-pointer" src="../res/img/pointer.png" height="32" width="32" v-show="cameraMode == 'first-person' && hasPointerLock"/>
+				<div layout="row center-center" class="pointer-lock-overlay" v-show="cameraMode == 'first-person' && !hasPointerLock" @click="requestPointerLock">
+					<h1>Click to enable Pointer Lock</h1>
+				</div>
+			</div>
 		</div>
 	</div>
 
-	<div self="size-x1" layout="row stretch-stretch">
-		<div self="size-1of4" layout="column top-stretch">
-			<div class="btn-group no-margin">
-				<button type="button" class="btn btn-default" @click="tab='blocks'"><i class="fa fa-cube"></i> Blocks</button>
-				<button type="button" class="btn btn-default" @click="tab='models'">Models</button>
-				<button type="button" class="btn btn-default" @click="tab='doors'">Doors</button>
-			</div>
-
-			<!-- blocks -->
-			<div v-show="tab=='blocks'" self="size-x1" layout="rows top-spread" style="overflow: auto">
-				<div class="block" self="size-1of8" v-for="block in blocks" @click="placeBlocks.selected = block.id" :class="{active: placeBlocks.selected == block.id}">
-					<tooltip placement="right" :content="block.name">
-						<mesh-preview class="fix-width" :mesh="block.mesh"></mesh-preview>
-					</tooltip>
+	<!-- shift blocks modal -->
+	<modal :show="shiftBlocks.open" effect="fade">
+		<div slot="modal-header" class="modal-header">
+			<h4 class="modal-title">Shift Blocks</h4>
+		</div>
+		<div slot="modal-body" class="modal-body">
+			<div class="input-group">
+				<div class="input-group-addon">X</div>
+				<input type="number" class="form-control" v-model="shiftBlocks.dir.x">
+				<div class="input-group-btn">
+					<button type="button" class="btn btn-default" @click="shiftBlocks.dir.x -= 1"><i class="fa fa-chevron-left"></i></button>
+					<button type="button" class="btn btn-default" @click="shiftBlocks.dir.x += 1"><i class="fa fa-chevron-right"></i></button>
 				</div>
 			</div>
-
-			<!-- models -->
-			<div v-show="tab=='models'" self="size-x1" layout="rows top-spread">
-				<div class="model" self="size-1of8" v-for="(index, model) in models">
-					<mesh-preview class="fix-width" v-if="model.loaded" :mesh="model.mesh"></mesh-preview>
+			<div class="input-group">
+				<div class="input-group-addon">Y</div>
+				<input type="number" class="form-control" v-model="shiftBlocks.dir.y">
+				<div class="input-group-btn">
+					<button type="button" class="btn btn-default" @click="shiftBlocks.dir.y -= 1"><i class="fa fa-chevron-left"></i></button>
+					<button type="button" class="btn btn-default" @click="shiftBlocks.dir.y += 1"><i class="fa fa-chevron-right"></i></button>
 				</div>
 			</div>
-
-			<!-- doors -->
-			<div v-show="tab=='doors'" class="panel panel-default no-margin" v-for="(axis_id, axis) in doors">
-				<div class="panel-heading">
-					<h3 class="panel-title">{{axis.title}}</h3>
-				</div>
-				<div class="panel-body">
-					<label>
-						<span>Positive</span>
-						<switch :state.sync="axis.sides[0]" size="mini"></switch>
-					</label>
-					<br>
-					<label>
-						<span>Negative</span>
-						<switch :state.sync="axis.sides[1]" size="mini"></switch>
-					</label>
+			<div class="input-group">
+				<div class="input-group-addon">Z</div>
+				<input type="number" class="form-control" v-model="shiftBlocks.dir.z">
+				<div class="input-group-btn">
+					<button type="button" class="btn btn-default" @click="shiftBlocks.dir.z -= 1"><i class="fa fa-chevron-left"></i></button>
+					<button type="button" class="btn btn-default" @click="shiftBlocks.dir.z += 1"><i class="fa fa-chevron-right"></i></button>
 				</div>
 			</div>
 		</div>
-		<div self="size-3of4" style="position: relative">
-			<div v-el:canvas class="canvas-container"></div>
-			<img class="first-person-pointer" src="../res/img/pointer.png" height="32" width="32" v-show="cameraMode == 'first-person' && hasPointerLock"/>
-			<div layout="row center-center" class="pointer-lock-overlay" v-show="cameraMode == 'first-person' && !hasPointerLock" @click="requestPointerLock">
-				<h1>Click to enable Pointer Lock</h1>
+		<div slot="modal-footer" class="modal-footer">
+			<button type="button" class="btn btn-default" @click="shiftBlocks.open = false">Cancel</button>
+			<button type="button" class="btn btn-success" @click="loopBlocks(shiftBlocks.dir)">Ok</button>
+		</div>
+	</modal>
+
+	<!-- rotate blocks modal -->
+	<modal :show="rotateBlocksModal.open" effect="fade">
+		<div slot="modal-header" class="modal-header">
+			<h4 class="modal-title">Rotate Blocks</h4>
+		</div>
+		<div slot="modal-body" class="modal-body">
+			<div class="input-group">
+				<div class="input-group-addon">Axis</div>
+				<select class="form-control" v-model="rotateBlocksModal.axis">
+					<option value="x">X</option>
+					<option value="y">Y</option>
+					<option value="z">Z</option>
+				</select>
+			</div>
+			<div class="input-group">
+				<div class="input-group-addon">Times (360*)</div>
+				<input type="number" class="form-control" v-model="rotateBlocksModal.times" step="0.25">
+				<div class="input-group-btn">
+					<button type="button" class="btn btn-default" @click="rotateBlocksModal.times -= 0.25"><i class="fa fa-chevron-left"></i></button>
+					<button type="button" class="btn btn-default" @click="rotateBlocksModal.times += 0.25"><i class="fa fa-chevron-right"></i></button>
+				</div>
 			</div>
 		</div>
-	</div>
+		<div slot="modal-footer" class="modal-footer">
+			<button type="button" class="btn btn-default" @click="rotateBlocksModal.open = false">Cancel</button>
+			<button type="button" class="btn btn-success" @click="rotateBlocks(rotateBlocksModal.axis, rotateBlocksModal.times)">Ok</button>
+		</div>
+	</modal>
+
+	<!-- change time modal -->
+	<modal :show="changeTime.open" effect="fade">
+		<div slot="modal-header" class="modal-header">
+			<h4 class="modal-title">Change time</h4>
+		</div>
+		<div slot="modal-body" class="modal-body">
+			<div class="input-group">
+				<div class="input-group-addon">Time</div>
+				<select class="form-control" v-model="changeTime.time">
+					<option value="0">1</option>
+					<option value="1">2</option>
+					<option value="2">3</option>
+					<option value="3">4</option>
+					<option value="4">5</option>
+				</select>
+			</div>
+		</div>
+		<div slot="modal-footer" class="modal-footer">
+			<button type="button" class="btn btn-default" @click="changeTime.open = false">Cancel</button>
+			<button type="button" class="btn btn-success" @click="setTime(changeTime.time)">Ok</button>
+		</div>
+	</modal>
+
+	<input type="file" ref="fileinput" style="display: none;"/>
 </div>
-
-<!-- shift blocks modal -->
-<modal :show.sync="shiftBlocks.open" effect="fade">
-	<div slot="modal-header" class="modal-header">
-		<h4 class="modal-title">Shift Blocks</h4>
-	</div>
-	<div slot="modal-body" class="modal-body">
-		<div class="input-group">
-			<div class="input-group-addon">X</div>
-			<input type="number" class="form-control" v-model="shiftBlocks.dir.x">
-			<div class="input-group-btn">
-				<button type="button" class="btn btn-default" @click="shiftBlocks.dir.x -= 1"><i class="fa fa-chevron-left"></i></button>
-				<button type="button" class="btn btn-default" @click="shiftBlocks.dir.x += 1"><i class="fa fa-chevron-right"></i></button>
-			</div>
-		</div>
-		<div class="input-group">
-			<div class="input-group-addon">Y</div>
-			<input type="number" class="form-control" v-model="shiftBlocks.dir.y">
-			<div class="input-group-btn">
-				<button type="button" class="btn btn-default" @click="shiftBlocks.dir.y -= 1"><i class="fa fa-chevron-left"></i></button>
-				<button type="button" class="btn btn-default" @click="shiftBlocks.dir.y += 1"><i class="fa fa-chevron-right"></i></button>
-			</div>
-		</div>
-		<div class="input-group">
-			<div class="input-group-addon">Z</div>
-			<input type="number" class="form-control" v-model="shiftBlocks.dir.z">
-			<div class="input-group-btn">
-				<button type="button" class="btn btn-default" @click="shiftBlocks.dir.z -= 1"><i class="fa fa-chevron-left"></i></button>
-				<button type="button" class="btn btn-default" @click="shiftBlocks.dir.z += 1"><i class="fa fa-chevron-right"></i></button>
-			</div>
-		</div>
-	</div>
-	<div slot="modal-footer" class="modal-footer">
-		<button type="button" class="btn btn-default" @click="shiftBlocks.open = false">Cancel</button>
-		<button type="button" class="btn btn-success" @click="loopBlocks(shiftBlocks.dir)">Ok</button>
-	</div>
-</modal>
-
-<!-- rotate blocks modal -->
-<modal :show.sync="rotateBlocksModal.open" effect="fade">
-	<div slot="modal-header" class="modal-header">
-		<h4 class="modal-title">Rotate Blocks</h4>
-	</div>
-	<div slot="modal-body" class="modal-body">
-		<div class="input-group">
-			<div class="input-group-addon">Axis</div>
-			<select class="form-control" v-model="rotateBlocksModal.axis">
-				<option value="x">X</option>
-				<option value="y">Y</option>
-				<option value="z">Z</option>
-			</select>
-		</div>
-		<div class="input-group">
-			<div class="input-group-addon">Times (360*)</div>
-			<input type="number" class="form-control" v-model="rotateBlocksModal.times" step="0.25">
-			<div class="input-group-btn">
-				<button type="button" class="btn btn-default" @click="rotateBlocksModal.times -= 0.25"><i class="fa fa-chevron-left"></i></button>
-				<button type="button" class="btn btn-default" @click="rotateBlocksModal.times += 0.25"><i class="fa fa-chevron-right"></i></button>
-			</div>
-		</div>
-	</div>
-	<div slot="modal-footer" class="modal-footer">
-		<button type="button" class="btn btn-default" @click="rotateBlocksModal.open = false">Cancel</button>
-		<button type="button" class="btn btn-success" @click="rotateBlocks(rotateBlocksModal.axis, rotateBlocksModal.times)">Ok</button>
-	</div>
-</modal>
-
-<!-- change time modal -->
-<modal :show.sync="changeTime.open" effect="fade">
-	<div slot="modal-header" class="modal-header">
-		<h4 class="modal-title">Change time</h4>
-	</div>
-	<div slot="modal-body" class="modal-body">
-		<div class="input-group">
-			<div class="input-group-addon">Time</div>
-			<select class="form-control" v-model="changeTime.time">
-				<option value="0">1</option>
-				<option value="1">2</option>
-				<option value="2">3</option>
-				<option value="3">4</option>
-				<option value="4">5</option>
-			</select>
-		</div>
-	</div>
-	<div slot="modal-footer" class="modal-footer">
-		<button type="button" class="btn btn-default" @click="changeTime.open = false">Cancel</button>
-		<button type="button" class="btn btn-success" @click="setTime(changeTime.time)">Ok</button>
-	</div>
-</modal>
-
-<input type="file" v-el:fileinput style="display: none;"/>
 
 </template>
 
@@ -239,13 +241,13 @@ import BSDropdown from './bootstrap/dropdown.vue';
 import BS_Switch from './bootstrap/bootstrap-switch.vue';
 
 // three plugins
-import 'imports?THREE=three!../lib/threejs/controls/OrbitControls.js';
-import 'imports?THREE=three!../lib/threejs/controls/PointerLockControls.js';
-import 'imports?THREE=three!../lib/threejs/postprocessing/EffectComposer.js';
-import 'imports?THREE=three!../lib/threejs/postprocessing/RenderPass.js';
-import 'imports?THREE=three!../lib/threejs/postprocessing/ShaderPass.js';
-import 'imports?THREE=three!../lib/threejs/shaders/CopyShader.js';
-import 'imports?THREE=three!../lib/threejs/shaders/SSAOShader.js';
+import 'imports-loader?THREE=three!../lib/threejs/controls/OrbitControls.js';
+import 'imports-loader?THREE=three!../lib/threejs/controls/PointerLockControls.js';
+import 'imports-loader?THREE=three!../lib/threejs/postprocessing/EffectComposer.js';
+import 'imports-loader?THREE=three!../lib/threejs/postprocessing/RenderPass.js';
+import 'imports-loader?THREE=three!../lib/threejs/postprocessing/ShaderPass.js';
+import 'imports-loader?THREE=three!../lib/threejs/shaders/CopyShader.js';
+import 'imports-loader?THREE=three!../lib/threejs/shaders/SSAOShader.js';
 
 import Room from '../js/rooms/Room.js';
 import GridCube from '../js/objects/GridCube.js';
@@ -375,7 +377,7 @@ export default {
 			FileSaver.saveAs(blob, `x${json.doors.x}-y${json.doors.y}-z${json.doors.z}-w${json.doors.w}.json`);
 		},
 		importFile(){
-			this.$els.fileinput.onchange = event => {
+			this.$refs.fileinput.onchange = event => {
 				if(event.target.files.length){
 					JSON.fromBlob(event.target.files[0]).then(json => {
 						if(json.selection){
@@ -404,7 +406,7 @@ export default {
 					})
 				}
 			};
-			$(this.$els.fileinput).trigger('click');
+			$(this.$refs.fileinput).trigger('click');
 		},
 		loopBlocks(dir){
 			let offset = new THREE.Vector3().copy(dir);
@@ -578,7 +580,7 @@ export default {
 		if(process.env.NODE_ENV == 'dev')
 			window.editor = editor;
 	},
-	ready(){
+	mounted(){
 		window.addEventListener('resize', Function.debounce(() => this.$emit('canvas-resize'), 150));
 
 		// default mode
@@ -644,30 +646,24 @@ export default {
 				mesh.scale.set(32,32,32);
 
 				data.mesh = () => mesh;
-			})
-
-			// we dont need to tell the MeshPreview to rerender since we just changed the "mesh" property on the block
-			// this.$broadcast('mesh-preview-render');
+			});
 		});
-		THREE.DefaultLoadingManager.onProgress = () => {
-			setTimeout(() => {
-				this.$broadcast('mesh-preview-render');
-			}, 50);
-		}
-	},
-	attached(){
-		//add it to my element
-		this.$els.canvas.appendChild(this.editor.renderer.domElement);
-		this.editor.keyboard.listen();
-		this.enabled = true;
 
-		this.$emit('canvas-resize');
+		// attached
+		Vue.nextTick(() => {
+			//add it to my element
+			this.$refs.canvas.appendChild(this.editor.renderer.domElement);
+			this.editor.keyboard.listen();
+			this.enabled = true;
 
-		window.onbeforeunload = function(){
-			return true;
-		}
+			this.$emit('canvas-resize');
+
+			window.onbeforeunload = function(){
+				return true;
+			}
+		});
 	},
-	detached(){
+	destroyed(){
 		this.editor.keyboard.stop_listening();
 		this.enabled = false;
 
@@ -684,7 +680,7 @@ function createRenderer(editor){
 
 	// resize renderer
 	this.$on('canvas-resize', () => {
-		renderer.setSize(this.$els.canvas.parentElement.clientWidth, this.$els.canvas.parentElement.clientHeight);
+		renderer.setSize(this.$refs.canvas.parentElement.clientWidth, this.$refs.canvas.parentElement.clientHeight);
 	});
 }
 
@@ -820,8 +816,8 @@ function createRendererEffects(editor){
 
 	// resize effects
 	this.$on('canvas-resize', () => {
-		let width = this.$els.canvas.parentElement.clientWidth;
-		let height = this.$els.canvas.parentElement.clientHeight;
+		let width = this.$refs.canvas.parentElement.clientWidth;
+		let height = this.$refs.canvas.parentElement.clientHeight;
 
 		// Resize renderTargets
 		ssaoPass.uniforms['size'].value.set(width, height);
@@ -918,7 +914,7 @@ function createControls(editor){
 
 	//resize camera when window resizes
 	this.$on('canvas-resize', () => {
-		orbitCam.aspect = firstPersonCam.aspect = this.$els.canvas.parentElement.clientWidth / this.$els.canvas.parentElement.clientHeight;
+		orbitCam.aspect = firstPersonCam.aspect = this.$refs.canvas.parentElement.clientWidth / this.$refs.canvas.parentElement.clientHeight;
 		orbitCam.updateProjectionMatrix();
 		firstPersonCam.updateProjectionMatrix();
 	});

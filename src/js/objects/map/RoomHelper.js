@@ -1,6 +1,6 @@
 import THREE from 'three';
 import Room from '../../rooms/Room.js';
-import 'imports?THREE=three!../../../lib/THREE.MeshLine.js';
+import 'imports-loader?THREE=three!../../../lib/THREE.MeshLine.js';
 
 export default class RoomHelper extends THREE.Group{
 	constructor(room){

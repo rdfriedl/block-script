@@ -6,8 +6,10 @@
 </template>
 <script>
 	export default {
-		ready() {
-			$(this.$el).find('[data-toggle="dropdown"]').dropdown();
+		mounted() {
+			Vue.nextTick(() => {
+				$(this.$el).find('[data-toggle="dropdown"]').dropdown();
+			})
 		}
 	}
 </script>

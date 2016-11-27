@@ -7,8 +7,7 @@ export default {
 	props: {
 		state: {
 			type: Boolean,
-			required: true,
-			twoWay: true
+			required: true
 		},
 		size: {type: String, default: $.fn.bootstrapSwitch.defaults.animate},
 		animate: {type: Boolean, default: $.fn.bootstrapSwitch.defaults.animate},
@@ -43,7 +42,7 @@ export default {
 			$(this.$el).bootstrapSwitch('state', this.state);
 		}
 	},
-	ready(){
+	mounted(){
 		let changeFromElement = false;
 		$(this.$el).on('switchChange.bootstrapSwitch', () => {
 			changeFromElement = true;
@@ -57,6 +56,8 @@ export default {
 		this.$watch('state', () => {
 			if(changeFromElement == false)
 				this.update();
+			else
+				this.$emit('input', this.state);
 		}, {immediate: true});
 		this.$watch('size', this.update.bind(this));
 		this.$watch('animate', this.update.bind(this));
@@ -70,11 +71,10 @@ export default {
 		this.$watch('labelText', this.update.bind(this));
 		this.$watch('handleWidth', this.update.bind(this));
 		this.$watch('labelWidth', this.update.bind(this));
+
+		Vue.nextTick(() => this.update());
 	},
-	attached(){
-		this.update();
-	},
-	detached(){
+	destroyed(){
 		$(this.$el).bootstrapSwitch('destroy');
 	}
 }

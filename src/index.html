@@ -5,8 +5,6 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-		<!-- REMOVE_DEV -->
-
 		<!-- load libraries from cdn in production mode -->
 		<link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/css/bootstrap.min.css">
 		<link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.6/superhero/bootstrap.min.css">
@@ -30,17 +28,8 @@
 		<script src="//cdn.rawgit.com/ArthurClemens/Javascript-Undo-Manager/master/lib/undomanager.js"></script>
 
 		<script src="//cdn.rawgit.com/eligrey/FileSaver.js/master/FileSaver.min.js"></script>
-
-		<!-- REMOVE_DEV -->
 	</head>
 	<body>
 		<router-view keep-alive="keep-alive"></router-view>
-
-		<!-- REMOVE_-PRODUCTION -->
-		<script src="vendor.bundle.js"></script>
-		<!-- REMOVE_-PRODUCTION -->
-
-		<!-- load app -->
-		<script src="app.js"></script>
 	</body>
 </html>

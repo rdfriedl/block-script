@@ -5,14 +5,6 @@ delete webpackConfig.entry
 delete webpackConfig.externals; //remove externals
 webpackConfig.devtool = 'inline-source-map';
 
-// remove common chunk plugin
-let arr = Array.from(webpackConfig.plugins)
-for (var i = 0; i < arr.length; i++) {
-	if(arr[i] instanceof webpack.optimize.CommonsChunkPlugin){
-		webpackConfig.plugins.splice(webpackConfig.plugins.indexOf(arr[i]),1);
-	}
-}
-
 module.exports = function(config) {
 	config.set({
 		browsers: ['Chrome', 'Firefox', 'IE'],

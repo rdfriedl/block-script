@@ -1,15 +1,16 @@
 <!-- HTML -->
 <template>
+<div>
+	<div ref="canvas" class="canvas-container"></div>
 
-<div v-el:canvas class="canvas-container"></div>
+	<div class="pointer-lock-overlay" v-show="!hasPointerLock && state == 'none'" @click="requestPointerLock">
+		<h1>Click to enable Pointer Lock</h1>
+	</div>
 
-<div class="pointer-lock-overlay" v-show="!hasPointerLock && state == 'none'" @click="requestPointerLock">
-	<h1>Click to enable Pointer Lock</h1>
-</div>
-
-<div v-el:stats class="stats-container"></div>
-<div class="col-xs-12">
-	<a class="btn btn-md btn-info pull-right" v-link="'/menu'"><i class="fa fa-arrow-left"></i> Back</a>
+	<div ref="stats" class="stats-container"></div>
+	<div class="col-xs-12">
+		<router-link to="/menu" class="btn btn-md btn-info pull-right"><i class="fa fa-arrow-left"></i> Back</router-link>
+	</div>
 </div>
 
 </template>
@@ -128,15 +129,17 @@ export default {
 		if(process.env.NODE_ENV == 'dev'){
 			window.game = game;
 		}
+
+		// attached
+		Vue.nextTick(() => {
+			//add it to my element
+			this.$refs.stats.appendChild(this.game.stats.domElement);
+			this.$refs.canvas.appendChild(this.game.renderer.domElement);
+			this.game.keyboard.listen();
+			this.enabled = true;
+		})
 	},
-	attached(){
-		//add it to my element
-		this.$els.stats.appendChild(this.game.stats.domElement);
-		this.$els.canvas.appendChild(this.game.renderer.domElement);
-		this.game.keyboard.listen();
-		this.enabled = true;
-	},
-	detached(){
+	destroyed(){
 		this.game.keyboard.stop_listening();
 		this.enabled = false;
 	}
@@ -144,7 +147,7 @@ export default {
 
 import THREE from 'three';
 // extentions
-import 'imports?THREE=three!../lib/threejs/controls/PointerLockControls.js';
+import 'imports-loader?THREE=three!../lib/threejs/controls/PointerLockControls.js';
 import Stats from 'stats';
 
 import VoxelMap from '../js/voxel/VoxelMap.js';

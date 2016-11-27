@@ -1,5 +1,5 @@
 import THREE from 'three';
-import 'imports?THREE=three!../lib/threejs/loaders/PLYLoader.js';
+import 'imports-loader?THREE=three!../lib/threejs/loaders/PLYLoader.js';
 import ModelManager from './ModelManager.js';
 
 // import all the tests

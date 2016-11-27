@@ -1,5 +1,5 @@
 <template>
-<canvas v-el:canvas @mouseover="hoverIn" @mouseleave="hoverOut"></canvas>
+<canvas ref="canvas" @mouseover="hoverIn" @mouseleave="hoverOut"></canvas>
 </template>
 
 <script>
@@ -50,10 +50,10 @@ export default {
 			this.rotate = false;
 		}
 	},
-	ready(){
+	mounted(){
 		this.rotation = new THREE.Euler();
 
-		this.ctx = this.$els.canvas.getContext('2d');
+		this.ctx = this.$refs.canvas.getContext('2d');
 		this.render();
 		this.$watch('mesh', () => this.render());
 
@@ -82,7 +82,7 @@ export default {
 			this.render();
 		})
 	},
-	detached(){
+	destroyed(){
 		clearInterval(this.interval);
 	}
 }

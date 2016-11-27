@@ -1,0 +1,27 @@
+{
+    "extends": "standard",
+    "plugins": [
+        "standard",
+        "promise"
+    ],
+    "parser": "babel-eslint",
+    "env": {
+        "browser": true,
+        "node": true,
+        "es6": true
+    },
+    "rules": {
+        "semi": "off",
+        "no-tabs": "off",
+        "no-mixed-spaces-and-tabs": "error",
+        "indent": ["error", "tab", {"SwitchCase": 1}],
+        "space-before-blocks": "off",
+        "space-before-function-paren": "off",
+        "keyword-spacing": "off",
+        "comma-spacing": "off",
+        "curly": "off",
+        "eqeqeq": "off",
+        "brace-style": ["warn", "stroustrup"],
+        "one-var": ["off"]
+    }
+}
