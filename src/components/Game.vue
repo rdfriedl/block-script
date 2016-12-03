@@ -21,7 +21,7 @@
 const MAZE_SIZE = new THREE.Vector3(1, 1, 1).multiplyScalar(5);
 
 export default {
-	data() {
+	data(){
 		return {
 			hasPointerLock: false,
 			state: 'none',
@@ -121,9 +121,12 @@ export default {
 		update.call(this);
 
 		// listen for pointer lock change
-		$(document).on('pointerlockchange mozpointerlockchange webkitpointerlockchange', () => {
+		let pointerlockchange = () => {
 			this.hasPointerLock = !!document.pointerLockElement;
-		});
+		};
+		document.addEventListener('pointerlockchange', pointerlockchange);
+		document.addEventListener('mozpointerlockchange', pointerlockchange);
+		document.addEventListener('webkitpointerlockchange', pointerlockchange);
 
 		// debug
 		if(process.env.NODE_ENV == 'dev'){
@@ -147,27 +150,27 @@ export default {
 
 import THREE from 'three';
 // extentions
-import 'imports-loader?THREE=three!../lib/threejs/controls/PointerLockControls.js';
+import 'imports-loader?THREE=three!three/examples/js/controls/PointerLockControls.js';
 import Stats from 'stats';
 
-import VoxelMap from '../js/voxel/VoxelMap.js';
-import VoxelChunk from '../js/voxel/VoxelChunk.js';
-import VoxelBlockManager from '../js/voxel/VoxelBlockManager.js';
-import * as blocks from '../js/blocks.js';
-import * as ChunkUtils from '../js/ChunkUtils.js';
+import VoxelMap from '../voxel/VoxelMap.js';
+import VoxelChunk from '../voxel/VoxelChunk.js';
+import VoxelBlockManager from '../voxel/VoxelBlockManager.js';
+import * as blocks from '../blocks.js';
+import * as ChunkUtils from '../ChunkUtils.js';
 
 window.blocks = blocks;
 
-import Keyboard from '../js/Keyboard.js';
-import Player from '../js/objects/Player.js';
-import RecursiveBacktracker from '../js/maze-generators/RecursiveBacktracker.js';
-import RoomMaze from '../js/rooms/RoomMaze.js';
-import DefaultRooms from '../js/rooms.js';
+import Keyboard from '../Keyboard.js';
+import Player from '../objects/Player.js';
+import RecursiveBacktracker from '../maze-generators/RecursiveBacktracker.js';
+import RoomMaze from '../rooms/RoomMaze.js';
+import DefaultRooms from '../rooms.js';
 
-import MazeLevelHelper from '../js/objects/map/MazeLevelHelper.js';
+import MazeLevelHelper from '../objects/map/MazeLevelHelper.js';
 
-import CollisionWorld from '../js/collisions/CollisionWorld.js';
-import CollisionEntityVoxelMap from '../js/collisions/types/voxelMap.js';
+import CollisionWorld from '../collisions/CollisionWorld.js';
+import CollisionEntityVoxelMap from '../collisions/types/voxelMap.js';
 
 // shaders
 import skyVertexShader from '../shaders/vertexShader.shader';

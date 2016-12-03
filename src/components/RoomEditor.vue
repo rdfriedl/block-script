@@ -1,6 +1,5 @@
 <!-- HTML -->
 <template>
-
 <div>
 	<div layout="column" style="height:100%;">
 		<div>
@@ -114,12 +113,12 @@
 					<div class="panel-body">
 						<label>
 							<span>Positive</span>
-							<switch :state="axis.sides[0]" @input="axis.sides[0] = $event.value" size="mini"></switch>
+							<switch-input :state="axis.sides[0]" @input="axis.sides[0] = $event.value" size="mini"></switch-input>
 						</label>
 						<br>
 						<label>
 							<span>Negative</span>
-							<switch :state="axis.sides[1]" @input="axis.sides[0] = $event.value" size="mini"></switch>
+							<switch-input :state="axis.sides[1]" @input="axis.sides[0] = $event.value" size="mini"></switch-input>
 						</label>
 					</div>
 				</div>
@@ -225,51 +224,50 @@
 
 	<input type="file" ref="fileinput" style="display: none;"/>
 </div>
-
 </template>
 
 <!-- JS -->
 <script>
 
+import VueStrap from 'vue-strap';
+import BS_Dropdown from './bootstrap/dropdown.vue';
+import BS_Switch from './bootstrap/bootstrap-switch.vue';
 import THREE from 'three';
 import FileSaver from 'file-saver';
 import UndoManager from 'undo-manager';
 
 import MeshPreviewComponent from './editor/MeshPreview.vue';
-import * as VueStrap from 'vue-strap';
-import BSDropdown from './bootstrap/dropdown.vue';
-import BS_Switch from './bootstrap/bootstrap-switch.vue';
 
 // three plugins
-import 'imports-loader?THREE=three!../lib/threejs/controls/OrbitControls.js';
-import 'imports-loader?THREE=three!../lib/threejs/controls/PointerLockControls.js';
-import 'imports-loader?THREE=three!../lib/threejs/postprocessing/EffectComposer.js';
-import 'imports-loader?THREE=three!../lib/threejs/postprocessing/RenderPass.js';
-import 'imports-loader?THREE=three!../lib/threejs/postprocessing/ShaderPass.js';
-import 'imports-loader?THREE=three!../lib/threejs/shaders/CopyShader.js';
-import 'imports-loader?THREE=three!../lib/threejs/shaders/SSAOShader.js';
+import 'imports-loader?THREE=three!three/examples/js/controls/OrbitControls.js';
+import 'imports-loader?THREE=three!three/examples/js/controls/PointerLockControls.js';
+import 'imports-loader?THREE=three!three/examples/js/postprocessing/EffectComposer.js';
+import 'imports-loader?THREE=three!three/examples/js/postprocessing/RenderPass.js';
+import 'imports-loader?THREE=three!three/examples/js/postprocessing/ShaderPass.js';
+import 'imports-loader?THREE=three!three/examples/js/shaders/CopyShader.js';
+import 'imports-loader?THREE=three!three/examples/js/shaders/SSAOShader.js';
 
-import Room from '../js/rooms/Room.js';
-import GridCube from '../js/objects/GridCube.js';
-import Keyboard from '../js/Keyboard.js';
-import * as blocks from '../js/blocks.js';
-import MODELS from '../js/models.js';
+import Room from '../rooms/Room.js';
+import GridCube from '../objects/GridCube.js';
+import Keyboard from '../Keyboard.js';
+import * as blocks from '../blocks.js';
+import MODELS from '../models.js';
 
-import VoxelMap from '../js/voxel/VoxelMap.js';
-import VoxelBlockManager from '../js/voxel/VoxelBlockManager.js';
-import VoxelSelection from '../js/voxel/VoxelSelection.js';
-import * as ChunkUtils from '../js/ChunkUtils.js';
+import VoxelMap from '../voxel/VoxelMap.js';
+import VoxelBlockManager from '../voxel/VoxelBlockManager.js';
+import VoxelSelection from '../voxel/VoxelSelection.js';
+import * as ChunkUtils from '../ChunkUtils.js';
 
-import AttachTool from '../js/editor/AttachTool.js';
-import PickBlockTool from '../js/editor/PickBlockTool.js';
-import DoorHelper from '../js/editor/DoorHelper.js';
+import AttachTool from '../editor/AttachTool.js';
+import PickBlockTool from '../editor/PickBlockTool.js';
+import DoorHelper from '../editor/DoorHelper.js';
 
 const ROOM_SIZE = new THREE.Vector3(32,16,32);
 
 export default {
 	components: {
-		dropdown: BSDropdown,
-		switch: BS_Switch,
+		dropdown: BS_Dropdown,
+		'switch-input': BS_Switch,
 		modal: VueStrap.modal,
 		tooltip: VueStrap.tooltip,
 		tabs: VueStrap.tabset,
@@ -572,9 +570,12 @@ export default {
 		update.call(this);
 
 		// listen for pointer lock change
-		$(document).on('pointerlockchange mozpointerlockchange webkitpointerlockchange', () => {
+		let pointerlockchange = () => {
 			this.hasPointerLock = !!document.pointerLockElement;
-		});
+		};
+		document.addEventListener('pointerlockchange', pointerlockchange);
+		document.addEventListener('mozpointerlockchange', pointerlockchange);
+		document.addEventListener('webkitpointerlockchange', pointerlockchange);
 
 		// debug
 		if(process.env.NODE_ENV == 'dev')

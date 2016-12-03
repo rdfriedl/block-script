@@ -10,7 +10,7 @@ property uchar red
 property uchar green
 property uchar blue
 element face 2256
-property list uchar int vertex_index
+property list uchar int vertex_indices
 end_header
 -8 -8 0 67 52 27
 -8 -8 1 67 52 27

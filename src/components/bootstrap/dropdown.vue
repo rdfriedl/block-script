@@ -5,11 +5,13 @@
 	</div>
 </template>
 <script>
-	export default {
-		mounted() {
-			Vue.nextTick(() => {
-				$(this.$el).find('[data-toggle="dropdown"]').dropdown();
-			})
-		}
+import $ from 'script-loader!jquery';
+
+export default {
+	mounted() {
+		Vue.nextTick(() => {
+			$(this.$el).find('[data-toggle="dropdown"]').dropdown();
+		})
 	}
+}
 </script>

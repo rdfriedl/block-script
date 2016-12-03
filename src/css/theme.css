@@ -1,0 +1,18 @@
+/* custom scrollbar */
+/* scrollbar */
+.scroll-custom::-webkit-scrollbar {
+	width: 12px;
+}
+
+/* track */
+.scroll-custom::-webkit-scrollbar-track {
+	background: hsl(176, 45%, 50%);
+}
+
+/* handle */
+.scroll-custom::-webkit-scrollbar-thumb {
+	background: rgba(0,0,0,0.3);
+}
+.scroll-custom::-webkit-scrollbar-thumb:window-inactive {
+	background: rgba(0,0,0,0.3);
+}

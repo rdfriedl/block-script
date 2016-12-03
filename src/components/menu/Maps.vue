@@ -63,13 +63,12 @@
 </template>
 <script>
 
-import MapLoaderIndexedDB from '../../js/maps/MapLoaderIndexedDB.js';
-import MapManager from '../../js/maps/MapManager.js';
+import MapLoaderIndexedDB from '../../maps/MapLoaderIndexedDB.js';
+import MapManager from '../../maps/MapManager.js';
 import Dexie from 'dexie';
-import {modal} from 'vue-strap';
 
 export default {
-	components: {modal},
+	// components: {modal},
 	data(){return{
 		maps: [],
 		newMap: {

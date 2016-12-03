@@ -1,6 +1,6 @@
 # Block-Script
 
-A 4 Dimensional voxel maze game, built with [threejs](http://threejs.org).
+A 3 Dimensional voxel maze game, built with [threejs](http://threejs.org).
 
 ![Screen Shot](screenshot.png)
 
@@ -23,10 +23,18 @@ coming soon...
  - [Internet Explorer](http://windows.microsoft.com/en-us/internet-explorer)
 
 ## To-Do
- - add functional minimap
- - add objects and modals to the rooms
- - add objects and modals to the editor
- - add forth dimension to the maze
+ - set up eslint
+ - remove vue-strap
+ - clean up dependencies
+ - clean up utils
+ - clean up css utils
+ - update threejs
+ - move files from `src/js/` to `src/`
+ - finish menu
+ - build settings menu
+ - add functional mini-map
+ - add objects and models to the editor
+ - add objects and models to the rooms
 
 ## Credits
 

@@ -30,16 +30,16 @@
 
 import THREE from 'three';
 import CssCube from './CssCube.vue';
-import VoxelMap from '../js/voxel/VoxelMap.js';
-import VoxelBlockManager from '../js/voxel/VoxelBlockManager.js';
-import * as blocks from '../js/blocks.js';
-import * as ChunkUtils from '../js/ChunkUtils.js';
+import VoxelMap from '../voxel/VoxelMap.js';
+import VoxelBlockManager from '../voxel/VoxelBlockManager.js';
+import * as blocks from '../blocks.js';
+import * as ChunkUtils from '../ChunkUtils.js';
 
-import ChunkGeneratorFlat from '../js/generators/ChunkGeneratorFlat.js';
+import ChunkGeneratorFlat from '../generators/ChunkGeneratorFlat.js';
 
-import CollisionWorld from '../js/collisions/CollisionWorld.js';
-import CollisionEntityBox from '../js/collisions/types/box.js';
-import CollisionEntityVoxelMap from '../js/collisions/types/voxelMap.js';
+import CollisionWorld from '../collisions/CollisionWorld.js';
+import CollisionEntityBox from '../collisions/types/box.js';
+import CollisionEntityVoxelMap from '../collisions/types/voxelMap.js';
 
 export default {
 	components: {CssCube},
@@ -143,7 +143,7 @@ export default {
 		}
 
 		// resize
-		$(window).resize(() =>{
+		window.addEventListener('resize', () =>{
 			camera.aspect = window.innerWidth / window.innerHeight;
 			camera.updateProjectionMatrix();
 
@@ -202,7 +202,7 @@ export default {
 		// attached
 		Vue.nextTick(() => {
 			//add it to my element
-			$(this.three.renderer.domElement).appendTo(this.$refs.canvas);
+			this.$refs.canvas.appendChild(this.three.renderer.domElement);
 			this.enabled = true;
 		})
 	},
