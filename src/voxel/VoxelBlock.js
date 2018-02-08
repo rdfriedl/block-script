@@ -1,13 +1,13 @@
-import THREE from 'three';
+import THREE from "three";
 
 const NEIGHBORS_DIRS = [
-	[1,0,0],
-	[0,1,0],
-	[0,0,1],
-	[-1,0,0],
-	[0,-1,0],
-	[0,0,-1]
-]
+	[1, 0, 0],
+	[0, 1, 0],
+	[0, 0, 1],
+	[-1, 0, 0],
+	[0, -1, 0],
+	[0, 0, -1],
+];
 
 /**
  * @class the base class for all blocks
@@ -15,8 +15,8 @@ const NEIGHBORS_DIRS = [
  * @param {Object} [data] - an optional json object to pass to {@link VoxelBlock.fromJSON}
  * @param {Object} data.properties a Object to be passed to {@link VoxelBlock.setProp}
  */
-export default class VoxelBlock{
-	constructor(data){
+export default class VoxelBlock {
+	constructor(data) {
 		/**
 		 * the chunk we belong to
 		 * @type {VoxelChunk|VoxelSelection}
@@ -24,34 +24,40 @@ export default class VoxelBlock{
 		this.parent = undefined;
 
 		// check to see if we set up the properties
-		if(!Object.getPrototypeOf(this).hasOwnProperty('properties')){
+		if (!Object.getPrototypeOf(this).hasOwnProperty("properties")) {
 			this.constructor._setUpProperties();
 		}
 
-		if(data)
-			this.fromJSON(data);
+		if (data) this.fromJSON(data);
 	}
 
 	/**
 	 * @param  {THREE.Vector3} direction - the direction to check
 	 * @return {VoxelBlock}
 	 */
-	getNeighbor(dir){
-		if(!this.parent) return;
+	getNeighbor(dir) {
+		if (!this.parent) return;
 
 		var pos = dir.clone().add(this.position);
 
 		let parent = this.parent;
-        // only wrap if we are in a chunk, dont wrap if we are in a selection
-		if(this.chunk){
-			if(pos.x < 0 || pos.y < 0 || pos.z < 0 || pos.x >= this.chunkSize.x || pos.y >= this.chunkSize.y || pos.z >= this.chunkSize.z){
+		// only wrap if we are in a chunk, dont wrap if we are in a selection
+		if (this.chunk) {
+			if (
+				pos.x < 0 ||
+				pos.y < 0 ||
+				pos.z < 0 ||
+				pos.x >= this.chunkSize.x ||
+				pos.y >= this.chunkSize.y ||
+				pos.z >= this.chunkSize.z
+			) {
 				parent = parent.getNeighbor(dir);
-				if(!parent) return; // dont go any futher if we cant find the chunk
+				if (!parent) return; // dont go any futher if we cant find the chunk
 			}
 
-			if(pos.x >= this.chunkSize.x) pos.x -= this.chunkSize.x;
-			if(pos.y >= this.chunkSize.y) pos.y -= this.chunkSize.y;
-			if(pos.z >= this.chunkSize.z) pos.z -= this.chunkSize.z;
+			if (pos.x >= this.chunkSize.x) pos.x -= this.chunkSize.x;
+			if (pos.y >= this.chunkSize.y) pos.y -= this.chunkSize.y;
+			if (pos.z >= this.chunkSize.z) pos.z -= this.chunkSize.z;
 		}
 
 		return parent.getBlock(pos);
@@ -61,7 +67,7 @@ export default class VoxelBlock{
 	 * returns an array of neighbors
 	 * @return {VoxelBlock[]}
 	 */
-	getNeighbors(){
+	getNeighbors() {
 		let a = [];
 		let vec = new THREE.Vector3();
 		for (let i = 0; i < NEIGHBORS_DIRS.length; i++) {
@@ -75,7 +81,7 @@ export default class VoxelBlock{
 	 * @param  {String} id
 	 * @return {*}
 	 */
-	getProp(id){
+	getProp(id) {
 		return this.properties && this.properties[id];
 	}
 
@@ -85,16 +91,15 @@ export default class VoxelBlock{
 	 * @param {*} [value] the value to set the parameter to
 	 * @returns {this}
 	 */
-	setProp(id,value){
-		if(!this.hasOwnProperty('parameters'))
+	setProp(id, value) {
+		if (!this.hasOwnProperty("parameters"))
 			this.properties = Object.create(this.properties);
 
-		if(Object.isObject(id)){
-			for(let i in id){
+		if (Object.isObject(id)) {
+			for (let i in id) {
 				this.properties[i] = id[i];
 			}
-		}
-		else{
+		} else {
 			this.properties[id] = value;
 		}
 
@@ -109,10 +114,12 @@ export default class VoxelBlock{
 	 * @property {Number[]} rotation the rotation of this object, in format [x,y,z]
 	 * @property {Object} parameters an object containing all the parameters of the block
 	 */
-	toJSON(){
+	toJSON() {
 		return {
 			type: this.id,
-			properties: this.hasOwnProperty('properties') ? this.properties : undefined
+			properties: this.hasOwnProperty("properties")
+				? this.properties
+				: undefined,
 		};
 	}
 
@@ -122,9 +129,8 @@ export default class VoxelBlock{
 	 * @param {Object} json.properties an object to pass to {@link VoxelBlock.setProp}
 	 * @return {this}
 	 */
-	fromJSON(json){
-		if(json.properties)
-			this.setProp(json.properties);
+	fromJSON(json) {
+		if (json.properties) this.setProp(json.properties);
 
 		return this;
 	}
@@ -134,7 +140,7 @@ export default class VoxelBlock{
 	 * @return {VoxelChunk}
 	 * @readOnly
 	 */
-	get chunk(){
+	get chunk() {
 		return this.parent instanceof VoxelChunk ? this.parent : undefined;
 	}
 
@@ -143,7 +149,7 @@ export default class VoxelBlock{
 	 * @return {VoxelSelection}
 	 * @readOnly
 	 */
-	get selection(){
+	get selection() {
 		return this.parent instanceof VoxelSelection ? this.parent : undefined;
 	}
 
@@ -152,8 +158,10 @@ export default class VoxelBlock{
 	 * @type {THREE.Vector3}
 	 * @readOnly
 	 */
-	get position(){
-		return this.parent ? this.parent.getBlockPosition(this) : new THREE.Vector3();
+	get position() {
+		return this.parent
+			? this.parent.getBlockPosition(this)
+			: new THREE.Vector3();
 	}
 
 	/**
@@ -162,8 +170,13 @@ export default class VoxelBlock{
 	 * @type {THREE.Vector3}
 	 * @readOnly
 	 */
-	get worldPosition(){
-		return (this.chunk) ? this.chunk.chunkPosition.clone().multiply(this.chunkSize).add(this.position) : new THREE.Vector3();
+	get worldPosition() {
+		return this.chunk
+			? this.chunk.chunkPosition
+					.clone()
+					.multiply(this.chunkSize)
+					.add(this.position)
+			: new THREE.Vector3();
 	}
 
 	/**
@@ -172,8 +185,12 @@ export default class VoxelBlock{
 	 * @type {THREE.Vector3}
 	 * @readOnly
 	 */
-	get scenePosition(){
-		return (this.chunk) ? this.chunk.scenePosition.add(this.position.clone().multiply(this.blockSize)) : new THREE.Vector3();
+	get scenePosition() {
+		return this.chunk
+			? this.chunk.scenePosition.add(
+					this.position.clone().multiply(this.blockSize),
+				)
+			: new THREE.Vector3();
 	}
 
 	/**
@@ -181,7 +198,7 @@ export default class VoxelBlock{
 	 * @type {THREE.Vector3}
 	 * @readOnly
 	 */
-	get sceneCenter(){
+	get sceneCenter() {
 		return this.scenePosition.add(this.blockSize.clone().divideScalar(2));
 	}
 
@@ -189,18 +206,17 @@ export default class VoxelBlock{
 	 * @type {Boolean}
 	 * @readOnly
 	 */
-	get visible(){
+	get visible() {
 		let visible = false;
 		let blocks = this.getNeighbors();
-		for(let i in blocks){
+		for (let i in blocks) {
 			let b = blocks[i];
-			if(b instanceof VoxelBlock){
-				if(b.properties.transparent){
+			if (b instanceof VoxelBlock) {
+				if (b.properties.transparent) {
 					visible = true;
 					break;
 				}
-			}
-			else{
+			} else {
 				visible = true;
 				break;
 			}
@@ -214,7 +230,7 @@ export default class VoxelBlock{
 	 * @type {VoxelMap}
 	 * @readOnly
 	 */
-	get map(){
+	get map() {
 		return this.chunk && this.chunk.map;
 	}
 
@@ -223,8 +239,8 @@ export default class VoxelBlock{
 	 * @readOnly
 	 * @type {String}
 	 */
-	get id(){
-		return this.constructor.UID
+	get id() {
+		return this.constructor.UID;
 	}
 
 	/**
@@ -232,7 +248,7 @@ export default class VoxelBlock{
 	 * @return {ThREE.Vector3}
 	 * @readOnly
 	 */
-	get blockSize(){
+	get blockSize() {
 		return this.parent ? this.parent.blockSize : new THREE.Vector3();
 	}
 
@@ -241,7 +257,7 @@ export default class VoxelBlock{
 	 * @return {ThREE.Vector3}
 	 * @readOnly
 	 */
-	get chunkSize(){
+	get chunkSize() {
 		return this.parent ? this.parent.chunkSize : new THREE.Vector3();
 	}
 
@@ -250,10 +266,10 @@ export default class VoxelBlock{
 	 * @type {THREE.Geometry}
 	 * @readOnly
 	 */
-	get geometry(){
-		if(!this.constructor._geometryCache){
+	get geometry() {
+		if (!this.constructor._geometryCache) {
 			// create it
-			this.constructor._geometryCache = this.CreateGeometry(); ;
+			this.constructor._geometryCache = this.CreateGeometry();
 		}
 		return this.constructor._geometryCache;
 	}
@@ -262,8 +278,8 @@ export default class VoxelBlock{
 	 * @readOnly
 	 * @type {THREE.Material}
 	 */
-	get material(){
-		if(!this.constructor._materialCache){
+	get material() {
+		if (!this.constructor._materialCache) {
 			// create it
 			this.constructor._materialCache = this.CreateMaterial();
 		}
@@ -276,8 +292,8 @@ export default class VoxelBlock{
 	 * @private
 	 * @returns {THREE.Geometry}
 	 */
-	CreateGeometry(){
-		let geometry = new THREE.BoxGeometry(1,1,1);
+	CreateGeometry() {
+		let geometry = new THREE.BoxGeometry(1, 1, 1);
 		geometry.faces.forEach(f => {
 			f.materialIndex = 0;
 		});
@@ -289,7 +305,7 @@ export default class VoxelBlock{
 	 * @private
 	 * @returns {THREE.Material}
 	 */
-	CreateMaterial(){
+	CreateMaterial() {
 		return new THREE.MeshNormalMaterial();
 	}
 
@@ -298,20 +314,24 @@ export default class VoxelBlock{
 	 * this is called from {@link VoxelBlock.setProp} and {@link VoxelBlock.setProp}
 	 * @private
 	 */
-	UpdateProps(){}
+	UpdateProps() {}
 
-	static _setUpProperties(){
+	static _setUpProperties() {
 		let _super = Object.getPrototypeOf(this.prototype).constructor;
 		// make sure we extend a class the has properties
-		if(_super._setUpProperties){
+		if (_super._setUpProperties) {
 			// if my parent dose not have a properties object, create one
-			if(!_super.prototype.hasOwnProperty('properties'))
+			if (!_super.prototype.hasOwnProperty("properties"))
 				_super._setUpProperties();
 
-			this.prototype.properties = this.hasOwnProperty('DefalutProperties') ? this.DefalutProperties : {};
-			Object.setPrototypeOf(this.prototype.properties, _super.prototype.properties);
-		}
-		else{
+			this.prototype.properties = this.hasOwnProperty("DefalutProperties")
+				? this.DefalutProperties
+				: {};
+			Object.setPrototypeOf(
+				this.prototype.properties,
+				_super.prototype.properties,
+			);
+		} else {
 			this.prototype.properties = this.DefalutProperties || {};
 		}
 	}
@@ -324,7 +344,7 @@ export default class VoxelBlock{
  * @memberOf VoxelBlock
  * @static
  */
-VoxelBlock.UID = 'block';
+VoxelBlock.UID = "block";
 
 /**
  * options / info about this block
@@ -350,8 +370,8 @@ VoxelBlock.DefalutProperties = {
 	canRotateOnY: true,
 	stepSound: [],
 	placeSound: [],
-	removeSound: []
-}
+	removeSound: [],
+};
 
-import VoxelChunk from './VoxelChunk.js';
-import VoxelSelection from './VoxelSelection.js';
+import VoxelChunk from "./VoxelChunk.js";
+import VoxelSelection from "./VoxelSelection.js";

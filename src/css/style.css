@@ -1,12 +1,14 @@
 @font-face {
-    font-family: "CubicFive10";
-    src: url("../res/fonts/cubicfive10.woff");
+	font-family: "CubicFive10";
+	src: url("../res/fonts/cubicfive10.woff");
 }
-html, body {
+html,
+body {
 	width: 100%;
 	height: 100%;
-    overflow: hidden;
+	overflow: hidden;
 }
-body, *{
+body,
+* {
 	font-family: CubicFive10;
 }

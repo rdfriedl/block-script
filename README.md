@@ -10,38 +10,27 @@ coming soon...
 
 ## Browser Support
 
-***Runs fine in***
- - [Google Chrome 51](https://www.google.com/chrome)
+**_Runs fine in_**
 
-***Planed Browser Support***
- - [FireFox](https://www.mozilla.org/en-US/firefox/new)
- - [Opra](http://www.opera.com)
- - [Edge](http://www.microsoft.com/en-us/windows/microsoft-edge)
+* [Google Chrome 51](https://www.google.com/chrome)
 
-***Does not support***
- - [Safari](http://www.apple.com/safari)
- - [Internet Explorer](http://windows.microsoft.com/en-us/internet-explorer)
+**_Planed Browser Support_**
 
-## To-Do
- - set up eslint
- - remove vue-strap
- - clean up dependencies
- - clean up utils
- - clean up css utils
- - update threejs
- - move files from `src/js/` to `src/`
- - finish menu
- - build settings menu
- - add functional mini-map
- - add objects and models to the editor
- - add objects and models to the rooms
+* [FireFox](https://www.mozilla.org/en-US/firefox/new)
+* [Opra](http://www.opera.com)
+* [Edge](http://www.microsoft.com/en-us/windows/microsoft-edge)
+
+**_Does not support_**
+
+* [Safari](http://www.apple.com/safari)
+* [Internet Explorer](http://windows.microsoft.com/en-us/internet-explorer)
 
 ## Credits
 
-***Images / Textures***
+**_Images / Textures_**
 
- - All block textures are from: [Dokucraft](http://dokucraft.co.uk/)
+* All block textures are from: [Dokucraft](http://dokucraft.co.uk/)
 
-***Fonts***
+**_Fonts_**
 
- - All fonts are from: [iamcal.com](http://www.iamcal.com/misc/fonts)
+* All fonts are from: [iamcal.com](http://www.iamcal.com/misc/fonts)

@@ -1,11 +1,11 @@
-import THREE from 'three';
+import THREE from "three";
 
 /**
  * @class manages and loads models
  * @name ModelManager
  */
-export default class ModelManager{
-	constructor(){
+export default class ModelManager {
+	constructor() {
 		/**
 		 * the cache for all the registed models
 		 * @var {Object}
@@ -34,7 +34,7 @@ export default class ModelManager{
 	 * @memberOf ModelManager
 	 * @static
 	 */
-	static get inst(){
+	static get inst() {
 		return this._inst || (this._inst = new this());
 	}
 
@@ -46,9 +46,8 @@ export default class ModelManager{
 	 * @param  {Function} loader - a function that takes (url, callback)
 	 * @return {this}
 	 */
-	register(id, url, loader){
-		if(this.has(id))
-			return this;
+	register(id, url, loader) {
+		if (this.has(id)) return this;
 
 		this.models[id] = {
 			loading: false,
@@ -56,8 +55,8 @@ export default class ModelManager{
 			url: url,
 			mesh: undefined,
 			callbacks: [],
-			meshes: []
-		}
+			meshes: [],
+		};
 
 		return this;
 	}
@@ -70,11 +69,11 @@ export default class ModelManager{
 	 * @param  {Function} models.loader - a function that takes (url, callback)
 	 * @return {this}
 	 */
-	registerMany(models){
-		if(Array.isArray(models)){
+	registerMany(models) {
+		if (Array.isArray(models)) {
 			models.filter(m => !this.has(m.id)).forEach(data => {
 				this.register(data.id, data.url, data.loader);
-			})
+			});
 		}
 		return this;
 	}
@@ -83,7 +82,7 @@ export default class ModelManager{
 	 * @param  {String} id - the id of the model to check for
 	 * @return {Boolean}
 	 */
-	has(id){
+	has(id) {
 		return !!this.models[id];
 	}
 
@@ -94,20 +93,19 @@ export default class ModelManager{
 	 * @param {Function} [cb] - called when the model is loaded, if the model is already loaded it will be called
 	 * @return {THREE.Mesh}
 	 */
-	getMesh(id, cb){
-		if(this.has(id)){
+	getMesh(id, cb) {
+		if (this.has(id)) {
 			let model = this.models[id];
 
-			if(model.mesh)
-				return model.mesh.clone();
+			if (model.mesh) return model.mesh.clone();
 
 			// load model
-			if(!model.loading){
+			if (!model.loading) {
 				model.loader(model.url, mesh => {
 					model.mesh = mesh;
 					model.loading = false;
 
-					for(let mesh of model.meshes){
+					for (let mesh of model.meshes) {
 						mesh.copy(model.mesh);
 						mesh.geometry = model.mesh.geometry;
 						mesh.material = model.mesh.material;
@@ -122,18 +120,16 @@ export default class ModelManager{
 			// model is loading, add a callback
 			let mesh = new THREE.Mesh(this.tmpGeometry, this.tmpMaterial);
 			model.meshes.push(mesh);
-			if(cb) model.callbacks.push(cb);
+			if (cb) model.callbacks.push(cb);
 			return mesh;
-		}
-		else
-			console.warn('no model with id: ' + id);
+		} else console.warn("no model with id: " + id);
 	}
 
 	/**
 	 * returns an array of model ids that are registered in the manager
 	 * @return {String[]}
 	 */
-	listModels(){
+	listModels() {
 		return Reflect.ownKeys(this.models);
 	}
 }

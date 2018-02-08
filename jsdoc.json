@@ -13,7 +13,7 @@
 		"access": "all",
 		"template": "node_modules/ink-docstrap/template"
 	},
-	"templates":{
+	"templates": {
 		"systemName": "Block - Script",
 		"theme": "simplex",
 		"linenums": true,

@@ -1,12 +1,12 @@
-import THREE from 'three';
-import CollisionEntity from './CollisionEntity.js';
+import THREE from "three";
+import CollisionEntity from "./CollisionEntity.js";
 
 /**
  * @class
  * @name CollisionWorld
  */
-export default class CollisionWorld{
-	constructor(){
+export default class CollisionWorld {
+	constructor() {
 		/**
 		 * a clock to keep track of time
 		 * @var {THREE.Clock}
@@ -31,21 +31,21 @@ export default class CollisionWorld{
 	 * @param {Number} [dtime] - the delta time to use, if none is provided it will get it from this worlds clock
 	 * @return {this}
 	 */
-	step(dtime){
-		if(dtime == undefined)
-			dtime = this.clock.getDelta();
-		else
-			this.clock.getDelta();
+	step(dtime) {
+		if (dtime == undefined) dtime = this.clock.getDelta();
+		else this.clock.getDelta();
 
 		// update all entities
-		this.listEntities().filter(e => !e.isStatic).forEach(entity => {
-			// add gravity
-			// NOTE: multiply gravity by dtime since its a type of acceleration and is effected by time
-			entity.velocity.add(this.gravity.clone().multiplyScalar(dtime * 60));
+		this.listEntities()
+			.filter(e => !e.isStatic)
+			.forEach(entity => {
+				// add gravity
+				// NOTE: multiply gravity by dtime since its a type of acceleration and is effected by time
+				entity.velocity.add(this.gravity.clone().multiplyScalar(dtime * 60));
 
-			// step
-			entity.step(dtime);
-		})
+				// step
+				entity.step(dtime);
+			});
 
 		return this;
 	}
@@ -54,7 +54,7 @@ export default class CollisionWorld{
 	 * call this when you start the world up again, it will reset the clock
 	 * @return {this}
 	 */
-	unpause(){
+	unpause() {
 		this.clock.getDelta();
 		return this;
 	}
@@ -64,8 +64,8 @@ export default class CollisionWorld{
 	 * @param {CollisionEntity} entity
 	 * @returns {this}
 	 */
-	addEntity(entity){
-		if(entity instanceof CollisionEntity){
+	addEntity(entity) {
+		if (entity instanceof CollisionEntity) {
 			this.entities.add(entity);
 
 			entity.world = this;
@@ -79,8 +79,8 @@ export default class CollisionWorld{
 	 * @param  {CollisionEntity} entity
 	 * @return {this}
 	 */
-	removeEntity(entity){
-		if(this.entities.has(entity)){
+	removeEntity(entity) {
+		if (this.entities.has(entity)) {
 			this.entities.delete(entity);
 
 			entity.world = undefined;
@@ -93,7 +93,7 @@ export default class CollisionWorld{
 	 * returns an array of all {@link CollisionEntity}s in this world
 	 * @return {CollisionEntity[]}
 	 */
-	listEntities(){
+	listEntities() {
 		return Array.from(this.entities);
 	}
 }

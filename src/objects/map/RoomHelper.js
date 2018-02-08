@@ -1,27 +1,29 @@
-import THREE from 'three';
-import Room from '../../rooms/Room.js';
-import 'imports-loader?THREE=three!../../lib/THREE.MeshLine.js';
+import THREE from "three";
+import Room from "../../rooms/Room.js";
+import "imports-loader?THREE=three!../../lib/THREE.MeshLine.js";
 
-export default class RoomHelper extends THREE.Group{
-	constructor(room){
+export default class RoomHelper extends THREE.Group {
+	constructor(room) {
 		super();
 
 		this.room = room;
 		this.roomSize = new THREE.Vector3();
 
-		if(this.room)
-			this.roomSize.copy(this.room.size);
+		if (this.room) this.roomSize.copy(this.room.size);
 
 		this.RoomColor = new THREE.Color(0x222222);
 		this.DoorColors = {
 			x: new THREE.Color(0x2222ff),
 			z: new THREE.Color(0x2222ff),
 			y: new THREE.Color(0x225522),
-			w: new THREE.Color(0xDCE15A)
+			w: new THREE.Color(0xdce15a),
 		};
 
 		// create the geometry
-		this.border = new THREE.BoxHelper(new THREE.Box3(new THREE.Vector3(), new THREE.Vector3(1,1,1)), this.RoomColor);
+		this.border = new THREE.BoxHelper(
+			new THREE.Box3(new THREE.Vector3(), new THREE.Vector3(1, 1, 1)),
+			this.RoomColor,
+		);
 		this.add(this.border);
 
 		// create doors group
@@ -32,14 +34,13 @@ export default class RoomHelper extends THREE.Group{
 		this.update();
 	}
 
-	update(){
-		if(!this.room)
-			return;
+	update() {
+		if (!this.room) return;
 
 		let halfRoom = this.roomSize.clone().divideScalar(2);
 
 		// update doors on x, y, z axes
-		['x','y','z'].forEach(axis => {
+		["x", "y", "z"].forEach(axis => {
 			let geometry = new THREE.Geometry();
 			let material = new THREE.MeshLineMaterial({
 				lineWidth: 0.3,
@@ -47,10 +48,13 @@ export default class RoomHelper extends THREE.Group{
 				resolution: new THREE.Vector3(window.innerWidth, window.innerHeight),
 				sizeAttenuation: true,
 				near: 1,
-				far: 10000
+				far: 10000,
 			});
 
-			if((this.room.doors[axis] & Room.DOOR_POSITIVE) && (this.room.doors[axis] & Room.DOOR_NEGATIVE)){
+			if (
+				this.room.doors[axis] & Room.DOOR_POSITIVE &&
+				this.room.doors[axis] & Room.DOOR_NEGATIVE
+			) {
 				let start = halfRoom.clone();
 				start[axis] -= halfRoom[axis];
 				geometry.vertices.push(start);
@@ -58,15 +62,13 @@ export default class RoomHelper extends THREE.Group{
 				let end = halfRoom.clone();
 				end[axis] += halfRoom[axis];
 				geometry.vertices.push(end);
-			}
-			else if(this.room.doors[axis] & Room.DOOR_POSITIVE){
+			} else if (this.room.doors[axis] & Room.DOOR_POSITIVE) {
 				geometry.vertices.push(halfRoom.clone());
 
 				let end = halfRoom.clone();
 				end[axis] += halfRoom[axis];
 				geometry.vertices.push(end);
-			}
-			else if(this.room.doors[axis] & Room.DOOR_NEGATIVE){
+			} else if (this.room.doors[axis] & Room.DOOR_NEGATIVE) {
 				geometry.vertices.push(halfRoom.clone());
 
 				let end = halfRoom.clone();
@@ -78,7 +80,7 @@ export default class RoomHelper extends THREE.Group{
 			line.setGeometry(geometry);
 			let mesh = new THREE.Mesh(line.geometry, material);
 			this.doors.add(mesh);
-		})
+		});
 
 		// set the border color
 		this.border.material.color.copy(this.RoomColor);

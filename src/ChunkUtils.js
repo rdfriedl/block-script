@@ -1,4 +1,4 @@
-import THREE from 'three';
+import THREE from "three";
 
 /**
  * @module ChunkUtils
@@ -12,9 +12,13 @@ import THREE from 'three';
  * @param  {String|Function} block the block to use. if a function is passed it will be called with
  * @param  {THREE.Vector3} block.pos the position of the block
  */
-export function drawLine(chunk, fromV, toV, block){
+export function drawLine(chunk, fromV, toV, block) {
 	let dv = new THREE.Vector3().add(toV).sub(fromV);
-	let sv = new THREE.Vector3(fromV.x < toV.x ? 1 : -1, fromV.y < toV.y ? 1 : -1, fromV.z < toV.z ? 1 : -1);
+	let sv = new THREE.Vector3(
+		fromV.x < toV.x ? 1 : -1,
+		fromV.y < toV.y ? 1 : -1,
+		fromV.z < toV.z ? 1 : -1,
+	);
 	let err = 0;
 }
 
@@ -27,48 +31,49 @@ export function drawLine(chunk, fromV, toV, block){
  * @param  {THREE.Vector3} block.pos the position of the block
  * @param  {String} [type='solid'] the type of cube ('solide', 'hollow', 'frame')
  */
-export function drawCube(chunk, fromV, toV, block, type = 'solid'){
+export function drawCube(chunk, fromV, toV, block, type = "solid") {
 	let pos = new THREE.Vector3();
-	let min = new THREE.Vector3(Infinity,Infinity,Infinity).min(fromV).min(toV);
-	let max = new THREE.Vector3(-Infinity,-Infinity,-Infinity).max(fromV).max(toV);
+	let min = new THREE.Vector3(Infinity, Infinity, Infinity).min(fromV).min(toV);
+	let max = new THREE.Vector3(-Infinity, -Infinity, -Infinity)
+		.max(fromV)
+		.max(toV);
 
-	if(!Number.isFinite(min.length()) || !Number.isFinite(max.length()))
-		return;
+	if (!Number.isFinite(min.length()) || !Number.isFinite(max.length())) return;
 
-	function setBlock(pos){
+	function setBlock(pos) {
 		let b = block instanceof Function ? block(pos) : block;
-		if(b == null || b == undefined)
-			chunk.removeBlock(pos);
-		else
-			chunk.setBlock(b, pos);
+		if (b == null || b == undefined) chunk.removeBlock(pos);
+		else chunk.setBlock(b, pos);
 	}
 
 	for (let x = min.x; x <= max.x; x++) {
 		for (let y = min.y; y <= max.y; y++) {
 			for (let z = min.z; z <= max.z; z++) {
-				pos.set(x,y,z);
+				pos.set(x, y, z);
 
-				switch(type){
-					case 'frame':
-						if(
+				switch (type) {
+					case "frame":
+						if (
 							(pos.x == min.x || pos.x == max.x) +
-							(pos.y == min.y || pos.y == max.y) +
-							(pos.z == min.z || pos.z == max.z) >= 2
-						){
+								(pos.y == min.y || pos.y == max.y) +
+								(pos.z == min.z || pos.z == max.z) >=
+							2
+						) {
 							setBlock(pos);
 						}
 						break;
-					case 'hollow':
-						if(
-							(pos.x == min.x || pos.x == max.x) ||
+					case "hollow":
+						if (
+							pos.x == min.x ||
+							pos.x == max.x ||
 							(pos.y == min.y || pos.y == max.y) ||
 							(pos.z == min.z || pos.z == max.z)
-						){
+						) {
 							setBlock(pos);
 						}
 						break;
 					default:
-					case 'solid':
+					case "solid":
 						setBlock(pos);
 						break;
 				}
@@ -83,18 +88,19 @@ export function drawCube(chunk, fromV, toV, block, type = 'solid'){
  * @param  {THREE.Vector3} from the start position
  * @param  {THREE.Vector3} to the end position
  */
-export function clearCube(chunk, fromV, toV){
+export function clearCube(chunk, fromV, toV) {
 	let pos = new THREE.Vector3();
-	let min = new THREE.Vector3(Infinity,Infinity,Infinity).min(fromV).min(toV);
-	let max = new THREE.Vector3(-Infinity,-Infinity,-Infinity).max(fromV).max(toV);
+	let min = new THREE.Vector3(Infinity, Infinity, Infinity).min(fromV).min(toV);
+	let max = new THREE.Vector3(-Infinity, -Infinity, -Infinity)
+		.max(fromV)
+		.max(toV);
 
-	if(!Number.isFinite(min.length()) || !Number.isFinite(max.length()))
-		return;
+	if (!Number.isFinite(min.length()) || !Number.isFinite(max.length())) return;
 
 	for (let x = min.x; x <= max.x; x++) {
 		for (let y = min.y; y <= max.y; y++) {
 			for (let z = min.z; z <= max.z; z++) {
-				chunk.removeBlock(pos.set(x,y,z));
+				chunk.removeBlock(pos.set(x, y, z));
 			}
 		}
 	}
@@ -109,9 +115,7 @@ export function clearCube(chunk, fromV, toV){
  * @param  {THREE.Vector3} block.pos the position of the block
  * @param  {String} [type='solid'] the type of sphere ('solide', 'hollow')
  */
-export function drawSphere(chunk, center, radius, block, type = 'solid'){
-
-}
+export function drawSphere(chunk, center, radius, block, type = "solid") {}
 
 /**
  * copies blocks from one chunk to another
@@ -125,43 +129,44 @@ export function drawSphere(chunk, center, radius, block, type = 'solid'){
  * @param  {Boolean} [opts.copyEmpty=false] - whether it should only copy the empty spaces
  * @param  {Boolean} [opts.keepOffset=true] - if it should keep the original position of the blocks or place them reletive to fromV in toChunk
  */
-export function copyBlocks(fromChunk, toChunk, fromV, toV, opts){
-	opts = Object.assign({
-		cloneBlocks: true,
-		copyEmpty: false,
-		keepOffset: true,
-		offset: new THREE.Vector3()
-	}, opts || {});
+export function copyBlocks(fromChunk, toChunk, fromV, toV, opts) {
+	opts = Object.assign(
+		{
+			cloneBlocks: true,
+			copyEmpty: false,
+			keepOffset: true,
+			offset: new THREE.Vector3(),
+		},
+		opts || {},
+	);
 
 	let fromPos = new THREE.Vector3();
 	let toPos = new THREE.Vector3();
-	let min = new THREE.Vector3(Infinity,Infinity,Infinity).min(fromV).min(toV);
-	let max = new THREE.Vector3(-Infinity,-Infinity,-Infinity).max(fromV).max(toV);
+	let min = new THREE.Vector3(Infinity, Infinity, Infinity).min(fromV).min(toV);
+	let max = new THREE.Vector3(-Infinity, -Infinity, -Infinity)
+		.max(fromV)
+		.max(toV);
 
-	if(!Number.isFinite(min.length()) || !Number.isFinite(max.length()))
-		return;
+	if (!Number.isFinite(min.length()) || !Number.isFinite(max.length())) return;
 
 	for (let x = min.x; x <= max.x; x++) {
 		for (let y = min.y; y <= max.y; y++) {
 			for (let z = min.z; z <= max.z; z++) {
-				fromPos.set(x,y,z);
+				fromPos.set(x, y, z);
 				toPos.copy(fromPos);
 
-				if(!opts.keepOffset)
-					toPos.sub(min);
+				if (!opts.keepOffset) toPos.sub(min);
 
 				toPos.add(opts.offset);
 
 				let block = fromChunk.getBlock(fromPos);
-				if(block){
-					if(opts.cloneBlocks && toChunk.blockManager)
+				if (block) {
+					if (opts.cloneBlocks && toChunk.blockManager)
 						block = toChunk.blockManager.cloneBlock(block);
-					else if(block.parent)
-						block.parent.removeBlock(block);
+					else if (block.parent) block.parent.removeBlock(block);
 
 					toChunk.setBlock(block, toPos);
-				}
-				else if(opts.copyEmpty){
+				} else if (opts.copyEmpty) {
 					toChunk.removeBlock(toPos);
 				}
 			}
@@ -180,45 +185,52 @@ export function copyBlocks(fromChunk, toChunk, fromV, toV, opts){
  * @param  {Boolean} [opts.ignoreEmpty=false] - whether to ignore the empty spaces
  */
 export function rotateBlocks(chunk, box, around, quaternion, opts) {
-	opts = Object.assign({
-		cloneBlocks: false,
-		ignoreEmpty: false,
-		offset: new THREE.Vector3()
-	}, opts || {});
+	opts = Object.assign(
+		{
+			cloneBlocks: false,
+			ignoreEmpty: false,
+			offset: new THREE.Vector3(),
+		},
+		opts || {},
+	);
 
 	let blocks = [];
 	let pos = new THREE.Vector3();
 	for (let x = box.min.x; x <= box.max.x; x++) {
 		for (let y = box.min.y; y <= box.max.y; y++) {
 			for (let z = box.min.z; z <= box.max.z; z++) {
-				let block = chunk.getBlock(pos.set(x,y,z));
+				let block = chunk.getBlock(pos.set(x, y, z));
 
-				if(block){
+				if (block) {
 					// clone the block, or remove it from its parent
-					if(opts.cloneBlocks && chunk.blockManager)
+					if (opts.cloneBlocks && chunk.blockManager)
 						block = chunk.blockManager.cloneBlock(block);
-					else
-						block.parent.removeBlock(block);
+					else block.parent.removeBlock(block);
 				}
 
-				if(opts.ignoreEmpty ? !!block : true)
+				if (opts.ignoreEmpty ? !!block : true)
 					blocks.push([block, pos.toString()]);
 			}
 		}
 	}
 
-	let half = new THREE.Vector3(0.5,0.5,0.5);
+	let half = new THREE.Vector3(0.5, 0.5, 0.5);
 	blocks.forEach(data => {
 		let block = data[0];
 		pos.fromString(data[1]);
 
 		// apply transform
-		pos.add(half).sub(around).applyQuaternion(quaternion).add(around).sub(half).add(opts.offset).round();
+		pos
+			.add(half)
+			.sub(around)
+			.applyQuaternion(quaternion)
+			.add(around)
+			.sub(half)
+			.add(opts.offset)
+			.round();
 
 		// set the block
-		if(block)
-			chunk.setBlock(block, pos);
-		else
-			chunk.removeBlock(pos);
-	})
+		if (block) chunk.setBlock(block, pos);
+		else chunk.removeBlock(pos);
+	});
 }

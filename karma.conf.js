@@ -1,26 +1,26 @@
 // we can just use the exact same webpack config by requiring it
-const webpackConfig = require('./webpack.config.js');
-const webpack = require('webpack');
-delete webpackConfig.entry
+const webpackConfig = require("./webpack.config.js");
+const webpack = require("webpack");
+delete webpackConfig.entry;
 delete webpackConfig.externals; //remove externals
-webpackConfig.devtool = 'inline-source-map';
+webpackConfig.devtool = "inline-source-map";
 
 module.exports = function(config) {
 	config.set({
-		browsers: ['Chrome', 'Firefox', 'IE'],
-		frameworks: ['jasmine'],
+		browsers: ["Chrome", "Firefox", "IE"],
+		frameworks: ["jasmine"],
 		// this is the entry file for all our tests.
-		files: ['tests/index.js'],
+		files: ["tests/index.js"],
 		// we will pass the entry file to webpack for bundling.
 		preprocessors: {
-			'tests/index.js': ['webpack', 'sourcemap']
+			"tests/index.js": ["webpack", "sourcemap"],
 		},
 		// use the webpack config
 		webpack: webpackConfig,
 		// avoid walls of useless text
 		webpackMiddleware: {
-			noInfo: true
+			noInfo: true,
 		},
-		singleRun: false
-	})
-}
+		singleRun: false,
+	});
+};

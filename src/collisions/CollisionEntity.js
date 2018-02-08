@@ -1,4 +1,4 @@
-import THREE from 'three';
+import THREE from "three";
 
 /**
  * @class
@@ -6,8 +6,8 @@ import THREE from 'three';
  *
  * @param {CollisionShape} [shape] - the shape that this entity will use
  */
-export default class CollisionEntity{
-	constructor(){
+export default class CollisionEntity {
+	constructor() {
 		/**
 		 * the position of this CollisionEntity
 		 * @var {THREE.Vector3}
@@ -31,7 +31,7 @@ export default class CollisionEntity{
 		 * this is used in the step method
 		 * @var {CollisionWorld}
 		 */
-		this.world = undefined
+		this.world = undefined;
 	}
 
 	/**
@@ -39,7 +39,7 @@ export default class CollisionEntity{
 	 * @param {Number} dtime - the delta time
 	 * @return {this}
 	 */
-	step(dtime){
+	step(dtime) {
 		let velocity = this.velocity.clone().multiplyScalar(dtime);
 
 		// get movment boundingBox
@@ -49,30 +49,33 @@ export default class CollisionEntity{
 		// get all entities that are in the way
 		let entities = this.world.listEntities().filter(entity => {
 			// make sure its not us, and also that its static (since we cant handle non-static collisions)
-			return entity !== this && entity.isStatic && movementBox.intersectsBox(entity.boundingBox);
+			return (
+				entity !== this &&
+				entity.isStatic &&
+				movementBox.intersectsBox(entity.boundingBox)
+			);
 		});
 
 		// loop until we stop moving
 		let a = 0;
-		while(!velocity.empty() && a++ < 12){
+		while (!velocity.empty() && a++ < 12) {
 			let col, entity;
 
 			// find the first collision
 			for (var i = 0; i < entities.length; i++) {
 				let data = entities[i].getCollisionData(this, velocity, movementBox);
-				if(!col || data.entryTime <= col.entryTime){
+				if (!col || data.entryTime <= col.entryTime) {
 					col = data;
 					entity = entities[i];
 				}
 			}
 
 			// if there was no collision
-			if(!col || col.entryTime == Infinity || col.entryTime == 1){
+			if (!col || col.entryTime == Infinity || col.entryTime == 1) {
 				// move
 				this.position.add(velocity);
-				velocity.set(0,0,0);
-			}
-			else{
+				velocity.set(0, 0, 0);
+			} else {
 				// if col.entryTime is inifnity, set it to 1
 				let entryTime = Number.isFinite(col.entryTime) ? col.entryTime : 1;
 
@@ -82,8 +85,7 @@ export default class CollisionEntity{
 				// ajust velocity to slide
 				velocity.projectOnPlane(col.normal).multiplyScalar(1 - entryTime);
 
-				if(this.onCollision)
-					this.onCollision(entity, col.normal)
+				if (this.onCollision) this.onCollision(entity, col.normal);
 			}
 		}
 
@@ -95,13 +97,13 @@ export default class CollisionEntity{
 	 * @param {CollisionEntity} entity
 	 * @param {THREE.Vector3} normal
 	 */
-	onCollision(entity, normal){}
+	onCollision(entity, normal) {}
 
 	/**
 	 * returns a bounding box for this entity
 	 * @return {THREE.Box}
 	 */
-	getBoundingBox(){
+	getBoundingBox() {
 		return new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
 	}
 
@@ -109,7 +111,7 @@ export default class CollisionEntity{
 	 * returns the bounding box of this entity relivive to its position
 	 * @return {THREE.Box3}
 	 */
-	get boundingBox(){
+	get boundingBox() {
 		return this.getBoundingBox().translate(this.position);
 	}
 
@@ -120,11 +122,11 @@ export default class CollisionEntity{
 	 * @param {THREE.Box3} movementBox
 	 * @returns {Object}
 	 */
-	getCollisionData(entity, velocity, movementBox){
+	getCollisionData(entity, velocity, movementBox) {
 		return {
 			entryTime: Infinity, // it never collides with this entity
 			exitTime: Infinity,
-			normal: new THREE.Vector3()
-		}
+			normal: new THREE.Vector3(),
+		};
 	}
 }
