@@ -2,6 +2,8 @@ const path = require("path");
 const webpack = require("webpack");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
+const CircularDependencyPlugin = require("circular-dependency-plugin");
+const DuplicatePackageCheckerPlugin = require("duplicate-package-checker-webpack-plugin");
 
 const IS_DEV = process.env.NODE_ENV === "development";
 const IS_PROD = process.env.NODE_ENV === "production";
@@ -25,6 +27,10 @@ module.exports = {
 		publicPath: "",
 	},
 	plugins: [
+		new CircularDependencyPlugin({
+			exclude: /node_modules/,
+		}),
+		new DuplicatePackageCheckerPlugin(),
 		new webpack.optimize.CommonsChunkPlugin({
 			name: "vendor",
 			chunks: ["main"],

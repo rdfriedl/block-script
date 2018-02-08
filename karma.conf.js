@@ -7,7 +7,13 @@ webpackConfig.devtool = "inline-source-map";
 
 module.exports = function(config) {
 	config.set({
-		browsers: ["Chrome", "Firefox", "IE"],
+		browsers: ["ChromeHeadless", "FirefoxHeadless"],
+		customLaunchers: {
+			FirefoxHeadless: {
+				base: "Firefox",
+				flags: ["-headless"],
+			},
+		},
 		frameworks: ["jasmine"],
 		// this is the entry file for all our tests.
 		files: ["tests/index.js"],

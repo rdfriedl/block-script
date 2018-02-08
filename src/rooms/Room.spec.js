@@ -1,5 +1,5 @@
 import THREE from "three";
-import DefaultRooms from "../../src/js/rooms.js";
+import DefaultRooms from "../rooms.js";
 
 describe("Room", function() {
 	beforeAll(function() {

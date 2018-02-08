@@ -1,8 +1,8 @@
-import VoxelMap from "../../src/js/voxel/VoxelMap.js";
-import VoxelChunk from "../../src/js/voxel/VoxelChunk.js";
-import VoxelSelection from "../../src/js/voxel/VoxelSelection.js";
-import VoxelBlock from "../../src/js/voxel/VoxelBlock.js";
-import VoxelBlockManager from "../../src/js/voxel/VoxelBlockManager.js";
+import VoxelMap from "./VoxelMap.js";
+import VoxelChunk from "./VoxelChunk.js";
+import VoxelSelection from "./VoxelSelection.js";
+import VoxelBlock from "./VoxelBlock.js";
+import VoxelBlockManager from "./VoxelBlockManager.js";
 import THREE from "three";
 
 describe("VoxelChunk", function() {

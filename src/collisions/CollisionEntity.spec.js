@@ -1,6 +1,5 @@
 import THREE from "three";
-import CollisionEntity from "../../src/js/collisions/CollisionEntity.js";
-import CollisionShape from "../../src/js/collisions/CollisionShape.js";
+import CollisionEntity from "./CollisionEntity.js";
 
 describe("CollisionEntity", function() {
 	beforeAll(function() {

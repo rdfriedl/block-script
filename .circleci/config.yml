@@ -3,7 +3,7 @@ jobs:
   test:
     working_directory: ~/repo
     docker:
-      - image: circleci/node:latest
+      - image: circleci/node:latest-browsers
 
     steps:
       - checkout
@@ -76,7 +76,10 @@ workflows:
   version: 2
   build-and-deploy:
     jobs:
-      - build
+      - test
+      - build:
+         requires:
+           - test
       - deploy:
           requires:
             - build

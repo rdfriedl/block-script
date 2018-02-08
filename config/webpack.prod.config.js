@@ -15,4 +15,12 @@ module.exports = merge.smart(base, {
 			exclude: [/(node_modules|web_modules)/],
 		}),
 	],
+	stats: {
+		hash: false,
+		env: true,
+		version: true,
+		timings: true,
+		assets: true,
+		modules: false,
+	},
 });

@@ -1,4 +1,5 @@
 import MazeGenerator from "./MazeGenerator.js";
+import THREE from "three";
 
 function weightedRand(spec) {
 	let total = 0;
@@ -111,4 +112,64 @@ export default class RecursiveBacktracker extends MazeGenerator {
 		// start
 		processCell.call(this, this.start);
 	}
+}
+
+// debug functions
+if (process.env.NODE_ENV === "development") {
+	window.print2DMaze = function(maze) {
+		if (!(maze instanceof MazeGenerator)) {
+			maze = new RecursiveBacktracker(
+				THREE.Vector2,
+				new THREE.Vector2(arguments[0] || 10, arguments[1] || 10),
+			);
+			maze.generate(arguments[2]);
+		}
+
+		let str = "";
+		let tmpVec = new THREE.Vector2();
+		let X = MazeGenerator.DOOR_NONE;
+		let P = MazeGenerator.DOOR_POSITIVE;
+		let N = MazeGenerator.DOOR_NEGATIVE;
+		for (let y = 0; y < maze.size.y; y++) {
+			for (let x = 0; x < maze.size.x; x++) {
+				let cell = maze.getCell(tmpVec.set(x, y)) || new THREE.Vector2();
+
+				// strait
+				if (cell.x == (P | N) && cell.y == X) str += "─";
+				if (cell.x == X && cell.y == (P | N)) str += "│";
+
+				// corners
+				if (cell.x == P && cell.y == P) str += "┌";
+				if (cell.x == N && cell.y == P) str += "┐";
+				if (cell.x == N && cell.y == N) str += "┘";
+				if (cell.x == P && cell.y == N) str += "└";
+
+				// Ts
+				if (cell.x == P && cell.y == (P | N)) str += "├";
+				if (cell.x == N && cell.y == (P | N)) str += "┤";
+				if (cell.x == (P | N) && cell.y == P) str += "┬";
+				if (cell.x == (P | N) && cell.y == N) str += "┴";
+
+				// ends
+				if (cell.x == P && cell.y == X) str += "╶";
+				if (cell.x == N && cell.y == X) str += "╴";
+				if (cell.x == X && cell.y == P) str += "╷";
+				if (cell.x == X && cell.y == N) str += "╵";
+
+				// cross
+				if (cell.x == (P | N) && cell.y == (P | N)) str += "┼";
+
+				// nothing
+				if (cell.x == X && cell.y == X) str += " ";
+			}
+
+			// new line
+			str += "\n";
+		}
+
+		console.log(
+			"%c" + str,
+			"font-size: 2em; background-color: white; color: black;",
+		);
+	};
 }

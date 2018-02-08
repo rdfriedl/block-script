@@ -1,6 +1,6 @@
-import VoxelBlock from "../../src/js/voxel/VoxelBlock.js";
-import VoxelBlockManager from "../../src/js/voxel/VoxelBlockManager.js";
-import * as blocks from "../../src/js/blocks.js";
+import VoxelBlock from "./VoxelBlock.js";
+import VoxelBlockManager from "./VoxelBlockManager.js";
+import * as blocks from "../blocks.js";
 
 describe("VoxelBlockManager", function() {
 	beforeAll(function() {

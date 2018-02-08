@@ -1,5 +1,5 @@
 import THREE from "three";
-import MazeGenerator from "../../src/js/maze-generators/MazeGenerator.js";
+import MazeGenerator from "./MazeGenerator.js";
 
 describe("MazeGenerator", function() {
 	beforeAll(function() {

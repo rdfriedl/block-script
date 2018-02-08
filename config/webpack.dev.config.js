@@ -4,7 +4,15 @@ const merge = require("webpack-merge");
 module.exports = merge.smart(base, {
 	devtool: "source-map",
 	devServer: {
-		contentBase: "dist",
-		port: 8080,
+		port: 8000,
+		overlay: true,
+		stats: {
+			hash: false,
+			version: false,
+			assets: false,
+			modules: true,
+			timings: true,
+			cached: false,
+		},
 	},
 });
