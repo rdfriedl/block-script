@@ -1,4 +1,3 @@
-// import $ from 'script-loader!jquery';
 import keypress from 'keypress';
 
 function simulateKeyEvent(el,char,type) {

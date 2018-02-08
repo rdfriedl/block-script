@@ -3,7 +3,8 @@
 </template>
 
 <script>
-// import $ from 'script-loader!jquery';
+import 'script-loader!jquery';
+import Vue from 'vue';
 import 'script-loader!bootstrap-switch/dist/js/bootstrap-switch.min.js';
 import 'bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.min.css';
 

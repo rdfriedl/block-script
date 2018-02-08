@@ -152,7 +152,7 @@ MazeGenerator.DOOR_POSITIVE = MazeGenerator.DOOR_UP = 2; // bits: 10
 MazeGenerator.DOOR_NEGATIVE = MazeGenerator.DOOR_DOWN = 1; // bits: 01
 
 // debug functions
-if(process.env.NODE_ENV == 'dev'){
+if(process.env.NODE_ENV == 'development'){
 	window.print2DMaze = function(maze){
 		if(!(maze instanceof MazeGenerator)){
 			maze = new RecursiveBacktracker(THREE.Vector2, new THREE.Vector2(arguments[0] || 10, arguments[1] || 10));

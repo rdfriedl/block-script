@@ -5,7 +5,8 @@
 	</div>
 </template>
 <script>
-import $ from 'script-loader!jquery';
+import 'script-loader!jquery';
+import Vue from 'vue';
 
 export default {
 	mounted() {

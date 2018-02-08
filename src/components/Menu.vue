@@ -27,7 +27,7 @@
 
 <!-- JS -->
 <script>
-
+import Vue from 'vue';
 import THREE from 'three';
 import CssCube from './CssCube.vue';
 import VoxelMap from '../voxel/VoxelMap.js';
@@ -74,7 +74,7 @@ export default {
 			scene = new THREE.Scene();
 
 			//if we are debugging add this to global scope
-			if(process.env.NODE_ENV == 'dev') window.menuScene = scene;
+			if(process.env.NODE_ENV == 'development') window.menuScene = scene;
 
 			//create voxel map
 			map = new VoxelMap();

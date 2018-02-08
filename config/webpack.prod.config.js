@@ -1,25 +1,18 @@
 const webpack = require('webpack');
+const ManifestPlugin = require('webpack-manifest-plugin');
+const merge = require('webpack-merge');
 
-module.exports = {
+const base = require('./webpack.base.config.js');
+
+module.exports = merge.smart(base, {
 	plugins: [
+		new ManifestPlugin(),
 		new webpack.optimize.UglifyJsPlugin({
 			compress: {
-				warnings: true
+				warnings: false
 			},
 			sourceMap: true,
 			exclude: [/(node_modules|web_modules)/]
 		})
-	],
-	externals: {
-		'vue': 'Vue',
-		'vue-router': 'VueRouter',
-		'dexie': 'Dexie',
-		'keypress': 'keypress',
-		'stats': 'Stats',
-		'three': 'THREE',
-		'font-awesome': 'undefined',
-		'flex-layout-attribute ': 'undefined',
-		'file-saver': '{saveAs: saveAs}',
-		'undo-manager': 'UndoManager'
-	}
-}
+	]
+});

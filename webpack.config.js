@@ -1,8 +1,9 @@
-const merge = require('webpack-merge');
-
-let base = require('./config/webpack.base.config.js');
-
-if(process.env.NODE_ENV == 'dev')
-	module.exports = merge.smart(base, require('./config/webpack.dev.config.js'));
-else
-	module.exports = merge.smart(base, require('./config/webpack.prod.config.js'));
+switch (process.env.NODE_ENV){
+	case 'development':
+		module.exports = require('./config/webpack.dev.config.js');
+		break;
+	default:
+	case 'production':
+		module.exports = require('./config/webpack.prod.config.js');
+		break;
+}

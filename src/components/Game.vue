@@ -17,6 +17,7 @@
 
 <!-- JS -->
 <script>
+import Vue from 'vue';
 
 const MAZE_SIZE = new THREE.Vector3(1, 1, 1).multiplyScalar(5);
 
@@ -70,7 +71,7 @@ export default {
 		initMazeMap.call(this, game);
 		initPlayer.call(this, game);
 
-		if(process.env.NODE_ENV == 'dev')
+		if(process.env.NODE_ENV == 'development')
 			initDebug.call(this, game);
 
 		game.keyboard.register_many([
@@ -129,7 +130,7 @@ export default {
 		document.addEventListener('webkitpointerlockchange', pointerlockchange);
 
 		// debug
-		if(process.env.NODE_ENV == 'dev'){
+		if(process.env.NODE_ENV == 'development'){
 			window.game = game;
 		}
 
@@ -161,7 +162,7 @@ import * as ChunkUtils from '../ChunkUtils.js';
 
 window.blocks = blocks;
 
-import Keyboard from '../Keyboard.js';
+import Keyboard from '../keyboard.js';
 import Player from '../objects/Player.js';
 import RecursiveBacktracker from '../maze-generators/RecursiveBacktracker.js';
 import RoomMaze from '../rooms/RoomMaze.js';
@@ -245,7 +246,7 @@ function initScene(game){
 	let geometryCache = {};
 	let materialCache = {};
 
-	if(process.env.NODE_ENV == 'dev'){
+	if(process.env.NODE_ENV == 'development'){
 		window.logChunkCache = () => {
 			console.log(geometryCache, materialCache);
 		}

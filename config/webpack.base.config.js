@@ -1,6 +1,10 @@
 const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const ExtractTextPlugin = require("extract-text-webpack-plugin");
+
+const IS_DEV = process.env.NODE_ENV === 'development';
+const IS_PROD = process.env.NODE_ENV === 'production';
 
 module.exports = {
 	resolve: {
@@ -13,57 +17,72 @@ module.exports = {
 		}
 	},
 	entry: {
-		app: [
-			path.resolve('src/index.js')
-		]
+		main: path.resolve('src/index.js')
 	},
 	output: {
 		path: path.resolve('dist'),
-		filename: '[name].js',
+		filename: '[name]-[hash:8].js',
 		publicPath: ''
 	},
 	plugins: [
+		new webpack.optimize.CommonsChunkPlugin({
+			name: "vendor",
+			chunks: ['main'],
+			minChunks: ({ resource }) => /node_modules/.test(resource)
+		}),
 		new HtmlWebpackPlugin({
 			template: path.resolve('src/index.html')
 		}),
 		new webpack.EnvironmentPlugin([
 			'NODE_ENV'
-		])
+		]),
+		new ExtractTextPlugin({
+			filename: '[name]-[contenthash:8].css',
+			disable: IS_DEV
+		})
 	],
 	module: {
 		rules: [
 			{
 				test: /\.vue/,
-				use: ['vue-loader']
+				loader: 'vue-loader',
+				options: {
+					extractCSS: true
+				}
 			},
 			{
 				test: /\.js$/,
 				exclude: /(node_modules|web_modules)/,
-				use: [
-					{
-						loader: 'babel-loader',
-						options: {cacheDirectory: ''}
-					}
-				]
+				loader: 'babel-loader',
+				options: {
+					cacheDirectory: true
+				}
 			},
 			{
 				test: /\.css$/,
-				use: [
-					'style-loader',
-					'css-loader'
-				]
+				use: ExtractTextPlugin.extract({
+					fallback: {
+						loader: 'style-loader',
+						options: {
+							sourceMap: IS_DEV
+						}
+					},
+					use: {
+						loader: 'css-loader',
+						options: {
+							sourceMap: IS_DEV,
+							minimize: IS_PROD
+						}
+					}
+				})
 			},
 			{
 				test: /\.(woff|woff2|ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-				use: [
-					{
-						loader: 'url-loader',
-						options: {
-							limit: 100000,
-							name: 'res/font/[hash].[ext]'
-						}
-					}
-				]
+				loader: 'url-loader',
+				options: {
+					limit: 100000,
+					name: 'res/font/[name]-[hash:8].[ext]'
+				}
 			},
 			{
 				test: /\.html$/,
@@ -78,28 +97,31 @@ module.exports = {
 				use: [
 					{
 						loader: 'file-loader',
-						options: {name: 'res/image/[hash].[ext]'}
+						options: {
+							name: 'res/image/[name]-[hash:8].[ext]'
+						}
 					},
 					{
 						loader: 'img-loader',
-						options: {minimize: true}
+						options: {
+							minimize: IS_PROD
+						}
 					}
 				]
 			},
 			{
 				test: /\.(dae|ply)$/,
-				use: [
-					'file-loader?name=res/model/[hash].[ext]'
-				]
+				loader: 'file-loader',
+				options: {
+					name: 'res/model/[name]-[hash:8].[ext]'
+				}
 			},
 			{
 				test: /\.(mp3|ogg)$/,
-				use: [
-					{
-						loader: 'file-loader',
-						options: {name: 'res/audio/[hash].[ext]'}
-					}
-				]
+				loader: 'file-loader',
+				options: {
+					name: 'res/audio/[name]-[hash:8].[ext]'
+				}
 			},
 			{
 				test: /\.json$/,
@@ -111,4 +133,4 @@ module.exports = {
 			}
 		]
 	}
-}
+};

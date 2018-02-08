@@ -3,7 +3,7 @@ import Vue from 'vue';
 import VueRouter from 'vue-router';
 import {devLog} from './util.js';
 
-if(process.env.NODE_ENV == 'dev'){
+if(process.env.NODE_ENV == 'development'){
 	window.Vue = Vue;
 	Vue.config.debug = true;
 	Vue.config.devtools = true;
@@ -23,7 +23,7 @@ import THREE from 'three';
 import './three-changes.js';
 
 // add threejs to the global scope so its easier to debug
-// if(process.env.NODE_ENV == 'dev') window.THREE = THREE;
+// if(process.env.NODE_ENV == 'development') window.THREE = THREE;
 
 // css
 import 'font-awesome';
@@ -42,7 +42,7 @@ import RoomEditorComponent from './components/RoomEditor.vue';
 
 // set up the config
 Vue.use(VueRouter);
-Vue.config.devtools = Vue.config.debug = process.env.NODE_ENV == 'dev';
+Vue.config.devtools = Vue.config.debug = process.env.NODE_ENV == 'development';
 
 Vue.filter('nl-to-br', function(value){
 	return String(value).replace(/\n/g,'<br>');

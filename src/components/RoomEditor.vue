@@ -106,7 +106,7 @@
 				</div>
 
 				<!-- doors -->
-				<div v-show="tab=='doors'" class="panel panel-default no-margin" v-for="(axis_id, axis) in doors">
+				<div v-show="tab=='doors'" class="panel panel-default no-margin" v-for="axis in doors">
 					<div class="panel-heading">
 						<h3 class="panel-title">{{axis.title}}</h3>
 					</div>
@@ -228,7 +228,7 @@
 
 <!-- JS -->
 <script>
-
+import Vue from 'vue';
 import VueStrap from 'vue-strap';
 import BS_Dropdown from './bootstrap/dropdown.vue';
 import BS_Switch from './bootstrap/bootstrap-switch.vue';
@@ -249,7 +249,7 @@ import 'imports-loader?THREE=three!three/examples/js/shaders/SSAOShader.js';
 
 import Room from '../rooms/Room.js';
 import GridCube from '../objects/GridCube.js';
-import Keyboard from '../Keyboard.js';
+import Keyboard from '../keyboard.js';
 import * as blocks from '../blocks.js';
 import MODELS from '../models.js';
 
@@ -578,7 +578,7 @@ export default {
 		document.addEventListener('webkitpointerlockchange', pointerlockchange);
 
 		// debug
-		if(process.env.NODE_ENV == 'dev')
+		if(process.env.NODE_ENV == 'development')
 			window.editor = editor;
 	},
 	mounted(){
