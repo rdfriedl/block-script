@@ -10,7 +10,7 @@ jobs:
 
       - restore_cache:
           keys:
-          - node_modules-{{ checksum "package-lock.json" }}
+          - node_modules-{{ checksum "package.json" }}
 
       - run:
           name: Install dependancies
@@ -19,7 +19,7 @@ jobs:
       - save_cache:
           paths:
             - node_modules
-          key: node_modules-{{ checksum "package-lock.json" }}
+          key: node_modules-{{ checksum "package.json" }}
 
       - run:
           name: test
@@ -35,7 +35,7 @@ jobs:
 
       - restore_cache:
           keys:
-          - node_modules-{{ checksum "package-lock.json" }}
+          - node_modules-{{ checksum "package.json" }}
 
       - run:
           name: Install dependancies
@@ -44,7 +44,7 @@ jobs:
       - save_cache:
           paths:
             - node_modules
-          key: node_modules-{{ checksum "package-lock.json" }}
+          key: node_modules-{{ checksum "package.json" }}
 
       - run:
           name: build

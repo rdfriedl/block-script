@@ -26,17 +26,18 @@
 		"build-docs": "jsdoc -c jsdoc.json",
 		"start": "cross-env NODE_ENV=development webpack-dev-server --hot",
 		"test": "cross-env NODE_ENV=development karma start --single-run=true",
-		"test-debug":
-			"cross-env NODE_ENV=development karma start --browsers=Chrome",
-		"test-watch":
-			"cross-env NODE_ENV=development karma start --single-run=false",
+		"test-debug": "cross-env NODE_ENV=development karma start --browsers=Chrome",
+		"test-watch": "cross-env NODE_ENV=development karma start --single-run=false",
 		"clean": "rimraf dist",
 		"clean-docs": "rimraf docs",
 		"docs": "npm run build-docs && npm run server-docs",
 		"server-docs": "live-server docs/ --open"
 	},
 	"lint-staged": {
-		"*.{js,json,css,md}": ["prettier --write", "git add"]
+		"*.{js,json,css,md}": [
+			"prettier --write",
+			"git add"
+		]
 	},
 	"homepage": "https://github.com/rdfriedl/block-script#readme",
 	"devDependencies": {
