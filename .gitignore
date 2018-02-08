@@ -4,3 +4,4 @@ docs/
 *.log
 *.cache
 .idea/
+coverage/

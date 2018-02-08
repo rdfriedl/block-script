@@ -1,12 +1,12 @@
+const path = require("path");
 // we can just use the exact same webpack config by requiring it
-const webpackConfig = require("./webpack.config.js");
-const webpack = require("webpack");
+const webpackConfig = require("./config/webpack.test.config.js");
 delete webpackConfig.entry;
-delete webpackConfig.externals; //remove externals
-webpackConfig.devtool = "inline-source-map";
 
 module.exports = function(config) {
 	config.set({
+		basePath: "./",
+		singleRun: false,
 		browsers: ["ChromeHeadless", "FirefoxHeadless"],
 		customLaunchers: {
 			FirefoxHeadless: {
@@ -14,19 +14,42 @@ module.exports = function(config) {
 				flags: ["-headless"],
 			},
 		},
-		frameworks: ["jasmine"],
+		frameworks: ["mocha", "sinon-chai"],
 		// this is the entry file for all our tests.
 		files: ["tests/index.js"],
 		// we will pass the entry file to webpack for bundling.
 		preprocessors: {
 			"tests/index.js": ["webpack", "sourcemap"],
 		},
+		reporters: ["mocha", "coverage-istanbul"],
+
+		client: {
+			// hide all the annoying console logs
+			captureConsole: false,
+			mocha: {
+				reporter: "html",
+			},
+		},
+
 		// use the webpack config
 		webpack: webpackConfig,
+
 		// avoid walls of useless text
 		webpackMiddleware: {
-			noInfo: true,
+			stats: "errors-only",
 		},
-		singleRun: false,
+
+		mochaReporter: {
+			output: "full",
+			showDiff: true,
+		},
+
+		coverageIstanbulReporter: {
+			reports: ["html", "text-summary"],
+			dir: "./coverage",
+			combineBrowserReports: true,
+			fixWebpackSourcePaths: true,
+			skipFilesWithNoCoverage: false,
+		},
 	});
 };
