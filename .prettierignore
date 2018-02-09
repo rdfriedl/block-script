@@ -1,4 +1,6 @@
 dist
+docs
+coverage
 node_modules
 src/res
 src/lib

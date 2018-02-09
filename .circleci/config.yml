@@ -47,7 +47,7 @@ jobs:
           key: node_modules-{{ checksum "package.json" }}
 
       - run:
-          name: build
+          name: Build
           command: npm run build
 
       - persist_to_workspace:
@@ -55,27 +55,10 @@ jobs:
           paths:
             - dist
 
-  deploy:
+  build-docs:
     working_directory: ~/repo
     docker:
-      - image: rdfriedl/circleci-node-aws
-
-    steps:
-      - attach_workspace:
-          at: /tmp/workspace
-
-      - deploy:
-          name: Deploy to s3 bucket
-          command: |
-            aws configure set preview.cloudfront true && \
-            aws s3 rm s3://${S3_BUCKET} --recursive && \
-            aws s3 sync /tmp/workspace/dist s3://${S3_BUCKET} --acl public-read && \
-            aws cloudfront create-invalidation --distribution-id ${CLOUDFRONT_ID} --paths "/*";
-
-  docs:
-    working_directory: ~/repo
-    docker:
-      - image: rdfriedl/circleci-node-aws
+      - image: circleci/node:latest
 
     steps:
       - checkout
@@ -94,16 +77,47 @@ jobs:
           key: node_modules-{{ checksum "package.json" }}
 
       - run:
-         name: Build Docs
-         command: npm run docs
+          name: Build Docs
+          command: npm run docs
+
+      - persist_to_workspace:
+          root: ./
+          paths:
+            - docs
+
+  deploy:
+    working_directory: ~/repo
+    docker:
+      - image: rdfriedl/circleci-node-aws
+
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace
+
+      - deploy:
+          name: Deploy to s3 bucket
+          command: |
+            aws configure set preview.cloudfront true && \
+            aws s3 rm s3://${S3_BUCKET}/app --recursive && \
+            aws s3 sync /tmp/workspace/dist s3://${S3_BUCKET}/app --acl public-read && \
+            aws cloudfront create-invalidation --distribution-id ${CLOUDFRONT_ID} --paths "/*";
+
+  deploy-docs:
+    working_directory: ~/repo
+    docker:
+      - image: rdfriedl/circleci-node-aws
+
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace
 
       - run:
           name: Deploy Docs to s3 bucket
           command: |
             aws configure set preview.cloudfront true && \
             aws s3 rm s3://${S3_BUCKET}/docs --recursive && \
-            aws s3 sync ~/repo/docs s3://${S3_BUCKET}/docs --acl public-read && \
-            aws cloudfront create-invalidation --distribution-id ${CLOUDFRONT_ID} --paths "/docs/*";
+            aws s3 sync /tmp/workspace/docs s3://${S3_BUCKET}/docs --acl public-read && \
+            aws cloudfront create-invalidation --distribution-id ${DOCS_CLOUDFRONT_ID} --paths "/docs/*";
 
 workflows:
   version: 2
@@ -111,8 +125,15 @@ workflows:
     jobs:
       - test
       - build:
-         requires:
-           - test
+          requires:
+            - test
+      - build-docs:
+          requires:
+            - test
+          filters:
+            branches:
+              only:
+                - master
       - deploy:
           requires:
             - build
@@ -120,9 +141,9 @@ workflows:
             branches:
               only:
                 - master
-      - docs:
+      - deploy-docs:
           requires:
-            - build
+            - build-docs
           filters:
             branches:
               only:
