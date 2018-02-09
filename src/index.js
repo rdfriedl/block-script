@@ -31,6 +31,20 @@ import "flex-layout-attribute";
 import "./css/style.css";
 import "./css/utils.css";
 
+// register the service worker
+if ("serviceWorker" in navigator && process.env.NODE_ENV === "production") {
+	window.addEventListener("load", () => {
+		navigator.serviceWorker
+			.register("/sw.js")
+			.then(registration => {
+				console.log("SW registered: ", registration);
+			})
+			.catch(registrationError => {
+				console.log("SW registration failed: ", registrationError);
+			});
+	});
+}
+
 // load vue components
 import GameComponent from "./components/Game.vue";
 import MenuComponent from "./components/Menu.vue";
@@ -80,7 +94,7 @@ window.addEventListener("load", () => {
 
 	// fix middle click
 	document.body.addEventListener("mousedown", event => {
-		if (event.button == 1) event.preventDefault();
+		if (event.button === 1) event.preventDefault();
 	});
 
 	// dont allow the user to drag images
