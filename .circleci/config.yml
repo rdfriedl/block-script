@@ -33,8 +33,34 @@ jobs:
           - node_modules-{{ checksum "package.json" }}
 
       - run:
-          name: test
+          name: Test
           command: npm test
+
+      - persist_to_workspace:
+          root: ./
+          paths:
+            - coverage
+
+  upload-coverage:
+    working_directory: ~/repo
+    docker:
+      - image: circleci/node:latest
+
+    steps:
+      - checkout
+
+      - attach_workspace:
+          at: /tmp/workspace
+
+      - restore_cache:
+          keys:
+          - node_modules-{{ checksum "package.json" }}
+
+      - run:
+          name: Upload Coverage
+          command: |
+            cp -rf /tmp/workspace/coverage ~/repo/coverage && \
+            npm run upload-coverage
 
   build:
     working_directory: ~/repo
@@ -120,6 +146,9 @@ workflows:
       - test:
           requires:
             - install
+      - upload-coverage:
+          requires:
+            - test
       - build:
           requires:
             - test

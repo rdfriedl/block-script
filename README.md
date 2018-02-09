@@ -1,31 +1,20 @@
 # Block-Script
 
+[![CircleCI](https://img.shields.io/circleci/project/github/rdfriedl/block-script.svg?style=flat-square)](https://circleci.com/gh/rdfriedl/block-script)
+[![Codecov](https://img.shields.io/codecov/c/github/rdfriedl/block-script.svg?style=flat-square)](https://codecov.io/gh/rdfriedl/block-script)
+[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
+[![David](https://img.shields.io/david/rdfriedl/block-script.svg?style=flat-square)]()
+[![David](https://img.shields.io/david/dev/rdfriedl/block-script.svg?style=flat-square)]()
+
 A 3 Dimensional voxel maze game, built with [threejs](http://threejs.org).
 
 ![Screen Shot](screenshot.png)
 
 ## Play now
 
-coming soon...
+[Play Online](block-script.rdfriedl.com)
 
-## Browser Support
-
-**_Runs fine in_**
-
-* [Google Chrome 51](https://www.google.com/chrome)
-
-**_Planed Browser Support_**
-
-* [FireFox](https://www.mozilla.org/en-US/firefox/new)
-* [Opra](http://www.opera.com)
-* [Edge](http://www.microsoft.com/en-us/windows/microsoft-edge)
-
-**_Does not support_**
-
-* [Safari](http://www.apple.com/safari)
-* [Internet Explorer](http://windows.microsoft.com/en-us/internet-explorer)
-
-## Credits
+## CreditsPlay
 
 **_Images / Textures_**
 

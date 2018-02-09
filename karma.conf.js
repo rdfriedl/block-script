@@ -45,11 +45,16 @@ module.exports = function(config) {
 		},
 
 		coverageIstanbulReporter: {
-			reports: ["html", "text-summary"],
+			reports: ["html", "lcovonly", "json", "text-summary"],
 			dir: "./coverage",
 			combineBrowserReports: true,
 			fixWebpackSourcePaths: true,
 			skipFilesWithNoCoverage: false,
+			"report-config": {
+				html: {
+					subdir: "html",
+				},
+			},
 		},
 	});
 };
