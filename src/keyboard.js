@@ -1,7 +1,7 @@
 import keypress from "keypress";
 
 function simulateKeyEvent(el, char, type) {
-	var e = document.createEvent("KeyboardEvent");
+	let e = document.createEvent("KeyboardEvent");
 	if (e.initKeyboardEvent) {
 		e.initKeyboardEvent(
 			type || "keypress",

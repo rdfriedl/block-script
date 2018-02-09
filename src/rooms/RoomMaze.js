@@ -5,13 +5,12 @@ import MazeGenerator from "../maze-generators/MazeGenerator.js";
 
 const up = new THREE.Vector3(0, 1, 0);
 
-/**
- * @class takes a {@link MazeGenerator} and a {@link RoomManager} and builds a maze out of {@link Room}s
- * @name RoomMaze
- * @param {MazeGenerator} mazeGenerator
- * @param {RoomManager} [roomManager]
- */
+/** takes a {@link MazeGenerator} and a {@link RoomManager} and builds a maze out of {@link Room}s */
 export default class RoomMaze {
+	/**
+	 * @param {MazeGenerator} mazeGenerator
+	 * @param {RoomManager} [roomManager=RoomManager.inst]
+	 * */
 	constructor(mazeGenerator, roomManager = RoomManager.inst) {
 		if (!(mazeGenerator instanceof MazeGenerator))
 			throw new Error(

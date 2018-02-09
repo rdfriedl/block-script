@@ -1,11 +1,7 @@
 import THREE from "three";
 import CollisionEntity from "../CollisionEntity.js";
 
-/**
- * @class a point collition shape
- * @name CollisionEntityPoint
- * @extends {CollisionEntity}
- */
+/** a point collision shape */
 export default class CollisionEntityPoint extends CollisionEntity {
 	getBoundingBox() {
 		return new THREE.Box3(this.position, this.position);
@@ -30,7 +26,7 @@ export default class CollisionEntityPoint extends CollisionEntity {
 	 * @param {THREE.Vector3} a - the point thats moving
 	 * @param {THREE.Box3} b - the static box
 	 * @param {THREE.Vector3} velocity
-	 * @returns {Object|Boolean} - returns object with info about collision, if there was no collision it will return false
+	 * @return {Object|Boolean} - returns object with info about collision, if there was no collision it will return false
 	 */
 	static SweptAABB(a, b, velocity) {
 		const axes = ["x", "y", "z"];

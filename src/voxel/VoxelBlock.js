@@ -9,13 +9,12 @@ const NEIGHBORS_DIRS = [
 	[0, 0, -1],
 ];
 
-/**
- * @class the base class for all blocks
- * @name VoxelBlock
- * @param {Object} [data] - an optional json object to pass to {@link VoxelBlock.fromJSON}
- * @param {Object} data.properties a Object to be passed to {@link VoxelBlock.setProp}
- */
+/** the base class for all blocks */
 export default class VoxelBlock {
+	/**
+	 * @param {Object} [data] - an optional json object to pass to {@link VoxelBlock.fromJSON}
+	 * @param {Object} [data.properties] a Object to be passed to {@link VoxelBlock.setProp}
+	 */
 	constructor(data) {
 		/**
 		 * the chunk we belong to
@@ -35,10 +34,10 @@ export default class VoxelBlock {
 	 * @param  {THREE.Vector3} direction - the direction to check
 	 * @return {VoxelBlock}
 	 */
-	getNeighbor(dir) {
+	getNeighbor(direction) {
 		if (!this.parent) return;
 
-		var pos = dir.clone().add(this.position);
+		let pos = direction.clone().add(this.position);
 
 		let parent = this.parent;
 		// only wrap if we are in a chunk, dont wrap if we are in a selection
@@ -51,8 +50,8 @@ export default class VoxelBlock {
 				pos.y >= this.chunkSize.y ||
 				pos.z >= this.chunkSize.z
 			) {
-				parent = parent.getNeighbor(dir);
-				if (!parent) return; // dont go any futher if we cant find the chunk
+				parent = parent.getNeighbor(direction);
+				if (!parent) return; // dont go any further if we cant find the chunk
 			}
 
 			if (pos.x >= this.chunkSize.x) pos.x -= this.chunkSize.x;
@@ -89,7 +88,7 @@ export default class VoxelBlock {
 	 * sets a parameter with id to value
 	 * @param {String|Object} id the id of the parameter to set, or a key value map. with the key being the id
 	 * @param {*} [value] the value to set the parameter to
-	 * @returns {this}
+	 * @return {this}
 	 */
 	setProp(id, value) {
 		if (!this.hasOwnProperty("parameters"))
@@ -245,7 +244,7 @@ export default class VoxelBlock {
 
 	/**
 	 * returns the blockSize of the map
-	 * @return {ThREE.Vector3}
+	 * @return {THREE.Vector3}
 	 * @readOnly
 	 */
 	get blockSize() {
@@ -254,7 +253,7 @@ export default class VoxelBlock {
 
 	/**
 	 * returns the chunkSize of the map
-	 * @return {ThREE.Vector3}
+	 * @return {THREE.Vector3}
 	 * @readOnly
 	 */
 	get chunkSize() {
@@ -289,8 +288,7 @@ export default class VoxelBlock {
 	/**
 	 * returns the geometry for this type of block.
 	 * geometry should be no bigger then 1 x 1 x 1
-	 * @private
-	 * @returns {THREE.Geometry}
+	 * @return {THREE.Geometry}
 	 */
 	CreateGeometry() {
 		let geometry = new THREE.BoxGeometry(1, 1, 1);
@@ -302,8 +300,7 @@ export default class VoxelBlock {
 
 	/**
 	 * creates the material for this type of block
-	 * @private
-	 * @returns {THREE.Material}
+	 * @return {THREE.Material}
 	 */
 	CreateMaterial() {
 		return new THREE.MeshNormalMaterial();

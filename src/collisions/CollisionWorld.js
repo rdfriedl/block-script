@@ -1,27 +1,23 @@
 import THREE from "three";
 import CollisionEntity from "./CollisionEntity.js";
 
-/**
- * @class
- * @name CollisionWorld
- */
 export default class CollisionWorld {
 	constructor() {
 		/**
 		 * a clock to keep track of time
-		 * @var {THREE.Clock}
+		 * @type {THREE.Clock}
 		 */
 		this.clock = new THREE.Clock();
 
 		/**
 		 * a Set of CollisionEntity that are in this world
-		 * @var {Set}
+		 * @type {Set}
 		 */
 		this.entities = new Set();
 
 		/**
 		 * a THREE.Vector3 that is added to all non-static entities in this world every step
-		 * @var {THREE.Vector3}
+		 * @type {THREE.Vector3}
 		 */
 		this.gravity = new THREE.Vector3(0, -18, 0);
 	}
@@ -29,7 +25,7 @@ export default class CollisionWorld {
 	/**
 	 * runs one step for the world
 	 * @param {Number} [dtime] - the delta time to use, if none is provided it will get it from this worlds clock
-	 * @return {this}
+	 * @return {CollisionWorld} this
 	 */
 	step(dtime) {
 		if (dtime == undefined) dtime = this.clock.getDelta();
@@ -52,7 +48,7 @@ export default class CollisionWorld {
 
 	/**
 	 * call this when you start the world up again, it will reset the clock
-	 * @return {this}
+	 * @return {CollisionWorld} this
 	 */
 	unpause() {
 		this.clock.getDelta();
@@ -62,7 +58,7 @@ export default class CollisionWorld {
 	/**
 	 * adds a {@link CollisionEntity} to this world
 	 * @param {CollisionEntity} entity
-	 * @returns {this}
+	 * @return {CollisionWorld} this
 	 */
 	addEntity(entity) {
 		if (entity instanceof CollisionEntity) {
@@ -77,7 +73,7 @@ export default class CollisionWorld {
 	/**
 	 * removes a {@link CollisionEntity} from this world
 	 * @param  {CollisionEntity} entity
-	 * @return {this}
+	 * @return {CollisionWorld} this
 	 */
 	removeEntity(entity) {
 		if (this.entities.has(entity)) {

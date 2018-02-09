@@ -2,11 +2,7 @@ import THREE from "three";
 import ChunkGenerator from "./ChunkGenerator.js";
 import * as ChunkUtils from "../ChunkUtils.js";
 
-/**
- * @name ChunkGeneratorRooms
- * @class a chunk generator for making flat land
- * @extends {ChunkGenerator}
- */
+/** a chunk generator for making flat land */
 export default class ChunkGeneratorRooms extends ChunkGenerator {
 	setUpChunk(chunk) {
 		// make walls

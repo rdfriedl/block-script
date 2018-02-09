@@ -1,7 +1,8 @@
 import VoxelBlock from "./VoxelBlock.js";
 import VoxelBlockManager from "./VoxelBlockManager.js";
-import * as blocks from "../blocks.js";
+import * as blocks from "../blocks/defaultBlocks.js";
 
+/** @test {VoxelBlockManager} */
 describe("VoxelBlockManager", function() {
 	before(function() {
 		this.manager = new VoxelBlockManager();

@@ -1,10 +1,9 @@
 import VoxelMap from "./VoxelMap.js";
-import VoxelChunk from "./VoxelChunk.js";
 import VoxelBlock from "./VoxelBlock.js";
-import VoxelBlockManager from "./VoxelBlockManager.js";
 import VoxelSelection from "./VoxelSelection.js";
 import THREE from "three";
 
+/** @test {VoxelBlock} */
 describe("VoxelBlock", function() {
 	before(function() {
 		this.map = new VoxelMap();
@@ -16,7 +15,7 @@ describe("VoxelBlock", function() {
 
 	describe("UID", function() {
 		it("block.id is equal to the UID of the block", function() {
-			this.block.id == VoxelBlock.UID;
+			expect(this.block.id).to.equal(VoxelBlock.UID);
 		});
 	});
 

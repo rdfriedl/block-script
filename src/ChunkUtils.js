@@ -1,14 +1,10 @@
 import THREE from "three";
 
 /**
- * @module ChunkUtils
- */
-
-/**
  * draws a line in blocks
  * @param  {VoxelChunk|VoxelMap} chunk the chunk or map to use
- * @param  {THREE.Vector3} from the start position
- * @param  {THREE.Vector3} to the end position
+ * @param  {THREE.Vector3} fromV the start position
+ * @param  {THREE.Vector3} toV the end position
  * @param  {String|Function} block the block to use. if a function is passed it will be called with
  * @param  {THREE.Vector3} block.pos the position of the block
  */
@@ -25,8 +21,8 @@ export function drawLine(chunk, fromV, toV, block) {
 /**
  * draws a cube in blocks
  * @param  {VoxelChunk|VoxelMap} chunk the chunk or map to use
- * @param  {THREE.Vector3} from the start position
- * @param  {THREE.Vector3} to the end position
+ * @param  {THREE.Vector3} fromV the start position
+ * @param  {THREE.Vector3} toV the end position
  * @param  {String|Function|Null} block the block to use. if a function is passed it will be called with
  * @param  {THREE.Vector3} block.pos the position of the block
  * @param  {String} [type='solid'] the type of cube ('solide', 'hollow', 'frame')
@@ -85,8 +81,8 @@ export function drawCube(chunk, fromV, toV, block, type = "solid") {
 /**
  * removes all blocks in a cube
  * @param  {VoxelChunk|VoxelMap} chunk the chunk or map to use
- * @param  {THREE.Vector3} from the start position
- * @param  {THREE.Vector3} to the end position
+ * @param  {THREE.Vector3} fromV the start position
+ * @param  {THREE.Vector3} toV the end position
  */
 export function clearCube(chunk, fromV, toV) {
 	let pos = new THREE.Vector3();
@@ -121,8 +117,8 @@ export function drawSphere(chunk, center, radius, block, type = "solid") {}
  * copies blocks from one chunk to another
  * @param  {VoxelMap|VoxelChunk|VoxelSelection} fromChunk
  * @param  {VoxelMap|VoxelChunk|VoxelSelection} toChunk
- * @param  {THREE.Vector3} from the start position
- * @param  {THREE.Vector3} to the end position
+ * @param  {THREE.Vector3} fromV the start position
+ * @param  {THREE.Vector3} toV the end position
  * @param  {Object} [opts]
  * @param  {THREE.Vector3} [opts.offset] - offset to be applied to the blocks
  * @param  {Boolean} [opts.cloneBlocks=true] - whether or not to clone the blocks, by default it will use the blockManager on toChunk

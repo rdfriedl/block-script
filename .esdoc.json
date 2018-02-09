@@ -1,0 +1,18 @@
+{
+	"source": "./src",
+	"destination": "./docs",
+	"excludes": ["\\.config\\.js$", "src/lib"],
+	"plugins": [
+		{
+			"name": "esdoc-standard-plugin",
+			"options": {
+				"brand": {
+					"title": "Block-Script",
+					"repository": "https://github.com/rdfriedl/block-script",
+					"site": "https://block-script.rdfriedl.com",
+					"author": "https://rdfriedl.com"
+				}
+			}
+		}
+	]
+}

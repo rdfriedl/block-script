@@ -2,10 +2,8 @@ import THREE from "three";
 import CollisionEntity from "../CollisionEntity.js";
 
 /**
- * @class a compound collision entity
- * @name CollisionEntityCompound
- * @extends {CollisionEntity}
- * @todo make it posible to have non-static CollisionEntityCompound
+ * @desc a compound collision entity
+ * @todo make it possible to have non-static CollisionEntityCompound
  */
 export default class CollisionEntityCompound extends CollisionEntity {
 	constructor(entities) {
@@ -15,7 +13,7 @@ export default class CollisionEntityCompound extends CollisionEntity {
 
 		/**
 		 * CollisionEntity that make up this entity
-		 * @var {CollisionEntity[]}
+		 * @type {CollisionEntity[]}
 		 */
 		this.entities = [];
 

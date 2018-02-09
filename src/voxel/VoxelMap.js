@@ -3,26 +3,23 @@ import VoxelChunk from "./VoxelChunk.js";
 import VoxelBlock from "./VoxelBlock.js";
 import VoxelBlockManager from "./VoxelBlockManager.js";
 
-/**
- * @name VoxelMap
- * @class
- * @extends {THREE.Group}
- * @param {VoxelBlockManager} [blockManager=VoxelBlockManager.inst]
- */
 export default class VoxelMap extends THREE.Group {
+	/**
+	 * @param {VoxelBlockManager} [blockManager=VoxelBlockManager.inst]
+	 */
 	constructor(blockManager = VoxelBlockManager.inst) {
 		super();
 
 		/**
 		 * the block manager this map will use
 		 * @default {@link VoxelBlockManager.inst}
-		 * @var {VoxelBlockManager}
+		 * @type {VoxelBlockManager}
 		 */
 		this.blockManager = blockManager;
 
 		/**
 		 * a Map of VoxelChunk with the keys being a string "x,y,z"
-		 * @var {Map}
+		 * @type {Map}
 		 * @private
 		 */
 		this.chunks = new Map();
@@ -30,7 +27,7 @@ export default class VoxelMap extends THREE.Group {
 		/**
 		 * a WeakMap of THREE.Vector3 with the keys being the chunks
 		 * @private
-		 * @var {WeakMap}
+		 * @type {WeakMap}
 		 */
 		this.chunksPositions = new WeakMap();
 
@@ -130,14 +127,14 @@ export default class VoxelMap extends THREE.Group {
 	 * @param  {(THREE.Vector3)} position
 	 * @return {VoxelChunk}
 	 */
-	createChunk(pos) {
-		if (pos instanceof THREE.Vector3) {
-			pos = this.tmpVec.copy(pos).round();
-			let chunk = this.chunks.get(pos.toString());
+	createChunk(position) {
+		if (position instanceof THREE.Vector3) {
+			position = this.tmpVec.copy(position).round();
+			let chunk = this.chunks.get(position.toString());
 			if (chunk) return chunk;
 			else {
 				chunk = new VoxelChunk();
-				this.setChunk(chunk, pos);
+				this.setChunk(chunk, position);
 				return chunk;
 			}
 		}
@@ -148,15 +145,15 @@ export default class VoxelMap extends THREE.Group {
 	 * @param  {(THREE.Vector3)} position
 	 * @return {Boolean}
 	 */
-	hasChunk(pos) {
-		if (pos instanceof THREE.Vector3) {
-			pos = this.tmpVec.copy(pos).round();
-			return !!this.chunks.has(pos.toString());
-		} else if (pos instanceof VoxelChunk) {
+	hasChunk(position) {
+		if (position instanceof THREE.Vector3) {
+			position = this.tmpVec.copy(position).round();
+			return this.chunks.has(position.toString());
+		} else if (position instanceof VoxelChunk) {
 			// check to see if we have this chunk
 			let chunks = this.listChunks();
 			for (let i in chunks) {
-				if (chunks[i] === pos) return true;
+				if (chunks[i] === position) return true;
 			}
 		}
 		return false;
@@ -167,12 +164,12 @@ export default class VoxelMap extends THREE.Group {
 	 * @param  {THREE.Vector3|VoxelChunk} position
 	 * @return {VoxelChunk}
 	 */
-	getChunk(pos) {
-		if (pos instanceof THREE.Vector3) {
-			pos = this.tmpVec.copy(pos).round();
-			return this.chunks.get(pos.toString());
-		} else if (pos instanceof VoxelChunk) {
-			if (this.hasChunk(pos)) return pos;
+	getChunk(position) {
+		if (position instanceof THREE.Vector3) {
+			position = this.tmpVec.copy(position).round();
+			return this.chunks.get(position.toString());
+		} else if (position instanceof VoxelChunk) {
+			if (this.hasChunk(position)) return position;
 		}
 	}
 
@@ -188,24 +185,24 @@ export default class VoxelMap extends THREE.Group {
 	/**
 	 * @param {VoxelChunk|Object} chunk a {@link VoxelChunk} or a Object to pass to {@link VoxelChunk#fromJSON}
 	 * @param {(THREE.Vector3)} position
-	 * @returns {this}
+	 * @return {VoxelMap} this
 	 *
-	 * @fires VoxelMap#chunk:set
+	 * @emits {chunk:set}
 	 */
-	setChunk(chunk, pos) {
+	setChunk(chunk, position) {
 		if (!(chunk instanceof VoxelChunk))
 			chunk = new VoxelChunk().fromJSON(chunk);
 
-		if (pos instanceof THREE.Vector3) {
-			pos = this.tmpVec.copy(pos).round();
-			let str = pos.toArray().join(",");
+		if (position instanceof THREE.Vector3) {
+			position = this.tmpVec.copy(position).round();
+			let str = position.toArray().join(",");
 			let oldChunk = this.chunks.get(str);
 			this.chunks.set(str, chunk);
-			this.chunksPositions.set(chunk, pos.clone());
+			this.chunksPositions.set(chunk, position.clone());
 
 			this.add(chunk);
 			chunk.position
-				.copy(pos)
+				.copy(position)
 				.multiply(this.chunkSize)
 				.multiply(this.blockSize);
 			chunk.map = this;
@@ -224,7 +221,7 @@ export default class VoxelMap extends THREE.Group {
 	/**
 	 * removes all the chunks and all the blocks in then from the map
 	 * @param {Boolean} [disposeBlocks=true] - whether to put all the blocks in the chunk back into the blockManagers pool
-	 * @return {this}
+	 * @return {VoxelMap} this
 	 *
 	 * @fires VoxelMap#chunks:cleared
 	 */
@@ -245,18 +242,18 @@ export default class VoxelMap extends THREE.Group {
 
 	/**
 	 * removes a chunk from the map
-	 * @param  {THREE.Vector3|VoxelChunk} posision - ths position of the chunk to remove. or the {@link VoxelChunk} to remove
-	 * @return {this}
+	 * @param  {THREE.Vector3|VoxelChunk} position - ths position of the chunk to remove. or the {@link VoxelChunk} to remove
+	 * @return {VoxelMap} this
 	 *
 	 * @fires VoxelMap#chunk:removed
 	 */
-	removeChunk(pos) {
-		if (this.hasChunk(pos)) {
+	removeChunk(position) {
+		if (this.hasChunk(position)) {
 			let chunk;
-			if (pos instanceof THREE.Vector3) {
-				chunk = this.getChunk(pos);
-			} else if (pos instanceof VoxelChunk) {
-				chunk = pos;
+			if (position instanceof THREE.Vector3) {
+				chunk = this.getChunk(position);
+			} else if (position instanceof VoxelChunk) {
+				chunk = position;
 			}
 
 			// TODO: remove all the chunks blocks from the neighbor cache and remove the edges of the chunk around this one from the cache
@@ -291,14 +288,14 @@ export default class VoxelMap extends THREE.Group {
 	 * creates a block with id and adds it to the map
 	 * @param  {String} id - the UID of the block to create
 	 * @param  {THREE.Vector3} position - the position to add the block to
-	 * @returns {VoxelBlock}
+	 * @return {VoxelBlock}
 	 */
-	createBlock(id, pos) {
+	createBlock(id, position) {
 		let block;
 		if (String.isString(id)) block = this.blockManager.createBlock(id);
 
-		if (block && pos) {
-			this.setBlock(block, pos);
+		if (block && position) {
+			this.setBlock(block, position);
 		}
 		return block;
 	}
@@ -308,20 +305,22 @@ export default class VoxelMap extends THREE.Group {
 	 * @param  {THREE.Vector3|VoxelBlock} position - the position to check, or the block to check for
 	 * @return {Boolean}
 	 */
-	hasBlock(pos) {
-		if (pos instanceof THREE.Vector3) {
+	hasBlock(position) {
+		if (position instanceof THREE.Vector3) {
 			let chunkPos = this.tmpVec
-				.copy(pos)
+				.copy(position)
 				.divide(this.chunkSize)
 				.floor();
 			let chunk = this.getChunk(chunkPos);
 			if (chunk)
-				return chunk.hasBlock(this.tmpVec.copy(pos).sub(chunk.worldPosition));
-		} else if (pos instanceof VoxelBlock) {
+				return chunk.hasBlock(
+					this.tmpVec.copy(position).sub(chunk.worldPosition),
+				);
+		} else if (position instanceof VoxelBlock) {
 			// check to see if we have this chunk
 			let chunks = this.listChunks();
 			for (let chunk of chunks) {
-				if (chunk.hasBlock(pos)) return true;
+				if (chunk.hasBlock(position)) return true;
 			}
 		}
 		return false;
@@ -332,19 +331,21 @@ export default class VoxelMap extends THREE.Group {
 	 * @param  {THREE.Vector3|VoxelBlock} position - the position of the block (in blocks), or the VoxelBlock to check for
 	 * @return {VoxelBlock}
 	 */
-	getBlock(pos) {
-		if (pos instanceof THREE.Vector3) {
+	getBlock(position) {
+		if (position instanceof THREE.Vector3) {
 			let chunkPos = this.tmpVec
-				.copy(pos)
+				.copy(position)
 				.divide(this.chunkSize)
 				.floor();
 			let chunk = this.getChunk(chunkPos);
 			if (chunk)
-				return chunk.getBlock(this.tmpVec.copy(pos).sub(chunk.worldPosition));
-		} else if (pos instanceof VoxelBlock) {
+				return chunk.getBlock(
+					this.tmpVec.copy(position).sub(chunk.worldPosition),
+				);
+		} else if (position instanceof VoxelBlock) {
 			let chunks = this.listChunks();
 			for (let chunk of chunks) {
-				if (chunk.hasBlock(pos)) return pos;
+				if (chunk.hasBlock(position)) return position;
 			}
 		}
 	}
@@ -352,12 +353,12 @@ export default class VoxelMap extends THREE.Group {
 	/**
 	 * @param {VoxelBlock|String} block - a {@link VoxelBlock} or a UID of a block to create
 	 * @param {THREE.Vector3} position
-	 * @returns {this}
+	 * @return {VoxelMap} this
 	 */
-	setBlock(block, pos) {
-		if (pos instanceof THREE.Vector3) {
+	setBlock(block, position) {
+		if (position instanceof THREE.Vector3) {
 			let chunkPos = this.tmpVec
-				.copy(pos)
+				.copy(position)
 				.divide(this.chunkSize)
 				.floor();
 			let chunk = this.getChunk(chunkPos);
@@ -368,7 +369,10 @@ export default class VoxelMap extends THREE.Group {
 				this.setChunk(chunk, chunkPos);
 			}
 
-			chunk.setBlock(block, this.tmpVec.copy(pos).sub(chunk.worldPosition));
+			chunk.setBlock(
+				block,
+				this.tmpVec.copy(position).sub(chunk.worldPosition),
+			);
 		}
 
 		return this;
@@ -377,7 +381,7 @@ export default class VoxelMap extends THREE.Group {
 	/**
 	 * removes all the blocks in this map, but keeps the chunks
 	 * @param {Boolean} [disposeBlocks=true]
-	 * @return {this}
+	 * @return {VoxelMap} this
 	 */
 	clearBlocks(disposeBlocks = true) {
 		this.listChunks().forEach(chunk => {
@@ -389,27 +393,27 @@ export default class VoxelMap extends THREE.Group {
 
 	/**
 	 * removes a block from the map
-	 * @param  {THREE.Vector3|VoxelBlock} posision
+	 * @param  {THREE.Vector3|VoxelBlock} position
 	 * @param {Boolean} [disposeBlock=true]
-	 * @return {this}
+	 * @return {VoxelMap} this
 	 */
-	removeBlock(pos, disposeBlock = true) {
-		if (pos instanceof THREE.Vector3) {
+	removeBlock(position, disposeBlock = true) {
+		if (position instanceof THREE.Vector3) {
 			let chunkPos = this.tmpVec
-				.copy(pos)
+				.copy(position)
 				.divide(this.chunkSize)
 				.floor();
 			let chunk = this.getChunk(chunkPos);
 
 			if (chunk)
 				chunk.removeBlock(
-					this.tmpVec.copy(pos).sub(chunk.worldPosition),
+					this.tmpVec.copy(position).sub(chunk.worldPosition),
 					disposeBlock,
 				);
-		} else if (pos instanceof VoxelBlock) {
+		} else if (position instanceof VoxelBlock) {
 			let chunks = this.listChunks();
 			for (let chunk of chunks) {
-				if (chunk.hasBlock(pos)) chunk.removeBlock(pos, disposeBlock);
+				if (chunk.hasBlock(position)) chunk.removeBlock(position, disposeBlock);
 			}
 		}
 
@@ -432,7 +436,7 @@ export default class VoxelMap extends THREE.Group {
 	/**
 	 * imports chunks / blocks from json format
 	 * @param  {Object} json
-	 * @return {this}
+	 * @return {VoxelMap} this
 	 */
 	fromJSON(json) {
 		if (json.chunks) {
@@ -450,7 +454,7 @@ export default class VoxelMap extends THREE.Group {
 
 	/**
 	 * loops over all the chunks in the map and rebuilds them if they need it
-	 * @returns {this}
+	 * @return {VoxelMap} this
 	 */
 	updateChunks() {
 		this.listChunks().forEach(chunk => {

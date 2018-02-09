@@ -1,28 +1,25 @@
 import THREE from "three";
 
-/**
- * @class manages and loads models
- * @name ModelManager
- */
+/** manages and loads models */
 export default class ModelManager {
 	constructor() {
 		/**
 		 * the cache for all the registed models
-		 * @var {Object}
+		 * @type {Object}
 		 * @private
 		 */
 		this.models = {};
 
 		/**
 		 * the geometry to use while the model is loading
-		 * @var {THREE.Geometry)
+		 * @type {THREE.Geometry)
 		 * @private
 		 */
 		this.tmpGeometry = new THREE.Geometry();
 
 		/**
 		 * the material to use while the model is loading
-		 * @var {THREE.Material)
+		 * @type {THREE.Material)
 		 * @private
 		 */
 		this.tmpMaterial = new THREE.MeshNormalMaterial();

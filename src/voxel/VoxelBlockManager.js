@@ -1,14 +1,8 @@
-/**
- * @class manages a list of voxels blocks, and provides functions for creating them
- * @name VoxelBlockManager
- */
+/** manages a list of voxels blocks, and provides functions for creating them */
 export default class VoxelBlockManager {
 	/**
 	 * returns an instance of a VoxelBlockManager
-	 * @static
-	 * @name inst
 	 * @return {VoxelBlockManager}
-	 * @memberOf VoxelBlockManager
 	 */
 	static get inst() {
 		return this._inst || (this._inst = new this());
@@ -17,28 +11,28 @@ export default class VoxelBlockManager {
 	constructor() {
 		/**
 		 * a Map of blocks with the key being the UID
-		 * @var {Map}
+		 * @type {Map}
 		 * @private
 		 */
 		this.blocks = new Map();
 
 		/**
 		 * a pool of blocks to pull from
-		 * @var {Object}
+		 * @type {Object}
 		 * @private
 		 */
 		this.blockPool = {};
 
 		/**
 		 * whether to use the blockPool
-		 * @var {Boolean}
+		 * @type {Boolean}
 		 * @default false
 		 */
 		this.usePool = false;
 	}
 
 	/**
-	 * @param  {String|VoxelBlock|Class} - a UID of a block or a {@link VoxelBlock} or a class
+	 * @param  {String|VoxelBlock|Class} id - a UID of a block or a {@link VoxelBlock} or a class
 	 * @return {Boolean}
 	 */
 	hasBlock(id) {
@@ -127,8 +121,8 @@ export default class VoxelBlockManager {
 
 	/**
 	 * registers a block class with this manager
-	 * @param  {VoxelBlock|VoxelBlock[]|Object}
-	 * @return {this}
+	 * @param  {VoxelBlock|VoxelBlock[]|Object} block
+	 * @return {VoxelBlockManager} this
 	 */
 	registerBlock(block) {
 		if (this.hasBlock(block)) return this;
@@ -148,7 +142,7 @@ export default class VoxelBlockManager {
 
 	/**
 	 * returns an array of all the VoxelBlocks registered
-	 * @return {VoxelBlox[]}
+	 * @return {VoxelBlock[]}
 	 */
 	listBlocks() {
 		let arr = [];
@@ -159,8 +153,8 @@ export default class VoxelBlockManager {
 	/**
 	 * returns the UID of the block, if the block is not in the manager it will still return the blocks UID
 	 * @param  {String|VoxelBlock|Class} id - a UID of a block or a instance of a {@link VoxelBlock} or a class
-	 * @return {String}
 	 * @static
+	 * @return {String}
 	 */
 	static resolveID(id) {
 		// if its a string, extract the id out of the string just in case there are properties in the string
@@ -247,7 +241,7 @@ export default class VoxelBlockManager {
 	/**
 	 * removes block from its parent and adds it back into the pool
 	 * @param {VoxelBlock} block
-	 * @return {this}
+	 * @return {VoxelBlockManager} this
 	 */
 	disposeBlock(block) {
 		let id = VoxelBlockManager.resolveID(block);
@@ -263,7 +257,8 @@ export default class VoxelBlockManager {
 	/**
 	 * resets a block before putting it back in the pool
 	 * @param  {VoxelBlock} block
-	 * @return {this}
+	 * @private
+	 * @return {VoxelBlockManager} this
 	 */
 	_resetBlock(block) {
 		if (block.hasOwnProperty("properties")) delete block.properties;

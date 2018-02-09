@@ -1,24 +1,18 @@
 import THREE from "three";
 
-/**
- * @class
- * @name VoxelSelection
- *
- * @extends {THREE.EventDispatcher}
- */
 export default class VoxelSelection extends THREE.EventDispatcher {
 	constructor(blockManager = VoxelBlockManager.inst) {
 		super();
 		/**
 		 * the block manager this selection will use
 		 * @default {@link VoxelBlockManager.inst}
-		 * @var {VoxelBlockManager}
+		 * @type {VoxelBlockManager}
 		 */
 		this.blockManager = blockManager;
 
 		/**
 		 * a Map of VoxelBlock with the keys being a string "x,y,z"
-		 * @var {Map}
+		 * @type {Map}
 		 * @private
 		 */
 		this.blocks = new Map();
@@ -26,7 +20,7 @@ export default class VoxelSelection extends THREE.EventDispatcher {
 		/**
 		 * a WeakMap of THREE.Vector3 with the keys being the blocks
 		 * @private
-		 * @var {WeakMap}
+		 * @type {WeakMap}
 		 */
 		this.blocksPositions = new WeakMap();
 
@@ -40,7 +34,7 @@ export default class VoxelSelection extends THREE.EventDispatcher {
 
 		/**
 		 * a tmp Vector3 the chunk uses so it dose not have to create new instances
-		 * @var {THREE.Vector3}
+		 * @type {THREE.Vector3}
 		 * @private
 		 */
 		this.tmpVec = new THREE.Vector3();
@@ -72,13 +66,13 @@ export default class VoxelSelection extends THREE.EventDispatcher {
 	 * @param  {THREE.Vector3|VoxelBlock} position - the position to check, or the block to check for
 	 * @return {Boolean}
 	 */
-	hasBlock(pos) {
-		if (pos instanceof THREE.Vector3) {
-			pos = this.tmpVec.copy(pos).round();
-			return this.blocks.has(pos.toString());
-		} else if (pos instanceof VoxelBlock) {
+	hasBlock(position) {
+		if (position instanceof THREE.Vector3) {
+			position = this.tmpVec.copy(position).round();
+			return this.blocks.has(position.toString());
+		} else if (position instanceof VoxelBlock) {
 			for (let block of this.blocks) {
-				if (block[1] === pos) return true;
+				if (block[1] === position) return true;
 			}
 		}
 		return false;
@@ -89,12 +83,12 @@ export default class VoxelSelection extends THREE.EventDispatcher {
 	 * @param  {(THREE.Vector3)} position
 	 * @return {VoxelBlock}
 	 */
-	getBlock(pos) {
-		if (pos instanceof THREE.Vector3) {
-			pos = this.tmpVec.copy(pos).round();
-			return this.blocks.get(pos.toString());
-		} else if (pos instanceof VoxelBlock) {
-			if (this.hasBlock(pos)) return pos;
+	getBlock(position) {
+		if (position instanceof THREE.Vector3) {
+			position = this.tmpVec.copy(position).round();
+			return this.blocks.get(position.toString());
+		} else if (position instanceof VoxelBlock) {
+			if (this.hasBlock(position)) return position;
 		}
 	}
 
@@ -111,14 +105,14 @@ export default class VoxelSelection extends THREE.EventDispatcher {
 	 * creates a block with id and adds it to the selection
 	 * @param  {String} id - the UID of the block to create
 	 * @param  {THREE.Vector3} position - the position to add the block to
-	 * @returns {VoxelBlock}
+	 * @return {VoxelBlock}
 	 */
-	createBlock(id, pos) {
+	createBlock(id, position) {
 		let block;
 		if (String.isString(id)) block = this.blockManager.createBlock(id);
 
-		if (block && pos) {
-			this.setBlock(block, pos);
+		if (block && position) {
+			this.setBlock(block, position);
 		}
 		return block;
 	}
@@ -128,23 +122,23 @@ export default class VoxelSelection extends THREE.EventDispatcher {
 	 * if "block" is a String it will create a new block with using {@link VoxelBlockManager#createBlock}
 	 * @param {VoxelBlock|String} block
 	 * @param {(THREE.Vector3)} position
-	 * @returns {this}
+	 * @return {this}
 	 *
 	 * @fires VoxelSelection#block:set
 	 */
-	setBlock(block, pos) {
+	setBlock(block, position) {
 		if (block instanceof VoxelBlock && block.parent)
 			throw new Error("cant add block that already has a parent");
 
 		if (String.isString(block)) block = this.blockManager.createBlock(block);
 
-		if (pos instanceof THREE.Vector3 && block instanceof VoxelBlock) {
-			pos = this.tmpVec.copy(pos).round();
-			let str = pos.toString();
+		if (position instanceof THREE.Vector3 && block instanceof VoxelBlock) {
+			position = this.tmpVec.copy(position).round();
+			let str = position.toString();
 			let oldBlock = this.blocks.get(str);
 
 			this.blocks.set(str, block);
-			this.blocksPositions.set(block, pos.clone());
+			this.blocksPositions.set(block, position.clone());
 
 			block.parent = this;
 
@@ -186,13 +180,13 @@ export default class VoxelSelection extends THREE.EventDispatcher {
 	 *
 	 * @fires VoxelSelection#block:removed
 	 */
-	removeBlock(pos) {
-		if (this.hasBlock(pos)) {
+	removeBlock(position) {
+		if (this.hasBlock(position)) {
 			let block;
-			if (pos instanceof THREE.Vector3) {
-				block = this.getBlock(pos.clone().round());
-			} else if (pos instanceof VoxelBlock) {
-				block = pos;
+			if (position instanceof THREE.Vector3) {
+				block = this.getBlock(position.clone().round());
+			} else if (position instanceof VoxelBlock) {
+				block = position;
 			}
 			if (!block) return this;
 

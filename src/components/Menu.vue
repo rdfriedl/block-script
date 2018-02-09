@@ -32,7 +32,7 @@ import THREE from 'three';
 import CssCube from './CssCube.vue';
 import VoxelMap from '../voxel/VoxelMap.js';
 import VoxelBlockManager from '../voxel/VoxelBlockManager.js';
-import * as blocks from '../blocks.js';
+import * as blocks from '../blocks/defaultBlocks.js';
 import * as ChunkUtils from '../ChunkUtils.js';
 
 import ChunkGeneratorFlat from '../generators/ChunkGeneratorFlat.js';
@@ -74,7 +74,7 @@ export default {
 			scene = new THREE.Scene();
 
 			//if we are debugging add this to global scope
-			if(process.env.NODE_ENV == 'development') window.menuScene = scene;
+			if(process.env.NODE_ENV === 'development') window.menuScene = scene;
 
 			//create voxel map
 			map = new VoxelMap();
@@ -222,8 +222,8 @@ export default {
 }
 .git_fork_link{
 	position: absolute;
-	right: 0px;
-	top: 0px;
+	right: 0;
+	top: 0;
 	transition: all 0.5s;
 	width: 10%;
 }

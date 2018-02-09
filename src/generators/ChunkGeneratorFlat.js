@@ -2,17 +2,10 @@ import THREE from "three";
 import ChunkGenerator from "./ChunkGenerator.js";
 import * as ChunkUtils from "../ChunkUtils.js";
 
-/**
- * @name ChunkGeneratorFlat
- * @class a chunk generator for making flat land
- * @extends {ChunkGenerator}
- */
+/** a chunk generator for making flat land */
 export default class ChunkGeneratorFlat extends ChunkGenerator {
-	/**
-	 * @override
-	 */
 	setUpChunk(chunk) {
-		if (chunk.chunkPosition.y == 0) {
+		if (chunk.chunkPosition.y === 0) {
 			ChunkUtils.drawCube(
 				chunk,
 				new THREE.Vector3(0, 0, 0),

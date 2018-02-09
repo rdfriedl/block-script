@@ -72,6 +72,39 @@ jobs:
             aws s3 sync /tmp/workspace/dist s3://${S3_BUCKET} --acl public-read && \
             aws cloudfront create-invalidation --distribution-id ${CLOUDFRONT_ID} --paths "/*";
 
+  docs:
+    working_directory: ~/repo
+    docker:
+      - image: rdfriedl/circleci-node-aws
+
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+          - node_modules-{{ checksum "package.json" }}
+
+      - run:
+          name: Install dependancies
+          command: npm install
+
+      - save_cache:
+          paths:
+            - node_modules
+          key: node_modules-{{ checksum "package.json" }}
+
+      - run:
+         name: Build Docs
+         command: npm run docs
+
+      - run:
+          name: Deploy Docs to s3 bucket
+          command: |
+            aws configure set preview.cloudfront true && \
+            aws s3 rm s3://${S3_BUCKET}/docs --recursive && \
+            aws s3 sync ~/repo/docs s3://${S3_BUCKET}/docs --acl public-read && \
+            aws cloudfront create-invalidation --distribution-id ${CLOUDFRONT_ID} --paths "/docs/*";
+
 workflows:
   version: 2
   build-and-deploy:
@@ -81,6 +114,13 @@ workflows:
          requires:
            - test
       - deploy:
+          requires:
+            - build
+          filters:
+            branches:
+              only:
+                - master
+      - docs:
           requires:
             - build
           filters:

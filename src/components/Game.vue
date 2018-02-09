@@ -157,7 +157,7 @@ import Stats from 'stats';
 import VoxelMap from '../voxel/VoxelMap.js';
 import VoxelChunk from '../voxel/VoxelChunk.js';
 import VoxelBlockManager from '../voxel/VoxelBlockManager.js';
-import * as blocks from '../blocks.js';
+import * as blocks from '../blocks/defaultBlocks.js';
 import * as ChunkUtils from '../ChunkUtils.js';
 
 window.blocks = blocks;

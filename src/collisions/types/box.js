@@ -1,22 +1,18 @@
 import THREE from "three";
 import CollisionEntity from "../CollisionEntity.js";
 
-/**
- * @class
- * @name CollisionEntityBox
- * @extends {CollisionEntity}
- *
- * @param {THREE.Vector3} size - the size of the box
- * @param {THREE.Vector3} [offset] - the offset of the box from its center, if none is provided it will default to the center of the box
- */
 export default class CollisionEntityBox extends CollisionEntity {
+	/**
+	 * @param {THREE.Vector3} size - the size of the box
+	 * @param {THREE.Vector3} [offset] - the offset of the box from its center, if none is provided it will default to the center of the box
+	 */
 	constructor(size, offset) {
 		super();
 		size = size || new THREE.Vector3();
 
 		/**
 		 * a Box3 that is used as the size of this CollisionEntityBox
-		 * @var {THREE.Box3}
+		 * @type {THREE.Box3}
 		 */
 		this._box = new THREE.Box3(
 			size
@@ -59,7 +55,7 @@ export default class CollisionEntityBox extends CollisionEntity {
 	 * @param {THREE.Box3} a - the box thats moving
 	 * @param {THREE.Box3} b - the static box
 	 * @param {THREE.Vector3} velocity
-	 * @returns {Object|Boolean} - returns object with info about collision, if there was no collision it will return false
+	 * @return {Object|Boolean} - returns object with info about collision, if there was no collision it will return false
 	 */
 	static SweptAABB(a, b, velocity) {
 		const axes = ["x", "y", "z"];

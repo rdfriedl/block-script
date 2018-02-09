@@ -250,7 +250,7 @@ import 'imports-loader?THREE=three!three/examples/js/shaders/SSAOShader.js';
 import Room from '../rooms/Room.js';
 import GridCube from '../objects/GridCube.js';
 import Keyboard from '../keyboard.js';
-import * as blocks from '../blocks.js';
+import * as blocks from '../blocks/defaultBlocks.js';
 import MODELS from '../models.js';
 
 import VoxelMap from '../voxel/VoxelMap.js';

@@ -4,7 +4,7 @@ import THREE from "three";
 import "imports-loader?THREE=three!three/examples/js/controls/PointerLockControls.js";
 
 import VoxelMap from "../voxel/VoxelMap.js";
-import * as blocks from "../blocks.js";
+import * as blocks from "../blocks/defaultBlocks.js";
 
 import ChunkGeneratorRooms from "../generators/ChunkGeneratorRooms.js";
 

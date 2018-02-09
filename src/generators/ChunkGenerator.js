@@ -1,11 +1,7 @@
-/**
- * @class
- * @name ChunkGenerator
- * @param {VoxelMap} map the map this generator will use
- */
 export default class ChunkGenerator {
 	/**
 	 * sets up a chunk
+	 * @abstract
 	 * @param  {VoxelChunk} chunk
 	 * @return {VoxelChunk} returns chunk
 	 */

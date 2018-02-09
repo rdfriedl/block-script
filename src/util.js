@@ -437,6 +437,6 @@ function createDebugBox(size) {
 }
 
 export function devLog(...args) {
-	if (process.env.NODE_ENV == "development") console.log(...args);
+	if (process.env.NODE_ENV === "development") console.log(...args);
 	return console;
 }

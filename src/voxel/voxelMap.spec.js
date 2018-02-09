@@ -4,6 +4,7 @@ import VoxelBlock from "./VoxelBlock.js";
 import VoxelBlockManager from "./VoxelBlockManager.js";
 import THREE from "three";
 
+/** @test {VoxelMap} */
 describe("VoxelMap", function() {
 	before(function() {
 		this.map = new VoxelMap();

@@ -1,18 +1,13 @@
 import THREE from "three";
 import CollisionEntityBox from "../collisions/types/box.js";
 
-/**
- * @class
- * @name Player
- * @extends {THREE.Group}
- */
 class Player extends THREE.Group {
 	constructor() {
 		super();
 
 		/**
 		 * the {@link CollisionEntity} the play will use
-		 * @var {CollisionEntityBox}
+		 * @type {CollisionEntityBox}
 		 */
 		this.collision = new CollisionEntityBox(
 			new THREE.Vector3(20, 58, 20),
@@ -27,7 +22,7 @@ class Player extends THREE.Group {
 		};
 
 		/**
-		 * @var {THREE.PerspectiveCamera}
+		 * @type {THREE.PerspectiveCamera}
 		 */
 		this.camera = new THREE.PerspectiveCamera(
 			70,
@@ -81,7 +76,7 @@ class Player extends THREE.Group {
 		});
 
 		/**
-		 * @var {Object}
+		 * @type {Object}
 		 */
 		this.movement = {
 			forward: false,
@@ -94,14 +89,14 @@ class Player extends THREE.Group {
 		};
 
 		/**
-		 * @var {Boolean}
+		 * @type {Boolean}
 		 * @private
 		 */
 		this._onGround = false;
 
 		/**
 		 * a Vec2 used to store the players forward / back and left / right movements
-		 * @var {THREE.Vector2}
+		 * @type {THREE.Vector2}
 		 * @private
 		 */
 		this._movementVelocity = new THREE.Vector2();
@@ -236,6 +231,6 @@ Player.SPRINT_SPEED = 3.5 * 60;
 Player.JUMP_POWER = 4.8 * 60;
 Player.DRAG = 0.15 * 60;
 Player.AIR_DRAG = 0.05 * 60;
-Player.MOVEMENT_ACCELERATION = 1 * 60;
+Player.MOVEMENT_ACCELERATION = 60;
 
 export { Player as default };

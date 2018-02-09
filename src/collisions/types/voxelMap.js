@@ -1,11 +1,7 @@
 import THREE from "three";
 import CollisionEntity from "../CollisionEntity.js";
 
-/**
- * @class collition entity for a {@link VoxelMap}
- * @name CollisionEntityVoxelMap
- * @extends {CollisionEntity}
- */
+/** collision entity for a {@link VoxelMap} */
 export default class CollisionEntityVoxelMap extends CollisionEntity {
 	constructor(voxelMap) {
 		if (!voxelMap)
@@ -19,14 +15,12 @@ export default class CollisionEntityVoxelMap extends CollisionEntity {
 
 		/**
 		 * the map to use
-		 * @var {VoxelMap}
+		 * @type {VoxelMap}
 		 */
 		this.map = voxelMap;
 	}
 
-	/**
-	 * @override
-	 */
+	/** @override */
 	getBoundingBox() {
 		return new THREE.Box3(
 			new THREE.Vector3(-Infinity, -Infinity, -Infinity),

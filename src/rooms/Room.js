@@ -6,10 +6,6 @@ import MazeGenerator from "../maze-generators/MazeGenerator.js";
 
 export const ROOM_ROTATION_AXIS = new THREE.Vector3(0, 1, 0);
 
-/**
- * @class
- * @name Room
- */
 export default class Room {
 	constructor(blocks, doors) {
 		/**

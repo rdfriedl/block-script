@@ -13,16 +13,11 @@ function weightedRand(spec) {
 	}
 }
 
-/**
- * @class
- * @name RecursiveBacktracker
- * @extends {MazeGenerator}
- */
 export default class RecursiveBacktracker extends MazeGenerator {
 	/**
 	 * @param  {Object} opts
-	 * @param  {Number} [opts.paths=1] - the number of posible paths from "start" to "end"
-	 * @return {this}
+	 * @param  {Number} [opts.paths=1] - the number of possible paths from "start" to "end"
+	 * @return {RecursiveBacktracker} this
 	 */
 	generate(opts = {}) {
 		super.generate();
@@ -104,8 +99,6 @@ export default class RecursiveBacktracker extends MazeGenerator {
 						break;
 					}
 				}
-
-				console;
 			}
 		}
 
@@ -135,32 +128,32 @@ if (process.env.NODE_ENV === "development") {
 				let cell = maze.getCell(tmpVec.set(x, y)) || new THREE.Vector2();
 
 				// strait
-				if (cell.x == (P | N) && cell.y == X) str += "─";
-				if (cell.x == X && cell.y == (P | N)) str += "│";
+				if (cell.x === (P | N) && cell.y === X) str += "─";
+				if (cell.x === X && cell.y === (P | N)) str += "│";
 
 				// corners
-				if (cell.x == P && cell.y == P) str += "┌";
-				if (cell.x == N && cell.y == P) str += "┐";
-				if (cell.x == N && cell.y == N) str += "┘";
-				if (cell.x == P && cell.y == N) str += "└";
+				if (cell.x === P && cell.y === P) str += "┌";
+				if (cell.x === N && cell.y === P) str += "┐";
+				if (cell.x === N && cell.y === N) str += "┘";
+				if (cell.x === P && cell.y === N) str += "└";
 
 				// Ts
-				if (cell.x == P && cell.y == (P | N)) str += "├";
-				if (cell.x == N && cell.y == (P | N)) str += "┤";
-				if (cell.x == (P | N) && cell.y == P) str += "┬";
-				if (cell.x == (P | N) && cell.y == N) str += "┴";
+				if (cell.x === P && cell.y === (P | N)) str += "├";
+				if (cell.x === N && cell.y === (P | N)) str += "┤";
+				if (cell.x === (P | N) && cell.y === P) str += "┬";
+				if (cell.x === (P | N) && cell.y === N) str += "┴";
 
 				// ends
-				if (cell.x == P && cell.y == X) str += "╶";
-				if (cell.x == N && cell.y == X) str += "╴";
-				if (cell.x == X && cell.y == P) str += "╷";
-				if (cell.x == X && cell.y == N) str += "╵";
+				if (cell.x === P && cell.y === X) str += "╶";
+				if (cell.x === N && cell.y === X) str += "╴";
+				if (cell.x === X && cell.y === P) str += "╷";
+				if (cell.x === X && cell.y === N) str += "╵";
 
 				// cross
-				if (cell.x == (P | N) && cell.y == (P | N)) str += "┼";
+				if (cell.x === (P | N) && cell.y === (P | N)) str += "┼";
 
 				// nothing
-				if (cell.x == X && cell.y == X) str += " ";
+				if (cell.x === X && cell.y === X) str += " ";
 			}
 
 			// new line

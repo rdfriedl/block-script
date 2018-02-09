@@ -1,11 +1,10 @@
-import VoxelMap from "./VoxelMap.js";
-import VoxelChunk from "./VoxelChunk.js";
 import VoxelSelection from "./VoxelSelection.js";
 import VoxelBlock from "./VoxelBlock.js";
 import VoxelBlockManager from "./VoxelBlockManager.js";
 import THREE from "three";
 
-describe("VoxelChunk", function() {
+/** @test {VoxelSelection} */
+describe("VoxelSelection", function() {
 	before(function() {
 		this.selection = new VoxelSelection(new VoxelBlockManager());
 

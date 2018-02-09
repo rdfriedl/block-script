@@ -1,6 +1,7 @@
 import THREE from "three";
 import MazeGenerator from "./MazeGenerator.js";
 
+/** @test {MazeGenerator} */
 describe("MazeGenerator", function() {
 	before(function() {
 		this.generator = new MazeGenerator(
@@ -44,9 +45,8 @@ describe("MazeGenerator", function() {
 		});
 
 		it('returns "undefined" if "position" is out of maze', function() {
-			expect(
-				this.generator.createCell(new THREE.Vector4(5, -50, 5, 500)),
-			).to.equal(undefined);
+			expect(this.generator.createCell(new THREE.Vector4(5, -50, 5, 500))).to.be
+				.undefined;
 		});
 
 		it("sets cell", function() {
@@ -75,9 +75,8 @@ describe("MazeGenerator", function() {
 
 		it('returns "undefined" if "position" is outside of maze', function() {
 			this.generator.createCell(new THREE.Vector4(7, 3, 50, 3));
-			expect(this.generator.getCell(new THREE.Vector4(7, 3, 50, 3))).to.equal(
-				undefined,
-			);
+			expect(this.generator.getCell(new THREE.Vector4(7, 3, 50, 3))).to.be
+				.undefined;
 		});
 	});
 });

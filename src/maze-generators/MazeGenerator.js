@@ -1,11 +1,11 @@
 import THREE from "three";
 
-/**
- * @class main class for maze generators
- * @name MazeGenerator
- * @param {THREE.Vector2|THREE.Vector3|THREE.Vector4} vecClass - the type of vector to use
- */
+/** main class for maze generators */
 export default class MazeGenerator {
+	/**
+	 * @param {THREE.Vector2|THREE.Vector3|THREE.Vector4} vecClass - the type of vector to use
+	 * @param {MazeGenerator#vec} size - the size of the maze
+	 */
 	constructor(vecClass, size) {
 		/**
 		 * the type of vector to use
@@ -36,7 +36,7 @@ export default class MazeGenerator {
 		this.size.round();
 
 		// make sure the maze is bigger then 2
-		for (var i = 0; i < this.axes.length; i++) {
+		for (let i = 0; i < this.axes.length; i++) {
 			if (this.size[this.axes[i]] <= 2)
 				throw new Error(
 					"the maze has to be bigger then 2 on the " + this.axes[i] + " axis",
@@ -73,7 +73,7 @@ export default class MazeGenerator {
 	 */
 	checkPosition(position) {
 		// make sure that we are not outside of the maze
-		for (var i = 0; i < this.axes.length; i++) {
+		for (let i = 0; i < this.axes.length; i++) {
 			let axis = this.axes[i];
 			if (position[axis] < 0 || position[axis] >= this.size[axis]) return false;
 		}
@@ -92,8 +92,9 @@ export default class MazeGenerator {
 		if (!this.checkPosition(position)) return;
 
 		let cell = this.getCell(position);
-		if (cell) return cell;
-		else {
+		if (cell) {
+			return cell;
+		} else {
 			cell = new this.vec();
 			this.setCell(position, cell);
 			return cell;
@@ -117,7 +118,8 @@ export default class MazeGenerator {
 	/**
 	 * sets the data for a certain cell
 	 * @param {MazeGenerator#vec} position
-	 * @return {this}
+	 * @param {*} data - the value to set the cell to
+	 * @return {MazeGenerator}
 	 */
 	setCell(position, data) {
 		if (!(position instanceof this.vec)) return;
@@ -132,7 +134,7 @@ export default class MazeGenerator {
 
 	/**
 	 * populates the cells with data
-	 * @return {this}
+	 * @return {MazeGenerator} this
 	 */
 	generate(opts) {
 		if (Reflect.ownKeys(this.cells).length > 0)

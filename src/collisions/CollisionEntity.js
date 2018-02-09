@@ -1,35 +1,29 @@
 import THREE from "three";
 
-/**
- * @class
- * @name CollisionEntity
- *
- * @param {CollisionShape} [shape] - the shape that this entity will use
- */
 export default class CollisionEntity {
 	constructor() {
 		/**
 		 * the position of this CollisionEntity
-		 * @var {THREE.Vector3}
+		 * @type {THREE.Vector3}
 		 */
 		this.position = new THREE.Vector3();
 
 		/**
 		 * the velocity of this CollisionEntity
-		 * @var {THREE.Vector3}
+		 * @type {THREE.Vector3}
 		 */
 		this.velocity = new THREE.Vector3();
 
 		/**
 		 * whether this entity is static
-		 * @var {Boolean}
+		 * @type {Boolean}
 		 */
 		this.isStatic = false;
 
 		/**
 		 * the {@link CollisionWorld} that this entity belongs to.
 		 * this is used in the step method
-		 * @var {CollisionWorld}
+		 * @type {CollisionWorld}
 		 */
 		this.world = undefined;
 	}
@@ -37,12 +31,12 @@ export default class CollisionEntity {
 	/**
 	 * updates this entity
 	 * @param {Number} dtime - the delta time
-	 * @return {this}
+	 * @return {CollisionEntity} this
 	 */
 	step(dtime) {
 		let velocity = this.velocity.clone().multiplyScalar(dtime);
 
-		// get movment boundingBox
+		// get movement boundingBox
 		let movementBox = this.boundingBox;
 		movementBox.union(this.boundingBox.translate(velocity));
 
@@ -62,7 +56,7 @@ export default class CollisionEntity {
 			let col, entity;
 
 			// find the first collision
-			for (var i = 0; i < entities.length; i++) {
+			for (let i = 0; i < entities.length; i++) {
 				let data = entities[i].getCollisionData(this, velocity, movementBox);
 				if (!col || data.entryTime <= col.entryTime) {
 					col = data;
@@ -101,7 +95,7 @@ export default class CollisionEntity {
 
 	/**
 	 * returns a bounding box for this entity
-	 * @return {THREE.Box}
+	 * @return {THREE.Box3}
 	 */
 	getBoundingBox() {
 		return new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
@@ -120,7 +114,7 @@ export default class CollisionEntity {
 	 * @param {CollisionEntity} entity
 	 * @param {THREE.Vector3} velocity
 	 * @param {THREE.Box3} movementBox
-	 * @returns {Object}
+	 * @return {Object}
 	 */
 	getCollisionData(entity, velocity, movementBox) {
 		return {
