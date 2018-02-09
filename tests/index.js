@@ -1,6 +1,4 @@
-// import the utils
-import "../src/util.js";
-import "../src/three-changes.js";
+import "../src/index";
 
 // import all the tests
 let tests = require.context("../src", true, /\.spec/);

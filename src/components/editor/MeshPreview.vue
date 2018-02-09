@@ -87,32 +87,38 @@ export default {
 	}
 }
 
-let renderer = new THREE.WebGLRenderer({
-	preserveDrawingBuffer: true,
-	alpha: true
-});
-renderer.setClearColor(0x000000, 0);
+let renderer, scene, light, meshGroup, camera, helper, target;
 
-// create scene
-let scene = new THREE.Scene();
-scene.add(new THREE.AmbientLight(0xffffff, 0.5));
-let light = new THREE.DirectionalLight(0xffffff);
-light.position.set(1,1,0);
-scene.add(light);
-let meshGroup = new THREE.Group();
-scene.add(meshGroup);
+function createScene() {
+	renderer = new THREE.WebGLRenderer({
+		preserveDrawingBuffer: true,
+		alpha: true
+	});
+	renderer.setClearColor(0x000000, 0);
 
-// create camera
-let camera = new THREE.OrthographicCamera(100/-2, 100/2, 100/2, 100/-2, 0.01, 10000);
+	// create scene
+	scene = new THREE.Scene();
+	scene.add(new THREE.AmbientLight(0xffffff, 0.5));
+	light = new THREE.DirectionalLight(0xffffff);
+	light.position.set(1,1,0);
+	scene.add(light);
+	meshGroup = new THREE.Group();
+	scene.add(meshGroup);
 
-let helper = new THREE.CameraHelper(camera);
-// scene.add(helper);
+	// create camera
+	camera = new THREE.OrthographicCamera(100/-2, 100/2, 100/2, 100/-2, 0.01, 10000);
 
-// create render target
-let target = new THREE.WebGLRenderTarget(100, 100, { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter, format: THREE.RGBaFormat});
+	helper = new THREE.CameraHelper(camera);
+	// scene.add(helper);
 
-function renderMesh(ctx, mesh, opts){
-	opts = opts || {};
+	// create render target
+	target = new THREE.WebGLRenderTarget(100, 100, { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter, format: THREE.RGBaFormat});
+}
+
+function renderMesh(ctx, mesh, opts = {}){
+	if(!renderer){
+		createScene();
+	}
 
 	// clear scene and add mesh
 	meshGroup.children.forEach(child => meshGroup.remove(child));

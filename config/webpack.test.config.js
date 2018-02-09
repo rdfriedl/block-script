@@ -8,12 +8,17 @@ module.exports = merge.smart(base, {
 			{
 				test: /\.js$/,
 				include: path.resolve(__dirname, "../src"),
-				exclude: /node_modules|-spec\.js$/,
+				exclude: [/node_modules|-spec\.js$/, /src\/(lib|res)/],
 				loader: "istanbul-instrumenter-loader",
 				options: {
 					esModules: true,
 				},
 				enforce: "post",
+			},
+			{
+				test: /\.css$/,
+				loader: "ignore-loader",
+				enforce: "pre",
 			},
 		],
 	},
