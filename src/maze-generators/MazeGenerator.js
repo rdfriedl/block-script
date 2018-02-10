@@ -38,9 +38,7 @@ export default class MazeGenerator {
 		// make sure the maze is bigger then 2
 		for (let i = 0; i < this.axes.length; i++) {
 			if (this.size[this.axes[i]] <= 2)
-				throw new Error(
-					"the maze has to be bigger then 2 on the " + this.axes[i] + " axis",
-				);
+				throw new Error("the maze has to be bigger then 2 on the " + this.axes[i] + " axis");
 		}
 
 		/**
@@ -137,8 +135,7 @@ export default class MazeGenerator {
 	 * @return {MazeGenerator} this
 	 */
 	generate(opts) {
-		if (Reflect.ownKeys(this.cells).length > 0)
-			throw new Error("MazeGenerator.generate() has already been called");
+		if (Reflect.ownKeys(this.cells).length > 0) throw new Error("MazeGenerator.generate() has already been called");
 	}
 }
 

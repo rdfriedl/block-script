@@ -25,50 +25,11 @@ THREE.EventDispatcher.prototype.dispatchEvent = function(event) {
 
 // make it so axis helper can take a THREE.Vector3 as first arg
 THREE.AxisHelper = function(size) {
-	if (!(size instanceof THREE.Vector3))
-		size = new THREE.Vector3(size || 1, size || 1, size || 1);
+	if (!(size instanceof THREE.Vector3)) size = new THREE.Vector3(size || 1, size || 1, size || 1);
 
-	let vertices = new Float32Array([
-		0,
-		0,
-		0,
-		size.x,
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-		size.y,
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-		size.z,
-	]);
+	let vertices = new Float32Array([0, 0, 0, size.x, 0, 0, 0, 0, 0, 0, size.y, 0, 0, 0, 0, 0, 0, size.z]);
 
-	let colors = new Float32Array([
-		1,
-		0,
-		0,
-		1,
-		0.6,
-		0,
-		0,
-		1,
-		0,
-		0.6,
-		1,
-		0,
-		0,
-		0,
-		1,
-		0,
-		0.6,
-		1,
-	]);
+	let colors = new Float32Array([1, 0, 0, 1, 0.6, 0, 0, 1, 0, 0.6, 1, 0, 0, 0, 1, 0, 0.6, 1]);
 
 	let geometry = new THREE.BufferGeometry();
 	geometry.addAttribute("position", new THREE.BufferAttribute(vertices, 3));
@@ -92,11 +53,9 @@ THREE.GridHelper = function(size, step, color1, color2) {
 	let vertices = [];
 	let colors = [];
 
-	if (!(size instanceof THREE.Vector2))
-		size = new THREE.Vector2(size || 0, size || 0);
+	if (!(size instanceof THREE.Vector2)) size = new THREE.Vector2(size || 0, size || 0);
 
-	if (!(step instanceof THREE.Vector2))
-		step = new THREE.Vector2(step || 0, step || 0);
+	if (!(step instanceof THREE.Vector2)) step = new THREE.Vector2(step || 0, step || 0);
 
 	let offset = 0;
 	for (let i = -size.x; i <= size.x; i += step.x) {
@@ -202,4 +161,54 @@ THREE.Vector3.prototype.abs = function() {
 	this.y = Math.abs(this.y);
 	this.z = Math.abs(this.z);
 	return this;
+};
+
+// export maps on materials
+THREE.Material.prototype._toJSON = THREE.Material.prototype.toJSON;
+THREE.Material.prototype.toJSON = function() {
+	var output = THREE.Material.prototype._toJSON.apply(this);
+	if (this.map) output.map = this.map.toJSON();
+	if (this.lightMap) output.lightMap = this.lightMap.toJSON();
+	if (this.specularMap) output.specularMap = this.specularMap.toJSON();
+	if (this.alphaMap) output.alphaMap = this.alphaMap.toJSON();
+	if (this.envMap) output.envMap = this.envMap.toJSON();
+	return output;
+};
+// import materials with maps
+THREE.MaterialLoader.prototype._parse = THREE.MaterialLoader.prototype.parse;
+THREE.MaterialLoader.prototype.parse = function(a) {
+	var b = THREE.MaterialLoader.prototype._parse.apply(this, arguments);
+	// texture
+	if (a.map) b.map = THREE.Texture.fromJSON(a.map);
+	if (a.lightMap) b.lightMap = THREE.Texture.fromJSON(a.lightMap);
+	if (a.specularMap) b.specularMap = THREE.Texture.fromJSON(a.specularMap);
+	if (a.alphaMap) b.alphaMap = THREE.Texture.fromJSON(a.alphaMap);
+	if (a.envMap) b.envMap = THREE.Texture.fromJSON(a.envMap);
+	return b;
+};
+THREE.Texture.prototype.toJSON = function() {
+	var output = {};
+
+	output.sourceFile = this.sourceFile;
+	if (this.mapping !== THREE.UVMapping) output.mapping = this.mapping;
+	if (this.warpS !== THREE.ClampToEdgeWrapping) output.warpS = this.warpS;
+	if (this.warpT !== THREE.ClampToEdgeWrapping) output.warpT = this.warpT;
+	if (this.magFilter !== THREE.LinearMipMapLinearFilter) output.magFilter = this.magFilter;
+	if (this.minFilter !== THREE.LinearMipMapLinearFilter) output.minFilter = this.minFilter;
+	if (this.format !== THREE.RGBAFormat) output.format = this.format;
+	if (this.type !== THREE.UnsignedByteType) output.type = this.type;
+	if (this.anisotropy !== 1) output.anisotropy = this.anisotropy;
+	// repeat
+	// offset
+	if (this.name !== "") output.name = this.name;
+	if (this.generateMipmaps !== true) output.generateMipmaps = this.generateMipmaps;
+	if (this.flipY !== true) output.flipY = this.flipY;
+	return output;
+};
+THREE.Texture.fromJSON = function(data) {
+	var tex = THREE.ImageUtils.loadTexture(data.sourceFile);
+	for (var i in data) {
+		tex[i] = data[i];
+	}
+	return tex;
 };

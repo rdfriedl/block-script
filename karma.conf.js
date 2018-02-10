@@ -14,12 +14,12 @@ module.exports = function(config) {
 				flags: ["-headless"],
 			},
 		},
-		frameworks: ["mocha", "sinon-chai"],
+		frameworks: ["source-map-support", "mocha", "sinon-chai"],
 		// this is the entry file for all our tests.
 		files: ["tests/index.js"],
 		// we will pass the entry file to webpack for bundling.
 		preprocessors: {
-			"tests/index.js": ["webpack", "sourcemap"],
+			"tests/index.js": ["webpack"],
 		},
 		reporters: ["mocha", "coverage-istanbul"],
 

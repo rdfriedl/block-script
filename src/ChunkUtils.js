@@ -10,11 +10,7 @@ import THREE from "three";
  */
 export function drawLine(chunk, fromV, toV, block) {
 	let dv = new THREE.Vector3().add(toV).sub(fromV);
-	let sv = new THREE.Vector3(
-		fromV.x < toV.x ? 1 : -1,
-		fromV.y < toV.y ? 1 : -1,
-		fromV.z < toV.z ? 1 : -1,
-	);
+	let sv = new THREE.Vector3(fromV.x < toV.x ? 1 : -1, fromV.y < toV.y ? 1 : -1, fromV.z < toV.z ? 1 : -1);
 	let err = 0;
 }
 
@@ -25,14 +21,12 @@ export function drawLine(chunk, fromV, toV, block) {
  * @param  {THREE.Vector3} toV the end position
  * @param  {String|Function|Null} block the block to use. if a function is passed it will be called with
  * @param  {THREE.Vector3} block.pos the position of the block
- * @param  {String} [type='solid'] the type of cube ('solide', 'hollow', 'frame')
+ * @param  {String} [type='solid'] the type of cube ('solid', 'hollow', 'frame')
  */
 export function drawCube(chunk, fromV, toV, block, type = "solid") {
 	let pos = new THREE.Vector3();
 	let min = new THREE.Vector3(Infinity, Infinity, Infinity).min(fromV).min(toV);
-	let max = new THREE.Vector3(-Infinity, -Infinity, -Infinity)
-		.max(fromV)
-		.max(toV);
+	let max = new THREE.Vector3(-Infinity, -Infinity, -Infinity).max(fromV).max(toV);
 
 	if (!Number.isFinite(min.length()) || !Number.isFinite(max.length())) return;
 
@@ -87,9 +81,7 @@ export function drawCube(chunk, fromV, toV, block, type = "solid") {
 export function clearCube(chunk, fromV, toV) {
 	let pos = new THREE.Vector3();
 	let min = new THREE.Vector3(Infinity, Infinity, Infinity).min(fromV).min(toV);
-	let max = new THREE.Vector3(-Infinity, -Infinity, -Infinity)
-		.max(fromV)
-		.max(toV);
+	let max = new THREE.Vector3(-Infinity, -Infinity, -Infinity).max(fromV).max(toV);
 
 	if (!Number.isFinite(min.length()) || !Number.isFinite(max.length())) return;
 
@@ -109,7 +101,7 @@ export function clearCube(chunk, fromV, toV) {
  * @param  {THREE.Vector3} radius - the radius of the sphere
  * @param  {String|Function} block - the block to use. if a function is passed it will be called with
  * @param  {THREE.Vector3} block.pos the position of the block
- * @param  {String} [type='solid'] the type of sphere ('solide', 'hollow')
+ * @param  {String} [type='solid'] the type of sphere ('solid', 'hollow')
  */
 export function drawSphere(chunk, center, radius, block, type = "solid") {}
 
@@ -123,7 +115,7 @@ export function drawSphere(chunk, center, radius, block, type = "solid") {}
  * @param  {THREE.Vector3} [opts.offset] - offset to be applied to the blocks
  * @param  {Boolean} [opts.cloneBlocks=true] - whether or not to clone the blocks, by default it will use the blockManager on toChunk
  * @param  {Boolean} [opts.copyEmpty=false] - whether it should only copy the empty spaces
- * @param  {Boolean} [opts.keepOffset=true] - if it should keep the original position of the blocks or place them reletive to fromV in toChunk
+ * @param  {Boolean} [opts.keepOffset=true] - if it should keep the original position of the blocks or place them relative to fromV in toChunk
  */
 export function copyBlocks(fromChunk, toChunk, fromV, toV, opts) {
 	opts = Object.assign(
@@ -139,9 +131,7 @@ export function copyBlocks(fromChunk, toChunk, fromV, toV, opts) {
 	let fromPos = new THREE.Vector3();
 	let toPos = new THREE.Vector3();
 	let min = new THREE.Vector3(Infinity, Infinity, Infinity).min(fromV).min(toV);
-	let max = new THREE.Vector3(-Infinity, -Infinity, -Infinity)
-		.max(fromV)
-		.max(toV);
+	let max = new THREE.Vector3(-Infinity, -Infinity, -Infinity).max(fromV).max(toV);
 
 	if (!Number.isFinite(min.length()) || !Number.isFinite(max.length())) return;
 
@@ -157,8 +147,7 @@ export function copyBlocks(fromChunk, toChunk, fromV, toV, opts) {
 
 				let block = fromChunk.getBlock(fromPos);
 				if (block) {
-					if (opts.cloneBlocks && toChunk.blockManager)
-						block = toChunk.blockManager.cloneBlock(block);
+					if (opts.cloneBlocks && toChunk.blockManager) block = toChunk.blockManager.cloneBlock(block);
 					else if (block.parent) block.parent.removeBlock(block);
 
 					toChunk.setBlock(block, toPos);
@@ -199,13 +188,11 @@ export function rotateBlocks(chunk, box, around, quaternion, opts) {
 
 				if (block) {
 					// clone the block, or remove it from its parent
-					if (opts.cloneBlocks && chunk.blockManager)
-						block = chunk.blockManager.cloneBlock(block);
+					if (opts.cloneBlocks && chunk.blockManager) block = chunk.blockManager.cloneBlock(block);
 					else block.parent.removeBlock(block);
 				}
 
-				if (opts.ignoreEmpty ? !!block : true)
-					blocks.push([block, pos.toString()]);
+				if (opts.ignoreEmpty ? !!block : true) blocks.push([block, pos.toString()]);
 			}
 		}
 	}

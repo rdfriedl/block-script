@@ -9,10 +9,7 @@ class Player extends THREE.Group {
 		 * the {@link CollisionEntity} the play will use
 		 * @type {CollisionEntityBox}
 		 */
-		this.collision = new CollisionEntityBox(
-			new THREE.Vector3(20, 58, 20),
-			new THREE.Vector3(0, -58 / 2 + 8, 0),
-		);
+		this.collision = new CollisionEntityBox(new THREE.Vector3(20, 58, 20), new THREE.Vector3(0, -58 / 2 + 8, 0));
 		this.collision.onCollision = (entity, normal) => {
 			if (normal.y !== 0) {
 				this.collision.velocity.y = 0;
@@ -24,12 +21,7 @@ class Player extends THREE.Group {
 		/**
 		 * @type {THREE.PerspectiveCamera}
 		 */
-		this.camera = new THREE.PerspectiveCamera(
-			70,
-			window.innerWidth / window.innerHeight,
-			0.1,
-			10000,
-		);
+		this.camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 10000);
 		this.add(this.camera);
 
 		// create lights
@@ -37,27 +29,13 @@ class Player extends THREE.Group {
 		this.flashLight = new THREE.Group();
 		this.add(this.flashLight);
 
-		let flashLight = new THREE.SpotLight(
-			0xffffff,
-			0.8,
-			flashLightRange,
-			0.5,
-			0.3,
-			1,
-		);
+		let flashLight = new THREE.SpotLight(0xffffff, 0.8, flashLightRange, 0.5, 0.3, 1);
 		flashLight.position.set(16, -16, 16);
 		flashLight.target.position.set(0, 0, -flashLightRange);
 		this.flashLight.add(flashLight);
 		this.flashLight.add(flashLight.target);
 
-		let outterRing = new THREE.SpotLight(
-			0xffffff,
-			0.1,
-			flashLightRange,
-			0.64,
-			0.15,
-			1,
-		);
+		let outterRing = new THREE.SpotLight(0xffffff, 0.1, flashLightRange, 0.64, 0.15, 1);
 		outterRing.position.set(16, -16, 16);
 		outterRing.target.position.set(0, 0, -flashLightRange);
 		this.flashLight.add(outterRing);
@@ -117,14 +95,11 @@ class Player extends THREE.Group {
 		this.position.copy(this.collision.position);
 
 		// movment
-		const speed = this.movement.sprint
-			? Player.SPRINT_SPEED
-			: Player.WALK_SPEED;
+		const speed = this.movement.sprint ? Player.SPRINT_SPEED : Player.WALK_SPEED;
 		const drag = this._onGround ? Player.DRAG : Player.AIR_DRAG;
 
 		// jump
-		if (this._onGround && this.movement.jump)
-			this.velocity.y = Player.JUMP_POWER; // this is not effected by dtime since its not acceleration
+		if (this._onGround && this.movement.jump) this.velocity.y = Player.JUMP_POWER; // this is not effected by dtime since its not acceleration
 
 		// forward / back
 		if (this.movement.forward) {
@@ -134,15 +109,11 @@ class Player extends THREE.Group {
 		} else {
 			// ease back to 0
 			if (
-				Math.sign(
-					this._movementVelocity.y +
-						-Math.sign(this._movementVelocity.y) * drag * (dtime * 60),
-				) !== Math.sign(this._movementVelocity.y)
+				Math.sign(this._movementVelocity.y + -Math.sign(this._movementVelocity.y) * drag * (dtime * 60)) !==
+				Math.sign(this._movementVelocity.y)
 			) {
 				this._movementVelocity.y = 0;
-			} else
-				this._movementVelocity.y +=
-					-Math.sign(this._movementVelocity.y) * drag * (dtime * 60);
+			} else this._movementVelocity.y += -Math.sign(this._movementVelocity.y) * drag * (dtime * 60);
 		}
 
 		// left / right
@@ -153,15 +124,11 @@ class Player extends THREE.Group {
 		} else {
 			// ease back to 0
 			if (
-				Math.sign(
-					this._movementVelocity.x +
-						-Math.sign(this._movementVelocity.x) * drag * (dtime * 60),
-				) !== Math.sign(this._movementVelocity.x)
+				Math.sign(this._movementVelocity.x + -Math.sign(this._movementVelocity.x) * drag * (dtime * 60)) !==
+				Math.sign(this._movementVelocity.x)
 			) {
 				this._movementVelocity.x = 0;
-			} else
-				this._movementVelocity.x +=
-					-Math.sign(this._movementVelocity.x) * drag * (dtime * 60);
+			} else this._movementVelocity.x += -Math.sign(this._movementVelocity.x) * drag * (dtime * 60);
 		}
 
 		// clamp players walk speed
@@ -172,23 +139,20 @@ class Player extends THREE.Group {
 		} else {
 			// back
 			if (Math.abs(this._movementVelocity.y) > speed * Player.WALK_BACK_SPEED)
-				this._movementVelocity.y =
-					speed * Player.WALK_BACK_SPEED * Math.sign(this._movementVelocity.y);
+				this._movementVelocity.y = speed * Player.WALK_BACK_SPEED * Math.sign(this._movementVelocity.y);
 		}
 
 		// clamp players walk left / right speed
 		if (Math.abs(this._movementVelocity.x) > speed * Player.STRAFE_SPEED)
-			this._movementVelocity.x =
-				speed * Player.STRAFE_SPEED * Math.sign(this._movementVelocity.x);
+			this._movementVelocity.x = speed * Player.STRAFE_SPEED * Math.sign(this._movementVelocity.x);
 
 		// apply movement to velocity
 		let v = this.camera.getWorldDirection();
 		let angle = Math.atan2(v.x, v.z);
-		let velocity = new THREE.Vector3(
-			this._movementVelocity.x,
-			0,
-			this._movementVelocity.y,
-		).applyAxisAngle(this.up, angle);
+		let velocity = new THREE.Vector3(this._movementVelocity.x, 0, this._movementVelocity.y).applyAxisAngle(
+			this.up,
+			angle,
+		);
 		this.velocity.x = velocity.x;
 		this.velocity.z = velocity.z;
 
@@ -197,8 +161,7 @@ class Player extends THREE.Group {
 			// this is going to need to be moved below the collisions so when we push against a wall we dont walk
 			this._viewBobbing +=
 				Math.sqrt(
-					this._movementVelocity.x * this._movementVelocity.x +
-						this._movementVelocity.y * this._movementVelocity.y,
+					this._movementVelocity.x * this._movementVelocity.x + this._movementVelocity.y * this._movementVelocity.y,
 				) /
 				(30 * 60) *
 				this._viewBobbingDir *

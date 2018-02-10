@@ -56,14 +56,14 @@ export default {
 					game.renderer.setClearColor(0x999999);
 				}
 			}
-		}
+		};
 		this.$watch('state', (newState, oldState) => {
 			if(game.states[oldState] && game.states[oldState].exit)
 				game.states[oldState].exit();
 
 			if(game.states[newState] && game.states[newState].enter)
 				game.states[newState].enter();
-		})
+		});
 
 		initRenderer.call(this, game);
 		initScene.call(this, game);
@@ -88,7 +88,7 @@ export default {
 					}
 				}
 			}
-		])
+		]);
 
 		// create clock
 		let clock = new THREE.Clock();
@@ -116,7 +116,7 @@ export default {
 				on_keydown: () => timeSpeed = 0.1,
 				on_keyup: () => timeSpeed = 1
 			}
-		])
+		]);
 
 		// start
 		update.call(this);
@@ -150,7 +150,7 @@ export default {
 }
 
 import THREE from 'three';
-// extentions
+// extensions
 import 'imports-loader?THREE=three!three/examples/js/controls/PointerLockControls.js';
 import Stats from 'stats';
 
@@ -164,7 +164,7 @@ window.blocks = blocks;
 
 import Keyboard from '../keyboard.js';
 import Player from '../objects/Player.js';
-import RecursiveBacktracker from '../maze-generators/RecursiveBacktracker.js';
+import RecursiveBackTracker from '../maze-generators/RecursiveBackTracker.js';
 import RoomMaze from '../rooms/RoomMaze.js';
 import DefaultRooms from '../rooms.js';
 
@@ -221,7 +221,7 @@ function initScene(game){
 	voxelMap.addEventListener('chunk:built', event => {
 		event.chunk.mesh.castShadow = true;
 		event.chunk.mesh.receiveShadow = true;
-	})
+	});
 
 	// add voxelMap to collision world
 	voxelMap.collision = new CollisionEntityVoxelMap(voxelMap);
@@ -233,7 +233,7 @@ function initScene(game){
 		if(voxelMap.hasChunk(game.player.position.clone().divide(voxelMap.blockSize).divide(voxelMap.chunkSize).floor())){
 			world.step(dtime);
 		}
-	})
+	});
 
 	let time = Math.floor(Math.random()*5);
 	voxelMap.time = time;
@@ -249,7 +249,7 @@ function initScene(game){
 	if(process.env.NODE_ENV == 'development'){
 		window.logChunkCache = () => {
 			console.log(geometryCache, materialCache);
-		}
+		};
 
 		window.totalBlocksInMap = () => {
 			let total = {};
@@ -260,9 +260,9 @@ function initScene(game){
 
 					total[block.id] += 1;
 				})
-			})
+			});
 			return total;
-		}
+		};
 
 		window.totalBlocksInCache = () => {
 			let total = {};
@@ -271,9 +271,9 @@ function initScene(game){
 					total[block.id] = 0;
 
 				total[block.id] += 1;
-			})
+			});
 			return total;
-		}
+		};
 
 		window.logBlockInfo = () => {
 			console.log('blocks in map');
@@ -414,10 +414,10 @@ function initMaze(game){
 	let maze = game.maze = {};
 
 	// create maze
-	let generator = maze.generator = new RecursiveBacktracker(THREE.Vector3, MAZE_SIZE);
+	let generator = maze.generator = new RecursiveBackTracker(THREE.Vector3, MAZE_SIZE);
 	generator.generate({
 		weights: new THREE.Vector3(1, 0, 1) //make it so it only goes up or down if it has to
-	})
+	});
 	let rooms = maze.rooms = new RoomMaze(generator, DefaultRooms);
 }
 
@@ -436,7 +436,7 @@ function initPlayer(game){
 	let move = (dir, v) => {
 		if(this.state == 'none')
 			player.movement[dir] = v;
-	}
+	};
 	game.keyboard.register_many([
 		//up
 		{
@@ -505,7 +505,7 @@ function initPlayer(game){
 	game.updates.push((dtime) => {
 		controls.enabled = this.hasPointerLock;
 		player.update(dtime);
-	})
+	});
 
 	// add player to the collision world
 	game.world.addEntity(player.collision);
@@ -553,11 +553,11 @@ function initMazeMap(game){
 
 		const spread = 2.5;
 		levels.children.forEach(level => {
-			level.position.setY((level.level + Math.clamp((level.level - currentViewingLevel)*spread, -spread, spread)) * roomSize.y);
-		})
+			level.position.setY((level.level + Math.min(Math.max((level.level - currentViewingLevel)*spread, -spread), spread)) * roomSize.y);
+		});
 
 		currentViewingLevel += (this.map.level - currentViewingLevel)/10;
-	})
+	});
 
 	// bind keys
 	game.keyboard.register_many([
@@ -575,16 +575,16 @@ function initMazeMap(game){
 					this.map.level = Math.max(0, this.map.level - 1);
 			}
 		}
-	])
+	]);
 
 	// add player icon to map
-	let geo = new THREE.ConeBufferGeometry(1, 5, 8)
+	let geo = new THREE.ConeBufferGeometry(1, 5, 8);
 	geo.rotateX(Math.PI / 2);
 	let player = game.map.player = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({
 		color: 0x3344dd,
 		transparent: true,
 		opacity: 0.5
-	}))
+	}));
 	scene.add(player);
 
 	// update player position

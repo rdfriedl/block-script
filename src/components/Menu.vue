@@ -94,7 +94,7 @@ export default {
 				if(normal.y !== 0){
 					box2.velocity.y = 0;
 				}
-			}
+			};
 
 			collitionWorld = new CollisionWorld();
 			// collitionWorld.addEntity(box1);
@@ -108,7 +108,7 @@ export default {
 			window.reset = () => {
 				box2.position.set(0,100,0);
 				box2.velocity.set((Math.random()*2-1)*100,50,(Math.random()*2-1)*100);
-			}
+			};
 			window.reset();
 
 			// add lights
@@ -123,7 +123,7 @@ export default {
 		}
 
 		const range = 12;
-		const blockList = Object.keys(blocks).map(key => blocks[key].UID)//.filter(UID => !UID.includes('glass'));
+		const blockList = Object.keys(blocks).map(key => blocks[key].UID);//.filter(UID => !UID.includes('glass'));
 		function toggleBlock(){
 			let pos = new THREE.Vector3(Math.random()-.5,Math.random()-.5,Math.random()-.5).multiplyScalar(range*2);
 			while(Math.abs(pos.length()) > range){
@@ -194,7 +194,7 @@ export default {
 				}
 			}
 			requestAnimationFrame(update);
-		}.bind(this)
+		}.bind(this);
 
 		initScene();
 		update();

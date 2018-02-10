@@ -35,11 +35,7 @@ export default class CollisionEntityBox extends CollisionEntity {
 
 			if (col) return col;
 		} else if (entity instanceof CollisionEntityPoint) {
-			let col = CollisionEntityPoint.SweptAABB(
-				entity.position,
-				this.box,
-				velocity,
-			);
+			let col = CollisionEntityPoint.SweptAABB(entity.position, this.box, velocity);
 
 			if (col) return col;
 		}
@@ -125,24 +121,15 @@ export default class CollisionEntityBox extends CollisionEntity {
 				normal.z = velocity.z < 0 ? 1 : -1;
 			} else {
 				// looks like two sides collided at the same time
-				if (
-					Math.abs(velocity.y) < Math.abs(velocity.x) &&
-					Math.abs(velocity.y) < Math.abs(velocity.z)
-				) {
+				if (Math.abs(velocity.y) < Math.abs(velocity.x) && Math.abs(velocity.y) < Math.abs(velocity.z)) {
 					normal.x = 0;
 					normal.y = velocity.y < 0 ? 1 : -1;
 					normal.z = 0;
-				} else if (
-					Math.abs(velocity.x) < Math.abs(velocity.y) &&
-					Math.abs(velocity.x) < Math.abs(velocity.z)
-				) {
+				} else if (Math.abs(velocity.x) < Math.abs(velocity.y) && Math.abs(velocity.x) < Math.abs(velocity.z)) {
 					normal.x = velocity.x < 0 ? 1 : -1;
 					normal.y = 0;
 					normal.z = 0;
-				} else if (
-					Math.abs(velocity.z) < Math.abs(velocity.x) &&
-					Math.abs(velocity.z) < Math.abs(velocity.y)
-				) {
+				} else if (Math.abs(velocity.z) < Math.abs(velocity.x) && Math.abs(velocity.z) < Math.abs(velocity.y)) {
 					normal.x = 0;
 					normal.y = 0;
 					normal.z = velocity.z < 0 ? 1 : -1;

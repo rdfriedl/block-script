@@ -1,6 +1,5 @@
 import THREE from "three";
 import Room from "./Room.js";
-import MazeGenerator from "../maze-generators/MazeGenerator.js";
 
 const ROOM_ROTATIONS = [0, 1, 2, 3];
 
@@ -40,12 +39,8 @@ export default class RoomManager {
 			// check doors
 			if (search.doors) {
 				if (search.rotate) {
-					for (var i = 0; i < ROOM_ROTATIONS.length; i++) {
-						if (
-							Room.rotateDoors(room.doors, ROOM_ROTATIONS[i]).equals(
-								search.doors,
-							)
-						)
+					for (let i = 0; i < ROOM_ROTATIONS.length; i++) {
+						if (Room.rotateDoors(room.doors, ROOM_ROTATIONS[i]).equals(search.doors))
 							rooms.push([room, ROOM_ROTATIONS[i]]);
 					}
 				} else if (new THREE.Vector4().copy(room.doors).equals(search.doors)) {

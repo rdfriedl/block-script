@@ -48,8 +48,7 @@ export class TimeBlock extends VoxelBlock {
 		// create cache
 		if (!this.constructor._materialCache) this.constructor._materialCache = {};
 
-		let time =
-			(this.map && this.map.time) || (this.parent && this.parent.time) || 0;
+		let time = (this.map && this.map.time) || (this.parent && this.parent.time) || 0;
 		let cache = this.constructor._materialCache;
 		if (Array.isArray(TIMES[time])) {
 			// let index = Math.floor(Math.random() * TIMES[time].length);
@@ -59,8 +58,7 @@ export class TimeBlock extends VoxelBlock {
 			if (!cache[time]) cache[time] = [];
 
 			// create material
-			if (!cache[time][index])
-				cache[time][index] = this.CreateMaterial(TIMES[time][index]);
+			if (!cache[time][index]) cache[time][index] = this.CreateMaterial(TIMES[time][index]);
 
 			return cache[time][index];
 		} else {
@@ -73,12 +71,12 @@ export class TimeBlock extends VoxelBlock {
 	CreateMaterial(time) {
 		if (!time) return;
 
-		if (String.isString(time)) {
+		if (typeof time === "string") {
 			return new THREE.MeshPhongMaterial({
 				shininess: 0,
 				map: loader.load(time, pixelate),
 			});
-		} else if (Object.isObject(time)) {
+		} else if (typeof time === "object") {
 			let mat = {
 				shininess: 0,
 			};
@@ -87,11 +85,10 @@ export class TimeBlock extends VoxelBlock {
 			for (let i in time) mat[i] = time[i];
 
 			// load texture if its a string
-			if (String.isString(time.map)) mat.map = loader.load(time.map, pixelate);
+			if (typeof time.map === "string") mat.map = loader.load(time.map, pixelate);
 
 			// load bump map if its a string
-			if (String.isString(time.bumpMap))
-				mat.bumpMap = loader.load(time.bumpMap);
+			if (typeof time.bumpMap === "string") mat.bumpMap = loader.load(time.bumpMap);
 
 			return new THREE.MeshPhongMaterial(mat);
 		}
@@ -225,10 +222,7 @@ TilesDetail.UID = "tiles-detail";
 TilesDetail.TIMES = [
 	require("../res/blocks/tiles-detail/time-1.png"),
 	require("../res/blocks/tiles-detail/time-2.png"),
-	[
-		require("../res/blocks/tiles-detail/time-3-1.png"),
-		require("../res/blocks/tiles-detail/time-3-2.png"),
-	],
+	[require("../res/blocks/tiles-detail/time-3-1.png"), require("../res/blocks/tiles-detail/time-3-2.png")],
 	require("../res/blocks/tiles-detail/time-4.png"),
 	[
 		require("../res/blocks/tiles-detail/time-5-1.png"),
@@ -274,7 +268,7 @@ TilesDetail.TIMES = [
 // 	}
 // }
 // Log.UID = 'log';
-// Log.DefalutProperties = {
+// Log.DefaultProperties = {
 // 	type: 'normal',
 // 	TYPES: Reflect.ownKeys(LOG_TYPES)
 // }

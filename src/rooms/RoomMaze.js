@@ -13,9 +13,7 @@ export default class RoomMaze {
 	 * */
 	constructor(mazeGenerator, roomManager = RoomManager.inst) {
 		if (!(mazeGenerator instanceof MazeGenerator))
-			throw new Error(
-				"RoomMaze requires a MazeGenerator as the first argument",
-			);
+			throw new Error("RoomMaze requires a MazeGenerator as the first argument");
 
 		this.generator = mazeGenerator;
 		this.roomManager = roomManager;
@@ -31,8 +29,7 @@ export default class RoomMaze {
 	}
 
 	hasRoom(pos) {
-		if (pos instanceof THREE.Vector4)
-			pos = new THREE.Vector3(pos.x, pos.y, pos.z);
+		if (pos instanceof THREE.Vector4) pos = new THREE.Vector3(pos.x, pos.y, pos.z);
 
 		if (pos instanceof this.vec) {
 			return this.rooms.has(pos.toString());
@@ -45,8 +42,7 @@ export default class RoomMaze {
 	}
 
 	getRoom(pos) {
-		if (pos instanceof THREE.Vector4)
-			pos = new THREE.Vector3(pos.x, pos.y, pos.z);
+		if (pos instanceof THREE.Vector4) pos = new THREE.Vector3(pos.x, pos.y, pos.z);
 
 		if (pos instanceof this.vec) {
 			if (!this.hasRoom(pos)) this.createRoom(pos);
@@ -73,11 +69,9 @@ export default class RoomMaze {
 	 * @private
 	 */
 	createRoom(position) {
-		if (position instanceof THREE.Vector4)
-			position = new THREE.Vector3(position.x, position.y, position.z);
+		if (position instanceof THREE.Vector4) position = new THREE.Vector3(position.x, position.y, position.z);
 
-		if (this.hasRoom(position))
-			throw new Error("cant create a room where one already exists");
+		if (this.hasRoom(position)) throw new Error("cant create a room where one already exists");
 
 		let pos = this.tmpVec.copy(position);
 		let cell = this.generator.getCell(position);
@@ -88,12 +82,7 @@ export default class RoomMaze {
 		});
 
 		if (!room) {
-			console.warn(
-				"failed to create room at",
-				pos.toArray(),
-				"with doors",
-				cell,
-			);
+			console.warn("failed to create room at", pos.toArray(), "with doors", cell);
 
 			// create empty room
 			room = new Room();

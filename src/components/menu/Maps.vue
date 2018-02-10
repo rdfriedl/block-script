@@ -63,9 +63,7 @@
 </template>
 <script>
 
-import MapLoaderIndexedDB from '../../maps/MapLoaderIndexedDB.js';
 import MapManager from '../../maps/MapManager.js';
-import Dexie from 'dexie';
 
 export default {
 	// components: {modal},
@@ -86,7 +84,7 @@ export default {
 	methods: {
 		nlToBr(str){
 			return String(value).replace(/\n/g,'<br>');
-		}
+		},
 		loadMapsList(){
 			this.maps = [];
 			return new Promise((resolve, reject) => {
@@ -103,7 +101,7 @@ export default {
 								});
 							})
 						}))
-					})
+					});
 
 					Promise.all(wait).then(resolve);
 				});

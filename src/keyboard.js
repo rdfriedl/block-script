@@ -3,31 +3,8 @@ import keypress from "keypress";
 function simulateKeyEvent(el, char, type) {
 	let e = document.createEvent("KeyboardEvent");
 	if (e.initKeyboardEvent) {
-		e.initKeyboardEvent(
-			type || "keypress",
-			true,
-			true,
-			window,
-			char,
-			char,
-			0,
-			0,
-			0,
-			true,
-		);
-	} else
-		e.initKeyEvent(
-			type || "keypress",
-			true,
-			true,
-			window,
-			char,
-			char,
-			0,
-			0,
-			0,
-			true,
-		);
+		e.initKeyboardEvent(type || "keypress", true, true, window, char, char, 0, 0, 0, true);
+	} else e.initKeyEvent(type || "keypress", true, true, window, char, char, 0, 0, 0, true);
 	Object.defineProperty(e, "keyCode", {
 		value: char,
 	});

@@ -32,7 +32,7 @@ export default {
 		render(){
 			let mesh = this.mesh;
 
-			if(Function.isFunction(this.mesh))
+			if(typeof this.mesh === 'function')
 				mesh = this.mesh();
 
 			if(mesh instanceof THREE.Mesh)
@@ -63,7 +63,7 @@ export default {
 			let dtime = clock.getDelta();
 			this.rotation.y -= (Math.PI*2)/this.rotationTimesPerSecond * dtime;
 			this.render();
-		}
+		};
 		this.$watch('rotate', v => {
 			if(v){
 				if(isNaN(this.interval)){

@@ -1,5 +1,4 @@
 import THREE from "three";
-import VoxelBlock from "../voxel/VoxelBlock.js";
 import VoxelSelection from "../voxel/VoxelSelection.js";
 import VoxelBlockManager from "../voxel/VoxelBlockManager.js";
 import * as ChunkUtils from "../ChunkUtils.js";
@@ -45,13 +44,8 @@ export default class AttachTool extends THREE.Group {
 
 		// place blocks
 		renderer.domElement.addEventListener("mousedown", event => {
-			if (
-				(this.enabled && event.button == this.mouseButtons.PLACE) ||
-				event.button == this.mouseButtons.REMOVE
-			) {
-				this.start = this.getTarget(
-					this.useMousePosition ? this.mousePosition : new THREE.Vector3(),
-				);
+			if ((this.enabled && event.button == this.mouseButtons.PLACE) || event.button == this.mouseButtons.REMOVE) {
+				this.start = this.getTarget(this.useMousePosition ? this.mousePosition : new THREE.Vector3());
 				this._mousedown = true;
 				this._mousebutton = event.button;
 			}
@@ -73,14 +67,9 @@ export default class AttachTool extends THREE.Group {
 				this.end &&
 				this.end.placeTarget &&
 				event.button == this.mouseButtons.PLACE &&
-				(!this.checkPlace ||
-					(this.checkPlace(this.start.placeTarget) &&
-						this.checkPlace(this.end.placeTarget)))
+				(!this.checkPlace || (this.checkPlace(this.start.placeTarget) && this.checkPlace(this.end.placeTarget)))
 			) {
-				let id = VoxelBlockManager.createID(
-					this.placeBlockID,
-					this.placeBlockProps,
-				);
+				let id = VoxelBlockManager.createID(this.placeBlockID, this.placeBlockProps);
 				let newBlocks = new VoxelSelection();
 				let oldBlocks = new VoxelSelection();
 				let start = this.start.placeTarget.clone();
@@ -121,9 +110,7 @@ export default class AttachTool extends THREE.Group {
 				this.end &&
 				this.end.target &&
 				event.button == this.mouseButtons.REMOVE &&
-				(!this.checkRemove ||
-					(this.checkRemove(this.start.target) &&
-						this.checkRemove(this.end.target)))
+				(!this.checkRemove || (this.checkRemove(this.start.target) && this.checkRemove(this.end.target)))
 			) {
 				let oldBlocks = new VoxelSelection();
 				let start = this.start.target.clone();
@@ -169,10 +156,7 @@ export default class AttachTool extends THREE.Group {
 		this.add(this.selectionFace);
 
 		this.selectionBox = new THREE.BoxHelper(
-			new THREE.Box3(
-				new THREE.Vector3(-0.5, -0.5, -0.5),
-				new THREE.Vector3(0.5, 0.5, 0.5),
-			),
+			new THREE.Box3(new THREE.Vector3(-0.5, -0.5, -0.5), new THREE.Vector3(0.5, 0.5, 0.5)),
 			0xff5555,
 		);
 		this.selectionBox.material.transparent = true;
@@ -191,7 +175,7 @@ export default class AttachTool extends THREE.Group {
 		let intersects = this.raycaster.intersectObjects(this.intersects, true);
 
 		if (intersects.length) {
-			for (var i = 0; i < intersects.length; i++) {
+			for (let i = 0; i < intersects.length; i++) {
 				let intersection = intersects[i];
 
 				if (!this.testCollision || this.testCollision(intersects.object)) {
@@ -269,15 +253,11 @@ export default class AttachTool extends THREE.Group {
 					.multiply(this.end.normal)
 					.multiplyScalar(1.05),
 			);
-			this.selectionFace.quaternion.setFromUnitVectors(
-				this.selectionFace.up,
-				this.end.normal,
-			);
+			this.selectionFace.quaternion.setFromUnitVectors(this.selectionFace.up, this.end.normal);
 		} else this.selectionFace.visible = false;
 
 		if (this.enabled && this.start && this.end) {
-			let type =
-				this._mousebutton == this.mouseButtons.PLACE ? "placeTarget" : "target";
+			let type = this._mousebutton == this.mouseButtons.PLACE ? "placeTarget" : "target";
 			this.selectionBox.visible = true;
 			let box = this.getSelectionBox(this.start[type], this.end[type]);
 
@@ -300,9 +280,7 @@ export default class AttachTool extends THREE.Group {
 
 	update() {
 		if (this.enabled) {
-			let target = this.getTarget(
-				this.useMousePosition ? this.mousePosition : new THREE.Vector2(),
-			);
+			let target = this.getTarget(this.useMousePosition ? this.mousePosition : new THREE.Vector2());
 			if (target.target) this.end = target;
 			else this.end = undefined;
 		}

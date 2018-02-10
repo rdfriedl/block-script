@@ -13,12 +13,7 @@ export default class ChunkGeneratorFlat extends ChunkGenerator {
 				"top_dirt",
 			);
 		} else if (chunk.chunkPosition.y < -1) {
-			ChunkUtils.drawCube(
-				chunk,
-				new THREE.Vector3(0, 0, 0),
-				chunk.map.chunkSize,
-				"stone",
-			);
+			ChunkUtils.drawCube(chunk, new THREE.Vector3(0, 0, 0), chunk.map.chunkSize, "stone");
 		} else if (chunk.chunkPosition.y < 0) {
 			ChunkUtils.drawCube(
 				chunk,

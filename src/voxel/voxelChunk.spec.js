@@ -5,166 +5,176 @@ import VoxelBlockManager from "./VoxelBlockManager.js";
 import THREE from "three";
 
 /** @test {VoxelChunk} */
-describe("VoxelChunk", function() {
-	before(function() {
-		this.map = new VoxelMap();
+describe("VoxelChunk", () => {
+	let map, chunk;
+
+	beforeEach(() => {
+		map = new VoxelMap(new VoxelBlockManager());
 
 		// register default block
-		this.map.blockManager.registerBlock(VoxelBlock);
+		map.blockManager.registerBlock(VoxelBlock);
 
 		//create chunk
-		this.chunk = this.map.createChunk(new THREE.Vector3());
+		chunk = map.createChunk(new THREE.Vector3());
 	});
 
-	it("is an instance of THREE.Group", function() {
-		expect(this.chunk).to.an.instanceOf(THREE.Group);
+	it("is an instance of THREE.Group", () => {
+		expect(chunk).to.an.instanceOf(THREE.Group);
 	});
 
-	it("blockSize is a THREE.Vector3", function() {
-		expect(this.chunk.blockSize).not.to.be.undefined;
-		expect(this.chunk.blockSize).to.be.an.instanceOf(THREE.Vector3);
+	it("blockSize is a THREE.Vector3", () => {
+		// noinspection BadExpressionStatementJS
+		expect(chunk.blockSize).not.to.be.undefined;
+		expect(chunk.blockSize).to.be.an.instanceOf(THREE.Vector3);
 	});
 
-	it("chunkSize is a THREE.Vector3", function() {
-		expect(this.chunk.chunkSize).not.to.be.undefined;
-		expect(this.chunk.chunkSize).to.be.an.instanceOf(THREE.Vector3);
+	it("chunkSize is a THREE.Vector3", () => {
+		expect(chunk.chunkSize).not.to.be.undefined;
+		expect(chunk.chunkSize).to.be.an.instanceOf(THREE.Vector3);
 	});
 
-	it("chunkPosition is a THREE.Vector3", function() {
-		expect(this.chunk.chunkPosition).not.to.be.undefined;
-		expect(this.chunk.chunkPosition).to.be.an.instanceOf(THREE.Vector3);
+	it("chunkPosition is a THREE.Vector3", () => {
+		expect(chunk.chunkPosition).not.to.be.undefined;
+		expect(chunk.chunkPosition).to.be.an.instanceOf(THREE.Vector3);
 	});
-	it("worldPosition is a THREE.Vector3", function() {
-		expect(this.chunk.worldPosition).not.to.be.undefined;
-		expect(this.chunk.worldPosition).to.be.an.instanceOf(THREE.Vector3);
+	it("worldPosition is a THREE.Vector3", () => {
+		expect(chunk.worldPosition).not.to.be.undefined;
+		expect(chunk.worldPosition).to.be.an.instanceOf(THREE.Vector3);
 	});
-	it("scenePosition is a THREE.Vector3", function() {
-		expect(this.chunk.scenePosition).not.to.be.undefined;
-		expect(this.chunk.scenePosition).to.be.an.instanceOf(THREE.Vector3);
+	it("scenePosition is a THREE.Vector3", () => {
+		expect(chunk.scenePosition).not.to.be.undefined;
+		expect(chunk.scenePosition).to.be.an.instanceOf(THREE.Vector3);
 	});
 
-	describe("parent", function() {
-		it('"parent" points to parent', function() {
-			expect(this.chunk.parent).not.to.be.undefined;
-			expect(this.chunk.parent).to.equal(this.map);
+	/** @test {VoxelChunk#parent} */
+	describe("parent", () => {
+		it('"parent" points to parent', () => {
+			expect(chunk.parent).not.to.be.undefined;
+			expect(chunk.parent).to.equal(map);
 		});
 
-		it('"map" points to parent VoxelMap', function() {
-			expect(this.chunk.map).not.to.be.undefined;
-			expect(this.chunk.map).to.equal(this.map);
-		});
-	});
-
-	describe("empty", function() {
-		it("is true if chunk is empty", function() {
-			this.chunk.clearBlocks();
-			expect(this.chunk.empty).to.equal(true);
+		it('"map" points to parent VoxelMap', () => {
+			expect(chunk.map).not.to.be.undefined;
+			expect(chunk.map).to.equal(map);
 		});
 	});
 
-	// blocks
-	describe("createBlock", function() {
-		it("returns created block", function() {
-			expect(
-				this.chunk.createBlock("block", new THREE.Vector3(1, 1, 1)),
-			).to.be.an.instanceOf(VoxelBlock);
-		});
-
-		it("creates a block at position", function() {
-			let block = this.chunk.createBlock("block", new THREE.Vector3(0, 0, 0));
-			expect(this.chunk.getBlock(new THREE.Vector3())).to.equal(block);
+	/** @test {VoxelChunk#empty} */
+	describe("empty", () => {
+		it("is true if chunk is empty", () => {
+			chunk.clearBlocks();
+			expect(chunk.empty).to.be.true;
 		});
 	});
 
-	describe("hasBlock", function() {
-		before(function() {
-			this.block = this.chunk.createBlock("block", new THREE.Vector3());
+	/** @test {VoxelChunk#createBlock} */
+	describe("createBlock", () => {
+		it("returns created block", () => {
+			expect(chunk.createBlock("block", new THREE.Vector3(1, 1, 1))).to.be.an.instanceOf(VoxelBlock);
 		});
 
-		it("hasBlock(THREE.Vector3)", function() {
-			expect(this.chunk.hasBlock(new THREE.Vector3(0, 0, 0))).to.equal(true);
-		});
-
-		it('hasBlock("x,y,z")', function() {
-			expect(this.chunk.hasBlock(new THREE.Vector3())).to.equal(true);
-		});
-
-		it("hasBlock(VoxelBlock)", function() {
-			expect(this.chunk.hasBlock(this.block)).to.equal(true);
+		it("creates a block at position", () => {
+			let block = chunk.createBlock("block", new THREE.Vector3(0, 0, 0));
+			expect(chunk.getBlock(new THREE.Vector3())).to.equal(block);
 		});
 	});
 
-	describe("getBlock", function() {
-		before(function() {
-			this.block = this.chunk.createBlock("block", new THREE.Vector3());
+	/** @test {VoxelChunk#hasBlock} */
+	describe("hasBlock", () => {
+		let block;
+
+		beforeEach(() => {
+			block = chunk.createBlock("block", new THREE.Vector3());
 		});
 
-		it("getBlock(THREE.Vector3)", function() {
-			expect(this.chunk.getBlock(new THREE.Vector3(0, 0, 0))).to.equal(
-				this.block,
-			);
+		it("hasBlock(THREE.Vector3)", () => {
+			expect(chunk.hasBlock(new THREE.Vector3(0, 0, 0))).to.be.true;
 		});
 
-		it('getBlock("x,y,z")', function() {
-			expect(this.chunk.getBlock(new THREE.Vector3())).to.equal(this.block);
+		it('hasBlock("x,y,z")', () => {
+			expect(chunk.hasBlock(new THREE.Vector3())).to.be.true;
 		});
 
-		describe("getBlock(VoxelBlock)", function() {
-			it("returns block if its in the map", function() {
-				expect(this.chunk.getBlock(this.block)).to.equal(this.block);
+		it("hasBlock(VoxelBlock)", () => {
+			expect(chunk.hasBlock(block)).to.be.true;
+		});
+	});
+
+	/** @test {VoxelChunk#getBlock} */
+	describe("getBlock", () => {
+		let block;
+
+		beforeEach(() => {
+			block = chunk.createBlock("block", new THREE.Vector3());
+		});
+
+		it("getBlock(THREE.Vector3)", () => {
+			expect(chunk.getBlock(new THREE.Vector3(0, 0, 0))).to.equal(block);
+		});
+
+		it('getBlock("x,y,z")', () => {
+			expect(chunk.getBlock(new THREE.Vector3())).to.equal(block);
+		});
+
+		describe("getBlock(VoxelBlock)", () => {
+			it("returns block if its in the map", () => {
+				expect(chunk.getBlock(block)).to.equal(block);
 			});
 
-			it("returns undefined if the block in not in the map", function() {
-				expect(this.chunk.getBlock(new VoxelBlock())).to.equal(undefined);
+			it("returns undefined if the block in not in the map", () => {
+				expect(chunk.getBlock(new VoxelBlock())).to.be.undefined;
 			});
 		});
 	});
 
-	describe("removeBlock", function() {
-		beforeEach(function() {
-			this.block = this.chunk.createBlock(new THREE.Vector3());
+	/** @test {VoxelChunk#removeBlock} */
+	describe("removeBlock", () => {
+		let block;
+
+		beforeEach(() => {
+			block = chunk.createBlock(new THREE.Vector3());
 		});
 
-		it("removeBlock(THREE.Vector3)", function() {
+		it("removeBlock(THREE.Vector3)", () => {
 			let vec = new THREE.Vector3(0, 0, 0);
-			this.chunk.removeBlock(vec);
-			expect(this.chunk.hasBlock(vec)).to.equal(false);
-			expect(this.chunk.getBlock(vec)).to.equal(undefined);
+			chunk.removeBlock(vec);
+			expect(chunk.hasBlock(vec)).to.be.false;
+			expect(chunk.getBlock(vec)).to.be.undefined;
 		});
 
-		it('removeBlock("x,y,z")', function() {
-			this.chunk.removeBlock(new THREE.Vector3());
-			expect(this.chunk.hasBlock(new THREE.Vector3())).to.equal(false);
-			expect(this.chunk.getBlock(new THREE.Vector3())).to.equal(undefined);
+		it('removeBlock("x,y,z")', () => {
+			chunk.removeBlock(new THREE.Vector3());
+			expect(chunk.hasBlock(new THREE.Vector3())).to.be.false;
+			expect(chunk.getBlock(new THREE.Vector3())).to.be.undefined;
 		});
 
-		it("removeBlock(VoxelBlock)", function() {
-			this.chunk.removeBlock(this.block);
-			expect(this.chunk.hasBlock(this.block)).to.equal(false);
-			expect(this.chunk.getBlock(this.block)).to.equal(undefined);
+		it("removeBlock(VoxelBlock)", () => {
+			chunk.removeBlock(block);
+			expect(chunk.hasBlock(block)).to.be.false;
+			expect(chunk.getBlock(block)).to.be.undefined;
 		});
 	});
 
-	describe("clearBlocks", function() {
-		before(function() {
-			this.chunk.createBlock("block", new THREE.Vector3());
-			this.chunk.clearBlocks();
+	/** @test {VoxelChunk#clearBlocks} */
+	describe("clearBlocks", () => {
+		beforeEach(() => {
+			chunk.createBlock("block", new THREE.Vector3());
+			chunk.clearBlocks();
 		});
 
-		it("removes all blocks in chunk", function() {
-			expect(this.chunk.getBlock(new THREE.Vector3())).to.equal(undefined);
+		it("removes all blocks in chunk", () => {
+			expect(chunk.getBlock(new THREE.Vector3())).to.be.undefined;
 		});
 	});
 
-	describe("chunkSize", function() {
-		it("returns THREE.Vector3", function() {
-			expect(this.chunk.chunkSize).to.be.an.instanceOf(THREE.Vector3);
+	/** @test {VoxelChunk#chunkSize} */
+	describe("chunkSize", () => {
+		it("returns THREE.Vector3", () => {
+			expect(chunk.chunkSize).to.be.an.instanceOf(THREE.Vector3);
 		});
-		it("returns empty vector if the chunk dose not have a map", function() {
-			let pos = this.chunkPosition;
-			this.map.removeChunk(this.chunk);
-			expect(this.chunk.chunkSize.equals(new THREE.Vector3())).to.equal(true);
-			this.map.setChunk(this.chunk, pos);
+		it("returns empty vector if the chunk dose not have a map", () => {
+			map.removeChunk(chunk);
+			expect(chunk.chunkSize.equals(new THREE.Vector3())).to.be.true;
 		});
 	});
 });

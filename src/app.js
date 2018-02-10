@@ -93,10 +93,7 @@ function fixHtml() {
 
 	// stop blank links
 	document.body.addEventListener("click", event => {
-		if (
-			event.target.nodeName === "A" &&
-			event.target.getAttribute("href") === "#"
-		) {
+		if (event.target.nodeName === "A" && event.target.getAttribute("href") === "#") {
 			event.preventDefault();
 			return false;
 		}

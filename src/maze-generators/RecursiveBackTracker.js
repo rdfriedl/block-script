@@ -13,11 +13,11 @@ function weightedRand(spec) {
 	}
 }
 
-export default class RecursiveBacktracker extends MazeGenerator {
+export default class RecursiveBackTracker extends MazeGenerator {
 	/**
 	 * @param  {Object} opts
 	 * @param  {Number} [opts.paths=1] - the number of possible paths from "start" to "end"
-	 * @return {RecursiveBacktracker} this
+	 * @return {RecursiveBackTracker} this
 	 */
 	generate(opts = {}) {
 		super.generate();
@@ -33,10 +33,10 @@ export default class RecursiveBacktracker extends MazeGenerator {
 				weights[axis] = opts.weights ? opts.weights[axis] || 1 : 1;
 			});
 
-			let safey = 0;
+			let safety = 0;
 			let done = false;
-			while (!done && safey < 100000) {
-				safey++;
+			while (!done && safety < 100000) {
+				safety++;
 
 				// pick as axis
 				let axis = weightedRand(weights);
@@ -44,15 +44,10 @@ export default class RecursiveBacktracker extends MazeGenerator {
 
 				// if we have not checked either side pick a random one, other wise pick the one we have not checked
 				if (checked[axis] & MazeGenerator.DOOR_NONE)
-					side =
-						Math.random() >= 0.5
-							? MazeGenerator.DOOR_POSITIVE
-							: MazeGenerator.DOOR_NEGATIVE;
+					side = Math.random() >= 0.5 ? MazeGenerator.DOOR_POSITIVE : MazeGenerator.DOOR_NEGATIVE;
 				else
 					side =
-						checked[axis] & MazeGenerator.DOOR_POSITIVE
-							? MazeGenerator.DOOR_NEGATIVE
-							: MazeGenerator.DOOR_POSITIVE;
+						checked[axis] & MazeGenerator.DOOR_POSITIVE ? MazeGenerator.DOOR_NEGATIVE : MazeGenerator.DOOR_POSITIVE;
 
 				// make sure we have not check this side yet
 				if (checked[axis] & side) continue;
@@ -70,9 +65,7 @@ export default class RecursiveBacktracker extends MazeGenerator {
 					// make an opening in the next cell
 					openedCell[axis] =
 						openedCell[axis] |
-						(side == MazeGenerator.DOOR_POSITIVE
-							? MazeGenerator.DOOR_NEGATIVE
-							: MazeGenerator.DOOR_POSITIVE);
+						(side == MazeGenerator.DOOR_POSITIVE ? MazeGenerator.DOOR_NEGATIVE : MazeGenerator.DOOR_POSITIVE);
 
 					// move to next cell
 					processCell.call(this, tmpVec);
@@ -82,10 +75,7 @@ export default class RecursiveBacktracker extends MazeGenerator {
 				checked[axis] = checked[axis] | side;
 
 				// if we have check both sides of this axis remove it from the weights
-				if (
-					checked[axis] & MazeGenerator.DOOR_POSITIVE &&
-					checked[axis] & MazeGenerator.DOOR_NEGATIVE
-				)
+				if (checked[axis] & MazeGenerator.DOOR_POSITIVE && checked[axis] & MazeGenerator.DOOR_NEGATIVE)
 					delete weights[axis];
 
 				// check to see if we have checked every side
@@ -111,10 +101,7 @@ export default class RecursiveBacktracker extends MazeGenerator {
 if (process.env.NODE_ENV === "development") {
 	window.print2DMaze = function(maze) {
 		if (!(maze instanceof MazeGenerator)) {
-			maze = new RecursiveBacktracker(
-				THREE.Vector2,
-				new THREE.Vector2(arguments[0] || 10, arguments[1] || 10),
-			);
+			maze = new RecursiveBackTracker(THREE.Vector2, new THREE.Vector2(arguments[0] || 10, arguments[1] || 10));
 			maze.generate(arguments[2]);
 		}
 
@@ -160,9 +147,6 @@ if (process.env.NODE_ENV === "development") {
 			str += "\n";
 		}
 
-		console.log(
-			"%c" + str,
-			"font-size: 2em; background-color: white; color: black;",
-		);
+		console.log("%c" + str, "font-size: 2em; background-color: white; color: black;");
 	};
 }

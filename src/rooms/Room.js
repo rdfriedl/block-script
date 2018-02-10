@@ -25,7 +25,7 @@ export default class Room {
 		this.parent = undefined;
 
 		/**
-		 * the rotation (in quater turns) of the room of the Y axis in radians
+		 * the rotation (in quarter turns) of the room of the Y axis in radians
 		 * @type {Number}
 		 */
 		this.rotation = 0;
@@ -57,15 +57,12 @@ export default class Room {
 
 				// rotate the blocks
 				if (this.rotation != 0) {
-					let quat = new THREE.Quaternion().setFromAxisAngle(
-						ROOM_ROTATION_AXIS,
-						Math.PI / 2 * this.rotation,
-					);
+					let quaternion = new THREE.Quaternion().setFromAxisAngle(ROOM_ROTATION_AXIS, Math.PI / 2 * this.rotation);
 					ChunkUtils.rotateBlocks(
 						this._selection,
 						this._selection.boundingBox,
 						Room.SIZE.clone().divideScalar(2),
-						quat,
+						quaternion,
 						{
 							ignoreEmpty: true,
 						},
@@ -78,7 +75,7 @@ export default class Room {
 
 	/**
 	 * returns the size of the room in blocks
-	 * @return {THREE.Vecotr3}
+	 * @return {THREE.Vector3}
 	 */
 	get size() {
 		return Room.SIZE;
@@ -89,9 +86,7 @@ export default class Room {
 	 * @return {THREE.Vector4}
 	 */
 	get doors() {
-		return this.rawDoors
-			? Room.rotateDoors(this.rawDoors, this.rotation)
-			: new THREE.Vector4();
+		return this.rawDoors ? Room.rotateDoors(this.rawDoors, this.rotation) : new THREE.Vector4();
 	}
 
 	static rotateDoors(vec, rotation) {
@@ -102,12 +97,8 @@ export default class Room {
 			.map(v => {
 				if (v < 0)
 					return (
-						(Math.abs(v) & Room.DOOR_POSITIVE
-							? Room.DOOR_NEGATIVE
-							: Room.DOOR_NONE) |
-						(Math.abs(v) & Room.DOOR_NEGATIVE
-							? Room.DOOR_POSITIVE
-							: Room.DOOR_NONE)
+						(Math.abs(v) & Room.DOOR_POSITIVE ? Room.DOOR_NEGATIVE : Room.DOOR_NONE) |
+						(Math.abs(v) & Room.DOOR_NEGATIVE ? Room.DOOR_POSITIVE : Room.DOOR_NONE)
 					);
 				else return v;
 			});

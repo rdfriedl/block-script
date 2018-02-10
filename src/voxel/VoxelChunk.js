@@ -1,13 +1,7 @@
 import THREE from "three";
+import VoxelBlock from "./VoxelBlock.js";
 
-const NEIGHBORS_DIRS = [
-	[1, 0, 0],
-	[0, 1, 0],
-	[0, 0, 1],
-	[-1, 0, 0],
-	[0, -1, 0],
-	[0, 0, -1],
-];
+const NEIGHBORS_DIRS = [[1, 0, 0], [0, 1, 0], [0, 0, 1], [-1, 0, 0], [0, -1, 0], [0, 0, -1]];
 
 export default class VoxelChunk extends THREE.Group {
 	/**
@@ -116,18 +110,13 @@ export default class VoxelChunk extends THREE.Group {
 					});
 
 					// only add it to the cache if we are using the cache
-					if (this.useNeighborCache)
-						VoxelChunk.BlockNeighborCache.set(block, neighbors);
+					if (this.useNeighborCache) VoxelChunk.BlockNeighborCache.set(block, neighbors);
 				}
 
 				VoxelChunk.BuildBlockNeighborCache.set(block, neighbors);
 
 				for (let i in neighbors) {
-					if (
-						neighbors[i] === undefined ||
-						neighbors[i].properties.transparent === true
-					)
-						return true;
+					if (neighbors[i] === undefined || neighbors[i].properties.transparent === true) return true;
 				}
 				return false;
 			});
@@ -149,19 +138,15 @@ export default class VoxelChunk extends THREE.Group {
 					for (let i in block.material.materials) {
 						this.material.materials.push(block.material.materials[i]);
 					}
-				} else if (block.material instanceof THREE.Material)
-					this.material.materials.push(block.material);
+				} else if (block.material instanceof THREE.Material) this.material.materials.push(block.material);
 				VoxelChunk.materialOffsetCache.set(block.material, materialOffset);
 			}
 
 			// set rotation
-			if (block.properties.rotation instanceof THREE.Euler)
-				matrix.makeRotationFromEuler(block.properties.rotation);
+			if (block.properties.rotation instanceof THREE.Euler) matrix.makeRotationFromEuler(block.properties.rotation);
 
 			// set position
-			matrix.setPosition(
-				this.tmpVec.copy(block.position).add(blockPositionOffset),
-			);
+			matrix.setPosition(this.tmpVec.copy(block.position).add(blockPositionOffset));
 
 			// merge the geometry
 			if (block.geometry instanceof THREE.BoxGeometry) {
@@ -198,11 +183,7 @@ export default class VoxelChunk extends THREE.Group {
 
 						// add uvs
 						let UVs = [];
-						for (
-							let i = 0;
-							i < block.geometry.faceVertexUvs[0][faceIndex].length;
-							i++
-						) {
+						for (let i = 0; i < block.geometry.faceVertexUvs[0][faceIndex].length; i++) {
 							let uv = VoxelChunk.UVPool.pop() || new THREE.Vector2();
 							uv.copy(block.geometry.faceVertexUvs[0][faceIndex][i]);
 							UVs.push(uv);
@@ -317,8 +298,7 @@ export default class VoxelChunk extends THREE.Group {
 	 */
 	createBlock(id, position) {
 		let block;
-		if (String.isString(id))
-			block = this.map && this.map.blockManager.createBlock(id);
+		if (typeof id === "string") block = this.map && this.map.blockManager.createBlock(id);
 
 		if (block && position) {
 			this.setBlock(block, position);
@@ -336,11 +316,9 @@ export default class VoxelChunk extends THREE.Group {
 	 * @fires VoxelChunk#block:set
 	 */
 	setBlock(block, position) {
-		if (block instanceof VoxelBlock && block.parent)
-			throw new Error("cant add block that already has a parent");
+		if (block instanceof VoxelBlock && block.parent) throw new Error("cant add block that already has a parent");
 
-		if (String.isString(block))
-			block = this.map && this.map.blockManager.createBlock(block);
+		if (typeof block === "string") block = this.map && this.map.blockManager.createBlock(block);
 
 		if (position instanceof THREE.Vector3 && block instanceof VoxelBlock) {
 			position = this.tmpVec.copy(position).round();
@@ -367,8 +345,7 @@ export default class VoxelChunk extends THREE.Group {
 			block.parent = this;
 
 			// remove this blocks neighbors from the cache
-			if (this.useNeighborCache)
-				VoxelChunk.removeBlockFromNeighborCache(block, true);
+			if (this.useNeighborCache) VoxelChunk.removeBlockFromNeighborCache(block, true);
 
 			// tell the map that we need to rebuild this chunk
 			this.needsBuild = true;
@@ -405,16 +382,14 @@ export default class VoxelChunk extends THREE.Group {
 		blocks.forEach(b => {
 			b.parent = undefined;
 
-			if (this.useNeighborCache)
-				VoxelChunk.removeBlockFromNeighborCache(b, false);
+			if (this.useNeighborCache) VoxelChunk.removeBlockFromNeighborCache(b, false);
 		});
 		this.blocks.clear();
 		this.needsBuild = true;
 
 		// add blocks to pool
 		// NOTE: we have to call this AFTER we remove the block from this chunk, otherwise we get an inifite loop because the blockManager tries to remove the block
-		if (disposeBlocks && this.map)
-			blocks.forEach(block => this.map.blockManager.disposeBlock(block));
+		if (disposeBlocks && this.map) blocks.forEach(block => this.map.blockManager.disposeBlock(block));
 
 		// fire event
 		this.dispatchEvent({
@@ -490,11 +465,7 @@ export default class VoxelChunk extends THREE.Group {
 	 * @param {Boolean} [setBuild=false] - whether to set the build flag on the parent chunk
 	 * @static
 	 */
-	static removeBlockFromNeighborCache(
-		block,
-		removeNeighbors = true,
-		setBuild = false,
-	) {
+	static removeBlockFromNeighborCache(block, removeNeighbors = true, setBuild = false) {
 		if (block.map) {
 			let neighbors = VoxelChunk.BlockNeighborCache.get(block);
 			VoxelChunk.BlockNeighborCache.delete(block);
@@ -503,8 +474,7 @@ export default class VoxelChunk extends THREE.Group {
 				if (neighbors) {
 					for (let i in neighbors) {
 						VoxelChunk.BlockNeighborCache.delete(neighbors[i]);
-						if (setBuild && neighbors[i] && neighbors[i].chunk)
-							neighbors[i].chunk.needsBuild = true;
+						if (setBuild && neighbors[i] && neighbors[i].chunk) neighbors[i].chunk.needsBuild = true;
 					}
 				} else {
 					block.getNeighbors().forEach(b => {
@@ -696,6 +666,3 @@ VoxelChunk.UVPool = [];
  * @memberOf VoxelChunk
  */
 VoxelChunk.BlockNeighborCache = new WeakMap();
-
-// import block for runtime
-import VoxelBlock from "./VoxelBlock.js";

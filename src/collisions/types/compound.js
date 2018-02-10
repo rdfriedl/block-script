@@ -19,8 +19,7 @@ export default class CollisionEntityCompound extends CollisionEntity {
 
 		if (entities) {
 			for (let i = 0; i < entities.length; i++) {
-				if (entities[i] instanceof CollisionEntity)
-					this.entities.push(entities[i]);
+				if (entities[i] instanceof CollisionEntity) this.entities.push(entities[i]);
 			}
 		}
 	}
@@ -78,11 +77,7 @@ export default class CollisionEntityCompound extends CollisionEntity {
 					col;
 
 				if (enty instanceof CollisionEntityBox) {
-					col = CollisionEntityPoint.SweptAABB(
-						entity.position,
-						enty.box,
-						velocity,
-					);
+					col = CollisionEntityPoint.SweptAABB(entity.position, enty.box, velocity);
 				} else if (enty instanceof CollisionEntityPoint) {
 					// TODO: make box -> point collision
 				}

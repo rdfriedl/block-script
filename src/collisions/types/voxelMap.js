@@ -4,10 +4,7 @@ import CollisionEntity from "../CollisionEntity.js";
 /** collision entity for a {@link VoxelMap} */
 export default class CollisionEntityVoxelMap extends CollisionEntity {
 	constructor(voxelMap) {
-		if (!voxelMap)
-			throw new Error(
-				"CollisionEntityVoxelMap requires a VoxelMap as the first argument",
-			);
+		if (!voxelMap) throw new Error("CollisionEntityVoxelMap requires a VoxelMap as the first argument");
 
 		super();
 
@@ -81,11 +78,7 @@ export default class CollisionEntityVoxelMap extends CollisionEntity {
 				box.min.copy(scenePosition);
 				box.max.copy(scenePosition).add(this.map.blockSize);
 
-				let col = CollisionEntityPoint.SweptAABB(
-					entity.position,
-					box,
-					velocity,
-				);
+				let col = CollisionEntityPoint.SweptAABB(entity.position, box, velocity);
 
 				// if there was a collision
 				if (col && (!collision || col.entryTime < collision.entryTime)) {

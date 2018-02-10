@@ -56,7 +56,7 @@ export default {
 
 			if(this.onChange)
 				this.onChange(this.state);
-		})
+		});
 
 		this.$watch('state', () => {
 			if(changeFromElement == false)

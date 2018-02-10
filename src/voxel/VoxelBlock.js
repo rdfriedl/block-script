@@ -1,13 +1,6 @@
 import THREE from "three";
 
-const NEIGHBORS_DIRS = [
-	[1, 0, 0],
-	[0, 1, 0],
-	[0, 0, 1],
-	[-1, 0, 0],
-	[0, -1, 0],
-	[0, 0, -1],
-];
+const NEIGHBORS_DIRS = [[1, 0, 0], [0, 1, 0], [0, 0, 1], [-1, 0, 0], [0, -1, 0], [0, 0, -1]];
 
 /** the base class for all blocks */
 export default class VoxelBlock {
@@ -91,13 +84,10 @@ export default class VoxelBlock {
 	 * @return {this}
 	 */
 	setProp(id, value) {
-		if (!this.hasOwnProperty("parameters"))
-			this.properties = Object.create(this.properties);
+		if (!this.hasOwnProperty("parameters")) this.properties = Object.create(this.properties);
 
-		if (Object.isObject(id)) {
-			for (let i in id) {
-				this.properties[i] = id[i];
-			}
+		if (typeof id === "object") {
+			Object.assign(this.properties, id);
 		} else {
 			this.properties[id] = value;
 		}
@@ -116,9 +106,7 @@ export default class VoxelBlock {
 	toJSON() {
 		return {
 			type: this.id,
-			properties: this.hasOwnProperty("properties")
-				? this.properties
-				: undefined,
+			properties: this.hasOwnProperty("properties") ? this.properties : undefined,
 		};
 	}
 
@@ -158,9 +146,7 @@ export default class VoxelBlock {
 	 * @readOnly
 	 */
 	get position() {
-		return this.parent
-			? this.parent.getBlockPosition(this)
-			: new THREE.Vector3();
+		return this.parent ? this.parent.getBlockPosition(this) : new THREE.Vector3();
 	}
 
 	/**
@@ -186,9 +172,7 @@ export default class VoxelBlock {
 	 */
 	get scenePosition() {
 		return this.chunk
-			? this.chunk.scenePosition.add(
-					this.position.clone().multiply(this.blockSize),
-				)
+			? this.chunk.scenePosition.add(this.position.clone().multiply(this.blockSize))
 			: new THREE.Vector3();
 	}
 
@@ -318,16 +302,10 @@ export default class VoxelBlock {
 		// make sure we extend a class the has properties
 		if (_super._setUpProperties) {
 			// if my parent dose not have a properties object, create one
-			if (!_super.prototype.hasOwnProperty("properties"))
-				_super._setUpProperties();
+			if (!_super.prototype.hasOwnProperty("properties")) _super._setUpProperties();
 
-			this.prototype.properties = this.hasOwnProperty("DefalutProperties")
-				? this.DefalutProperties
-				: {};
-			Object.setPrototypeOf(
-				this.prototype.properties,
-				_super.prototype.properties,
-			);
+			this.prototype.properties = this.hasOwnProperty("DefalutProperties") ? this.DefalutProperties : {};
+			Object.setPrototypeOf(this.prototype.properties, _super.prototype.properties);
 		} else {
 			this.prototype.properties = this.DefalutProperties || {};
 		}

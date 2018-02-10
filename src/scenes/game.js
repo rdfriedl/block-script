@@ -1,6 +1,6 @@
 import THREE from "three";
 
-// extentions
+// extensions
 import "imports-loader?THREE=three!three/examples/js/controls/PointerLockControls.js";
 
 import VoxelMap from "../voxel/VoxelMap.js";
@@ -252,7 +252,7 @@ export default function gameScene(opts = {}) {
 				)
 				.abs()
 				.toArray();
-			for (var i = 0; i < dist.length; i++) {
+			for (let i = 0; i < dist.length; i++) {
 				if (dist[i] > VIEW_RANGE) {
 					// unload chunk
 					map.removeChunk(chunk);
@@ -292,10 +292,7 @@ export default function gameScene(opts = {}) {
 		pickBlockNormal.set(0, 0, 0);
 
 		// cast ray to find block data
-		rayCaster.set(
-			player.camera.getWorldPosition(),
-			player.camera.getWorldDirection(),
-		);
+		rayCaster.set(player.camera.getWorldPosition(), player.camera.getWorldDirection());
 
 		// intersect with map
 		let tmpVec = new THREE.Vector3();
@@ -317,18 +314,9 @@ export default function gameScene(opts = {}) {
 					let n = rayCaster.ray.intersectBox(box) || block.sceneCenter,
 						normal = new THREE.Vector3();
 					n.sub(block.sceneCenter);
-					if (Math.abs(n.y) > Math.abs(n.x) && Math.abs(n.y) > Math.abs(n.z))
-						normal.y = Math.sign(n.y);
-					else if (
-						Math.abs(n.x) > Math.abs(n.y) &&
-						Math.abs(n.x) > Math.abs(n.z)
-					)
-						normal.x = Math.sign(n.x);
-					else if (
-						Math.abs(n.z) > Math.abs(n.x) &&
-						Math.abs(n.z) > Math.abs(n.y)
-					)
-						normal.z = Math.sign(n.z);
+					if (Math.abs(n.y) > Math.abs(n.x) && Math.abs(n.y) > Math.abs(n.z)) normal.y = Math.sign(n.y);
+					else if (Math.abs(n.x) > Math.abs(n.y) && Math.abs(n.x) > Math.abs(n.z)) normal.x = Math.sign(n.x);
+					else if (Math.abs(n.z) > Math.abs(n.x) && Math.abs(n.z) > Math.abs(n.y)) normal.z = Math.sign(n.z);
 
 					pickBlockNormal.copy(normal);
 				}

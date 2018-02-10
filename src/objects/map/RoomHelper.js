@@ -20,10 +20,7 @@ export default class RoomHelper extends THREE.Group {
 		};
 
 		// create the geometry
-		this.border = new THREE.BoxHelper(
-			new THREE.Box3(new THREE.Vector3(), new THREE.Vector3(1, 1, 1)),
-			this.RoomColor,
-		);
+		this.border = new THREE.BoxHelper(new THREE.Box3(new THREE.Vector3(), new THREE.Vector3(1, 1, 1)), this.RoomColor);
 		this.add(this.border);
 
 		// create doors group
@@ -51,10 +48,7 @@ export default class RoomHelper extends THREE.Group {
 				far: 10000,
 			});
 
-			if (
-				this.room.doors[axis] & Room.DOOR_POSITIVE &&
-				this.room.doors[axis] & Room.DOOR_NEGATIVE
-			) {
+			if (this.room.doors[axis] & Room.DOOR_POSITIVE && this.room.doors[axis] & Room.DOOR_NEGATIVE) {
 				let start = halfRoom.clone();
 				start[axis] -= halfRoom[axis];
 				geometry.vertices.push(start);

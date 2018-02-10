@@ -36,7 +36,7 @@ export default class VoxelBlockManager {
 	 * @return {Boolean}
 	 */
 	hasBlock(id) {
-		if (String.isString(id)) {
+		if (typeof id === "string") {
 			return this.blocks.has(VoxelBlockManager.resolveID(id));
 		} else {
 			for (let [UID, block] of this.blocks) {
@@ -54,7 +54,7 @@ export default class VoxelBlockManager {
 	 * @return {VoxelBlock} returns a {@link VoxelBlock} class
 	 */
 	getBlock(id) {
-		if (String.isString(id)) {
+		if (typeof id === "string") {
 			return this.blocks.get(VoxelBlockManager.resolveID(id));
 		} else {
 			for (let [UID, block] of this.blocks) {
@@ -73,9 +73,8 @@ export default class VoxelBlockManager {
 	 */
 	createBlock(id, props) {
 		// if the id is a string get the props out of it
-		if (String.isString(id)) {
-			if (props)
-				props = Object.assign({}, props, VoxelBlockManager.parseProps(id));
+		if (typeof id === "string") {
+			if (props) props = Object.assign({}, props, VoxelBlockManager.parseProps(id));
 			else props = Object.assign({}, VoxelBlockManager.parseProps(id));
 		}
 
@@ -127,11 +126,11 @@ export default class VoxelBlockManager {
 	registerBlock(block) {
 		if (this.hasBlock(block)) return this;
 
-		if (Function.isFunction(block) && block.UID) {
+		if (typeof block === "function" && block.UID) {
 			this.blocks.set(block.UID, block);
 		} else if (Array.isArray(block)) {
 			block.forEach(block => this.blocks.set(block.UID, block));
-		} else if (Object.isObject(block)) {
+		} else if (typeof block === "object") {
 			for (let i in block) {
 				this.blocks.set(block[i].UID, block[i]);
 			}
@@ -158,8 +157,8 @@ export default class VoxelBlockManager {
 	 */
 	static resolveID(id) {
 		// if its a string, extract the id out of the string just in case there are properties in the string
-		if (String.isString(id)) return id.match(/^[^?]+(?=\?)?/)[0];
-		else if (Function.isFunction(id)) return id.UID;
+		if (typeof id === "string") return id.match(/^[^?]+(?=\?)?/)[0];
+		else if (typeof id === "function") return id.UID;
 		else if (id instanceof VoxelBlock) return id.constructor.UID;
 	}
 
@@ -173,7 +172,7 @@ export default class VoxelBlockManager {
 	static createID(id, props) {
 		props = props || {};
 		let blockID = VoxelBlockManager.resolveID(id);
-		if (String.isString(id)) {
+		if (typeof id === "string") {
 			Object.assign(props, VoxelBlockManager.parseProps(id));
 		} else if (id instanceof VoxelBlock && id.hasOwnProperty("properties")) {
 			Reflect.ownKeys(id.properties).forEach(key => {
@@ -211,9 +210,8 @@ export default class VoxelBlockManager {
 	 */
 	newBlock(id, props) {
 		// if the id is a string get the props out of it
-		if (String.isString(id)) {
-			if (props)
-				props = Object.assign({}, props, VoxelBlockManager.parseProps(id));
+		if (typeof id === "string") {
+			if (props) props = Object.assign({}, props, VoxelBlockManager.parseProps(id));
 			else props = Object.assign({}, VoxelBlockManager.parseProps(id));
 		}
 

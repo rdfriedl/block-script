@@ -4,93 +4,96 @@ import VoxelSelection from "./VoxelSelection.js";
 import THREE from "three";
 
 /** @test {VoxelBlock} */
-describe("VoxelBlock", function() {
-	before(function() {
-		this.map = new VoxelMap();
+describe("VoxelBlock", () => {
+	let block, map;
+
+	beforeEach(() => {
+		map = new VoxelMap();
 
 		// register default block
-		this.map.blockManager.registerBlock(VoxelBlock);
-		this.block = this.map.createBlock("block", new THREE.Vector3());
+		map.blockManager.registerBlock(VoxelBlock);
+		block = map.createBlock("block", new THREE.Vector3());
 	});
 
-	describe("UID", function() {
-		it("block.id is equal to the UID of the block", function() {
-			expect(this.block.id).to.equal(VoxelBlock.UID);
-		});
-	});
-
-	describe("parent", function() {
-		before(function() {
-			this.selection = new VoxelSelection();
-			this.chunk = this.map.createChunk(new THREE.Vector3(1, 1, 1));
-			this.block = new VoxelBlock();
-		});
-		it('"parent" points to parent chunk or selection', function() {
-			if (this.block.parent) this.block.parent.removeBlock(this.block);
-			this.selection.setBlock(this.block, new THREE.Vector3());
-			expect(this.block.parent).to.equal(this.selection);
-
-			if (this.block.parent) this.block.parent.removeBlock(this.block);
-			this.chunk.setBlock(this.block, new THREE.Vector3());
-			expect(this.block.parent).to.equal(this.chunk);
-		});
-
-		it('"chunk" points to parent chunk, but not parent selection', function() {
-			if (this.block.parent) this.block.parent.removeBlock(this.block);
-			this.selection.setBlock(this.block, new THREE.Vector3());
-			expect(this.block.chunk).to.equal(undefined);
-
-			if (this.block.parent) this.block.parent.removeBlock(this.block);
-			this.chunk.setBlock(this.block, new THREE.Vector3());
-			expect(this.block.chunk).to.equal(this.chunk);
-		});
-
-		it('"selection" points to parent selection, but not parent chunk', function() {
-			if (this.block.parent) this.block.parent.removeBlock(this.block);
-			this.selection.setBlock(this.block, new THREE.Vector3());
-			expect(this.block.selection).to.equal(this.selection);
-
-			if (this.block.parent) this.block.parent.removeBlock(this.block);
-			this.chunk.setBlock(this.block, new THREE.Vector3());
-			expect(this.block.selection).to.equal(undefined);
+	describe("UID", () => {
+		it("block.id is equal to the UID of the block class", () => {
+			expect(block.id).to.equal(VoxelBlock.UID);
 		});
 	});
 
-	describe("worldPosition", function() {
-		it("returns THREE.Vector3", function() {
-			if (this.block.parent) this.block.parent.removeBlock(this.block);
-			this.map.setBlock(this.block, new THREE.Vector3());
-			expect(this.block.worldPosition).to.be.an.instanceOf(THREE.Vector3);
+	/** @test {VoxelBlock#parent} */
+	describe("parent", () => {
+		let selection, chunk;
+
+		beforeEach(() => {
+			selection = new VoxelSelection();
+			chunk = map.createChunk(new THREE.Vector3(1, 1, 1));
+			block = new VoxelBlock();
 		});
 
-		it("returns empty Vec3 when not in a map", function() {
-			if (this.block.parent) this.block.parent.removeBlock(this.block);
-			expect(this.block.worldPosition).to.be.an.instanceOf(THREE.Vector3);
+		it('"parent" points to parent chunk or selection', () => {
+			selection.setBlock(block, new THREE.Vector3());
+			expect(block.parent).to.equal(selection);
+
+			if (block.parent) block.parent.removeBlock(block);
+			chunk.setBlock(block, new THREE.Vector3());
+			expect(block.parent).to.equal(chunk);
+		});
+
+		it('"chunk" points to parent chunk, but not parent selection', () => {
+			selection.setBlock(block, new THREE.Vector3());
+			expect(block.chunk).to.be.undefined;
+
+			if (block.parent) block.parent.removeBlock(block);
+			chunk.setBlock(block, new THREE.Vector3());
+			expect(block.chunk).to.equal(chunk);
+		});
+
+		it('"selection" points to parent selection, but not parent chunk', () => {
+			selection.setBlock(block, new THREE.Vector3());
+			expect(block.selection).to.equal(selection);
+
+			if (block.parent) block.parent.removeBlock(block);
+			chunk.setBlock(block, new THREE.Vector3());
+			expect(block.selection).to.be.undefined;
 		});
 	});
 
-	describe("position", function() {
-		it("returns THREE.Vector3", function() {
-			if (this.block.parent) this.block.parent.removeBlock(this.block);
-			this.map.setBlock(this.block, new THREE.Vector3());
-			expect(this.block.position).to.be.an.instanceOf(THREE.Vector3);
+	describe("worldPosition", () => {
+		it("returns THREE.Vector3", () => {
+			if (block.parent) block.parent.removeBlock(block);
+			map.setBlock(block, new THREE.Vector3());
+			expect(block.worldPosition).to.be.an.instanceOf(THREE.Vector3);
 		});
 
-		it("returns empty Vec3 when not in a map or selection", function() {
-			if (this.block.parent) this.block.parent.removeBlock(this.block);
-			expect(this.block.position).to.be.an.instanceOf(THREE.Vector3);
-		});
-	});
-
-	describe("geometry", function() {
-		it("caches geometry", function() {
-			expect(this.block.geometry).to.equal(this.block.geometry);
+		it("returns empty Vec3 when not in a map", () => {
+			if (block.parent) block.parent.removeBlock(block);
+			expect(block.worldPosition).to.be.an.instanceOf(THREE.Vector3);
 		});
 	});
 
-	describe("material", function() {
-		it("caches material", function() {
-			expect(this.block.material).to.equal(this.block.material);
+	describe("position", () => {
+		it("returns THREE.Vector3", () => {
+			if (block.parent) block.parent.removeBlock(block);
+			map.setBlock(block, new THREE.Vector3());
+			expect(block.position).to.be.an.instanceOf(THREE.Vector3);
+		});
+
+		it("returns empty Vec3 when not in a map or selection", () => {
+			if (block.parent) block.parent.removeBlock(block);
+			expect(block.position).to.be.an.instanceOf(THREE.Vector3);
+		});
+	});
+
+	describe("geometry", () => {
+		it("caches geometry", () => {
+			expect(block.geometry).to.equal(block.geometry);
+		});
+	});
+
+	describe("material", () => {
+		it("caches material", () => {
+			expect(block.material).to.equal(block.material);
 		});
 	});
 });

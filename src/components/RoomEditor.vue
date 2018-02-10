@@ -351,7 +351,7 @@ export default {
 							copyEmpty: true
 						})
 					}
-				})
+				});
 
 				// run command
 				this.editor.undoManager.getCommands()[this.editor.undoManager.getIndex()].redo();
@@ -359,11 +359,11 @@ export default {
 		},
 		exportFile(){
 			let selection = new VoxelSelection();
-			ChunkUtils.copyBlocks(this.editor.map, selection, new THREE.Vector3(), ROOM_SIZE)
+			ChunkUtils.copyBlocks(this.editor.map, selection, new THREE.Vector3(), ROOM_SIZE);
 			let json = {
 				selection: selection.toJSON(),
 				doors: {}
-			}
+			};
 
 			// doors
 			for(let i in this.doors){
@@ -414,7 +414,7 @@ export default {
 			// move all the blocks from the map into a new selection
 			ChunkUtils.copyBlocks(this.editor.map, selection, new THREE.Vector3(), ROOM_SIZE, {
 				cloneBlocks: false
-			})
+			});
 
 			// move blocks
 			selection.listBlocks().forEach(block => {
@@ -426,11 +426,11 @@ export default {
 					while(v >= ROOM_SIZE[axis]) v -= ROOM_SIZE[axis];
 					while(v < 0) v += ROOM_SIZE[axis];
 					return v;
-				})
+				});
 
 				// add to the new selection
 				selection2.setBlock(block, pos);
-			})
+			});
 
 			// add back to map
 			let box = selection2.boundingBox;
@@ -499,7 +499,7 @@ export default {
 		editor.undoManager.setCallback(() => {
 			this.hasUndo = editor.undoManager.hasUndo();
 			this.hasRedo = editor.undoManager.hasRedo();
-		})
+		});
 		editor.undoManager.setLimit(20);
 
 		// undo / redo keys
@@ -516,7 +516,7 @@ export default {
 				keys: 'meta o',
 				on_keydown: this.importFile
 			}
-		])
+		]);
 
 		// init
 		createRenderer.call(this, editor);
@@ -545,9 +545,9 @@ export default {
 
 				// call updates
 				this.editor.updates.forEach(fn => {
-					if(Function.isFunction(fn))
+					if( typeof fn === 'function')
 						fn(dtime);
-				})
+				});
 
 				// Render depth into depthRenderTarget
 				if(editor.activeCam){
@@ -555,7 +555,7 @@ export default {
 					editor.renderer.render(editor.scene, editor.activeCam, editor.depthRenderTarget, true);
 					// Render renderPass and SSAO shaderPass
 					editor.scene.overrideMaterial = null;
-					editor.renderPass.camera = editor.activeCam
+					editor.renderPass.camera = editor.activeCam;
 					editor.effectComposer.render();
 				}
 			}
@@ -593,7 +593,7 @@ export default {
 				id: id,
 				loaded: false,
 				mesh: () => mesh
-			}
+			};
 
 			// load models
 			let mesh = MODELS.getMesh(model.id, () => {
@@ -601,7 +601,7 @@ export default {
 			});
 
 			return model;
-		})
+		});
 
 		// get blocks
 		let blockHolder = new VoxelSelection();
@@ -705,7 +705,7 @@ function createScene(editor){
 	this.$watch('roomTime', time => {
 		map.time = time;
 		map.listChunks().forEach(chunk => chunk.needsBuild = true);
-	})
+	});
 
 	// create light
 	scene.add(new THREE.AmbientLight(0xffffff));
@@ -721,7 +721,7 @@ function createScene(editor){
 			gridWalls.updateViewingDirection(gridWalls.position.clone().sub(editor.activeCam.getWorldPosition()));
 		else
 			gridWalls.updateViewingDirection();
-	})
+	});
 
 	// view grid walls
 	editor.gridWalls.visible = this.view.walls;
@@ -745,7 +745,7 @@ function createScene(editor){
 			mapEdges.add(helper);
 			chunkEdges.set(ev.chunk, helper);
 		}
-	})
+	});
 	map.addEventListener('chunk:removed', ev => {
 		// remove helper
 		let helper = chunkEdges.get(ev.chunk);
@@ -753,7 +753,7 @@ function createScene(editor){
 
 		if(helper && helper.parent)
 				helper.parent.remove(helper);
-	})
+	});
 	scene.add(mapEdges);
 
 	// view edges
@@ -781,7 +781,7 @@ function createScene(editor){
 	this.$watch('doors', doors => {
 		Reflect.ownKeys(doorHelper.doors).forEach(axis => {
 			doorHelper.doors[axis] = (doors[axis].sides[0]? Room.DOOR_POSITIVE : 0) | (doors[axis].sides[1]? Room.DOOR_NEGATIVE : 0);
-		})
+		});
 		doorHelper.update();
 	}, {deep: true})
 }
@@ -874,7 +874,7 @@ function createTools(editor){
 			v.y >= ROOM_SIZE.y || v.y < 0 ||
 			v.z >= ROOM_SIZE.z || v.z < 0
 		);
-	}
+	};
 
 	// sync with vue
 	editor.attachTool.placeBlockID = this.placeBlocks.selected;
@@ -888,13 +888,13 @@ function createTools(editor){
 		this.targetBlock.x = attachTool.end? attachTool.end.target.x : 0;
 		this.targetBlock.y = attachTool.end? attachTool.end.target.y : 0;
 		this.targetBlock.z = attachTool.end? attachTool.end.target.z : 0;
-	})
+	});
 
 	// create editor tools
 	let pickBlockTool = editor.pickBlockTool = new PickBlockTool(editor.camera, editor.map, editor.renderer);
 	pickBlockTool.onPick = (block) => {
 		this.placeBlocks.selected = VoxelBlockManager.createID(block);
-	}
+	};
 	editor.scene.add(pickBlockTool);
 
 	// if camera changes update the tool
@@ -938,7 +938,7 @@ function createControls(editor){
 		mouseButtons: {
 			LOOK: THREE.MOUSE.RIGHT
 		}
-	}
+	};
 	editor.renderer.domElement.addEventListener('mousedown', event => {
 		if(camLookAt.enabled && event.button == camLookAt.mouseButtons.LOOK){
 			let raycaster = new THREE.Raycaster();
@@ -952,7 +952,7 @@ function createControls(editor){
 				orbitControls.target.copy(intersects[0].point);
 			}
 		}
-	})
+	});
 
 	let pointerLockControls = editor.pointerLockControls = new THREE.PointerLockControls(firstPersonCam);
 	pointerLockControls.enabled = false;
@@ -966,7 +966,7 @@ function createControls(editor){
 		forward: false,
 		back: false,
 		down: false
-	}
+	};
 
 	// update movement
 	editor.updates.push(() => {
@@ -979,21 +979,21 @@ function createControls(editor){
 		if(move.forward && !move.back)
 			velocity.z = -move.SPEED;
 		else if(move.back && !move.forward)
-			velocity.z = move.SPEED
+			velocity.z = move.SPEED;
 		else
 			velocity.z = 0;
 
 		if(move.right && !move.left)
 			velocity.x = move.SPEED;
 		else if(move.left && !move.right)
-			velocity.x = -move.SPEED
+			velocity.x = -move.SPEED;
 		else
 			velocity.x = 0;
 
 		if(move.up && !move.down)
 			velocity.y = move.SPEED;
 		else if(move.down && !move.up)
-			velocity.y = -move.SPEED
+			velocity.y = -move.SPEED;
 		else
 			velocity.y = 0;
 
@@ -1006,7 +1006,7 @@ function createControls(editor){
 				pointerLockControls.getObject().position.add(velocity.applyQuaternion(yaw));
 				break;
 		}
-	})
+	});
 
 	// add key controls
 	editor.keyboard.register_many([
@@ -1088,7 +1088,7 @@ function createModes(editor, modes) {
 
 			editor.orbitControls.mouseButtons.ORBIT = undefined;
 		}
-	}
+	};
 
 	modes['pick-block'] = {
 		enter(){
@@ -1101,7 +1101,7 @@ function createModes(editor, modes) {
 
 			editor.orbitControls.mouseButtons.ORBIT = undefined;
 		}
-	}
+	};
 
 	modes['place-objects'] = {
 		enter(){
@@ -1110,7 +1110,7 @@ function createModes(editor, modes) {
 		exit(){
 			editor.orbitControls.mouseButtons.ORBIT = undefined;
 		}
-	}
+	};
 
 	modes['camera-controls'] = {
 		enter(){
@@ -1127,7 +1127,7 @@ function createModes(editor, modes) {
 			editor.camLookAt.enabled = true;
 			editor.camLookAt.mouseButtons.LOOK = undefined;
 		}
-	}
+	};
 
 	// set up keybindings
 	editor.keyboard.register_many([
@@ -1190,7 +1190,7 @@ function createCameraModes(editor, cameraModes){
 		exit(){
 			editor.orbitControls.enabled = false;
 		}
-	}
+	};
 
 	let unwatch;
 	let that = this;
@@ -1210,7 +1210,7 @@ function createCameraModes(editor, cameraModes){
 			editor.pointerLockControls.enabled = false;
 			unwatch();
 		}
-	}
+	};
 
 	// set default cam mode
 	this.cameraMode = 'orbit';

@@ -41,11 +41,7 @@ export default class PickBlockTool extends THREE.Group {
 			this.update();
 
 			// pick
-			if (
-				this.enabled &&
-				this.target &&
-				event.button == this.mouseButtons.PICK
-			) {
+			if (this.enabled && this.target && event.button == this.mouseButtons.PICK) {
 				this.pickedBlock = this.map.getBlock(this.target.target);
 				if (this.onPick && this.pickedBlock) this.onPick(this.pickedBlock);
 			}
@@ -76,7 +72,7 @@ export default class PickBlockTool extends THREE.Group {
 		let intersects = this.raycaster.intersectObject(this.map, true);
 
 		if (intersects.length) {
-			for (var i = 0; i < intersects.length; i++) {
+			for (let i = 0; i < intersects.length; i++) {
 				let intersection = intersects[i];
 
 				if (!this.testCollision || this.testCollision(intersects.object)) {
@@ -118,10 +114,7 @@ export default class PickBlockTool extends THREE.Group {
 					.multiply(this.target.normal)
 					.multiplyScalar(1.05),
 			);
-			this.selectionFace.quaternion.setFromUnitVectors(
-				this.selectionFace.up,
-				this.target.normal,
-			);
+			this.selectionFace.quaternion.setFromUnitVectors(this.selectionFace.up, this.target.normal);
 		} else this.selectionFace.visible = false;
 
 		return this;
@@ -129,9 +122,7 @@ export default class PickBlockTool extends THREE.Group {
 
 	update() {
 		if (this.enabled) {
-			let target = this.getTarget(
-				this.useMousePosition ? this.mousePosition : new THREE.Vector2(),
-			);
+			let target = this.getTarget(this.useMousePosition ? this.mousePosition : new THREE.Vector2());
 			if (target.target) this.target = target;
 			else this.target = undefined;
 		}

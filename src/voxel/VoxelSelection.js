@@ -109,7 +109,7 @@ export default class VoxelSelection extends THREE.EventDispatcher {
 	 */
 	createBlock(id, position) {
 		let block;
-		if (String.isString(id)) block = this.blockManager.createBlock(id);
+		if (typeof id === "string") block = this.blockManager.createBlock(id);
 
 		if (block && position) {
 			this.setBlock(block, position);
@@ -127,10 +127,9 @@ export default class VoxelSelection extends THREE.EventDispatcher {
 	 * @fires VoxelSelection#block:set
 	 */
 	setBlock(block, position) {
-		if (block instanceof VoxelBlock && block.parent)
-			throw new Error("cant add block that already has a parent");
+		if (block instanceof VoxelBlock && block.parent) throw new Error("cant add block that already has a parent");
 
-		if (String.isString(block)) block = this.blockManager.createBlock(block);
+		if (typeof block === "string") block = this.blockManager.createBlock(block);
 
 		if (position instanceof THREE.Vector3 && block instanceof VoxelBlock) {
 			position = this.tmpVec.copy(position).round();

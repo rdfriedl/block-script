@@ -4,7 +4,7 @@ import THREE from "three";
 export default class ModelManager {
 	constructor() {
 		/**
-		 * the cache for all the registed models
+		 * the cache for all the registered models
 		 * @type {Object}
 		 * @private
 		 */
@@ -12,21 +12,21 @@ export default class ModelManager {
 
 		/**
 		 * the geometry to use while the model is loading
-		 * @type {THREE.Geometry)
 		 * @private
+		 * @type {THREE.Geometry)
 		 */
 		this.tmpGeometry = new THREE.Geometry();
 
 		/**
 		 * the material to use while the model is loading
-		 * @type {THREE.Material)
 		 * @private
+		 * @type {THREE.Material)
 		 */
 		this.tmpMaterial = new THREE.MeshNormalMaterial();
 	}
 
 	/**
-	 * returns a singlton ModelManager
+	 * returns a singleton ModelManager
 	 * @return {ModelManager}
 	 * @memberOf ModelManager
 	 * @static

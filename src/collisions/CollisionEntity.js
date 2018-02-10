@@ -43,11 +43,7 @@ export default class CollisionEntity {
 		// get all entities that are in the way
 		let entities = this.world.listEntities().filter(entity => {
 			// make sure its not us, and also that its static (since we cant handle non-static collisions)
-			return (
-				entity !== this &&
-				entity.isStatic &&
-				movementBox.intersectsBox(entity.boundingBox)
-			);
+			return entity !== this && entity.isStatic && movementBox.intersectsBox(entity.boundingBox);
 		});
 
 		// loop until we stop moving
