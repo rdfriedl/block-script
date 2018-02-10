@@ -1,8 +1,8 @@
+import THREE from "three";
 import VoxelMap from "./VoxelMap.js";
 import VoxelChunk from "./VoxelChunk.js";
 import VoxelBlock from "./VoxelBlock.js";
 import VoxelBlockManager from "./VoxelBlockManager.js";
-import THREE from "three";
 
 /** @test {VoxelMap} */
 describe("VoxelMap", () => {
@@ -35,7 +35,7 @@ describe("VoxelMap", () => {
 		});
 	});
 
-	// chunks
+	/** @test {VoxelMap#createChunk} */
 	describe("createChunk", () => {
 		beforeEach(() => {
 			chunk = map.createChunk(new THREE.Vector3());
@@ -50,6 +50,38 @@ describe("VoxelMap", () => {
 		});
 	});
 
+	/** @test {VoxelMap#setChunk} */
+	describe("setChunk", () => {
+		beforeEach(() => {
+			chunk = new VoxelChunk();
+		});
+
+		it("add the chunk to the map", () => {
+			map.setChunk(chunk, new THREE.Vector3());
+
+			expect(map.getChunk(new THREE.Vector3())).to.equal(chunk);
+		});
+
+		it("should set the 'map' property on the chunk", () => {
+			map.setChunk(chunk, new THREE.Vector3());
+
+			chunk.map.should.equal(map);
+		});
+
+		it('should emit the "chunk:set" event', () => {
+			let listener = sinon.stub().callsFake(event => {
+				event.chunk.should.equal(chunk);
+			});
+
+			map.addEventListener("chunk:set", listener);
+
+			map.setChunk(chunk, new THREE.Vector3());
+
+			listener.should.have.been.called;
+		});
+	});
+
+	/** @test {VoxelMap#hasChunk} */
 	describe("hasChunk", () => {
 		beforeEach(() => {
 			chunk = map.createChunk(new THREE.Vector3());
@@ -68,6 +100,7 @@ describe("VoxelMap", () => {
 		});
 	});
 
+	/** @test {VoxelMap#getChunk} */
 	describe("getChunk", () => {
 		beforeEach(() => {
 			chunk = map.createChunk(new THREE.Vector3());
@@ -96,28 +129,52 @@ describe("VoxelMap", () => {
 		});
 	});
 
+	/** @test {VoxelMap#removeChunk} */
 	describe("removeChunk", () => {
 		beforeEach(() => {
 			chunk = map.createChunk(new THREE.Vector3());
 		});
 
-		it("removeChunk(THREE.Vector3)", () => {
+		it("(THREE.Vector3)", () => {
 			let vec = new THREE.Vector3(0, 0, 0);
 			map.removeChunk(vec);
 			expect(map.hasChunk(vec)).to.be.false;
 			expect(map.getChunk(vec)).to.be.undefined;
 		});
 
-		it('removeChunk("x,y,z")', () => {
+		it('("x,y,z")', () => {
 			map.removeChunk(new THREE.Vector3());
 			expect(map.hasChunk(new THREE.Vector3())).to.be.false;
 			expect(map.getChunk(new THREE.Vector3())).to.be.undefined;
 		});
 
-		it("removeChunk(VoxelChunk)", () => {
+		it("(VoxelChunk)", () => {
 			map.removeChunk(chunk);
 			expect(map.hasChunk(chunk)).to.be.false;
 			expect(map.getChunk(chunk)).to.be.undefined;
+		});
+
+		it('should emit the "chunk:removed" event', () => {
+			let listener = sinon.stub().callsFake(event => {
+				event.chunk.should.equal(chunk);
+			});
+
+			map.addEventListener("chunk:removed", listener);
+			map.removeChunk(chunk);
+
+			listener.should.have.been.called;
+		});
+
+		it('should reset the chunks "map" property', () => {
+			map.removeChunk(chunk);
+
+			expect(chunk.map).to.be.undefined;
+		});
+
+		it("should reset the chunks position", () => {
+			map.removeChunk(chunk);
+
+			chunk.position.equals(new THREE.Vector3()).should.be.true;
 		});
 	});
 
@@ -250,6 +307,36 @@ describe("VoxelMap", () => {
 
 		it("keeps the chunks", () => {
 			expect(map.listChunks().length).to.be.above(0);
+		});
+	});
+
+	/** @test {VoxelMap#toJSON} */
+	describe("toJSON", () => {
+		it('should return an object with a "chunks" array', () => {
+			let json = map.toJSON();
+
+			json.chunks.should.be.an("array");
+		});
+	});
+
+	/** @test {VoxelMap#fromJSON} */
+	describe("fromJSON", () => {
+		it("should create a chunk in the map", () => {
+			let json = {
+				chunks: [
+					[
+						"1,1,1",
+						{
+							blocks: [],
+							types: [],
+						},
+					],
+				],
+			};
+
+			map.fromJSON(json);
+
+			expect(map.getChunk(new THREE.Vector3(1, 1, 1))).to.be.an.instanceOf(VoxelChunk);
 		});
 	});
 });

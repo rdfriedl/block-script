@@ -10,6 +10,7 @@ import HelpMenuComponent from "./components/menu/Help.vue";
 import SettingsMenuComponent from "./components/menu/Settings.vue";
 import RoomEditorComponent from "./components/RoomEditor.vue";
 
+/** mounts the app into the dom */
 export function bootstrap() {
 	if (process.env.NODE_ENV === "production") {
 		Vue.config.silent = true;

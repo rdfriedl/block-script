@@ -1,17 +1,28 @@
 {
 	"source": "./src",
 	"destination": "./docs",
-	"excludes": ["\\.config\\.js$", "src/lib"],
+	"excludes": ["spec\\.js$", "src/lib"],
 	"plugins": [
 		{
 			"name": "esdoc-standard-plugin",
-			"options": {
+			"option": {
 				"brand": {
 					"title": "Block-Script",
 					"repository": "https://github.com/rdfriedl/block-script",
 					"site": "https://block-script.rdfriedl.com",
 					"author": "https://rdfriedl.com"
+				},
+				"test": {
+					"source": "./src/",
+					"interfaces": ["describe", "it"],
+					"includes": ["spec\\.js$"]
 				}
+			}
+		},
+		{
+			"name": "esdoc-ecmascript-proposal-plugin",
+			"option": {
+				"all": true
 			}
 		}
 	]

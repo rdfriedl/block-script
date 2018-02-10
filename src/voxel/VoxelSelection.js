@@ -1,5 +1,12 @@
 import THREE from "three";
 
+/**
+ * @typedef {Object} VoxelSelectionJSON
+ * @property {{position: string, type: number}[]} blocks
+ * @property {VoxelBlockJSON[]} types
+ * */
+
+/** a selection of blocks */
 export default class VoxelSelection extends THREE.EventDispatcher {
 	constructor(blockManager = VoxelBlockManager.inst) {
 		super();
@@ -214,48 +221,51 @@ export default class VoxelSelection extends THREE.EventDispatcher {
 
 	/**
 	 * exports chunk to json format
-	 * @return {Object}
-	 * @property {Array} blocks an array of Objects from {@link VoxelBlock.toJSON}
+	 * @return {VoxelSelectionJSON}
 	 */
 	toJSON() {
-		let json = {};
+		let json = {
+			types: [],
+			blocks: [],
+		};
 
 		// build list of block types
 		let typeCache = new Map();
-		json.blockTypes = [];
 
-		json.blocks = Array.from(this.blocks).map(block => {
-			let blockData = block[1].toJSON();
+		for (let { position, block } of this.blocks) {
+			let blockData = block.toJSON();
 			let str = JSON.stringify(blockData);
+
 			if (!typeCache.has(str)) {
-				typeCache.set(str, json.blockTypes.length);
-				json.blockTypes.push(blockData);
+				typeCache.set(str, json.types.length);
+				json.types.push(blockData);
 			}
-			let data = block[0].split(",").map(v => parseInt(v));
-			data.push(typeCache.get(str));
-			return data; // [x,y,z,typeID]
-		});
+
+			json.blocks.push({
+				position,
+				type: typeCache.get(str),
+			});
+		}
+
 		return json;
 	}
 
 	/**
-	 * imports selection from json
-	 * @param  {Object} json
-	 * @param  {Object[]} json.blocks an array of objects to pass to {@link VoxelBlock.fromJSON}
-	 * @return {this}
+	 * imports chunk from json
+	 * @param  {VoxelSelectionJSON} json
+	 * @return {VoxelSelection} this
 	 */
-	fromJSON(json) {
+	fromJSON(json = {}) {
 		let tmpVec = new THREE.Vector3();
-		if (json.blocks && json.blockTypes) {
-			json.blocks.forEach(data => {
-				// data is in format [x,y,z,typeID]
-				let blockData = json.blockTypes[data[3]];
+		if (json.blocks && json.types) {
+			json.blocks.forEach(([positionString, blockType]) => {
+				let blockData = json.types[blockType];
 				if (blockData) {
 					let block = this.blockManager.createBlock(blockData.type);
 
 					if (block) {
 						block.fromJSON(blockData);
-						this.setBlock(block, tmpVec.set(data[0], data[1], data[2]));
+						this.setBlock(block, tmpVec.fromString(positionString));
 					}
 				}
 			});

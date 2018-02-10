@@ -49,12 +49,10 @@ describe("VoxelChunk", () => {
 	/** @test {VoxelChunk#parent} */
 	describe("parent", () => {
 		it('"parent" points to parent', () => {
-			expect(chunk.parent).not.to.be.undefined;
 			expect(chunk.parent).to.equal(map);
 		});
 
 		it('"map" points to parent VoxelMap', () => {
-			expect(chunk.map).not.to.be.undefined;
 			expect(chunk.map).to.equal(map);
 		});
 	});

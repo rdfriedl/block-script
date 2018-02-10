@@ -3,6 +3,12 @@ import VoxelChunk from "./VoxelChunk.js";
 import VoxelBlock from "./VoxelBlock.js";
 import VoxelBlockManager from "./VoxelBlockManager.js";
 
+/**
+ * @typedef {Object} VoxelMapJSON
+ * @property {VoxelChunkJSON[]} chunks
+ */
+
+/** the base class for the voxel map */
 export default class VoxelMap extends THREE.Group {
 	/**
 	 * @param {VoxelBlockManager} [blockManager=VoxelBlockManager.inst]
@@ -19,7 +25,7 @@ export default class VoxelMap extends THREE.Group {
 
 		/**
 		 * a Map of VoxelChunk with the keys being a string "x,y,z"
-		 * @type {Map}
+		 * @type {Map<string, VoxelChunk>}
 		 * @private
 		 */
 		this.chunks = new Map();
@@ -244,7 +250,7 @@ export default class VoxelMap extends THREE.Group {
 	 * @param  {THREE.Vector3|VoxelChunk} position - ths position of the chunk to remove. or the {@link VoxelChunk} to remove
 	 * @return {VoxelMap} this
 	 *
-	 * @fires VoxelMap#chunk:removed
+	 * @emits {chunk:removed}
 	 */
 	removeChunk(position) {
 		if (this.hasChunk(position)) {
@@ -411,27 +417,30 @@ export default class VoxelMap extends THREE.Group {
 	 * @return {Object}
 	 */
 	toJSON() {
-		let json = {};
-		json.chunks = Array.from(this.chunks).map(chunk => {
-			chunk[1] = chunk[1].toJSON();
-			return chunk;
-		});
+		let json = {
+			chunks: [],
+		};
+
+		for (let { position, chunk } of this.chunks) {
+			json.chunks.push([position, chunk.toJSON()]);
+		}
+
 		return json;
 	}
 
 	/**
 	 * imports chunks / blocks from json format
-	 * @param  {Object} json
+	 * @param  {VoxelMapJSON} json
 	 * @return {VoxelMap} this
 	 */
-	fromJSON(json) {
+	fromJSON(json = {}) {
 		if (json.chunks) {
-			json.chunks.forEach(data => {
-				let chunk = new VoxelChunk();
-				this.setChunk(chunk, data[0]);
+			json.chunks.forEach(([positionString, data]) => {
+				let position = new THREE.Vector3().fromString(positionString);
+				let chunk = this.getChunk(position) || this.createChunk(position);
 
 				// import the blocks after we add the chunk to the map, that way the chunk can access the blockManager
-				chunk.fromJSON(data[1]);
+				chunk.fromJSON(data);
 			});
 		}
 

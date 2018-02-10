@@ -1,6 +1,7 @@
 import THREE from "three";
 import DefaultRooms from "../rooms.js";
 
+/** @test {Room} */
 describe("Room", function() {
 	before(function() {
 		this.room = DefaultRooms.createRoom({
@@ -8,6 +9,8 @@ describe("Room", function() {
 			rotate: false,
 		});
 	});
+
+	/** @test {Room#doors} */
 	describe("doors", function() {
 		it("returns Vector4", function() {
 			expect(this.room.doors).to.be.an.instanceOf(THREE.Vector4);

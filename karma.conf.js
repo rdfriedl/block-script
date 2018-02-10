@@ -40,7 +40,7 @@ module.exports = function(config) {
 		},
 
 		mochaReporter: {
-			output: "full",
+			output: "autowatch",
 			showDiff: true,
 		},
 

@@ -1,8 +1,16 @@
 import THREE from "three";
 import VoxelBlock from "./VoxelBlock.js";
 
+/**
+ * @typedef {Object} VoxelChunkJSON
+ * @property {Array<{position: string, type: number}>} blocks - an array of positions and block types
+ * @property {VoxelBlockJSON[]} types - an array of block types
+ */
+
+/** the directions of neighbors */
 const NEIGHBORS_DIRS = [[1, 0, 0], [0, 1, 0], [0, 0, 1], [-1, 0, 0], [0, -1, 0], [0, 0, -1]];
 
+/** the base class for voxel chunks */
 export default class VoxelChunk extends THREE.Group {
 	/**
 	 * @param {Object} [data] - a json object to pass to {@link VoxelChunk#fromJSON}
@@ -12,7 +20,7 @@ export default class VoxelChunk extends THREE.Group {
 
 		/**
 		 * a Map of VoxelBlock with the keys being a string "x,y,z"
-		 * @type {Map}
+		 * @type {Map<string, VoxelBlock>}
 		 * @private
 		 */
 		this.blocks = new Map();
@@ -29,6 +37,12 @@ export default class VoxelChunk extends THREE.Group {
 		 * @type {THREE.Mesh}
 		 */
 		this.mesh = undefined;
+
+		/**
+		 * the parent {@link VoxelMap}
+		 * @type {VoxelMap}
+		 */
+		this.map = undefined;
 
 		/**
 		 * this is read by the parent map, and if its true it will trigger {@link VoxelChunk#build}
@@ -506,48 +520,51 @@ export default class VoxelChunk extends THREE.Group {
 
 	/**
 	 * exports chunk to json format
-	 * @return {Object}
-	 * @property {Array} blocks an array of Objects from {@link VoxelBlock.toJSON}
+	 * @return {VoxelChunkJSON}
 	 */
 	toJSON() {
-		let json = {};
+		let json = {
+			types: [],
+			blocks: [],
+		};
 
 		// build list of block types
 		let typeCache = new Map();
-		json.blockTypes = [];
 
-		json.blocks = Array.from(this.blocks).map(block => {
-			let blockData = block[1].toJSON();
+		for (let { position, block } of this.blocks) {
+			let blockData = block.toJSON();
 			let str = JSON.stringify(blockData);
+
 			if (!typeCache.has(str)) {
-				typeCache.set(str, json.blockTypes.length);
-				json.blockTypes.push(blockData);
+				typeCache.set(str, json.types.length);
+				json.types.push(blockData);
 			}
-			let data = block[0].split(",").map(v => parseInt(v));
-			data.push(typeCache.get(str));
-			return data; // [x,y,z,typeID]
-		});
+
+			json.blocks.push({
+				position,
+				type: typeCache.get(str),
+			});
+		}
+
 		return json;
 	}
 
 	/**
 	 * imports chunk from json
-	 * @param  {Object} json
-	 * @param  {Object[]} json.blocks an array of objects to pass to {@link VoxelBlock.fromJSON}
+	 * @param  {VoxelChunkJSON} json
 	 * @return {VoxelChunk} this
 	 */
-	fromJSON(json) {
+	fromJSON(json = {}) {
 		let tmpVec = new THREE.Vector3();
-		if (json.blocks && json.blockTypes) {
-			json.blocks.forEach(data => {
-				// data is in format [x,y,z,typeID]
-				let blockData = json.blockTypes[data[3]];
+		if (json.blocks && json.types) {
+			json.blocks.forEach(([positionString, blockType]) => {
+				let blockData = json.types[blockType];
 				if (blockData) {
 					let block = this.blockManager.createBlock(blockData.type);
 
 					if (block) {
 						block.fromJSON(blockData);
-						this.setBlock(block, tmpVec.set(data[0], data[1], data[2]));
+						this.setBlock(block, tmpVec.fromString(positionString));
 					}
 				}
 			});

@@ -1,4 +1,4 @@
-/** manages a list of voxels blocks, and provides functions for creating them */
+/** manages a list of voxel blocks, and provides functions for creating them */
 export default class VoxelBlockManager {
 	/**
 	 * returns an instance of a VoxelBlockManager

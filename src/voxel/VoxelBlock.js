@@ -1,5 +1,12 @@
 import THREE from "three";
 
+/**
+ * @typedef {Object} VoxelBlockJSON
+ * @property {String} type - the id of the block
+ * @property {Object} properties - the blocks properties
+ * */
+
+/** the directions of neighbors */
 const NEIGHBORS_DIRS = [[1, 0, 0], [0, 1, 0], [0, 0, 1], [-1, 0, 0], [0, -1, 0], [0, 0, -1]];
 
 /** the base class for all blocks */
