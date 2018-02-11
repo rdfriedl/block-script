@@ -3,5 +3,4 @@ docs
 coverage
 node_modules
 src/res
-src/lib
 package*.json

@@ -1,7 +1,7 @@
 {
 	"source": "./src",
 	"destination": "./docs",
-	"excludes": ["spec\\.js$", "src/lib"],
+	"excludes": ["spec\\.js$"],
 	"plugins": [
 		{
 			"name": "esdoc-standard-plugin",

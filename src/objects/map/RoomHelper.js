@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import Room from "../../rooms/Room.js";
-import "imports-loader?THREE=three!../../lib/THREE.MeshLine.js";
+import { MeshLine, MeshLineMaterial } from "three.meshline";
 
 export default class RoomHelper extends THREE.Group {
 	constructor(room) {
@@ -39,7 +39,7 @@ export default class RoomHelper extends THREE.Group {
 		// update doors on x, y, z axes
 		["x", "y", "z"].forEach(axis => {
 			let geometry = new THREE.Geometry();
-			let material = new THREE.MeshLineMaterial({
+			let material = new MeshLineMaterial({
 				lineWidth: 0.3,
 				color: this.DoorColors[axis],
 				resolution: new THREE.Vector3(window.innerWidth, window.innerHeight),
@@ -70,7 +70,7 @@ export default class RoomHelper extends THREE.Group {
 				geometry.vertices.push(end);
 			}
 
-			let line = new THREE.MeshLine();
+			let line = new MeshLine();
 			line.setGeometry(geometry);
 			let mesh = new THREE.Mesh(line.geometry, material);
 			this.doors.add(mesh);
