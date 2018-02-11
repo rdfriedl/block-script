@@ -85,7 +85,14 @@ module.exports = {
 							loader: "postcss-loader",
 							options: {
 								sourceMap: IS_DEV,
-								plugins: [require("precss"), require("autoprefixer")],
+								plugins: [
+									require("precss"),
+									IS_PROD && require("autoprefixer"),
+									IS_PROD &&
+										require("cssnano")({
+											preset: "default",
+										}),
+								].filter(p => !!p),
 							},
 						},
 					],
