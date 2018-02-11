@@ -1,6 +1,8 @@
 import { jsx } from "../../../jsx";
-import * as THREE from "three";
 import RedomComponent from "../../../RedomComponent";
+
+import * as THREE from "three";
+import "../../../../three-changes.js";
 import VoxelMap from "../../../../voxel/VoxelMap";
 import * as blocks from "../../../../blocks/defaultBlocks.js";
 import * as ChunkUtils from "../../../../ChunkUtils.js";

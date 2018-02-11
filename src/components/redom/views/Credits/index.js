@@ -1,6 +1,14 @@
 import { jsx } from "../../../jsx";
 import { RouterLink } from "../../../router";
 
+import GithubCorner from "../Menu/GithubCorner";
+import VoxelMap from "../../../../voxel/VoxelMap";
+import * as blocks from "../../../../blocks/defaultBlocks.js";
+import * as ChunkUtils from "../../../../ChunkUtils.js";
+import CollisionWorld from "../../../../collisions/CollisionWorld";
+import CollisionEntityBox from "../../../../collisions/types/box";
+import CollisionEntityVoxelMap from "../../../../collisions/types/voxelMap";
+
 const CreditsView = () => (
 	<div>
 		<RouterLink href="/" className="btn btn-md btn-info pull-left margin-10" style="position: fixed; z-index:100;">

@@ -22,6 +22,7 @@
 		"prebuild": "npm run clean",
 		"build": "cross-env NODE_ENV=production webpack --config config/webpack.prod.config.js",
 		"build-dev": "cross-env NODE_ENV=development webpack --config config/webpack.dev.config.js",
+		"build-stats": "cross-env NODE_ENV=development WEBPACK_STATS=true webpack --config config/webpack.prod.config.js",
 		"start": "cross-env NODE_ENV=development webpack-dev-server --config config/webpack.dev.config.js --hot",
 		"pretest": "rimraf coverage",
 		"test": "cross-env NODE_ENV=development TEST_COVERAGE=true karma start --single-run=true",
@@ -99,8 +100,8 @@
 		"vue-style-loader": "^3.1.2",
 		"vue-template-compiler": "^2.5.13",
 		"webpack": "^3.10.0",
+		"webpack-bundle-analyzer": "^2.10.0",
 		"webpack-dev-server": "^2.11.1",
-		"webpack-manifest-plugin": "^1.3.2",
 		"webpack-merge": "^4.1.1",
 		"workbox-webpack-plugin": "^2.1.2"
 	},

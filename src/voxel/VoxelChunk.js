@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import "../three-changes";
 import VoxelBlock from "./VoxelBlock.js";
 
 /**

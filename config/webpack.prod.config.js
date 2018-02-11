@@ -1,5 +1,4 @@
 const webpack = require("webpack");
-const ManifestPlugin = require("webpack-manifest-plugin");
 const WorkboxPlugin = require("workbox-webpack-plugin");
 const merge = require("webpack-merge");
 
@@ -7,13 +6,25 @@ const base = require("./webpack.base.config.js");
 
 module.exports = merge.smart(base, {
 	plugins: [
-		new ManifestPlugin(),
+		new webpack.optimize.CommonsChunkPlugin({
+			async: "common",
+			children: true,
+			minChunks: 2,
+		}),
+		new webpack.optimize.CommonsChunkPlugin({
+			name: "vendor",
+			minChunks: ({ resource }) => resource.includes("node_modules"),
+		}),
+		new webpack.optimize.CommonsChunkPlugin({
+			name: "manifest",
+			minChunks: Infinity,
+		}),
 		new webpack.optimize.UglifyJsPlugin({
 			compress: {
 				warnings: false,
 			},
 			sourceMap: true,
-			exclude: [/(node_modules|web_modules)/],
+			exclude: [/node_modules/],
 		}),
 		new WorkboxPlugin({
 			globDirectory: "dist",

@@ -1,5 +1,4 @@
 import "./util";
-import "./three-changes.js";
 
 // bootstrap
 import "script-loader!jquery";

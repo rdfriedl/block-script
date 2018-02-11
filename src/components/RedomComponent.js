@@ -7,9 +7,10 @@ export default class RedomComponent {
 		this.ref = this.refs = {};
 
 		let result = this.createElement(props, ...children);
+		/** @type {HTMLElement} */
 		this.el = this.el || result || el("div");
 
-		this.updateElement(props, {});
+		this.updateElement(props || {}, {});
 	}
 	update(props) {
 		let oldProps = Object.assign({}, this.props);

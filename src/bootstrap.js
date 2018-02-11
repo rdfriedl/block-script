@@ -1,9 +1,6 @@
-import * as THREE from "three";
 import { mount } from "redom";
 // import Vue from "vue";
 // import VueRouter from "vu-router";
-
-import App from "./components/redom/App";
 
 // load vue components
 // import GameComponent from "./components/Game.vue";
@@ -21,6 +18,25 @@ export function preventBootstrap() {
 
 /** mounts the app into the dom */
 export function bootstrap() {
+	// register the service worker
+	if (process.env.NODE_ENV === "production") {
+		registerServiceWorker();
+	}
+
+	fixHtml();
+
+	if (!isBootstrapPrevented) {
+		return import("./components/redom/App").then(module => {
+			const App = module.default;
+
+			let app = new App();
+			mount(document.body, app);
+
+			return app;
+		});
+	}
+
+	return Promise.resolve();
 	// if (process.env.NODE_ENV === "production") {
 	// 	Vue.config.silent = true;
 	// }
@@ -54,31 +70,6 @@ export function bootstrap() {
 	// 		return createElement("router-view");
 	// 	},
 	// }).$mount("#app");
-
-	let app = new App();
-	if (!isBootstrapPrevented) {
-		mount(document.body, app);
-	}
-
-	// register the service worker
-	if (process.env.NODE_ENV === "production") {
-		registerServiceWorker();
-	}
-
-	fixHtml();
-
-	if (process.env.NODE_ENV === "development") {
-		setupDebug();
-	}
-
-	return app;
-}
-
-function setupDebug() {
-	// Vue.config.devtools = true;
-	// Vue.config.debug = true;
-	// window.Vue = Vue;
-	window.THREE = THREE;
 }
 
 function registerServiceWorker() {

@@ -4,6 +4,7 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const CircularDependencyPlugin = require("circular-dependency-plugin");
 const DuplicatePackageCheckerPlugin = require("duplicate-package-checker-webpack-plugin");
+const BundleAnalyzerPlugin = require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
 
 const IS_DEV = process.env.NODE_ENV === "development";
 const IS_PROD = process.env.NODE_ENV === "production";
@@ -17,13 +18,13 @@ module.exports = {
 			keypress: "keypress.js/keypress.js",
 			stats: "stats.js/build/stats.min.js",
 		},
+		symlinks: false,
 	},
-	entry: {
-		main: path.resolve("src/index.js"),
-	},
+	entry: path.resolve(__dirname, "../src/index.js"),
 	output: {
 		path: path.resolve("dist"),
 		filename: "[name]-[hash:8].js",
+		chunkFilename: "[name]-[hash:8].js",
 		publicPath: "",
 	},
 	plugins: [
@@ -31,11 +32,6 @@ module.exports = {
 			exclude: /node_modules/,
 		}),
 		new DuplicatePackageCheckerPlugin(),
-		new webpack.optimize.CommonsChunkPlugin({
-			name: "vendor",
-			chunks: ["main"],
-			minChunks: ({ resource }) => /node_modules/.test(resource),
-		}),
 		new HtmlWebpackPlugin({
 			template: path.resolve("src/index.html"),
 		}),
@@ -44,7 +40,9 @@ module.exports = {
 			filename: "[name]-[contenthash:8].css",
 			disable: IS_DEV,
 		}),
-	],
+		process.env.WEBPACK_STATS && new BundleAnalyzerPlugin(),
+	].filter(p => !!p),
+	devtool: IS_DEV ? "source-map" : undefined,
 	module: {
 		rules: [
 			{
