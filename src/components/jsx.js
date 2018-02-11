@@ -101,7 +101,9 @@ export function jsx(node, props = {}, ...children) {
 		return new node(props || {}, ...children);
 	} else if (svgElements.includes(node)) {
 		return svg(node, props, ...children);
-	} else {
+	} else if (node) {
 		return el(node, props, ...children);
+	} else {
+		throw new Error("node cannot be undefined or null");
 	}
 }

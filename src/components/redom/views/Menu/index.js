@@ -2,7 +2,6 @@ import { jsx } from "../../../jsx";
 import * as THREE from "three";
 import RedomComponent from "../../../RedomComponent";
 import VoxelMap from "../../../../voxel/VoxelMap";
-import VoxelBlockManager from "../../../../voxel/VoxelBlockManager.js";
 import * as blocks from "../../../../blocks/defaultBlocks.js";
 import * as ChunkUtils from "../../../../ChunkUtils.js";
 import CollisionWorld from "../../../../collisions/CollisionWorld";
@@ -10,6 +9,7 @@ import CollisionEntityBox from "../../../../collisions/types/box";
 import CollisionEntityVoxelMap from "../../../../collisions/types/voxelMap";
 
 import GithubCorner from "./GithubCorner";
+import { RouterLink } from "../../../router";
 
 import "./index.pcss";
 export default class MenuView extends RedomComponent {
@@ -29,21 +29,21 @@ export default class MenuView extends RedomComponent {
 						Block-Script
 					</h1>
 					<div className="col-xs-12 col-sm-8 col-md-6 col-lg-4" style="margin: 40px 0;">
-						<a href="/play" className="btn btn-lg btn-block btn-success">
+						<RouterLink href="/play" className="btn btn-lg btn-block btn-success">
 							<i className="fa fa-gamepad" /> Play
-						</a>
-						<a href="/editor" className="btn btn-lg btn-block btn-info">
+						</RouterLink>
+						<RouterLink href="/editor" className="btn btn-lg btn-block btn-info">
 							<i className="fa fa-cubes" /> Editor
-						</a>
-						<a href="/help" className="btn btn-lg btn-block btn-default">
+						</RouterLink>
+						<RouterLink href="/help" className="btn btn-lg btn-block btn-default">
 							<i className="fa fa-question" /> Help
-						</a>
-						<a href="/settings" className="btn btn-lg btn-block btn-default">
+						</RouterLink>
+						<RouterLink href="/settings" className="btn btn-lg btn-block btn-default">
 							<i className="fa fa-cogs" /> Settings
-						</a>
-						<a href="/credits" className="btn btn-lg btn-block btn-default">
+						</RouterLink>
+						<RouterLink href="/credits" className="btn btn-lg btn-block btn-default">
 							<i className="fa fa-bars" /> Credits
-						</a>
+						</RouterLink>
 					</div>
 				</div>
 				<a className="created-by btn btn-info btn-xs" href="http://rdfriedl.github.io" target="_blank">

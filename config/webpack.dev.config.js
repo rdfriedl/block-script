@@ -6,6 +6,7 @@ module.exports = merge.smart(base, {
 	devServer: {
 		port: 8000,
 		overlay: true,
+		historyApiFallback: true,
 		stats: {
 			hash: false,
 			version: false,
