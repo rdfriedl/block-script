@@ -14,10 +14,8 @@ import "flex-layout-attribute";
 import "./css/style.css";
 import "./css/utils.css";
 
-import { bootstrap } from "./app";
+import { bootstrap } from "./bootstrap";
 
-if (document.getElementById("app")) {
-	window.addEventListener("load", () => {
-		bootstrap();
-	});
-}
+window.addEventListener("load", () => {
+	bootstrap();
+});
