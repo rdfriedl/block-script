@@ -1,5 +1,5 @@
 import { jsx } from "../../../jsx";
-import THREE from "three";
+import * as THREE from "three";
 import RedomComponent from "../../../RedomComponent";
 import VoxelMap from "../../../../voxel/VoxelMap";
 import VoxelBlockManager from "../../../../voxel/VoxelBlockManager.js";

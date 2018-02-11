@@ -1,5 +1,5 @@
 import VoxelBlock from "../voxel/VoxelBlock.js";
-import THREE from "three";
+import * as THREE from "three";
 
 const loader = new THREE.TextureLoader();
 
@@ -260,11 +260,10 @@ TilesDetail.TIMES = [
 // 		return geo;
 // 	}
 // 	CreateMaterial(type){
-// 		let mat = new THREE.MultiMaterial([
+// 		return [
 // 			basicMaterial(LOG_TYPES[type]? LOG_TYPES[type][0] : LOG_TYPES['normal'][0]),
 // 			basicMaterial(LOG_TYPES[type]? LOG_TYPES[type][1] : LOG_TYPES['normal'][1])
-// 		]);
-// 		return mat;
+// 		];
 // 	}
 // }
 // Log.UID = 'log';

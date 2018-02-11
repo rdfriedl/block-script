@@ -1,4 +1,4 @@
-import THREE from "three";
+import * as THREE from "three";
 import Room from "./Room.js";
 import RoomManager from "./RoomManager.js";
 import MazeGenerator from "../maze-generators/MazeGenerator.js";

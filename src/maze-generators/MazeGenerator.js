@@ -1,4 +1,4 @@
-import THREE from "three";
+import * as THREE from "three";
 
 /** main class for maze generators */
 export default class MazeGenerator {

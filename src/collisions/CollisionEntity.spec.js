@@ -1,4 +1,4 @@
-import THREE from "three";
+import * as THREE from "three";
 import CollisionEntity from "./CollisionEntity.js";
 
 describe("CollisionEntity", function() {

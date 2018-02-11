@@ -1,4 +1,4 @@
-import THREE from "three";
+import * as THREE from "three";
 import VoxelBlock from "./VoxelBlock.js";
 
 /**
@@ -52,11 +52,10 @@ export default class VoxelChunk extends THREE.Group {
 		this.needsBuild = false;
 
 		/**
-		 * a THREE.MultiMaterial thats made up of all the blocks materials
-		 * @type {THREE.MultiMaterial}
+		 * @type {THREE.Material[]}
 		 * @private
 		 */
-		this.material = new THREE.MultiMaterial();
+		this.materials = [];
 
 		/**
 		 * a tmp Vector3 the chunk uses so it dose not have to create new instances
@@ -135,8 +134,7 @@ export default class VoxelChunk extends THREE.Group {
 				return false;
 			});
 
-		this.material.materials = [];
-		this.material.needsUpdate = true;
+		this.materials = [];
 
 		// merge the geometries
 		let blockPositionOffset = new THREE.Vector3(0.5, 0.5, 0.5);
@@ -147,12 +145,12 @@ export default class VoxelChunk extends THREE.Group {
 			// add the material
 			let materialOffset = VoxelChunk.materialOffsetCache.get(block.material);
 			if (materialOffset == undefined) {
-				materialOffset = this.material.materials.length;
-				if (block.material instanceof THREE.MultiMaterial) {
-					for (let i in block.material.materials) {
-						this.material.materials.push(block.material.materials[i]);
-					}
-				} else if (block.material instanceof THREE.Material) this.material.materials.push(block.material);
+				materialOffset = this.materials.length;
+				if (Array.isArray(block.material)) {
+					this.materials.push(...block.material);
+				} else if (block.material instanceof THREE.Material) {
+					this.materials.push(block.material);
+				}
 				VoxelChunk.materialOffsetCache.set(block.material, materialOffset);
 			}
 
@@ -224,7 +222,7 @@ export default class VoxelChunk extends THREE.Group {
 		geometry.computeFaceNormals();
 
 		if (!this.mesh) {
-			this.mesh = new THREE.Mesh(geometry, this.material);
+			this.mesh = new THREE.Mesh(geometry, this.materials);
 			this.mesh.scale.multiply(this.blockSize);
 			this.add(this.mesh);
 		} else {

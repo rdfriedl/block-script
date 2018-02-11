@@ -1,4 +1,4 @@
-import THREE from "three";
+import * as THREE from "three";
 import RoomManager from "./rooms/RoomManager.js";
 
 // import all the tests

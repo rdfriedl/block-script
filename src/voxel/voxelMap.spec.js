@@ -1,4 +1,4 @@
-import THREE from "three";
+import * as THREE from "three";
 import VoxelMap from "./VoxelMap.js";
 import VoxelChunk from "./VoxelChunk.js";
 import VoxelBlock from "./VoxelBlock.js";

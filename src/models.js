@@ -1,4 +1,4 @@
-import THREE from "three";
+import * as THREE from "three";
 import "imports-loader?THREE=three!three/examples/js/loaders/PLYLoader.js";
 import ModelManager from "./ModelManager.js";
 

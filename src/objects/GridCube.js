@@ -1,4 +1,4 @@
-import THREE from "three";
+import * as THREE from "three";
 
 export default class GridCube extends THREE.Group {
 	constructor(gridSize, cellSize, colorCenterLine, colorGrid) {

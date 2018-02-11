@@ -1,4 +1,4 @@
-import THREE from "three";
+import * as THREE from "three";
 
 THREE.EventDispatcher.prototype.dispatchEvent = function(event) {
 	if (this._listeners === undefined) return;
@@ -24,74 +24,74 @@ THREE.EventDispatcher.prototype.dispatchEvent = function(event) {
 };
 
 // make it so axis helper can take a THREE.Vector3 as first arg
-THREE.AxisHelper = function(size) {
-	if (!(size instanceof THREE.Vector3)) size = new THREE.Vector3(size || 1, size || 1, size || 1);
-
-	let vertices = new Float32Array([0, 0, 0, size.x, 0, 0, 0, 0, 0, 0, size.y, 0, 0, 0, 0, 0, 0, size.z]);
-
-	let colors = new Float32Array([1, 0, 0, 1, 0.6, 0, 0, 1, 0, 0.6, 1, 0, 0, 0, 1, 0, 0.6, 1]);
-
-	let geometry = new THREE.BufferGeometry();
-	geometry.addAttribute("position", new THREE.BufferAttribute(vertices, 3));
-	geometry.addAttribute("color", new THREE.BufferAttribute(colors, 3));
-
-	let material = new THREE.LineBasicMaterial({
-		vertexColors: THREE.VertexColors,
-	});
-
-	THREE.LineSegments.call(this, geometry, material);
-};
-
-THREE.AxisHelper.prototype = Object.create(THREE.LineSegments.prototype);
-THREE.AxisHelper.prototype.constructor = THREE.AxisHelper;
+// THREE.AxisHelper = function(size) {
+// 	if (!(size instanceof THREE.Vector3)) size = new THREE.Vector3(size || 1, size || 1, size || 1);
+//
+// 	let vertices = new Float32Array([0, 0, 0, size.x, 0, 0, 0, 0, 0, 0, size.y, 0, 0, 0, 0, 0, 0, size.z]);
+//
+// 	let colors = new Float32Array([1, 0, 0, 1, 0.6, 0, 0, 1, 0, 0.6, 1, 0, 0, 0, 1, 0, 0.6, 1]);
+//
+// 	let geometry = new THREE.BufferGeometry();
+// 	geometry.addAttribute("position", new THREE.BufferAttribute(vertices, 3));
+// 	geometry.addAttribute("color", new THREE.BufferAttribute(colors, 3));
+//
+// 	let material = new THREE.LineBasicMaterial({
+// 		vertexColors: THREE.VertexColors,
+// 	});
+//
+// 	THREE.LineSegments.call(this, geometry, material);
+// };
+//
+// THREE.AxisHelper.prototype = Object.create(THREE.LineSegments.prototype);
+// THREE.AxisHelper.prototype.constructor = THREE.AxisHelper;
 
 // make it so grid helper can take a THREE.Vector2 as the size
-THREE.GridHelper = function(size, step, color1, color2) {
-	color1 = new THREE.Color(color1 !== undefined ? color1 : 0x444444);
-	color2 = new THREE.Color(color2 !== undefined ? color2 : 0x888888);
-
-	let vertices = [];
-	let colors = [];
-
-	if (!(size instanceof THREE.Vector2)) size = new THREE.Vector2(size || 0, size || 0);
-
-	if (!(step instanceof THREE.Vector2)) step = new THREE.Vector2(step || 0, step || 0);
-
-	let offset = 0;
-	for (let i = -size.x; i <= size.x; i += step.x) {
-		vertices.push(i, 0, -size.y, i, 0, size.y);
-
-		let color = i === 0 ? color1 : color2;
-
-		color.toArray(colors, offset);
-		offset += 3;
-		color.toArray(colors, offset);
-		offset += 3;
-	}
-	for (let i = -size.y; i <= size.y; i += step.y) {
-		vertices.push(-size.x, 0, i, size.x, 0, i);
-
-		let color = i === 0 ? color1 : color2;
-
-		color.toArray(colors, offset);
-		offset += 3;
-		color.toArray(colors, offset);
-		offset += 3;
-	}
-
-	let geometry = new THREE.BufferGeometry();
-	geometry.addAttribute("position", new THREE.Float32Attribute(vertices, 3));
-	geometry.addAttribute("color", new THREE.Float32Attribute(colors, 3));
-
-	let material = new THREE.LineBasicMaterial({
-		vertexColors: THREE.VertexColors,
-	});
-
-	THREE.LineSegments.call(this, geometry, material);
-};
-
-THREE.GridHelper.prototype = Object.create(THREE.LineSegments.prototype);
-THREE.GridHelper.prototype.constructor = THREE.GridHelper;
+// THREE.GridHelper = function(size, step, color1, color2) {
+// 	color1 = new THREE.Color(color1 !== undefined ? color1 : 0x444444);
+// 	color2 = new THREE.Color(color2 !== undefined ? color2 : 0x888888);
+//
+// 	let vertices = [];
+// 	let colors = [];
+//
+// 	if (!(size instanceof THREE.Vector2)) size = new THREE.Vector2(size || 0, size || 0);
+//
+// 	if (!(step instanceof THREE.Vector2)) step = new THREE.Vector2(step || 0, step || 0);
+//
+// 	let offset = 0;
+// 	for (let i = -size.x; i <= size.x; i += step.x) {
+// 		vertices.push(i, 0, -size.y, i, 0, size.y);
+//
+// 		let color = i === 0 ? color1 : color2;
+//
+// 		color.toArray(colors, offset);
+// 		offset += 3;
+// 		color.toArray(colors, offset);
+// 		offset += 3;
+// 	}
+// 	for (let i = -size.y; i <= size.y; i += step.y) {
+// 		vertices.push(-size.x, 0, i, size.x, 0, i);
+//
+// 		let color = i === 0 ? color1 : color2;
+//
+// 		color.toArray(colors, offset);
+// 		offset += 3;
+// 		color.toArray(colors, offset);
+// 		offset += 3;
+// 	}
+//
+// 	let geometry = new THREE.BufferGeometry();
+// 	geometry.addAttribute("position", new THREE.Float32Attribute(vertices, 3));
+// 	geometry.addAttribute("color", new THREE.Float32Attribute(colors, 3));
+//
+// 	let material = new THREE.LineBasicMaterial({
+// 		vertexColors: THREE.VertexColors,
+// 	});
+//
+// 	THREE.LineSegments.call(this, geometry, material);
+// };
+//
+// THREE.GridHelper.prototype = Object.create(THREE.LineSegments.prototype);
+// THREE.GridHelper.prototype.constructor = THREE.GridHelper;
 
 // fix up vector classes
 THREE.Vector2.prototype.multiply = function(v) {

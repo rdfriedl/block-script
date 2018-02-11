@@ -1,4 +1,4 @@
-import THREE from "three";
+import * as THREE from "three";
 import RoomHelper from "./RoomHelper.js";
 
 export default class MazeLevelHelper extends THREE.Group {

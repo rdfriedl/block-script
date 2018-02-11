@@ -1,4 +1,4 @@
-import THREE from "three";
+import * as THREE from "three";
 import CollisionEntityBox from "../collisions/types/box.js";
 
 class Player extends THREE.Group {

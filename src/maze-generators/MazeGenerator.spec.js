@@ -1,4 +1,4 @@
-import THREE from "three";
+import * as THREE from "three";
 import MazeGenerator from "./MazeGenerator.js";
 
 /** @test {MazeGenerator} */

@@ -1,7 +1,7 @@
 import VoxelMap from "./VoxelMap.js";
 import VoxelBlock from "./VoxelBlock.js";
 import VoxelSelection from "./VoxelSelection.js";
-import THREE from "three";
+import * as THREE from "three";
 
 /** @test {VoxelBlock} */
 describe("VoxelBlock", () => {

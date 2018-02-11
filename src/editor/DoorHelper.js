@@ -1,4 +1,4 @@
-import THREE from "three";
+import * as THREE from "three";
 import Room from "../rooms/Room.js";
 
 const DOOR_TYPES = {};

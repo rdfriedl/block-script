@@ -1,4 +1,4 @@
-import THREE from "three";
+import * as THREE from "three";
 import Room from "./Room.js";
 
 const ROOM_ROTATIONS = [0, 1, 2, 3];

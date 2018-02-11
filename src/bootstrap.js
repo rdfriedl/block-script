@@ -1,4 +1,4 @@
-import THREE from "three";
+import * as THREE from "three";
 import { mount } from "redom";
 // import Vue from "vue";
 // import VueRouter from "vu-router";
@@ -12,6 +12,12 @@ import App from "./components/redom/App";
 // import HelpMenuComponent from "./components/menu/Help.vue";
 // import SettingsMenuComponent from "./components/menu/Settings.vue";
 // import RoomEditorComponent from "./components/RoomEditor.vue";
+
+let isBootstrapPrevented = false;
+
+export function preventBootstrap() {
+	isBootstrapPrevented = true;
+}
 
 /** mounts the app into the dom */
 export function bootstrap() {
@@ -50,7 +56,9 @@ export function bootstrap() {
 	// }).$mount("#app");
 
 	let app = new App();
-	mount(document.body, app);
+	if (!isBootstrapPrevented) {
+		mount(document.body, app);
+	}
 
 	// register the service worker
 	if (process.env.NODE_ENV === "production") {

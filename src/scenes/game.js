@@ -1,4 +1,4 @@
-import THREE from "three";
+import * as THREE from "three";
 
 // extensions
 import "imports-loader?THREE=three!three/examples/js/controls/PointerLockControls.js";

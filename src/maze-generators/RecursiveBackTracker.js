@@ -1,5 +1,5 @@
 import MazeGenerator from "./MazeGenerator.js";
-import THREE from "three";
+import * as THREE from "three";
 
 function weightedRand(spec) {
 	let total = 0;

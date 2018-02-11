@@ -1,4 +1,4 @@
-import THREE from "three";
+import * as THREE from "three";
 
 export default class PickBlockTool extends THREE.Group {
 	constructor(camera, map, renderer) {

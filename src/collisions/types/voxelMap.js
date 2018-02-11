@@ -1,4 +1,4 @@
-import THREE from "three";
+import * as THREE from "three";
 import CollisionEntity from "../CollisionEntity.js";
 
 /** collision entity for a {@link VoxelMap} */

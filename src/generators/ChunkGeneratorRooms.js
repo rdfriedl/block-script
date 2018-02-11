@@ -1,4 +1,4 @@
-import THREE from "three";
+import * as THREE from "three";
 import ChunkGenerator from "./ChunkGenerator.js";
 import * as ChunkUtils from "../ChunkUtils.js";
 

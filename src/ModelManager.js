@@ -1,4 +1,4 @@
-import THREE from "three";
+import * as THREE from "three";
 
 /** manages and loads models */
 export default class ModelManager {
