@@ -1,22 +1,14 @@
-import { jsx } from "../../../jsx";
-import { RouterLink } from "../../../router";
-
-import GithubCorner from "../Menu/GithubCorner";
-import VoxelMap from "../../../../voxel/VoxelMap";
-import * as blocks from "../../../../blocks/defaultBlocks.js";
-import * as ChunkUtils from "../../../../ChunkUtils.js";
-import CollisionWorld from "../../../../collisions/CollisionWorld";
-import CollisionEntityBox from "../../../../collisions/types/box";
-import CollisionEntityVoxelMap from "../../../../collisions/types/voxelMap";
+import React from "react";
+import { Link } from "react-router-dom";
 
 const CreditsView = () => (
 	<div>
-		<RouterLink href="/" className="btn btn-md btn-info pull-left margin-10" style="position: fixed; z-index:100;">
+		<Link to="/" className="btn btn-md btn-info pull-left margin-10" style={{ position: "fixed", zIndex: 100 }}>
 			<i className="fa fa-arrow-left" />
 			<span> Back</span>
-		</RouterLink>
+		</Link>
 
-		<div className="col-md-8 col-md-offset-2 text-center" style="margin-bottom: 10vh;">
+		<div className="col-md-8 col-md-offset-2 text-center" style={{ marginBottom: "10vh" }}>
 			<div className="page-header">
 				<h1>Block Script</h1>
 			</div>

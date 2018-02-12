@@ -12,10 +12,6 @@ module.exports = merge.smart(base, {
 			minChunks: 2,
 		}),
 		new webpack.optimize.CommonsChunkPlugin({
-			name: "vendor",
-			minChunks: ({ resource }) => resource.includes("node_modules"),
-		}),
-		new webpack.optimize.CommonsChunkPlugin({
 			name: "manifest",
 			minChunks: Infinity,
 		}),

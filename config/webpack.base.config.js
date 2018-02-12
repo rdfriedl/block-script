@@ -20,7 +20,9 @@ module.exports = {
 		},
 		symlinks: false,
 	},
-	entry: path.resolve(__dirname, "../src/index.js"),
+	entry: {
+		main: [path.resolve(__dirname, "../src/index.js")],
+	},
 	output: {
 		path: path.resolve("dist"),
 		filename: "[name]-[hash:8].js",
@@ -63,38 +65,36 @@ module.exports = {
 			{
 				test: /\.(p)?css$/,
 				exclude: /(node_modules)/,
-				use: ExtractTextPlugin.extract({
-					fallback: {
+				use: [
+					{
 						loader: "style-loader",
 						options: {
 							sourceMap: IS_DEV,
 						},
 					},
-					use: [
-						{
-							loader: "css-loader",
-							options: {
-								sourceMap: IS_DEV,
-								minimize: IS_PROD,
-								importLoaders: 1,
-							},
+					{
+						loader: "css-loader",
+						options: {
+							sourceMap: IS_DEV,
+							minimize: IS_PROD,
+							importLoaders: 1,
 						},
-						{
-							loader: "postcss-loader",
-							options: {
-								sourceMap: IS_DEV,
-								plugins: [
-									require("precss"),
-									IS_PROD && require("autoprefixer"),
-									IS_PROD &&
-										require("cssnano")({
-											preset: "default",
-										}),
-								].filter(p => !!p),
-							},
+					},
+					{
+						loader: "postcss-loader",
+						options: {
+							sourceMap: IS_DEV,
+							plugins: [
+								require("precss"),
+								IS_PROD && require("autoprefixer"),
+								IS_PROD &&
+									require("cssnano")({
+										preset: "default",
+									}),
+							].filter(p => !!p),
 						},
-					],
-				}),
+					},
+				],
 			},
 			{
 				test: /\.css$/,
@@ -102,19 +102,8 @@ module.exports = {
 				use: ExtractTextPlugin.extract({
 					fallback: {
 						loader: "style-loader",
-						options: {
-							sourceMap: IS_DEV,
-						},
 					},
-					use: [
-						{
-							loader: "css-loader",
-							options: {
-								sourceMap: IS_DEV,
-								minimize: IS_PROD,
-							},
-						},
-					],
+					use: ["css-loader"],
 				}),
 			},
 			{

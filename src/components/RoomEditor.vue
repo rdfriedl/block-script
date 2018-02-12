@@ -262,6 +262,8 @@ import AttachTool from '../editor/AttachTool.js';
 import PickBlockTool from '../editor/PickBlockTool.js';
 import DoorHelper from '../editor/DoorHelper.js';
 
+import {readBlob} from "../util";
+
 const ROOM_SIZE = new THREE.Vector3(32,16,32);
 
 export default {
@@ -377,7 +379,7 @@ export default {
 		importFile(){
 			this.$refs.fileinput.onchange = event => {
 				if(event.target.files.length){
-					JSON.fromBlob(event.target.files[0]).then(json => {
+					readBlob(event.target.files[0]).then(content => JSON.parse(content)).then(json => {
 						if(json.selection){
 							let selection = new VoxelSelection();
 							selection.fromJSON(json.selection);
@@ -582,7 +584,7 @@ export default {
 			window.editor = editor;
 	},
 	mounted(){
-		window.addEventListener('resize', Function.debounce(() => this.$emit('canvas-resize'), 150));
+		// window.addEventListener('resize', Function.debounce(() => this.$emit('canvas-resize'), 150));
 
 		// default mode
 		this.mode = 'place-blocks';

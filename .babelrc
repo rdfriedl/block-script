@@ -1,12 +1,9 @@
 {
 	"presets": [
-		"env", "stage-1"
+		"env", "react", "stage-1"
 	],
 	"plugins": [
-		"transform-runtime",
-		"syntax-jsx",
-		["transform-react-jsx", {
-			"pragma": "jsx"
-		}]
+		"react-hot-loader/babel",
+		"transform-runtime"
 	]
 }

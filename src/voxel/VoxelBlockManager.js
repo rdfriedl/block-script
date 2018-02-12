@@ -1,3 +1,5 @@
+import * as querystring from "query-string";
+
 /** manages a list of voxel blocks, and provides functions for creating them */
 export default class VoxelBlockManager {
 	/**
@@ -198,7 +200,7 @@ export default class VoxelBlockManager {
 	 * "dirt?rotation=[1,0,0]"
 	 */
 	static parseProps(id) {
-		return URL.parseSearch(id);
+		return querystring.parseUrl(id || "").query;
 	}
 
 	/**

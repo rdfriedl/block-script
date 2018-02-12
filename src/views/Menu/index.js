@@ -1,51 +1,52 @@
-import { jsx } from "../../../jsx";
-import RedomComponent from "../../../RedomComponent";
+import React, { PureComponent } from "react";
+import { Link } from "react-router-dom";
 
 import * as THREE from "three";
-import "../../../../three-changes.js";
-import VoxelMap from "../../../../voxel/VoxelMap";
-import * as blocks from "../../../../blocks/defaultBlocks.js";
-import * as ChunkUtils from "../../../../ChunkUtils.js";
-import CollisionWorld from "../../../../collisions/CollisionWorld";
-import CollisionEntityBox from "../../../../collisions/types/box";
-import CollisionEntityVoxelMap from "../../../../collisions/types/voxelMap";
+import "../../three-changes.js";
+import VoxelMap from "../../voxel/VoxelMap";
+import * as blocks from "../../blocks/defaultBlocks.js";
+import * as ChunkUtils from "../../ChunkUtils.js";
+import CollisionWorld from "../../collisions/CollisionWorld";
+import CollisionEntityBox from "../../collisions/types/box";
+import CollisionEntityVoxelMap from "../../collisions/types/voxelMap";
 
 import GithubCorner from "./GithubCorner";
-import { RouterLink } from "../../../router";
 
 import "./index.pcss";
-export default class MenuView extends RedomComponent {
-	createElement() {
+export default class MenuView extends PureComponent {
+	componentWillMount() {
 		this.createRenderer();
 		this.createScene();
 		this.createCollisions();
 
+		this.mounted = true;
 		requestAnimationFrame(this.updateScene.bind(this));
-
+	}
+	componentDidMount() {
+		this.canvasContainer.appendChild(this.renderer.domElement);
+	}
+	componentWillUnmount() {
+		this.mounted = false;
+	}
+	render() {
 		return (
 			<div className="menu-view">
-				{this.renderer.domElement}
 				<GithubCorner />
-				<div className="flex-v" style="align-items: center">
-					<h1 className="text-center title" style="margin-top: 10vh">
+				<div ref={el => (this.canvasContainer = el)} />
+				<div className="flex-v" style={{ alignItems: "center" }}>
+					<h1 className="text-center title" style={{ marginTop: "10vh" }}>
 						Block-Script
 					</h1>
-					<div className="col-xs-12 col-sm-8 col-md-6 col-lg-4" style="margin: 40px 0;">
-						<RouterLink href="/play" className="btn btn-lg btn-block btn-success">
+					<div className="col-xs-12 col-sm-8 col-md-6 col-lg-4" style={{ margin: "40px 0" }}>
+						<Link to="/play" className="btn btn-lg btn-block btn-success">
 							<i className="fa fa-gamepad" /> Play
-						</RouterLink>
-						<RouterLink href="/editor" className="btn btn-lg btn-block btn-info">
+						</Link>
+						<Link to="/editor" className="btn btn-lg btn-block btn-info">
 							<i className="fa fa-cubes" /> Editor
-						</RouterLink>
-						<RouterLink href="/help" className="btn btn-lg btn-block btn-default">
-							<i className="fa fa-question" /> Help
-						</RouterLink>
-						<RouterLink href="/settings" className="btn btn-lg btn-block btn-default">
-							<i className="fa fa-cogs" /> Settings
-						</RouterLink>
-						<RouterLink href="/credits" className="btn btn-lg btn-block btn-default">
+						</Link>
+						<Link to="/credits" className="btn btn-lg btn-block btn-default">
 							<i className="fa fa-bars" /> Credits
-						</RouterLink>
+						</Link>
 					</div>
 				</div>
 				<a className="created-by btn btn-info btn-xs" href="http://rdfriedl.github.io" target="_blank">
@@ -54,6 +55,8 @@ export default class MenuView extends RedomComponent {
 			</div>
 		);
 	}
+
+	// scene
 	createRenderer() {
 		this.renderer = new THREE.WebGLRenderer();
 		this.renderer.setClearColor(0x2b3e50, 1);
@@ -143,7 +146,9 @@ export default class MenuView extends RedomComponent {
 		this.animateScene(dtime);
 		this.renderScene(dtime);
 
-		requestAnimationFrame(this.updateScene.bind(this));
+		if (this.mounted) {
+			requestAnimationFrame(this.updateScene.bind(this));
+		}
 	}
 	animateScene(dtime) {
 		this.collisionWorld.step(dtime);

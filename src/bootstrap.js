@@ -1,75 +1,32 @@
-import { mount } from "redom";
-// import Vue from "vue";
-// import VueRouter from "vu-router";
+import React from "react";
+import ReactDOM from "react-dom";
+import { AppContainer } from "react-hot-loader";
 
-// load vue components
-// import GameComponent from "./components/Game.vue";
-// import MenuComponent from "./components/Menu.vue";
-// import CreditsMenuComponent from "./components/menu/Credits.vue";
-// import HelpMenuComponent from "./components/menu/Help.vue";
-// import SettingsMenuComponent from "./components/menu/Settings.vue";
-// import RoomEditorComponent from "./components/RoomEditor.vue";
+import App from "./views/App";
 
-let isBootstrapPrevented = false;
+const render = Component => {
+	ReactDOM.render(
+		<AppContainer>
+			<Component />
+		</AppContainer>,
+		document.getElementById("app"),
+	);
+};
 
-export function preventBootstrap() {
-	isBootstrapPrevented = true;
+// register the service worker
+if (process.env.NODE_ENV === "production") {
+	registerServiceWorker();
 }
 
-/** mounts the app into the dom */
-export function bootstrap() {
-	// register the service worker
-	if (process.env.NODE_ENV === "production") {
-		registerServiceWorker();
-	}
+fixHtml();
 
-	fixHtml();
+render(App);
 
-	if (!isBootstrapPrevented) {
-		return import("./components/redom/App").then(module => {
-			const App = module.default;
-
-			let app = new App();
-			mount(document.body, app);
-
-			return app;
-		});
-	}
-
-	return Promise.resolve();
-	// if (process.env.NODE_ENV === "production") {
-	// 	Vue.config.silent = true;
-	// }
-
-	// set up the config
-	// Vue.use(VueRouter);
-
-	// Vue.filter("nl-to-br", function(value) {
-	// 	return String(value).replace(/\n/g, "<br>");
-	// });
-
-	// create the router
-	// let router = new VueRouter({
-	// 	routes: [
-	// 		{ path: "/", component: MenuComponent },
-	// 		{ path: "/menu", component: MenuComponent },
-	// 		{ path: "/play", component: GameComponent },
-	// 		{ path: "/credits", component: CreditsMenuComponent },
-	// 		{ path: "/help", component: HelpMenuComponent },
-	// 		{ path: "/help/:topic", component: HelpMenuComponent },
-	// 		{ path: "/settings", component: SettingsMenuComponent },
-	// 		{ path: "/settings/:topic", component: SettingsMenuComponent },
-	// 		{ path: "/editor", component: RoomEditorComponent },
-	// 		{ path: "/editor/:room", component: RoomEditorComponent },
-	// 	],
-	// });
-
-	// new Vue({
-	// 	router,
-	// 	render(createElement) {
-	// 		return createElement("router-view");
-	// 	},
-	// }).$mount("#app");
+// Webpack Hot Module Replacement API
+if (module.hot) {
+	module.hot.accept("./views/App", () => {
+		render(App);
+	});
 }
 
 function registerServiceWorker() {
