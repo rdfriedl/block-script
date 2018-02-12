@@ -3,6 +3,7 @@
 	"destination": "./docs",
 	"excludes": ["spec\\.js$"],
 	"plugins": [
+		{ "name": "esdoc-jsx-plugin", "option": { "enable": true } },
 		{
 			"name": "esdoc-standard-plugin",
 			"option": {
@@ -19,6 +20,7 @@
 				}
 			}
 		},
+		{ "name": "esdoc-react-plugin" },
 		{
 			"name": "esdoc-ecmascript-proposal-plugin",
 			"option": {
