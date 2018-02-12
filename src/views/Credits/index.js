@@ -1,10 +1,12 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import Icon from "@fortawesome/react-fontawesome";
+import { faChevronLeft } from "@fortawesome/fontawesome-free-solid";
 
 const CreditsView = () => (
 	<div>
 		<Link to="/" className="btn btn-md btn-info pull-left margin-10" style={{ position: "fixed", zIndex: 100 }}>
-			<i className="fa fa-arrow-left" />
+			<Icon icon={faChevronLeft} />
 			<span> Back</span>
 		</Link>
 

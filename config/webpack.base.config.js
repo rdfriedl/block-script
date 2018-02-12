@@ -14,7 +14,6 @@ module.exports = {
 		extensions: [".js", ".vue"],
 		alias: {
 			"event-emitter": "wolfy87-eventemitter/EventEmitter.min.js", // event-emiiter is not part of vendor
-			"font-awesome": "font-awesome/css/font-awesome.min.css",
 			keypress: "keypress.js/keypress.js",
 			stats: "stats.js/build/stats.min.js",
 		},

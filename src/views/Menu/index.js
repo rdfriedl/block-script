@@ -2,6 +2,9 @@ import React, { PureComponent } from "react";
 import { Link } from "react-router-dom";
 import * as THREE from "three";
 
+import Icon from "@fortawesome/react-fontawesome";
+import { faGamepad, faBars } from "@fortawesome/fontawesome-free-solid";
+import { faEdit } from "@fortawesome/fontawesome-free-regular";
 import GithubCorner from "./GithubCorner";
 import MenuScene from "../../scenes/Menu";
 
@@ -47,13 +50,13 @@ export default class MenuView extends PureComponent {
 					</h1>
 					<div className="col-xs-12 col-sm-8 col-md-6 col-lg-4" style={{ margin: "40px 0" }}>
 						<Link to="/play" className="btn btn-lg btn-block btn-success">
-							<i className="fa fa-gamepad" /> Play
+							<Icon icon={faGamepad} /> Play
 						</Link>
 						<Link to="/editor" className="btn btn-lg btn-block btn-info">
-							<i className="fa fa-cubes" /> Editor
+							<Icon icon={faEdit} /> Editor
 						</Link>
 						<Link to="/credits" className="btn btn-lg btn-block btn-default">
-							<i className="fa fa-bars" /> Credits
+							<Icon icon={faBars} /> Credits
 						</Link>
 					</div>
 				</div>
