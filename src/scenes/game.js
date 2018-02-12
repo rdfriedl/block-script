@@ -16,8 +16,6 @@ import CollisionEntityVoxelMap from "../collisions/types/voxelMap.js";
 
 /**
  * a function for creating a game scene
- * @name gameScene
- * @function
  * @param {Object} [opts] - a object containing options
  * @param {Keyboard} opts.keyboard - the keyboard to use for this scenes player
  * @return {Object}
