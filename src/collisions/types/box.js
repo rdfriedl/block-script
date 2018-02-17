@@ -19,7 +19,7 @@ export default class CollisionEntityBox extends CollisionEntity {
 				.clone()
 				.divideScalar(2)
 				.negate(),
-			size.clone().divideScalar(2),
+			size.clone().divideScalar(2)
 		);
 
 		if (offset instanceof THREE.Vector3) this._box.translate(offset);
@@ -140,7 +140,7 @@ export default class CollisionEntityBox extends CollisionEntity {
 			return {
 				entryTime: entryTime,
 				exitTime: exitTime,
-				normal: normal,
+				normal: normal
 			};
 		}
 	}

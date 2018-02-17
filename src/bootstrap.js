@@ -9,7 +9,7 @@ const render = Component => {
 		<AppContainer>
 			<Component />
 		</AppContainer>,
-		document.getElementById("app"),
+		document.getElementById("app")
 	);
 };
 
@@ -24,7 +24,7 @@ render(App);
 
 // Webpack Hot Module Replacement API
 if (module.hot) {
-	module.hot.accept("./views/App", () => {
+	module.hot.accept("./views/App.js", () => {
 		render(App);
 	});
 }

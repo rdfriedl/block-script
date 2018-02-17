@@ -6,7 +6,7 @@ function simulateKeyEvent(el, char, type) {
 		e.initKeyboardEvent(type || "keypress", true, true, window, char, char, 0, 0, 0, true);
 	} else e.initKeyEvent(type || "keypress", true, true, window, char, char, 0, 0, 0, true);
 	Object.defineProperty(e, "keyCode", {
-		value: char,
+		value: char
 	});
 	el.dispatchEvent(e);
 }

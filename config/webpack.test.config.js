@@ -13,16 +13,16 @@ module.exports = merge.smart(base, {
 				options: {
 					esModules: true,
 					preserveComments: true,
-					produceSourceMap: true,
+					produceSourceMap: true
 				},
-				enforce: "post",
+				enforce: "post"
 			},
 			{
 				test: /\.css$/,
 				loader: "ignore-loader",
-				enforce: "pre",
-			},
-		].filter(r => !!r),
+				enforce: "pre"
+			}
+		].filter(r => !!r)
 	},
-	devtool: "inline-source-map",
+	devtool: "inline-source-map"
 });

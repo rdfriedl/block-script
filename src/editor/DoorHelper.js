@@ -8,8 +8,8 @@ DOOR_TYPES.x = DOOR_TYPES.z = DOOR_TYPES.y = (size, side) => {
 		new THREE.MeshLambertMaterial({
 			color: 0x55ff55,
 			transparent: true,
-			opacity: 0.3,
-		}),
+			opacity: 0.3
+		})
 	);
 
 	mesh.position

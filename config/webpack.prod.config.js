@@ -9,18 +9,18 @@ module.exports = merge.smart(base, {
 		new webpack.optimize.CommonsChunkPlugin({
 			async: "common",
 			children: true,
-			minChunks: 2,
+			minChunks: 2
 		}),
 		new webpack.optimize.CommonsChunkPlugin({
 			name: "manifest",
-			minChunks: Infinity,
+			minChunks: Infinity
 		}),
 		new webpack.optimize.UglifyJsPlugin({
 			compress: {
-				warnings: false,
+				warnings: false
 			},
 			sourceMap: true,
-			exclude: [/node_modules/],
+			exclude: [/node_modules/]
 		}),
 		new WorkboxPlugin({
 			globDirectory: "dist",
@@ -30,10 +30,10 @@ module.exports = merge.smart(base, {
 			runtimeCaching: [
 				{
 					urlPattern: new RegExp("https://fonts\\.googleapis\\.com"),
-					handler: "staleWhileRevalidate",
-				},
-			],
-		}),
+					handler: "staleWhileRevalidate"
+				}
+			]
+		})
 	],
 	stats: {
 		hash: false,
@@ -41,6 +41,6 @@ module.exports = merge.smart(base, {
 		version: true,
 		timings: true,
 		assets: true,
-		modules: false,
-	},
+		modules: false
+	}
 });

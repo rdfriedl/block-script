@@ -31,14 +31,14 @@ export default class AttachTool extends THREE.Group {
 		this.fillType = "solid";
 		this.mouseButtons = {
 			PLACE: THREE.MOUSE.LEFT,
-			REMOVE: THREE.MOUSE.RIGHT,
+			REMOVE: THREE.MOUSE.RIGHT
 		};
 
 		// bind events
 		renderer.domElement.addEventListener("mousemove", event => {
 			this.mousePosition.set(
 				event.offsetX / renderer.domElement.clientWidth * 2 - 1,
-				-(event.offsetY / renderer.domElement.clientHeight) * 2 + 1,
+				-(event.offsetY / renderer.domElement.clientHeight) * 2 + 1
 			);
 		});
 
@@ -53,7 +53,7 @@ export default class AttachTool extends THREE.Group {
 		renderer.domElement.addEventListener("mouseup", event => {
 			this.mousePosition.set(
 				event.offsetX / renderer.domElement.clientWidth * 2 - 1,
-				-(event.offsetY / renderer.domElement.clientHeight) * 2 + 1,
+				-(event.offsetY / renderer.domElement.clientHeight) * 2 + 1
 			);
 
 			this.update();
@@ -86,15 +86,15 @@ export default class AttachTool extends THREE.Group {
 					redo: () => {
 						// copy the new blocks onto the map
 						ChunkUtils.copyBlocks(newBlocks, this.map, start, end, {
-							copyEmpty: true,
+							copyEmpty: true
 						});
 					},
 					undo: () => {
 						// copy the new blocks onto the map
 						ChunkUtils.copyBlocks(oldBlocks, this.map, start, end, {
-							copyEmpty: true,
+							copyEmpty: true
 						});
-					},
+					}
 				});
 
 				// run command
@@ -128,9 +128,9 @@ export default class AttachTool extends THREE.Group {
 					undo: () => {
 						// put the old blocks back
 						ChunkUtils.copyBlocks(oldBlocks, this.map, start, end, {
-							copyEmpty: true,
+							copyEmpty: true
 						});
-					},
+					}
 				});
 
 				// run command
@@ -148,8 +148,8 @@ export default class AttachTool extends THREE.Group {
 				color: 0xff5555,
 				transparent: true,
 				opacity: 0.5,
-				depthTest: false,
-			}),
+				depthTest: false
+			})
 		);
 		this.selectionFace.up = new THREE.Vector3(0, 0, 1);
 		this.selectionFace.scale.copy(this.map.blockSize);
@@ -157,7 +157,7 @@ export default class AttachTool extends THREE.Group {
 
 		this.selectionBox = new THREE.BoxHelper(
 			new THREE.Box3(new THREE.Vector3(-0.5, -0.5, -0.5), new THREE.Vector3(0.5, 0.5, 0.5)),
-			0xff5555,
+			0xff5555
 		);
 		this.selectionBox.material.transparent = true;
 		this.selectionBox.material.opacity = 0.8;
@@ -220,8 +220,8 @@ export default class AttachTool extends THREE.Group {
 							.clone()
 							.sign()
 							.negate()
-							.map(v => v || -1),
-					),
+							.map(v => v || -1)
+					)
 				),
 			end: end
 				.clone()
@@ -231,9 +231,9 @@ export default class AttachTool extends THREE.Group {
 						diff
 							.clone()
 							.sign()
-							.map(v => v || 1),
-					),
-				),
+							.map(v => v || 1)
+					)
+				)
 		};
 	}
 
@@ -244,14 +244,14 @@ export default class AttachTool extends THREE.Group {
 				this.end.target
 					.clone()
 					.add(new THREE.Vector3(0.5, 0.5, 0.5))
-					.multiply(this.map.blockSize),
+					.multiply(this.map.blockSize)
 			);
 			this.selectionFace.position.add(
 				this.map.blockSize
 					.clone()
 					.divideScalar(2)
 					.multiply(this.end.normal)
-					.multiplyScalar(1.05),
+					.multiplyScalar(1.05)
 			);
 			this.selectionFace.quaternion.setFromUnitVectors(this.selectionFace.up, this.end.normal);
 		} else this.selectionFace.visible = false;
@@ -270,8 +270,8 @@ export default class AttachTool extends THREE.Group {
 					box.start
 						.clone()
 						.max(box.end)
-						.multiply(this.map.blockSize),
-				),
+						.multiply(this.map.blockSize)
+				)
 			);
 		} else this.selectionBox.visible = false;
 

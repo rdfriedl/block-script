@@ -13,32 +13,39 @@ import "./index.pcss";
 let rendererCache;
 
 export default class MenuView extends PureComponent {
+	constructor(...args) {
+		super(...args);
+
+		this.onWindowResize = this.onWindowResize.bind(this);
+	}
+
 	componentWillMount() {
 		this.createRenderer();
 		this.scene = MenuScene.inst;
 
-		// resize
-		window.addEventListener(
-			"resize",
-			(this.resizeListener = () => {
-				this.scene.camera.aspect = window.innerWidth / window.innerHeight;
-				this.scene.camera.updateProjectionMatrix();
-
-				this.renderer.setSize(window.innerWidth, window.innerHeight);
-			}),
-		);
+		window.addEventListener("resize", this.onWindowResize);
 
 		this.mounted = true;
 		requestAnimationFrame(this.updateScene.bind(this));
 	}
 	componentDidMount() {
 		this.canvasContainer.appendChild(this.renderer.domElement);
+		this.scene.unPause();
 	}
 	componentWillUnmount() {
 		this.mounted = false;
+		this.scene.pause();
 
-		window.addEventListener("resize", this.resizeListener);
+		window.addEventListener("resize", this.onWindowResize);
 	}
+
+	onWindowResize() {
+		this.scene.camera.aspect = window.innerWidth / window.innerHeight;
+		this.scene.camera.updateProjectionMatrix();
+
+		this.renderer.setSize(window.innerWidth, window.innerHeight);
+	}
+
 	render() {
 		return (
 			<div className="menu-view">

@@ -63,7 +63,7 @@ class Player extends THREE.Group {
 			right: false,
 			jump: false,
 			crouch: false,
-			sprint: false,
+			sprint: false
 		};
 
 		/**
@@ -151,7 +151,7 @@ class Player extends THREE.Group {
 		let angle = Math.atan2(v.x, v.z);
 		let velocity = new THREE.Vector3(this._movementVelocity.x, 0, this._movementVelocity.y).applyAxisAngle(
 			this.up,
-			angle,
+			angle
 		);
 		this.velocity.x = velocity.x;
 		this.velocity.z = velocity.z;
@@ -161,7 +161,7 @@ class Player extends THREE.Group {
 			// this is going to need to be moved below the collisions so when we push against a wall we dont walk
 			this._viewBobbing +=
 				Math.sqrt(
-					this._movementVelocity.x * this._movementVelocity.x + this._movementVelocity.y * this._movementVelocity.y,
+					this._movementVelocity.x * this._movementVelocity.x + this._movementVelocity.y * this._movementVelocity.y
 				) /
 				(30 * 60) *
 				this._viewBobbingDir *

@@ -64,8 +64,8 @@ export default class Room {
 						Room.SIZE.clone().divideScalar(2),
 						quaternion,
 						{
-							ignoreEmpty: true,
-						},
+							ignoreEmpty: true
+						}
 					);
 				}
 			}

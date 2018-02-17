@@ -6,7 +6,7 @@ describe("Room", function() {
 	before(function() {
 		this.room = DefaultRooms.createRoom({
 			doors: new THREE.Vector4(1, 0, 1, 0),
-			rotate: false,
+			rotate: false
 		});
 	});
 

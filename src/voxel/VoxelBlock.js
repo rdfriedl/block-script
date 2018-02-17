@@ -114,7 +114,7 @@ export default class VoxelBlock {
 	toJSON() {
 		return {
 			type: this.id,
-			properties: this.hasOwnProperty("properties") ? this.properties : undefined,
+			properties: this.hasOwnProperty("properties") ? this.properties : undefined
 		};
 	}
 
@@ -353,7 +353,7 @@ VoxelBlock.DefalutProperties = {
 	canRotateOnY: true,
 	stepSound: [],
 	placeSound: [],
-	removeSound: [],
+	removeSound: []
 };
 
 import VoxelChunk from "./VoxelChunk.js";

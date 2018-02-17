@@ -2,6 +2,7 @@ import React from "react";
 import { BrowserRouter as Router, Route } from "react-router-dom";
 
 import MenuView from "./Menu/loadable";
+import GameView from "./Game/loadable";
 import CreditsView from "./Credits/loadable";
 
 const App = () => (
@@ -9,6 +10,7 @@ const App = () => (
 		<div>
 			<Route exact path="/" component={MenuView} />
 			<Route exact path="/menu" component={MenuView} />
+			<Route exact path="/play" component={GameView} />
 			<Route exact path="/credits" component={CreditsView} />
 		</div>
 	</Router>

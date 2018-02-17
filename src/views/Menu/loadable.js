@@ -1,6 +1,3 @@
-import Loadable from "react-loadable";
+import importedComponent from "react-imported-component";
 
-export default Loadable({
-	loader: () => import("./index.js"),
-	loading: () => "Loading...",
-});
+export default importedComponent(() => import("./index.js"));

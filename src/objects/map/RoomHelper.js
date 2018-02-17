@@ -16,7 +16,7 @@ export default class RoomHelper extends THREE.Group {
 			x: new THREE.Color(0x2222ff),
 			z: new THREE.Color(0x2222ff),
 			y: new THREE.Color(0x225522),
-			w: new THREE.Color(0xdce15a),
+			w: new THREE.Color(0xdce15a)
 		};
 
 		// create the geometry
@@ -45,7 +45,7 @@ export default class RoomHelper extends THREE.Group {
 				resolution: new THREE.Vector3(window.innerWidth, window.innerHeight),
 				sizeAttenuation: true,
 				near: 1,
-				far: 10000,
+				far: 10000
 			});
 
 			if (this.room.doors[axis] & Room.DOOR_POSITIVE && this.room.doors[axis] & Room.DOOR_NEGATIVE) {

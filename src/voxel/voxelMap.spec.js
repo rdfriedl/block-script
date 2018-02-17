@@ -328,10 +328,10 @@ describe("VoxelMap", () => {
 						"1,1,1",
 						{
 							blocks: [],
-							types: [],
-						},
-					],
-				],
+							types: []
+						}
+					]
+				]
 			};
 
 			map.fromJSON(json);

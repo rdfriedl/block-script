@@ -52,7 +52,7 @@ export default class ModelManager {
 			url: url,
 			mesh: undefined,
 			callbacks: [],
-			meshes: [],
+			meshes: []
 		};
 
 		return this;

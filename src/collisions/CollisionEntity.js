@@ -116,7 +116,7 @@ export default class CollisionEntity {
 		return {
 			entryTime: Infinity, // it never collides with this entity
 			exitTime: Infinity,
-			normal: new THREE.Vector3(),
+			normal: new THREE.Vector3()
 		};
 	}
 }

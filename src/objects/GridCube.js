@@ -46,7 +46,7 @@ export default class GridCube extends THREE.Group {
 					gridSize.clone().multiply(cellSize),
 					cellSize,
 					this.colorCenterLine,
-					this.colorGrid,
+					this.colorGrid
 				);
 
 				normal[side] = -s;

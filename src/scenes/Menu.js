@@ -36,7 +36,7 @@ export default class MenuScene extends Scene {
 			function() {
 				return blockList[Math.floor(Math.random() * blockList.length)];
 			},
-			"solid",
+			"solid"
 		);
 		ChunkUtils.drawCube(
 			this.map,
@@ -45,14 +45,14 @@ export default class MenuScene extends Scene {
 			function() {
 				return blockList[Math.floor(Math.random() * blockList.length)];
 			},
-			"frame",
+			"frame"
 		);
 		this.map.updateChunks();
 
 		// create box mesh
 		this.boxMesh = new THREE.Mesh(
 			new THREE.BoxGeometry(50, 50, 50),
-			new THREE.MeshLambertMaterial({ color: 0xff0000 }),
+			new THREE.MeshLambertMaterial({ color: 0xff0000 })
 		);
 		this.scene.add(this.boxMesh);
 

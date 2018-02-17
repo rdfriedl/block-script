@@ -123,9 +123,9 @@ export function copyBlocks(fromChunk, toChunk, fromV, toV, opts) {
 			cloneBlocks: true,
 			copyEmpty: false,
 			keepOffset: true,
-			offset: new THREE.Vector3(),
+			offset: new THREE.Vector3()
 		},
-		opts || {},
+		opts || {}
 	);
 
 	let fromPos = new THREE.Vector3();
@@ -174,9 +174,9 @@ export function rotateBlocks(chunk, box, around, quaternion, opts) {
 		{
 			cloneBlocks: false,
 			ignoreEmpty: false,
-			offset: new THREE.Vector3(),
+			offset: new THREE.Vector3()
 		},
-		opts || {},
+		opts || {}
 	);
 
 	let blocks = [];

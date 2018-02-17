@@ -21,7 +21,7 @@ export default class CollisionEntityVoxelMap extends CollisionEntity {
 	getBoundingBox() {
 		return new THREE.Box3(
 			new THREE.Vector3(-Infinity, -Infinity, -Infinity),
-			new THREE.Vector3(Infinity, Infinity, Infinity),
+			new THREE.Vector3(Infinity, Infinity, Infinity)
 		);
 	}
 
@@ -65,7 +65,7 @@ export default class CollisionEntityVoxelMap extends CollisionEntity {
 				return {
 					entryTime: collision.entryTime == 1 ? Infinity : collision.entryTime,
 					exitTime: collision.exitTime,
-					normal: collision.normal,
+					normal: collision.normal
 				};
 		} else if (entity instanceof CollisionEntityPoint) {
 			let box = new THREE.Box3();
@@ -90,7 +90,7 @@ export default class CollisionEntityVoxelMap extends CollisionEntity {
 				return {
 					entryTime: collision.entryTime == 1 ? Infinity : collision.entryTime,
 					exitTime: collision.exitTime,
-					normal: collision.normal,
+					normal: collision.normal
 				};
 		} else if (entity instanceof CollisionEntityVoxelMap) {
 			// NOTE: no point in this, since two maps will never collide

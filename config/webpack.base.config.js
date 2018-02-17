@@ -15,33 +15,31 @@ module.exports = {
 		alias: {
 			"event-emitter": "wolfy87-eventemitter/EventEmitter.min.js", // event-emiiter is not part of vendor
 			keypress: "keypress.js/keypress.js",
-			stats: "stats.js/build/stats.min.js",
+			stats: "stats.js/build/stats.min.js"
 		},
-		symlinks: false,
+		symlinks: false
 	},
-	entry: {
-		main: [path.resolve(__dirname, "../src/index.js")],
-	},
+	entry: path.resolve(__dirname, "../src/index.js"),
 	output: {
 		path: path.resolve("dist"),
 		filename: "[name]-[hash:8].js",
 		chunkFilename: "[name]-[hash:8].js",
-		publicPath: "",
+		publicPath: ""
 	},
 	plugins: [
 		new CircularDependencyPlugin({
-			exclude: /node_modules/,
+			exclude: /node_modules/
 		}),
 		new DuplicatePackageCheckerPlugin(),
 		new HtmlWebpackPlugin({
-			template: path.resolve("src/index.html"),
+			template: path.resolve("src/index.html")
 		}),
 		new webpack.EnvironmentPlugin(["NODE_ENV"]),
 		new ExtractTextPlugin({
 			filename: "[name]-[contenthash:8].css",
-			disable: IS_DEV,
+			disable: IS_DEV
 		}),
-		process.env.WEBPACK_STATS && new BundleAnalyzerPlugin(),
+		process.env.WEBPACK_STATS && new BundleAnalyzerPlugin()
 	].filter(p => !!p),
 	devtool: IS_DEV ? "source-map" : undefined,
 	module: {
@@ -50,16 +48,26 @@ module.exports = {
 				test: /\.vue/,
 				loader: "vue-loader",
 				options: {
-					extractCSS: true,
-				},
+					extractCSS: true
+				}
+			},
+			{
+				test: /\.js$/,
+				enforce: "pre",
+				include: path.resolve(__dirname, "../node_modules/three/examples/js"),
+				loader: "text-transform-loader",
+				options: {
+					prependText: `var THREE = require("three");\n\n`,
+					appendText: `\n\nmodule.exports = THREE;`
+				}
 			},
 			{
 				test: /\.js$/,
 				exclude: /(node_modules|web_modules)/,
 				loader: "babel-loader",
 				options: {
-					cacheDirectory: true,
-				},
+					cacheDirectory: true
+				}
 			},
 			{
 				test: /\.(p)?css$/,
@@ -68,16 +76,16 @@ module.exports = {
 					{
 						loader: "style-loader",
 						options: {
-							sourceMap: IS_DEV,
-						},
+							sourceMap: IS_DEV
+						}
 					},
 					{
 						loader: "css-loader",
 						options: {
 							sourceMap: IS_DEV,
 							minimize: IS_PROD,
-							importLoaders: 1,
-						},
+							importLoaders: 1
+						}
 					},
 					{
 						loader: "postcss-loader",
@@ -88,38 +96,38 @@ module.exports = {
 								IS_PROD && require("autoprefixer"),
 								IS_PROD &&
 									require("cssnano")({
-										preset: "default",
-									}),
-							].filter(p => !!p),
-						},
-					},
-				],
+										preset: "default"
+									})
+							].filter(p => !!p)
+						}
+					}
+				]
 			},
 			{
 				test: /\.css$/,
 				include: /(node_modules)/,
 				use: ExtractTextPlugin.extract({
 					fallback: {
-						loader: "style-loader",
+						loader: "style-loader"
 					},
-					use: ["css-loader"],
-				}),
+					use: ["css-loader"]
+				})
 			},
 			{
 				test: /\.(woff|woff2|ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
 				loader: "url-loader",
 				options: {
 					limit: 100000,
-					name: "res/font/[name]-[hash:8].[ext]",
-				},
+					name: "res/font/[name]-[hash:8].[ext]"
+				}
 			},
 			{
 				test: /\.html$/,
-				use: "html-loader",
+				use: "html-loader"
 			},
 			{
 				test: /\.md$/,
-				use: ["html-loader", "markdown-loader"],
+				use: ["html-loader", "markdown-loader"]
 			},
 			{
 				test: /\.(png|jpg|gif)$/,
@@ -127,39 +135,39 @@ module.exports = {
 					{
 						loader: "file-loader",
 						options: {
-							name: "res/image/[name]-[hash:8].[ext]",
-						},
+							name: "res/image/[name]-[hash:8].[ext]"
+						}
 					},
 					{
 						loader: "img-loader",
 						options: {
-							minimize: IS_PROD,
-						},
-					},
-				],
+							minimize: IS_PROD
+						}
+					}
+				]
 			},
 			{
 				test: /\.(dae|ply)$/,
 				loader: "file-loader",
 				options: {
-					name: "res/model/[name]-[hash:8].[ext]",
-				},
+					name: "res/model/[name]-[hash:8].[ext]"
+				}
 			},
 			{
 				test: /\.(mp3|ogg)$/,
 				loader: "file-loader",
 				options: {
-					name: "res/audio/[name]-[hash:8].[ext]",
-				},
+					name: "res/audio/[name]-[hash:8].[ext]"
+				}
 			},
 			{
 				test: /\.json$/,
-				use: "json-loader",
+				use: "json-loader"
 			},
 			{
 				test: /\.shader$/,
-				use: "raw-loader",
-			},
-		],
-	},
+				use: "raw-loader"
+			}
+		]
+	}
 };

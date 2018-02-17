@@ -217,7 +217,7 @@ export default class VoxelMap extends THREE.Group {
 			this.dispatchEvent({
 				type: "chunk:set",
 				chunk: chunk,
-				oldChunk: oldChunk,
+				oldChunk: oldChunk
 			});
 		}
 
@@ -240,7 +240,7 @@ export default class VoxelMap extends THREE.Group {
 
 		// fire event
 		this.dispatchEvent({
-			type: "chunks:cleared",
+			type: "chunks:cleared"
 		});
 
 		return this;
@@ -275,7 +275,7 @@ export default class VoxelMap extends THREE.Group {
 			// fire event
 			this.dispatchEvent({
 				type: "chunk:removed",
-				chunk: chunk,
+				chunk: chunk
 			});
 		}
 
@@ -419,7 +419,7 @@ export default class VoxelMap extends THREE.Group {
 	 */
 	toJSON() {
 		let json = {
-			chunks: [],
+			chunks: []
 		};
 
 		for (let { position, chunk } of this.chunks) {

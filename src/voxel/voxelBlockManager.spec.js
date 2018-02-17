@@ -121,17 +121,17 @@ describe("VoxelBlockManager", () => {
 			expect(
 				VoxelBlockManager.createID(new blocks.Dirt(), {
 					type: "test",
-					another: 9,
-				}),
+					another: 9
+				})
 			).to.equal("dirt?type=test&another=9");
 		});
 
 		it("createID(VoxelBlock with props, Object", () => {
 			expect(VoxelBlockManager.createID(manager.createBlock("dirt", { type: "normal" }), { type2: "test" })).to.equal(
-				"dirt?type2=test&type=normal",
+				"dirt?type2=test&type=normal"
 			);
 			expect(
-				VoxelBlockManager.createID(manager.createBlock("dirt", { type: "normal" }), { type2: "test", another: 9 }),
+				VoxelBlockManager.createID(manager.createBlock("dirt", { type: "normal" }), { type2: "test", another: 9 })
 			).to.equal("dirt?type2=test&another=9&type=normal");
 		});
 	});

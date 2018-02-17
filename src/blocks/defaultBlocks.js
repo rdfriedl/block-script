@@ -27,7 +27,7 @@ function basicMaterial(url, props, texProps) {
 					tex[i] = texProps[i];
 				}
 			}
-		}),
+		})
 	});
 
 	if (props) {
@@ -74,11 +74,11 @@ export class TimeBlock extends VoxelBlock {
 		if (typeof time === "string") {
 			return new THREE.MeshPhongMaterial({
 				shininess: 0,
-				map: loader.load(time, pixelate),
+				map: loader.load(time, pixelate)
 			});
 		} else if (typeof time === "object") {
 			let mat = {
-				shininess: 0,
+				shininess: 0
 			};
 
 			// copy props
@@ -101,7 +101,7 @@ export class Dirt extends VoxelBlock {
 		return new THREE.MeshPhongMaterial({
 			shininess: 0,
 			map: loader.load(require("../res/blocks/dirt.png"), pixelate),
-			bumpMap: loader.load(require("../res/blocks/dirt-bump.png")),
+			bumpMap: loader.load(require("../res/blocks/dirt-bump.png"))
 		});
 	}
 }
@@ -113,17 +113,17 @@ Stone.TIMES = [
 	require("../res/blocks/stone/time-1.png"),
 	{
 		map: require("../res/blocks/stone/time-2.png"),
-		bumpMap: require("../res/blocks/stone/time-2-5-bump.png"),
+		bumpMap: require("../res/blocks/stone/time-2-5-bump.png")
 	},
 	require("../res/blocks/stone/time-3.png"),
 	{
 		map: require("../res/blocks/stone/time-4.png"),
-		bumpMap: require("../res/blocks/stone/time-4-bump.png"),
+		bumpMap: require("../res/blocks/stone/time-4-bump.png")
 	},
 	{
 		map: require("../res/blocks/stone/time-5.png"),
-		bumpMap: require("../res/blocks/stone/time-2-5-bump.png"),
-	},
+		bumpMap: require("../res/blocks/stone/time-2-5-bump.png")
+	}
 ];
 
 export class BricksLarge extends TimeBlock {}
@@ -134,24 +134,24 @@ BricksLarge.TIMES = [
 		require("../res/blocks/bricks-large/time-1-2.png"),
 		require("../res/blocks/bricks-large/time-1-3.png"),
 		require("../res/blocks/bricks-large/time-1-4.png"),
-		require("../res/blocks/bricks-large/time-1-5.png"),
+		require("../res/blocks/bricks-large/time-1-5.png")
 	],
 	{
 		map: require("../res/blocks/bricks-large/time-2.png"),
-		bumpMap: require("../res/blocks/bricks-large/time-2-bump.png"),
+		bumpMap: require("../res/blocks/bricks-large/time-2-bump.png")
 	},
 	{
 		map: require("../res/blocks/bricks-large/time-3-1.png"),
-		bumpMap: require("../res/blocks/bricks-large/time-3-1-bump.png"),
+		bumpMap: require("../res/blocks/bricks-large/time-3-1-bump.png")
 	},
 	{
 		map: require("../res/blocks/bricks-large/time-4.png"),
-		bumpMap: require("../res/blocks/bricks-large/time-4-bump.png"),
+		bumpMap: require("../res/blocks/bricks-large/time-4-bump.png")
 	},
 	{
 		map: require("../res/blocks/bricks-large/time-5-1.png"),
-		bumpMap: require("../res/blocks/bricks-large/time-3-1-bump.png"),
-	},
+		bumpMap: require("../res/blocks/bricks-large/time-3-1-bump.png")
+	}
 ];
 
 export class Bricks extends TimeBlock {}
@@ -159,18 +159,18 @@ Bricks.UID = "bricks";
 Bricks.TIMES = [
 	{
 		map: require("../res/blocks/bricks/time-1.png"),
-		bumpMap: require("../res/blocks/bricks/time-1-bump.png"),
+		bumpMap: require("../res/blocks/bricks/time-1-bump.png")
 	},
 	{
 		map: require("../res/blocks/bricks/time-2.png"),
-		bumpMap: require("../res/blocks/bricks/time-2-5-bump.png"),
+		bumpMap: require("../res/blocks/bricks/time-2-5-bump.png")
 	},
 	require("../res/blocks/bricks/time-3.png"),
 	require("../res/blocks/bricks/time-4.png"),
 	{
 		map: require("../res/blocks/bricks/time-5.png"),
-		bumpMap: require("../res/blocks/bricks/time-2-5-bump.png"),
-	},
+		bumpMap: require("../res/blocks/bricks/time-2-5-bump.png")
+	}
 ];
 
 export class Tiles extends TimeBlock {}
@@ -180,10 +180,10 @@ Tiles.TIMES = [
 	require("../res/blocks/tiles/time-2.png"),
 	{
 		map: require("../res/blocks/tiles/time-3.png"),
-		bumpMap: require("../res/blocks/tiles/time-3-bump.png"),
+		bumpMap: require("../res/blocks/tiles/time-3-bump.png")
 	},
 	require("../res/blocks/tiles/time-4.png"),
-	require("../res/blocks/tiles/time-5.png"),
+	require("../res/blocks/tiles/time-5.png")
 ];
 
 export class TilesLarge extends TimeBlock {}
@@ -192,29 +192,29 @@ TilesLarge.TIMES = [
 	[
 		{
 			map: require("../res/blocks/tiles-large/time-1-1.png"),
-			bumpMap: require("../res/blocks/tiles-large/bump.png"),
+			bumpMap: require("../res/blocks/tiles-large/bump.png")
 		},
 		{
 			map: require("../res/blocks/tiles-large/time-1-2.png"),
-			bumpMap: require("../res/blocks/tiles-large/bump.png"),
-		},
+			bumpMap: require("../res/blocks/tiles-large/bump.png")
+		}
 	],
 	{
 		map: require("../res/blocks/tiles-large/time-2.png"),
-		bumpMap: require("../res/blocks/tiles-large/bump.png"),
+		bumpMap: require("../res/blocks/tiles-large/bump.png")
 	},
 	{
 		map: require("../res/blocks/tiles-large/time-3.png"),
-		bumpMap: require("../res/blocks/tiles-large/bump.png"),
+		bumpMap: require("../res/blocks/tiles-large/bump.png")
 	},
 	{
 		map: require("../res/blocks/tiles-large/time-4.png"),
-		bumpMap: require("../res/blocks/tiles-large/bump.png"),
+		bumpMap: require("../res/blocks/tiles-large/bump.png")
 	},
 	{
 		map: require("../res/blocks/tiles-large/time-5.png"),
-		bumpMap: require("../res/blocks/tiles-large/bump.png"),
-	},
+		bumpMap: require("../res/blocks/tiles-large/bump.png")
+	}
 ];
 
 export class TilesDetail extends TimeBlock {}
@@ -227,8 +227,8 @@ TilesDetail.TIMES = [
 	[
 		require("../res/blocks/tiles-detail/time-5-1.png"),
 		require("../res/blocks/tiles-detail/time-5-2.png"),
-		require("../res/blocks/tiles-detail/time-5-3.png"),
-	],
+		require("../res/blocks/tiles-detail/time-5-3.png")
+	]
 ];
 
 // let LOG_TYPES = {
@@ -277,22 +277,22 @@ Planks.UID = "planks";
 Planks.TIMES = [
 	{
 		map: require("../res/blocks/planks/time-1-1.png"),
-		bumpMap: require("../res/blocks/planks/bump.png"),
+		bumpMap: require("../res/blocks/planks/bump.png")
 	},
 	{
 		map: require("../res/blocks/planks/time-2.png"),
-		bumpMap: require("../res/blocks/planks/bump.png"),
+		bumpMap: require("../res/blocks/planks/bump.png")
 	},
 	{
 		map: require("../res/blocks/planks/time-3.png"),
-		bumpMap: require("../res/blocks/planks/bump.png"),
+		bumpMap: require("../res/blocks/planks/bump.png")
 	},
 	{
 		map: require("../res/blocks/planks/time-4.png"),
-		bumpMap: require("../res/blocks/planks/bump.png"),
+		bumpMap: require("../res/blocks/planks/bump.png")
 	},
 	{
 		map: require("../res/blocks/planks/time-5.png"),
-		bumpMap: require("../res/blocks/planks/bump.png"),
-	},
+		bumpMap: require("../res/blocks/planks/bump.png")
+	}
 ];

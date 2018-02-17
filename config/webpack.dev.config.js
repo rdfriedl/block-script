@@ -4,7 +4,7 @@ const merge = require("webpack-merge");
 
 module.exports = merge.smart(base, {
 	entry: {
-		main: ["react-hot-loader/patch"],
+		main: ["react-hot-loader/patch", "./src/index.js"]
 	},
 	plugins: [new webpack.NamedModulesPlugin()],
 	devServer: {
@@ -17,7 +17,7 @@ module.exports = merge.smart(base, {
 			assets: false,
 			modules: true,
 			timings: true,
-			cached: false,
-		},
-	},
+			cached: false
+		}
+	}
 });

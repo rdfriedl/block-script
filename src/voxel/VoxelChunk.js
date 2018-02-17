@@ -235,14 +235,14 @@ export default class VoxelChunk extends THREE.Group {
 
 		// fire event
 		this.dispatchEvent({
-			type: "built",
+			type: "built"
 		});
 
 		// fire event on parent
 		if (this.map && this.map.dispatchEvent)
 			this.map.dispatchEvent({
 				type: "chunk:built",
-				chunk: this,
+				chunk: this
 			});
 	}
 
@@ -367,7 +367,7 @@ export default class VoxelChunk extends THREE.Group {
 			this.dispatchEvent({
 				type: "block:set",
 				block: block,
-				oldBlock: oldBlock,
+				oldBlock: oldBlock
 			});
 
 			// fire event on parent
@@ -376,7 +376,7 @@ export default class VoxelChunk extends THREE.Group {
 					type: "block:set",
 					chunk: this,
 					block: block,
-					oldBlock: oldBlock,
+					oldBlock: oldBlock
 				});
 		}
 
@@ -406,14 +406,14 @@ export default class VoxelChunk extends THREE.Group {
 
 		// fire event
 		this.dispatchEvent({
-			type: "blocks:cleared",
+			type: "blocks:cleared"
 		});
 
 		// fire event on parent
 		if (this.map && this.map.dispatchEvent)
 			this.map.dispatchEvent({
 				type: "chunk:blocks:cleared",
-				chunk: this,
+				chunk: this
 			});
 
 		return this;
@@ -456,7 +456,7 @@ export default class VoxelChunk extends THREE.Group {
 			// fire event
 			this.dispatchEvent({
 				type: "block:removed",
-				block: block,
+				block: block
 			});
 
 			// fire event on parent
@@ -464,7 +464,7 @@ export default class VoxelChunk extends THREE.Group {
 				this.map.dispatchEvent({
 					type: "block:removed",
 					chunk: this,
-					block: block,
+					block: block
 				});
 		}
 
@@ -524,7 +524,7 @@ export default class VoxelChunk extends THREE.Group {
 	toJSON() {
 		let json = {
 			types: [],
-			blocks: [],
+			blocks: []
 		};
 
 		// build list of block types
@@ -541,7 +541,7 @@ export default class VoxelChunk extends THREE.Group {
 
 			json.blocks.push({
 				position,
-				type: typeCache.get(str),
+				type: typeCache.get(str)
 			});
 		}
 

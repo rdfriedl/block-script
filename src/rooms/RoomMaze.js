@@ -78,7 +78,7 @@ export default class RoomMaze {
 		if (!cell) return this;
 
 		let room = this.roomManager.createRoom({
-			doors: new THREE.Vector4(cell.x, cell.y, cell.z, 0), // cell
+			doors: new THREE.Vector4(cell.x, cell.y, cell.z, 0) // cell
 		});
 
 		if (!room) {

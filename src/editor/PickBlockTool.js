@@ -18,14 +18,14 @@ export default class PickBlockTool extends THREE.Group {
 		this.onPick = undefined;
 
 		this.mouseButtons = {
-			PICK: THREE.MOUSE.LEFT,
+			PICK: THREE.MOUSE.LEFT
 		};
 
 		// bind events
 		renderer.domElement.addEventListener("mousemove", event => {
 			this.mousePosition.set(
 				event.offsetX / renderer.domElement.clientWidth * 2 - 1,
-				-(event.offsetY / renderer.domElement.clientHeight) * 2 + 1,
+				-(event.offsetY / renderer.domElement.clientHeight) * 2 + 1
 			);
 
 			this.update();
@@ -35,7 +35,7 @@ export default class PickBlockTool extends THREE.Group {
 		renderer.domElement.addEventListener("mouseup", event => {
 			this.mousePosition.set(
 				event.offsetX / renderer.domElement.clientWidth * 2 - 1,
-				-(event.offsetY / renderer.domElement.clientHeight) * 2 + 1,
+				-(event.offsetY / renderer.domElement.clientHeight) * 2 + 1
 			);
 
 			this.update();
@@ -54,8 +54,8 @@ export default class PickBlockTool extends THREE.Group {
 				color: 0x5555ff,
 				transparent: true,
 				opacity: 0.5,
-				depthTest: false,
-			}),
+				depthTest: false
+			})
 		);
 		this.selectionFace.up = new THREE.Vector3(0, 0, 1);
 		this.selectionFace.scale.copy(this.map.blockSize);
@@ -105,14 +105,14 @@ export default class PickBlockTool extends THREE.Group {
 				this.target.target
 					.clone()
 					.add(new THREE.Vector3(0.5, 0.5, 0.5))
-					.multiply(this.map.blockSize),
+					.multiply(this.map.blockSize)
 			);
 			this.selectionFace.position.add(
 				this.map.blockSize
 					.clone()
 					.divideScalar(2)
 					.multiply(this.target.normal)
-					.multiplyScalar(1.05),
+					.multiplyScalar(1.05)
 			);
 			this.selectionFace.quaternion.setFromUnitVectors(this.selectionFace.up, this.target.normal);
 		} else this.selectionFace.visible = false;

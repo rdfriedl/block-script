@@ -16,7 +16,7 @@ export default class RoomManager {
 		this.rooms[id] = {
 			id: id,
 			selection: selection,
-			doors: new THREE.Vector4().copy(doors),
+			doors: new THREE.Vector4().copy(doors)
 		};
 	}
 
@@ -28,9 +28,9 @@ export default class RoomManager {
 	searchRooms(search) {
 		search = Object.assign(
 			{
-				rotate: true,
+				rotate: true
 			},
-			search || {},
+			search || {}
 		);
 
 		let rooms = [];

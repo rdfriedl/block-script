@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import "imports-loader?THREE=three!three/examples/js/loaders/PLYLoader.js";
+import "three/examples/js/loaders/PLYLoader.js";
 import ModelManager from "./ModelManager.js";
 
 // import all the tests
@@ -13,8 +13,8 @@ files.keys().forEach(url => {
 			let mesh = new THREE.Mesh(
 				geometry,
 				new THREE.MeshStandardMaterial({
-					vertexColors: THREE.VertexColors,
-				}),
+					vertexColors: THREE.VertexColors
+				})
 			);
 			mesh.scale.set(2, 2, 2);
 			mesh.rotation.set(-Math.PI / 2, 0, 0);

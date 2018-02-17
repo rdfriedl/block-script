@@ -153,7 +153,7 @@ export default class VoxelSelection extends THREE.EventDispatcher {
 			this.dispatchEvent({
 				type: "block:set",
 				block: block,
-				oldBlock: oldBlock,
+				oldBlock: oldBlock
 			});
 		}
 
@@ -174,7 +174,7 @@ export default class VoxelSelection extends THREE.EventDispatcher {
 
 		// fire evnet
 		this.dispatchEvent({
-			type: "blocks:cleared",
+			type: "blocks:cleared"
 		});
 
 		return this;
@@ -205,7 +205,7 @@ export default class VoxelSelection extends THREE.EventDispatcher {
 
 			this.dispatchEvent({
 				type: "block:removed",
-				block: block,
+				block: block
 			});
 		}
 
@@ -227,7 +227,7 @@ export default class VoxelSelection extends THREE.EventDispatcher {
 	toJSON() {
 		let json = {
 			types: [],
-			blocks: [],
+			blocks: []
 		};
 
 		// build list of block types
@@ -244,7 +244,7 @@ export default class VoxelSelection extends THREE.EventDispatcher {
 
 			json.blocks.push({
 				position,
-				type: typeCache.get(str),
+				type: typeCache.get(str)
 			});
 		}
 
@@ -309,7 +309,7 @@ export default class VoxelSelection extends THREE.EventDispatcher {
 	get boundingBox() {
 		let box = new THREE.Box3(
 			new THREE.Vector3(Infinity, Infinity, Infinity),
-			new THREE.Vector3(-Infinity, -Infinity, -Infinity),
+			new THREE.Vector3(-Infinity, -Infinity, -Infinity)
 		);
 		if (this.blocks.size) {
 			this.blocks.forEach(block => {
