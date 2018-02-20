@@ -1,31 +1,38 @@
 import * as THREE from "three";
 import * as ChunkUtils from "../ChunkUtils.js";
 import VoxelSelection from "../voxel/VoxelSelection.js";
-import VoxelBlockManager from "../voxel/VoxelBlockManager.js";
 import MazeGenerator from "../maze-generators/MazeGenerator.js";
 
 export const ROOM_ROTATION_AXIS = new THREE.Vector3(0, 1, 0);
 
 export default class Room {
-	constructor(blocks, doors) {
+	/**
+	 * @param {VoxelSelectionJSON} blocks
+	 * @param {any} doors
+	 * @param {RoomManager} manager
+	 */
+	constructor(blocks, doors, manager) {
 		/**
-		 * the block manager used when creating the {@link VoxelSelection} for this room
-		 * @type {VoxelBlockManager}
+		 * the parent room manager class
+		 * @type {RoomManager}
 		 */
-		this.blockManager = VoxelBlockManager.inst;
+		this.manager = manager;
 
 		/**
 		 * a object that is passed to {@link VoxelSelection#fromJSON} when creating the selection for this room
 		 * @type {Object}
+		 * @private
 		 */
 		this.blocks = blocks;
 
-		this.rawDoors = doors;
+		/** @private */
+		this.rawDoors = doors || new THREE.Vector3();
 
+		/** @type {RoomMaze} */
 		this.parent = undefined;
 
 		/**
-		 * the rotation (in quarter turns) of the room of the Y axis in radians
+		 * the rotation (in quarter turns) of the room of the Y axis
 		 * @type {Number}
 		 */
 		this.rotation = 0;
@@ -33,15 +40,6 @@ export default class Room {
 
 	get position() {
 		return this.parent.getRoomPosition(this);
-	}
-
-	get visited() {
-		return this.parent.getRoomVisited(this);
-	}
-
-	set visited(visited) {
-		this.parent.getRoomVisited(this, visited);
-		return visited;
 	}
 
 	/**
@@ -56,7 +54,7 @@ export default class Room {
 				this._selection.fromJSON(this.blocks);
 
 				// rotate the blocks
-				if (this.rotation != 0) {
+				if (this.rotation !== 0) {
 					let quaternion = new THREE.Quaternion().setFromAxisAngle(ROOM_ROTATION_AXIS, Math.PI / 2 * this.rotation);
 					ChunkUtils.rotateBlocks(
 						this._selection,
@@ -70,6 +68,7 @@ export default class Room {
 				}
 			}
 		}
+
 		return this._selection;
 	}
 
@@ -87,6 +86,14 @@ export default class Room {
 	 */
 	get doors() {
 		return this.rawDoors ? Room.rotateDoors(this.rawDoors, this.rotation) : new THREE.Vector4();
+	}
+
+	/**
+	 * returns the parent room managers blockManager
+	 * @return {VoxelBlockManager}
+	 */
+	get blockManager() {
+		return this.manager && this.manager.blockManager;
 	}
 
 	static rotateDoors(vec, rotation) {

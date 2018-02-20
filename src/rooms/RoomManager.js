@@ -1,11 +1,15 @@
 import * as THREE from "three";
 import Room from "./Room.js";
+import VoxelBlockManager from "../voxel/VoxelBlockManager";
 
 const ROOM_ROTATIONS = [0, 1, 2, 3];
 
 export default class RoomManager {
-	constructor() {
+	constructor(blockManager = VoxelBlockManager.inst) {
 		this.rooms = {};
+
+		/** @type {VoxelBlockManager} */
+		this.blockManager = blockManager;
 	}
 
 	static get inst() {
@@ -21,7 +25,7 @@ export default class RoomManager {
 	}
 
 	/**
-	 * returns an array of rooms with rotations that match the searchg
+	 * returns an array of rooms with rotations that match the search
 	 * @param  {Object} search
 	 * @return {Array[]}
 	 */
@@ -56,10 +60,18 @@ export default class RoomManager {
 		let rooms = this.searchRooms(search);
 		let data = rooms[Math.floor(Math.random() * rooms.length)];
 		if (data) {
-			let room = new Room(data[0].selection, data[0].doors);
+			let room = new Room(data[0].selection, data[0].doors, this);
 			room.rotation = data[1];
 			return room;
 		}
+	}
+
+	/**
+	 * creates an empty room that is tied to this manager
+	 * @return {Room}
+	 */
+	createEmptyRoom() {
+		return new Room(null, null, this);
 	}
 
 	listRooms() {

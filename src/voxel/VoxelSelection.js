@@ -3,9 +3,9 @@ import "../three-changes";
 
 /**
  * @typedef {Object} VoxelSelectionJSON
- * @property {{position: string, type: number}[]} blocks
- * @property {VoxelBlockJSON[]} types
- * */
+ * @property {Array<Number[]|Number>} blocks - an array of arrays of the position and block type of the block
+ * @property {VoxelBlockJSON[]} types - an array of block types
+ */
 
 /** a selection of blocks */
 export default class VoxelSelection extends THREE.EventDispatcher {
@@ -52,7 +52,7 @@ export default class VoxelSelection extends THREE.EventDispatcher {
 	 * fired when a block is set
 	 * @event VoxelSelection#block:set
 	 * @type {Object}
-	 * @property {VoxelChunk} target
+	 * @property {VoxelSelection} target
 	 * @property {VoxelBlock} block
 	 * @property {VoxelBlock} oldBlock
 	 */
@@ -60,13 +60,13 @@ export default class VoxelSelection extends THREE.EventDispatcher {
 	 * fired when a block is removed
 	 * @event VoxelSelection#block:removed
 	 * @type {Object}
-	 * @property {VoxelChunk} target
+	 * @property {VoxelSelection} target
 	 * @property {VoxelBlock} block - the block that was removed
 	 */
 	/**
 	 * @event VoxelSelection#blocks:cleared
 	 * @type {Object}
-	 * @property {VoxelChunk} target
+	 * @property {VoxelSelection} target
 	 */
 
 	/**
@@ -88,16 +88,16 @@ export default class VoxelSelection extends THREE.EventDispatcher {
 
 	/**
 	 * returns the block at position
-	 * @param  {(THREE.Vector3)} position
+	 * @param  {THREE.Vector3} position
 	 * @return {VoxelBlock}
 	 */
 	getBlock(position) {
-		if (position instanceof THREE.Vector3) {
-			position = this.tmpVec.copy(position).round();
-			return this.blocks.get(position.toString());
-		} else if (position instanceof VoxelBlock) {
-			if (this.hasBlock(position)) return position;
-		}
+		return this.blocks.get(
+			this.tmpVec
+				.copy(position)
+				.round()
+				.toString()
+		);
 	}
 
 	/**
@@ -110,34 +110,32 @@ export default class VoxelSelection extends THREE.EventDispatcher {
 	}
 
 	/**
-	 * creates a block with id and adds it to the selection
+	 * calls setBlock and returns the newly created VoxelBlock
 	 * @param  {String} id - the UID of the block to create
 	 * @param  {THREE.Vector3} position - the position to add the block to
 	 * @return {VoxelBlock}
 	 */
 	createBlock(id, position) {
-		let block;
-		if (typeof id === "string") block = this.blockManager.createBlock(id);
+		this.setBlock(id, position);
 
-		if (block && position) {
-			this.setBlock(block, position);
-		}
-		return block;
+		return this.getBlock(position);
 	}
 
 	/**
 	 * adds a block to the chunk at position
 	 * if "block" is a String it will create a new block with using {@link VoxelBlockManager#createBlock}
 	 * @param {VoxelBlock|String} block
-	 * @param {(THREE.Vector3)} position
+	 * @param {THREE.Vector3} position
 	 * @return {this}
 	 *
-	 * @fires VoxelSelection#block:set
+	 * @emits {block:set}
 	 */
 	setBlock(block, position) {
 		if (block instanceof VoxelBlock && block.parent) throw new Error("cant add block that already has a parent");
 
-		if (typeof block === "string") block = this.blockManager.createBlock(block);
+		if (typeof block === "string") {
+			block = this.blockManager.createBlock(block);
+		}
 
 		if (position instanceof THREE.Vector3 && block instanceof VoxelBlock) {
 			position = this.tmpVec.copy(position).round();
@@ -164,7 +162,7 @@ export default class VoxelSelection extends THREE.EventDispatcher {
 	 * removes all blocks from this selection
 	 * @return {this}
 	 *
-	 * @fires VoxelSelection#blocks:cleared
+	 * @emits {blocks:cleared}
 	 */
 	clearBlocks() {
 		this.listBlocks().forEach(b => {
@@ -172,7 +170,7 @@ export default class VoxelSelection extends THREE.EventDispatcher {
 		});
 		this.blocks.clear();
 
-		// fire evnet
+		// fire event
 		this.dispatchEvent({
 			type: "blocks:cleared"
 		});
@@ -181,8 +179,7 @@ export default class VoxelSelection extends THREE.EventDispatcher {
 	}
 
 	/**
-	 * removes block at position
-	 * @param  {(THREE.Vector3)} position
+	 * @param  {THREE.Vector3|VoxelBlock} position - the position of the block to remove, or the VoxelBlock to remove
 	 * @return {this}
 	 *
 	 * @fires VoxelSelection#block:removed
@@ -214,7 +211,7 @@ export default class VoxelSelection extends THREE.EventDispatcher {
 
 	/**
 	 * returns an Array of all the blocks in this chunk
-	 * @return {VoxelChunk[]}
+	 * @return {VoxelBlock[]}
 	 */
 	listBlocks() {
 		return Array.from(this.blocks).map(d => d[1]);
@@ -233,6 +230,7 @@ export default class VoxelSelection extends THREE.EventDispatcher {
 		// build list of block types
 		let typeCache = new Map();
 
+		let tmpVec = new THREE.Vector3();
 		for (let { position, block } of this.blocks) {
 			let blockData = block.toJSON();
 			let str = JSON.stringify(blockData);
@@ -242,10 +240,7 @@ export default class VoxelSelection extends THREE.EventDispatcher {
 				json.types.push(blockData);
 			}
 
-			json.blocks.push({
-				position,
-				type: typeCache.get(str)
-			});
+			json.blocks.push([tmpVec.fromString(position).toArray(), typeCache.get(str)]);
 		}
 
 		return json;
@@ -259,14 +254,14 @@ export default class VoxelSelection extends THREE.EventDispatcher {
 	fromJSON(json = {}) {
 		let tmpVec = new THREE.Vector3();
 		if (json.blocks && json.types) {
-			json.blocks.forEach(([positionString, blockType]) => {
+			json.blocks.forEach(([positionArray, blockType]) => {
 				let blockData = json.types[blockType];
 				if (blockData) {
 					let block = this.blockManager.createBlock(blockData.type);
 
 					if (block) {
 						block.fromJSON(blockData);
-						this.setBlock(block, tmpVec.fromString(positionString));
+						this.setBlock(block, tmpVec.fromArray(positionArray));
 					}
 				}
 			});
@@ -318,7 +313,7 @@ export default class VoxelSelection extends THREE.EventDispatcher {
 				box.max.max(pos);
 			});
 
-			if (Number.isFinite(box.size().length())) return box;
+			if (Number.isFinite(box.getSize().length())) return box;
 		}
 
 		return new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());

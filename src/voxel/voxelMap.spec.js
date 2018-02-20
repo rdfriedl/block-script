@@ -100,36 +100,16 @@ describe("VoxelMap", () => {
 		});
 	});
 
-	/** @test {VoxelMap#getChunk} */
 	describe("getChunk", () => {
 		beforeEach(() => {
 			chunk = map.createChunk(new THREE.Vector3());
 		});
 
-		describe("getChunk(THREE.Vector3)", () => {
-			it("returns chunk at that position", () => {
-				expect(map.getChunk(new THREE.Vector3(0, 0, 0))).to.equal(chunk);
-			});
-		});
-
-		describe('getChunk("x,y,z")', () => {
-			it("returns chunk at that position", () => {
-				expect(map.getChunk(new THREE.Vector3())).to.equal(chunk);
-			});
-		});
-
-		describe("getChunk(VoxelChunk)", () => {
-			it("returns the chunk if its in this map", () => {
-				expect(map.getChunk(chunk)).to.equal(chunk);
-			});
-
-			it("returns undefined it the map dose not have the chunk", () => {
-				expect(map.getChunk(new VoxelChunk())).to.be.undefined;
-			});
+		it("returns chunk at that position", () => {
+			expect(map.getChunk(new THREE.Vector3(0, 0, 0))).to.equal(chunk);
 		});
 	});
 
-	/** @test {VoxelMap#removeChunk} */
 	describe("removeChunk", () => {
 		beforeEach(() => {
 			chunk = map.createChunk(new THREE.Vector3());
@@ -140,12 +120,6 @@ describe("VoxelMap", () => {
 			map.removeChunk(vec);
 			expect(map.hasChunk(vec)).to.be.false;
 			expect(map.getChunk(vec)).to.be.undefined;
-		});
-
-		it('("x,y,z")', () => {
-			map.removeChunk(new THREE.Vector3());
-			expect(map.hasChunk(new THREE.Vector3())).to.be.false;
-			expect(map.getChunk(new THREE.Vector3())).to.be.undefined;
 		});
 
 		it("(VoxelChunk)", () => {
@@ -183,6 +157,17 @@ describe("VoxelMap", () => {
 			map.createChunk(new THREE.Vector3());
 			map.clearChunks();
 			expect(map.listChunks().length).to.equal(0);
+		});
+
+		it("should emit the chunks:cleared event", () => {
+			let listener = sinon.stub().callsFake(event => {
+				event.chunks.should.be.an("array");
+			});
+
+			map.addEventListener("chunks:cleared", listener);
+			map.clearChunks();
+
+			listener.should.have.been.called;
 		});
 	});
 
@@ -229,15 +214,15 @@ describe("VoxelMap", () => {
 			block = map.createBlock("block", new THREE.Vector3());
 		});
 
-		it("hasBlock(THREE.Vector3)", () => {
+		it("(THREE.Vector3)", () => {
 			expect(map.hasBlock(new THREE.Vector3(0, 0, 0))).to.be.true;
 		});
 
-		it('hasBlock("x,y,z")', () => {
+		it('("x,y,z")', () => {
 			expect(map.hasBlock(new THREE.Vector3())).to.be.true;
 		});
 
-		it("hasBlock(VoxelBlock)", () => {
+		it("(VoxelBlock)", () => {
 			expect(map.hasBlock(block)).to.be.true;
 		});
 	});
@@ -249,22 +234,12 @@ describe("VoxelMap", () => {
 			block = map.createBlock("block", new THREE.Vector3());
 		});
 
-		it("getBlock(THREE.Vector3)", () => {
+		it("(THREE.Vector3)", () => {
 			expect(map.getBlock(new THREE.Vector3(0, 0, 0))).to.equal(block);
 		});
 
-		it('getBlock("x,y,z")', () => {
+		it('("x,y,z")', () => {
 			expect(map.getBlock(new THREE.Vector3())).to.equal(block);
-		});
-
-		describe("getBlock(VoxelBlock)", () => {
-			it("returns block if its in the map", () => {
-				expect(map.getBlock(block)).to.equal(block);
-			});
-
-			it("returns undefined if the block in not in the map", () => {
-				expect(map.getBlock(new VoxelBlock())).to.be.undefined;
-			});
 		});
 	});
 
@@ -272,24 +247,20 @@ describe("VoxelMap", () => {
 		let block;
 
 		beforeEach(() => {
-			block = map.createBlock(new THREE.Vector3());
+			block = map.createBlock("block", new THREE.Vector3());
 		});
 
-		it("removeBlock(THREE.Vector3)", () => {
+		it("(THREE.Vector3)", () => {
 			let vec = new THREE.Vector3(0, 0, 0);
 			map.removeBlock(vec);
+
 			expect(map.hasBlock(vec)).to.be.false;
 			expect(map.getBlock(vec)).to.be.undefined;
 		});
 
-		it('removeBlock("x,y,z")', () => {
-			map.removeBlock(new THREE.Vector3());
-			expect(map.hasBlock(new THREE.Vector3())).to.be.false;
-			expect(map.getBlock(new THREE.Vector3())).to.be.undefined;
-		});
-
-		it("removeBlock(VoxelBlock)", () => {
+		it("(VoxelBlock)", () => {
 			map.removeBlock(block);
+
 			expect(map.hasBlock(block)).to.be.false;
 			expect(map.getBlock(block)).to.be.undefined;
 		});

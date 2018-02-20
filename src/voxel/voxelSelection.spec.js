@@ -46,18 +46,23 @@ describe("VoxelSelection", () => {
 			expect(selection.createBlock("block", new THREE.Vector3(1, 1, 1))).to.be.an.instanceOf(VoxelBlock);
 		});
 
-		it("creates a block at position", () => {
+		it("(ID, THREE.Vector3) creates a block at position", () => {
 			let block = selection.createBlock("block", new THREE.Vector3());
 			expect(selection.getBlock(new THREE.Vector3())).to.equal(block);
 		});
 	});
 
 	describe("setBlock()", () => {
-		it("setBlock(VoxelBlock, Vec3)", () => {
+		it("(VoxelBlock, THREE.Vector3)", () => {
 			let block = new VoxelBlock();
 			block.setProp("type", "test");
 			selection.setBlock(block, new THREE.Vector3(3, 3, 3));
 			expect(selection.getBlock(new THREE.Vector3(3, 3, 3))).to.equal(block);
+		});
+
+		it("(ID, THREE.Vector3)", () => {
+			selection.setBlock("block", new THREE.Vector3(3, 3, 3));
+			expect(selection.getBlock(new THREE.Vector3(3, 3, 3))).to.be.an.instanceOf(VoxelBlock);
 		});
 	});
 
@@ -68,15 +73,11 @@ describe("VoxelSelection", () => {
 			block = selection.createBlock("block", new THREE.Vector3());
 		});
 
-		it("hasBlock(THREE.Vector3)", () => {
+		it("(THREE.Vector3)", () => {
 			expect(selection.hasBlock(new THREE.Vector3(0, 0, 0))).to.be.true;
 		});
 
-		it('hasBlock("x,y,z")', () => {
-			expect(selection.hasBlock(new THREE.Vector3())).to.be.true;
-		});
-
-		it("hasBlock(VoxelBlock)", () => {
+		it("(VoxelBlock)", () => {
 			expect(selection.hasBlock(block)).to.be.true;
 		});
 	});
@@ -88,22 +89,8 @@ describe("VoxelSelection", () => {
 			block = selection.createBlock("block", new THREE.Vector3());
 		});
 
-		it("getBlock(THREE.Vector3)", () => {
+		it("(THREE.Vector3)", () => {
 			expect(selection.getBlock(new THREE.Vector3(0, 0, 0))).to.equal(block);
-		});
-
-		it('getBlock("x,y,z")', () => {
-			expect(selection.getBlock(new THREE.Vector3())).to.equal(block);
-		});
-
-		describe("getBlock(VoxelBlock)", () => {
-			it("returns block if its in the map", () => {
-				expect(selection.getBlock(block)).to.equal(block);
-			});
-
-			it("returns undefined if the block in not in the map", () => {
-				expect(selection.getBlock(new VoxelBlock())).to.be.undefined;
-			});
 		});
 	});
 
@@ -111,24 +98,20 @@ describe("VoxelSelection", () => {
 		let block;
 
 		beforeEach(() => {
-			block = selection.createBlock(new THREE.Vector3());
+			block = selection.createBlock("block", new THREE.Vector3());
 		});
 
-		it("removeBlock(THREE.Vector3)", () => {
+		it("(THREE.Vector3)", () => {
 			let vec = new THREE.Vector3(0, 0, 0);
 			selection.removeBlock(vec);
+
 			expect(selection.hasBlock(vec)).to.be.false;
 			expect(selection.getBlock(vec)).to.be.undefined;
 		});
 
-		it('removeBlock("x,y,z")', () => {
-			selection.removeBlock(new THREE.Vector3());
-			expect(selection.hasBlock(new THREE.Vector3())).to.be.false;
-			expect(selection.getBlock(new THREE.Vector3())).to.be.undefined;
-		});
-
-		it("removeBlock(VoxelBlock)", () => {
+		it("(VoxelBlock)", () => {
 			selection.removeBlock(block);
+
 			expect(selection.hasBlock(block)).to.be.false;
 			expect(selection.getBlock(block)).to.be.undefined;
 		});
@@ -140,7 +123,7 @@ describe("VoxelSelection", () => {
 			selection.clearBlocks();
 		});
 
-		it("removes all blocks in map", () => {
+		it("removes all blocks in selection", () => {
 			expect(selection.getBlock(new THREE.Vector3())).to.be.undefined;
 		});
 	});

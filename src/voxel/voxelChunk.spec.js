@@ -23,7 +23,6 @@ describe("VoxelChunk", () => {
 	});
 
 	it("blockSize is a THREE.Vector3", () => {
-		// noinspection BadExpressionStatementJS
 		expect(chunk.blockSize).not.to.be.undefined;
 		expect(chunk.blockSize).to.be.an.instanceOf(THREE.Vector3);
 	});
@@ -46,7 +45,6 @@ describe("VoxelChunk", () => {
 		expect(chunk.scenePosition).to.be.an.instanceOf(THREE.Vector3);
 	});
 
-	/** @test {VoxelChunk#parent} */
 	describe("parent", () => {
 		it('"parent" points to parent', () => {
 			expect(chunk.parent).to.equal(map);
@@ -57,7 +55,6 @@ describe("VoxelChunk", () => {
 		});
 	});
 
-	/** @test {VoxelChunk#empty} */
 	describe("empty", () => {
 		it("is true if chunk is empty", () => {
 			chunk.clearBlocks();
@@ -65,7 +62,6 @@ describe("VoxelChunk", () => {
 		});
 	});
 
-	/** @test {VoxelChunk#createBlock} */
 	describe("createBlock", () => {
 		it("returns created block", () => {
 			expect(chunk.createBlock("block", new THREE.Vector3(1, 1, 1))).to.be.an.instanceOf(VoxelBlock);
@@ -77,7 +73,6 @@ describe("VoxelChunk", () => {
 		});
 	});
 
-	/** @test {VoxelChunk#hasBlock} */
 	describe("hasBlock", () => {
 		let block;
 
@@ -85,20 +80,19 @@ describe("VoxelChunk", () => {
 			block = chunk.createBlock("block", new THREE.Vector3());
 		});
 
-		it("hasBlock(THREE.Vector3)", () => {
+		it("(THREE.Vector3)", () => {
 			expect(chunk.hasBlock(new THREE.Vector3(0, 0, 0))).to.be.true;
 		});
 
-		it('hasBlock("x,y,z")', () => {
+		it('("x,y,z")', () => {
 			expect(chunk.hasBlock(new THREE.Vector3())).to.be.true;
 		});
 
-		it("hasBlock(VoxelBlock)", () => {
+		it("(VoxelBlock)", () => {
 			expect(chunk.hasBlock(block)).to.be.true;
 		});
 	});
 
-	/** @test {VoxelChunk#getBlock} */
 	describe("getBlock", () => {
 		let block;
 
@@ -106,26 +100,29 @@ describe("VoxelChunk", () => {
 			block = chunk.createBlock("block", new THREE.Vector3());
 		});
 
-		it("getBlock(THREE.Vector3)", () => {
+		it("(THREE.Vector3)", () => {
 			expect(chunk.getBlock(new THREE.Vector3(0, 0, 0))).to.equal(block);
 		});
 
-		it('getBlock("x,y,z")', () => {
+		it('("x,y,z")', () => {
 			expect(chunk.getBlock(new THREE.Vector3())).to.equal(block);
-		});
-
-		describe("getBlock(VoxelBlock)", () => {
-			it("returns block if its in the map", () => {
-				expect(chunk.getBlock(block)).to.equal(block);
-			});
-
-			it("returns undefined if the block in not in the map", () => {
-				expect(chunk.getBlock(new VoxelBlock())).to.be.undefined;
-			});
 		});
 	});
 
-	/** @test {VoxelChunk#removeBlock} */
+	describe("setBlock()", () => {
+		it("(VoxelBlock, THREE.Vector3)", () => {
+			let block = new VoxelBlock();
+			block.setProp("type", "test");
+			chunk.setBlock(block, new THREE.Vector3(3, 3, 3));
+			expect(chunk.getBlock(new THREE.Vector3(3, 3, 3))).to.equal(block);
+		});
+
+		it("(ID, THREE.Vector3)", () => {
+			chunk.setBlock("block", new THREE.Vector3(3, 3, 3));
+			expect(chunk.getBlock(new THREE.Vector3(3, 3, 3))).to.be.an.instanceOf(VoxelBlock);
+		});
+	});
+
 	describe("removeBlock", () => {
 		let block;
 
@@ -133,27 +130,26 @@ describe("VoxelChunk", () => {
 			block = chunk.createBlock(new THREE.Vector3());
 		});
 
-		it("removeBlock(THREE.Vector3)", () => {
+		it("(THREE.Vector3)", () => {
 			let vec = new THREE.Vector3(0, 0, 0);
 			chunk.removeBlock(vec);
 			expect(chunk.hasBlock(vec)).to.be.false;
 			expect(chunk.getBlock(vec)).to.be.undefined;
 		});
 
-		it('removeBlock("x,y,z")', () => {
+		it('("x,y,z")', () => {
 			chunk.removeBlock(new THREE.Vector3());
 			expect(chunk.hasBlock(new THREE.Vector3())).to.be.false;
 			expect(chunk.getBlock(new THREE.Vector3())).to.be.undefined;
 		});
 
-		it("removeBlock(VoxelBlock)", () => {
+		it("(VoxelBlock)", () => {
 			chunk.removeBlock(block);
 			expect(chunk.hasBlock(block)).to.be.false;
 			expect(chunk.getBlock(block)).to.be.undefined;
 		});
 	});
 
-	/** @test {VoxelChunk#clearBlocks} */
 	describe("clearBlocks", () => {
 		beforeEach(() => {
 			chunk.createBlock("block", new THREE.Vector3());
@@ -165,7 +161,6 @@ describe("VoxelChunk", () => {
 		});
 	});
 
-	/** @test {VoxelChunk#chunkSize} */
 	describe("chunkSize", () => {
 		it("returns THREE.Vector3", () => {
 			expect(chunk.chunkSize).to.be.an.instanceOf(THREE.Vector3);

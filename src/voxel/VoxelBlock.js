@@ -300,7 +300,7 @@ export default class VoxelBlock {
 
 	/**
 	 * updates the block based on its parameters.
-	 * this is called from {@link VoxelBlock.setProp} and {@link VoxelBlock.setProp}
+	 * this is called from {@link VoxelBlock.setProp}
 	 * @private
 	 */
 	UpdateProps() {}
@@ -336,9 +336,7 @@ VoxelBlock.UID = "block";
  * 		if you can see other block through this one.
  * 		this is for VoxelChunk when it builds the mesh.
  *
- * @property {Boolean} canCollide -
- * 		if the player collides with this block
- *
+ * @property {Boolean} canCollide - if this block should be part of the collision mesh
  * @property {Boolean} canRotate if this block can be rotated
  * @property {Boolean} canRotateOnY
  * @property {Array} stepSound an array of sound ids to play if the player steps on this block

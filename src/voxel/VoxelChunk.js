@@ -4,7 +4,7 @@ import VoxelBlock from "./VoxelBlock.js";
 
 /**
  * @typedef {Object} VoxelChunkJSON
- * @property {Array<{position: string, type: number}>} blocks - an array of positions and block types
+ * @property {Array<Number[]|Number>} blocks - an array of arrays of the position and block type of the block
  * @property {VoxelBlockJSON[]} types - an array of block types
  */
 
@@ -40,7 +40,7 @@ export default class VoxelChunk extends THREE.Group {
 		this.mesh = undefined;
 
 		/**
-		 * the parent {@link VoxelMap}
+		 * the parent VoxelMap
 		 * @type {VoxelMap}
 		 */
 		this.map = undefined;
@@ -282,15 +282,13 @@ export default class VoxelChunk extends THREE.Group {
 	/**
 	 * returns the block at "position".
 	 * if the Vector3 is negative it will get the block from the edge of the chunk
-	 * @param  {(THREE.Vector3|VoxelBlock)} position
+	 * @param  {THREE.Vector3|VoxelBlock} position
 	 * @return {VoxelBlock}
 	 */
 	getBlock(position) {
 		if (position instanceof THREE.Vector3) {
 			position = this.tmpVec.copy(position).round();
 			return this.blocks.get(position.toString());
-		} else if (position instanceof VoxelBlock) {
-			if (this.hasBlock(position)) return position;
 		}
 	}
 
@@ -304,26 +302,22 @@ export default class VoxelChunk extends THREE.Group {
 	}
 
 	/**
-	 * creates a block with id and adds it to the chunk
+	 * calls setBlock and returns the newly created VoxelBlock
 	 * @param  {String} id - the UID of the block to create
 	 * @param  {THREE.Vector3} position - the position to add the block to
 	 * @return {VoxelBlock}
 	 */
 	createBlock(id, position) {
-		let block;
-		if (typeof id === "string") block = this.map && this.map.blockManager.createBlock(id);
+		this.setBlock(id, position);
 
-		if (block && position) {
-			this.setBlock(block, position);
-		}
-		return block;
+		return this.getBlock(position);
 	}
 
 	/**
 	 * adds a block to the chunk at position.
 	 * if "block" is a String it will create a new block with using the parents maps {@link VoxelBlockManager#createBlock}
 	 * @param {VoxelBlock|String} block
-	 * @param {(THREE.Vector3)} position
+	 * @param {THREE.Vector3} position
 	 * @return {this}
 	 *
 	 * @fires VoxelChunk#block:set
@@ -420,7 +414,6 @@ export default class VoxelChunk extends THREE.Group {
 	}
 
 	/**
-	 * removes block at position
 	 * @param  {THREE.Vector3|VoxelBlock} position - the position of the block to remove, or the {@link VoxelBlock} to remove
 	 * @param {Boolean} [disposeBlock=true]
 	 * @return {VoxelChunk} this
@@ -501,7 +494,7 @@ export default class VoxelChunk extends THREE.Group {
 
 	/**
 	 * returns an Array of all the blocks in this chunk
-	 * @return {VoxelChunk[]}
+	 * @return {VoxelBlock[]}
 	 */
 	listBlocks() {
 		return Array.from(this.blocks).map(d => d[1]);
@@ -530,6 +523,7 @@ export default class VoxelChunk extends THREE.Group {
 		// build list of block types
 		let typeCache = new Map();
 
+		let tmpVec = new THREE.Vector3();
 		for (let { position, block } of this.blocks) {
 			let blockData = block.toJSON();
 			let str = JSON.stringify(blockData);
@@ -539,10 +533,7 @@ export default class VoxelChunk extends THREE.Group {
 				json.types.push(blockData);
 			}
 
-			json.blocks.push({
-				position,
-				type: typeCache.get(str)
-			});
+			json.blocks.push([tmpVec.fromString(position).toArray(), typeCache.get(str)]);
 		}
 
 		return json;
@@ -556,14 +547,14 @@ export default class VoxelChunk extends THREE.Group {
 	fromJSON(json = {}) {
 		let tmpVec = new THREE.Vector3();
 		if (json.blocks && json.types) {
-			json.blocks.forEach(([positionString, blockType]) => {
+			json.blocks.forEach(([positionArray, blockType]) => {
 				let blockData = json.types[blockType];
 				if (blockData) {
 					let block = this.blockManager.createBlock(blockData.type);
 
 					if (block) {
 						block.fromJSON(blockData);
-						this.setBlock(block, tmpVec.fromString(positionString));
+						this.setBlock(block, tmpVec.fromArray(positionArray));
 					}
 				}
 			});

@@ -90,9 +90,10 @@ export default class MenuView extends PureComponent {
 		}
 
 		this.renderer = rendererCache;
-		// this.renderer.setClearColor(0x2b3e50, 1);
 		this.renderer.setPixelRatio(window.devicePixelRatio);
 		this.renderer.setSize(window.innerWidth, window.innerHeight);
+		this.renderer.shadowMap.enabled = true;
+		this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 	}
 	updateScene() {
 		this.stats.begin();

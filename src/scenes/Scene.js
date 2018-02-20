@@ -1,5 +1,12 @@
 import * as THREE from "three";
 
+/**
+ * @typedef {Object} SceneTimer
+ * @property {Function} callback
+ * @property {Number} fireEvery
+ * @property {Number} currentTime
+ */
+
 /** the base class for a scene */
 export default class Scene {
 	/** @type {Scene} */
@@ -16,6 +23,25 @@ export default class Scene {
 
 		/** @type {bool} */
 		this.paused = false;
+
+		/**
+		 * an array of timers for the scene
+		 * @type {SceneTimer[]}
+		 */
+		this.timers = [];
+	}
+
+	/**
+	 * creates and registers a new timer with the scene
+	 * @param {Function} callback
+	 * @param {Number} fireEvery
+	 */
+	createTimer(callback, fireEvery) {
+		this.timers.push({
+			callback,
+			fireEvery,
+			currentTime: 0
+		});
 	}
 
 	pause() {
@@ -34,6 +60,7 @@ export default class Scene {
 	update() {
 		let dtime = Math.min(this.clock.getDelta(), 0.5); //clamp delta time
 		this.animate(dtime);
+		this.updateTimers(dtime);
 		this.updateChildren(this.scene, dtime);
 	}
 
@@ -42,6 +69,17 @@ export default class Scene {
 			if (obj.update) obj.update(dtime);
 
 			if (obj.children) this.updateChildren(obj, dtime);
+		});
+	}
+
+	updateTimers(dtime = 0) {
+		this.timers.forEach(timer => {
+			timer.currentTime += dtime;
+
+			if (timer.currentTime > timer.fireEvery) {
+				timer.callback();
+				timer.currentTime = 0;
+			}
 		});
 	}
 
