@@ -35,7 +35,6 @@ describe("VoxelMap", () => {
 		});
 	});
 
-	/** @test {VoxelMap#createChunk} */
 	describe("createChunk", () => {
 		beforeEach(() => {
 			chunk = map.createChunk(new THREE.Vector3());
@@ -50,7 +49,6 @@ describe("VoxelMap", () => {
 		});
 	});
 
-	/** @test {VoxelMap#setChunk} */
 	describe("setChunk", () => {
 		beforeEach(() => {
 			chunk = new VoxelChunk();
@@ -81,21 +79,16 @@ describe("VoxelMap", () => {
 		});
 	});
 
-	/** @test {VoxelMap#hasChunk} */
 	describe("hasChunk", () => {
 		beforeEach(() => {
 			chunk = map.createChunk(new THREE.Vector3());
 		});
 
-		it("hasChunk(THREE.Vector3)", () => {
+		it("(THREE.Vector3)", () => {
 			expect(map.hasChunk(new THREE.Vector3(0, 0, 0))).to.be.true;
 		});
 
-		it('hasChunk("x,y,z")', () => {
-			expect(map.hasChunk(new THREE.Vector3())).to.be.true;
-		});
-
-		it("hasChunk(VoxelChunk)", () => {
+		it("(VoxelChunk)", () => {
 			expect(map.hasChunk(chunk)).to.be.true;
 		});
 	});
@@ -195,7 +188,6 @@ describe("VoxelMap", () => {
 		});
 	});
 
-	// blocks
 	describe("createBlock", () => {
 		it("returns created block", () => {
 			expect(map.createBlock("block", new THREE.Vector3(1, 1, 1))).to.be.an.instanceOf(VoxelBlock);
@@ -218,10 +210,6 @@ describe("VoxelMap", () => {
 			expect(map.hasBlock(new THREE.Vector3(0, 0, 0))).to.be.true;
 		});
 
-		it('("x,y,z")', () => {
-			expect(map.hasBlock(new THREE.Vector3())).to.be.true;
-		});
-
 		it("(VoxelBlock)", () => {
 			expect(map.hasBlock(block)).to.be.true;
 		});
@@ -238,8 +226,9 @@ describe("VoxelMap", () => {
 			expect(map.getBlock(new THREE.Vector3(0, 0, 0))).to.equal(block);
 		});
 
-		it('("x,y,z")', () => {
-			expect(map.getBlock(new THREE.Vector3())).to.equal(block);
+		it("(THREE.Vector3)", () => {
+			expect(map.getBlock(block)).to.equal(block);
+			expect(map.getBlock(new VoxelBlock())).to.be.undefined;
 		});
 	});
 

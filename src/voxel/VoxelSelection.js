@@ -1,10 +1,14 @@
-import * as THREE from "three";
+import { Group, Vector3, Box3 } from "three";
 import "../three-changes";
 
+import VoxelBlock from "./VoxelBlock.js";
+import VoxelBlockManager from "./VoxelBlockManager.js";
+
 /** a selection of blocks */
-export default class VoxelSelection extends THREE.EventDispatcher {
+export default class VoxelSelection extends Group {
 	constructor(blockManager = VoxelBlockManager.inst) {
 		super();
+
 		/**
 		 * the block manager this selection will use
 		 * @default {@link VoxelBlockManager.inst}
@@ -19,8 +23,8 @@ export default class VoxelSelection extends THREE.EventDispatcher {
 		this.blocks = new Map();
 
 		/**
-		 * a WeakMap of THREE.Vector3 with the keys being the blocks
-		 * @private
+		 * a WeakMap of
+		 * Vector3 with the keys being the blocks
 		 * @type {WeakMap}
 		 */
 		this.blocksPositions = new WeakMap();
@@ -28,47 +32,25 @@ export default class VoxelSelection extends THREE.EventDispatcher {
 		/**
 		 * the size of the blocks in this selection.
 		 * this is used when building this selection to a mesh
-		 * @type {THREE.Vector3}
+		 * @type {Vector3}
 		 * @default [32,32,32]
 		 */
-		this.blockSize = new THREE.Vector3(32, 32, 32);
+		this.blockSize = new Vector3(32, 32, 32);
 
 		/**
 		 * a tmp Vector3 the chunk uses so it dose not have to create new instances
-		 * @type {THREE.Vector3}
-		 * @private
+		 * @type {Vector3}
 		 */
-		this.tmpVec = new THREE.Vector3();
+		this.tmpVec = new Vector3();
 	}
 
 	/**
-	 * fired when a block is set
-	 * @event VoxelSelection#block:set
-	 * @type {Object}
-	 * @property {VoxelSelection} target
-	 * @property {VoxelBlock} block
-	 * @property {VoxelBlock} oldBlock
-	 */
-	/**
-	 * fired when a block is removed
-	 * @event VoxelSelection#block:removed
-	 * @type {Object}
-	 * @property {VoxelSelection} target
-	 * @property {VoxelBlock} block - the block that was removed
-	 */
-	/**
-	 * @event VoxelSelection#blocks:cleared
-	 * @type {Object}
-	 * @property {VoxelSelection} target
-	 */
-
-	/**
-	 * checks to see if we have a block at position, or if the block is in this selection
-	 * @param  {THREE.Vector3|VoxelBlock} position - the position to check, or the block to check for
+	 * checks to see if there is a block at position, or if the block is in this selection
+	 * @param  {Vector3|VoxelBlock} position - the position to check, or the block to check for
 	 * @return {Boolean}
 	 */
 	hasBlock(position) {
-		if (position instanceof THREE.Vector3) {
+		if (position instanceof Vector3) {
 			position = this.tmpVec.copy(position).round();
 			return this.blocks.has(position.toString());
 		} else if (position instanceof VoxelBlock) {
@@ -81,10 +63,15 @@ export default class VoxelSelection extends THREE.EventDispatcher {
 
 	/**
 	 * returns the block at position
-	 * @param  {THREE.Vector3} position
+	 * @param  {
+	 * Vector3|VoxelBlock} position
 	 * @return {VoxelBlock}
 	 */
 	getBlock(position) {
+		if (position instanceof VoxelBlock) {
+			return this.hasBlock(position) ? position : undefined;
+		}
+
 		return this.blocks.get(
 			this.tmpVec
 				.copy(position)
@@ -96,16 +83,16 @@ export default class VoxelSelection extends THREE.EventDispatcher {
 	/**
 	 * returns the position of the block in this chunk
 	 * @param  {VoxelBlock} block
-	 * @return {THREE.Vector3}
+	 * @return {Vector3}
 	 */
 	getBlockPosition(block) {
-		return this.blocksPositions.get(block) || new THREE.Vector3();
+		return this.blocksPositions.get(block) || new Vector3();
 	}
 
 	/**
 	 * calls setBlock and returns the newly created VoxelBlock
 	 * @param  {String} id - the UID of the block to create
-	 * @param  {THREE.Vector3} position - the position to add the block to
+	 * @param  {Vector3} position - the position to add the block to
 	 * @return {VoxelBlock}
 	 */
 	createBlock(id, position) {
@@ -118,50 +105,58 @@ export default class VoxelSelection extends THREE.EventDispatcher {
 	 * adds a block to the chunk at position
 	 * if "block" is a String it will create a new block with using {@link VoxelBlockManager#createBlock}
 	 * @param {VoxelBlock|String} block
-	 * @param {THREE.Vector3} position
+	 * @param {Vector3} position
 	 * @return {this}
 	 *
 	 * @emits {block:set}
 	 */
 	setBlock(block, position) {
-		if (block instanceof VoxelBlock && block.parent) throw new Error("cant add block that already has a parent");
+		if (block instanceof VoxelBlock && block.parent) {
+			throw new Error("cant add block that already has a parent");
+		}
 
 		if (typeof block === "string") {
 			block = this.blockManager.createBlock(block);
 		}
 
-		if (position instanceof THREE.Vector3 && block instanceof VoxelBlock) {
-			position = this.tmpVec.copy(position).round();
-			let str = position.toString();
-			let oldBlock = this.blocks.get(str);
+		position = this.tmpVec.copy(position).round();
+		let str = position.toString();
+		let oldBlock = this.blocks.get(str);
 
-			this.blocks.set(str, block);
-			this.blocksPositions.set(block, position.clone());
+		this.blocks.set(str, block);
+		this.blocksPositions.set(block, position.clone());
 
-			block.parent = this;
+		block.parent = this;
 
-			// fire event
-			this.dispatchEvent({
-				type: "block:set",
-				block: block,
-				oldBlock: oldBlock
-			});
-		}
+		// fire event
+		this.dispatchEvent({
+			type: "block:set",
+			block: block,
+			oldBlock: oldBlock
+		});
 
 		return this;
 	}
 
 	/**
 	 * removes all blocks from this selection
-	 * @return {this}
+	 * @param {Boolean} [disposeBlocks=true]
+	 * @return {VoxelSelection} this
 	 *
 	 * @emits {blocks:cleared}
 	 */
-	clearBlocks() {
-		this.listBlocks().forEach(b => {
-			b.parent = undefined;
+	clearBlocks(disposeBlocks = true) {
+		let blocks = this.listBlocks();
+		blocks.forEach(block => {
+			block.parent = undefined;
 		});
 		this.blocks.clear();
+
+		// dispose of the blocks
+		// NOTE: we have to call this AFTER we remove the block from this selection, otherwise we get an infinite loop because the blockManager tries to remove the block
+		if (disposeBlocks) {
+			blocks.forEach(block => this.blockManager.disposeBlock(block));
+		}
 
 		// fire event
 		this.dispatchEvent({
@@ -172,80 +167,79 @@ export default class VoxelSelection extends THREE.EventDispatcher {
 	}
 
 	/**
-	 * @param  {THREE.Vector3|VoxelBlock} position - the position of the block to remove, or the VoxelBlock to remove
-	 * @return {this}
+	 * @param  {
+	 * Vector3|VoxelBlock} position - the position of the block to remove, or the VoxelBlock to remove
+	 * @param {Boolean} [disposeBlock=true]
+	 * @return {VoxelSelection} this
 	 *
-	 * @fires VoxelSelection#block:removed
+	 * @emits {block:removed}
 	 */
-	removeBlock(position) {
-		if (this.hasBlock(position)) {
-			let block;
-			if (position instanceof THREE.Vector3) {
-				block = this.getBlock(position.clone().round());
-			} else if (position instanceof VoxelBlock) {
-				block = position;
-			}
-			if (!block) return this;
+	removeBlock(position, disposeBlock = true) {
+		if (!this.hasBlock(position)) return this;
 
-			// remove it from the maps
-			this.blocks.delete(block.position.toString());
-			this.blocksPositions.delete(block);
+		let block = this.getBlock(position);
+		if (!block) return this;
 
-			block.parent = undefined;
+		// remove it from the maps
+		this.blocks.delete(block.position.toString());
+		this.blocksPositions.delete(block);
 
-			this.dispatchEvent({
-				type: "block:removed",
-				block: block
-			});
+		block.parent = undefined;
+
+		// dispose of the block
+		// NOTE: we have to call this AFTER we remove the block from this chunk, otherwise we get an infinite loop because the blockManager tries to remove the block
+		if (disposeBlock) {
+			this.blockManager.disposeBlock(block);
 		}
+
+		this.dispatchEvent({
+			type: "block:removed",
+			block: block
+		});
 
 		return this;
 	}
 
 	/**
-	 * returns an Array of all the blocks in this chunk
+	 * returns an Array of all the blocks in this selection
 	 * @return {VoxelBlock[]}
 	 */
 	listBlocks() {
 		return Array.from(this.blocks).map(d => d[1]);
 	}
 
-	/**
-	 * @readOnly
-	 * @type {Boolean}
-	 */
+	/** @return {Boolean} */
 	get empty() {
 		return !this.blocks.size;
 	}
 
 	/**
 	 * returns the size of the selection
-	 * @return {THREE.Vector3} the size in blocks of this selection
-	 * @readOnly
+	 * @return {Vector3} the size in blocks of this selection
 	 */
 	get size() {
 		if (this.blocks.size) {
-			let min = new THREE.Vector3().addScalar(Infinity),
-				max = new THREE.Vector3().addScalar(-Infinity);
+			let min = new Vector3().addScalar(Infinity),
+				max = new Vector3().addScalar(-Infinity);
 			this.blocks.forEach(block => {
 				let pos = this.getBlockPosition(block);
 				min.min(pos);
 				max.max(pos);
 			});
 			return max.sub(min).add(this.tmpVec.set(1, 1, 1));
-		} else return new THREE.Vector3();
+		} else {
+			return new Vector3();
+		}
 	}
 
 	/**
 	 * returns the bounding box of the selection
-	 * @return {THREE.Box3}
-	 * @readOnly
+	 * @return {
+	 * Box3}
 	 */
 	get boundingBox() {
-		let box = new THREE.Box3(
-			new THREE.Vector3(Infinity, Infinity, Infinity),
-			new THREE.Vector3(-Infinity, -Infinity, -Infinity)
-		);
+		let box = new Box3(new Vector3(Infinity, Infinity, Infinity), new Vector3(-Infinity, -Infinity, -Infinity));
+
 		if (this.blocks.size) {
 			this.blocks.forEach(block => {
 				let pos = this.getBlockPosition(block);
@@ -253,13 +247,11 @@ export default class VoxelSelection extends THREE.EventDispatcher {
 				box.max.max(pos);
 			});
 
-			if (Number.isFinite(box.getSize().length())) return box;
+			if (Number.isFinite(box.getSize().length())) {
+				return box;
+			}
 		}
 
-		return new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
+		return new Box3(new Vector3(), new Vector3());
 	}
 }
-
-// import block for runtime
-import VoxelBlock from "./VoxelBlock.js";
-import VoxelBlockManager from "./VoxelBlockManager.js";

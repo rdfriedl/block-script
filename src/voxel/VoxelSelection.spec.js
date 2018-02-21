@@ -92,6 +92,11 @@ describe("VoxelSelection", () => {
 		it("(THREE.Vector3)", () => {
 			expect(selection.getBlock(new THREE.Vector3(0, 0, 0))).to.equal(block);
 		});
+
+		it("(THREE.Vector3)", () => {
+			expect(selection.getBlock(block)).to.equal(block);
+			expect(selection.getBlock(new VoxelBlock())).to.be.undefined;
+		});
 	});
 
 	describe("removeBlock", () => {

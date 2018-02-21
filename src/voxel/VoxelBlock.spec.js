@@ -1,7 +1,7 @@
+import {Vector3} from "three";
 import VoxelMap from "./VoxelMap.js";
 import VoxelBlock from "./VoxelBlock.js";
 import VoxelSelection from "./VoxelSelection.js";
-import * as THREE from "three";
 
 /** @test {VoxelBlock} */
 describe("VoxelBlock", () => {
@@ -12,7 +12,7 @@ describe("VoxelBlock", () => {
 
 		// register default block
 		map.blockManager.registerBlock(VoxelBlock);
-		block = map.createBlock("block", new THREE.Vector3());
+		block = map.createBlock("block", new Vector3());
 	});
 
 	describe("UID", () => {
@@ -21,67 +21,48 @@ describe("VoxelBlock", () => {
 		});
 	});
 
-	/** @test {VoxelBlock#parent} */
 	describe("parent", () => {
 		let selection, chunk;
 
 		beforeEach(() => {
 			selection = new VoxelSelection();
-			chunk = map.createChunk(new THREE.Vector3(1, 1, 1));
+			chunk = map.createChunk(new Vector3(1, 1, 1));
 			block = new VoxelBlock();
 		});
 
 		it('"parent" points to parent chunk or selection', () => {
-			selection.setBlock(block, new THREE.Vector3());
+			selection.setBlock(block, new Vector3());
 			expect(block.parent).to.equal(selection);
 
 			if (block.parent) block.parent.removeBlock(block);
-			chunk.setBlock(block, new THREE.Vector3());
+			chunk.setBlock(block, new Vector3());
 			expect(block.parent).to.equal(chunk);
-		});
-
-		it('"chunk" points to parent chunk, but not parent selection', () => {
-			selection.setBlock(block, new THREE.Vector3());
-			expect(block.chunk).to.be.undefined;
-
-			if (block.parent) block.parent.removeBlock(block);
-			chunk.setBlock(block, new THREE.Vector3());
-			expect(block.chunk).to.equal(chunk);
-		});
-
-		it('"selection" points to parent selection, but not parent chunk', () => {
-			selection.setBlock(block, new THREE.Vector3());
-			expect(block.selection).to.equal(selection);
-
-			if (block.parent) block.parent.removeBlock(block);
-			chunk.setBlock(block, new THREE.Vector3());
-			expect(block.selection).to.be.undefined;
 		});
 	});
 
 	describe("worldPosition", () => {
-		it("returns THREE.Vector3", () => {
+		it("returns Vector3", () => {
 			if (block.parent) block.parent.removeBlock(block);
-			map.setBlock(block, new THREE.Vector3());
-			expect(block.worldPosition).to.be.an.instanceOf(THREE.Vector3);
+			map.setBlock(block, new Vector3());
+			expect(block.worldPosition).to.be.an.instanceOf(Vector3);
 		});
 
 		it("returns empty Vec3 when not in a map", () => {
 			if (block.parent) block.parent.removeBlock(block);
-			expect(block.worldPosition).to.be.an.instanceOf(THREE.Vector3);
+			expect(block.worldPosition).to.be.an.instanceOf(Vector3);
 		});
 	});
 
 	describe("position", () => {
-		it("returns THREE.Vector3", () => {
+		it("returns Vector3", () => {
 			if (block.parent) block.parent.removeBlock(block);
-			map.setBlock(block, new THREE.Vector3());
-			expect(block.position).to.be.an.instanceOf(THREE.Vector3);
+			map.setBlock(block, new Vector3());
+			expect(block.position).to.be.an.instanceOf(Vector3);
 		});
 
 		it("returns empty Vec3 when not in a map or selection", () => {
 			if (block.parent) block.parent.removeBlock(block);
-			expect(block.position).to.be.an.instanceOf(THREE.Vector3);
+			expect(block.position).to.be.an.instanceOf(Vector3);
 		});
 	});
 

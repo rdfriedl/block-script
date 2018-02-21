@@ -1,4 +1,5 @@
 import * as querystring from "query-string";
+import VoxelBlock from "./VoxelBlock.js";
 
 /** manages a list of voxel blocks, and provides functions for creating them */
 export default class VoxelBlockManager {
@@ -268,6 +269,3 @@ export default class VoxelBlockManager {
 		return this;
 	}
 }
-
-// import block for runtime
-import VoxelBlock from "./VoxelBlock.js";

@@ -20,7 +20,7 @@ export default class VoxelBlock {
 	}
 
 	/**
-	 * @param  {THREE.Vector3} direction - the direction to check
+	 * @param  {Vector3} direction - the direction to check
 	 * @return {VoxelBlock}
 	 */
 	getNeighbor(direction) {
@@ -29,8 +29,9 @@ export default class VoxelBlock {
 		let pos = direction.clone().add(this.position);
 
 		let parent = this.parent;
-		// only wrap if we are in a chunk, dont wrap if we are in a selection
-		if (this.chunk) {
+
+		// only wrap if block is in a chunk, dont wrap if we are in a selection
+		if (parent.chunkSize) {
 			if (
 				pos.x < 0 ||
 				pos.y < 0 ||
@@ -77,7 +78,7 @@ export default class VoxelBlock {
 	 * sets a parameter with id to value
 	 * @param {String|Object} id the id of the parameter to set, or a key value map. with the key being the id
 	 * @param {*} [value] the value to set the parameter to
-	 * @return {this}
+	 * @return {VoxelBlock} this
 	 */
 	setProp(id, value) {
 		if (!this.hasOwnProperty("parameters")) this.properties = Object.create(this.properties);
@@ -89,30 +90,31 @@ export default class VoxelBlock {
 		}
 
 		this.UpdateProps();
+
 		return this;
 	}
 
-	/**
-	 * returns the parent {@link VoxelChunk} if this block is a child of it
-	 * @return {VoxelChunk}
-	 * @readOnly
-	 */
-	get chunk() {
-		return this.parent instanceof VoxelChunk ? this.parent : undefined;
-	}
-
-	/**
-	 * returns the parent {@link VoxelSelection} if this block is a child of it
-	 * @return {VoxelSelection}
-	 * @readOnly
-	 */
-	get selection() {
-		return this.parent instanceof VoxelSelection ? this.parent : undefined;
-	}
+	// /**
+	//  * returns the parent {@link VoxelChunk} if this block is a child of it
+	//  * @return {VoxelChunk}
+	//  * @readOnly
+	//  */
+	// get chunk() {
+	// 	return this.parent instanceof VoxelChunk ? this.parent : undefined;
+	// }
+	//
+	// /**
+	//  * returns the parent {@link VoxelSelection} if this block is a child of it
+	//  * @return {VoxelSelection}
+	//  * @readOnly
+	//  */
+	// get selection() {
+	// 	return this.parent instanceof VoxelSelection ? this.parent : undefined;
+	// }
 
 	/**
 	 * the position of the block in its parent
-	 * @type {THREE.Vector3}
+	 * @type {Vector3}
 	 * @readOnly
 	 */
 	get position() {
@@ -122,7 +124,7 @@ export default class VoxelBlock {
 	/**
 	 * the position of this block, in blocks, reletive to the VoxelMap
 	 * this will only work if the block is in a {@link VoxelChunk} that has a {@link VoxelMap}
-	 * @type {THREE.Vector3}
+	 * @type {Vector3}
 	 * @readOnly
 	 */
 	get worldPosition() {
@@ -137,7 +139,7 @@ export default class VoxelBlock {
 	/**
 	 * the position of this block reletive to the scene
 	 * this will only work if the block is in a {@link VoxelChunk} that has a {@link VoxelMap}
-	 * @type {THREE.Vector3}
+	 * @type {Vector3}
 	 * @readOnly
 	 */
 	get scenePosition() {
@@ -148,7 +150,7 @@ export default class VoxelBlock {
 
 	/**
 	 * the center of this block reletive to the scene
-	 * @type {THREE.Vector3}
+	 * @type {Vector3}
 	 * @readOnly
 	 */
 	get sceneCenter() {
@@ -181,15 +183,13 @@ export default class VoxelBlock {
 	/**
 	 * returns the VoxelMap this block is in
 	 * @type {VoxelMap}
-	 * @readOnly
 	 */
 	get map() {
-		return this.chunk && this.chunk.map;
+		return this.parent && this.parent.map;
 	}
 
 	/**
 	 * returns the UID of the block
-	 * @readOnly
 	 * @type {String}
 	 */
 	get id() {
@@ -198,8 +198,7 @@ export default class VoxelBlock {
 
 	/**
 	 * returns the blockSize of the map
-	 * @return {THREE.Vector3}
-	 * @readOnly
+	 * @return {Vector3}
 	 */
 	get blockSize() {
 		return this.parent ? this.parent.blockSize : new THREE.Vector3();
@@ -207,8 +206,7 @@ export default class VoxelBlock {
 
 	/**
 	 * returns the chunkSize of the map
-	 * @return {THREE.Vector3}
-	 * @readOnly
+	 * @return {Vector3}
 	 */
 	get chunkSize() {
 		return this.parent ? this.parent.chunkSize : new THREE.Vector3();
@@ -216,8 +214,7 @@ export default class VoxelBlock {
 
 	/**
 	 * the modal used when building the mesh for the chunk
-	 * @type {THREE.Geometry}
-	 * @readOnly
+	 * @type {Geometry}
 	 */
 	get geometry() {
 		if (!this.constructor._geometryCache) {
@@ -228,8 +225,7 @@ export default class VoxelBlock {
 	}
 
 	/**
-	 * @readOnly
-	 * @type {THREE.Material}
+	 * @type {Material}
 	 */
 	get material() {
 		if (!this.constructor._materialCache) {
@@ -242,7 +238,7 @@ export default class VoxelBlock {
 	/**
 	 * returns the geometry for this type of block.
 	 * geometry should be no bigger then 1 x 1 x 1
-	 * @return {THREE.Geometry}
+	 * @return {Geometry}
 	 */
 	CreateGeometry() {
 		let geometry = new THREE.BoxGeometry(1, 1, 1);
@@ -254,7 +250,7 @@ export default class VoxelBlock {
 
 	/**
 	 * creates the material for this type of block
-	 * @return {THREE.Material}
+	 * @return {Material}
 	 */
 	CreateMaterial() {
 		return new THREE.MeshNormalMaterial();
@@ -315,6 +311,3 @@ VoxelBlock.DefalutProperties = {
 	placeSound: [],
 	removeSound: []
 };
-
-import VoxelChunk from "./VoxelChunk.js";
-import VoxelSelection from "./VoxelSelection.js";

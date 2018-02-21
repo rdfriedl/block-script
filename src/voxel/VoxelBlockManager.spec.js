@@ -11,43 +11,40 @@ describe("VoxelBlockManager", () => {
 		manager.registerBlock(blocks);
 	});
 
-	/** @test {VoxelBlockManager#hasBlock} */
 	describe("hasBlock", () => {
-		it("hasBlock(String)", () => {
+		it("(String)", () => {
 			expect(manager.hasBlock("dirt")).to.be.true;
 		});
 	});
 
-	/** @test {VoxelBlockManager#getBlock} */
 	describe("getBlock", () => {
-		it("getBlock(String)", () => {
+		it("(String)", () => {
 			expect(manager.getBlock("dirt")).to.equal(blocks.Dirt);
 		});
 
-		it("getBlock(Class)", () => {
+		it("(Class)", () => {
 			expect(manager.getBlock(blocks.Dirt)).to.equal(blocks.Dirt);
 		});
 
-		it("getBlock(VoxelBlock)", () => {
+		it("(VoxelBlock)", () => {
 			expect(manager.getBlock(new blocks.Dirt())).to.equal(blocks.Dirt);
 		});
 
-		it("getBlock(String with props)", () => {
+		it("(String with props)", () => {
 			expect(manager.getBlock("dirt?type=test")).to.equal(blocks.Dirt);
 		});
 	});
 
-	/** @test {VoxelBlockManager#createBlock} */
 	describe("createBlock", () => {
-		it("createBlock(String)", () => {
+		it("(String)", () => {
 			expect(manager.createBlock("dirt")).to.be.an.instanceOf(VoxelBlock);
 		});
 
-		it("createBlock(Class)", () => {
+		it("(Class)", () => {
 			expect(manager.createBlock(blocks.Dirt)).to.be.an.instanceOf(VoxelBlock);
 		});
 
-		it("createBlock(VoxelBlock)", () => {
+		it("(VoxelBlock)", () => {
 			expect(manager.createBlock(new blocks.Dirt())).to.be.an.instanceOf(VoxelBlock);
 		});
 
@@ -84,7 +81,7 @@ describe("VoxelBlockManager", () => {
 			expect(block.getProp("testing")).to.equal("test");
 		});
 
-		it("createBlock(String with props)", () => {
+		it("(String with props)", () => {
 			let block = manager.createBlock("dirt?type=test");
 			expect(block.getProp("type")).to.equal("test");
 		});
@@ -92,31 +89,31 @@ describe("VoxelBlockManager", () => {
 
 	/** @test {VoxelBlockManager#resolveID} */
 	describe("resolveID", () => {
-		it("resolveID(String)", () => {
+		it("(String)", () => {
 			expect(VoxelBlockManager.resolveID("dirt")).to.equal("dirt");
 		});
 
-		it("resolveID(string with props)", () => {
+		it("(string with props)", () => {
 			expect(VoxelBlockManager.resolveID("dirt?type=test")).to.equal("dirt");
 		});
 
-		it("resolveID(Class)", () => {
+		it("(Class)", () => {
 			expect(VoxelBlockManager.resolveID(blocks.Dirt)).to.equal("dirt");
 		});
 
-		it("resolveID(VoxelBlock)", () => {
+		it("(VoxelBlock)", () => {
 			expect(VoxelBlockManager.resolveID(new blocks.Dirt())).to.equal("dirt");
 		});
 	});
 
 	/** @test {VoxelBlockManager#createID} */
 	describe("createID", () => {
-		it("createID(String, Object)", () => {
+		it("(String, Object)", () => {
 			expect(VoxelBlockManager.createID("dirt", { type: "test" })).to.equal("dirt?type=test");
 			expect(VoxelBlockManager.createID("dirt", { type: "test", another: 9 })).to.equal("dirt?type=test&another=9");
 		});
 
-		it("createID(VoxelBlock, Object)", () => {
+		it("(VoxelBlock, Object)", () => {
 			expect(VoxelBlockManager.createID(new blocks.Dirt(), { type: "test" })).to.equal("dirt?type=test");
 			expect(
 				VoxelBlockManager.createID(new blocks.Dirt(), {
@@ -126,7 +123,7 @@ describe("VoxelBlockManager", () => {
 			).to.equal("dirt?type=test&another=9");
 		});
 
-		it("createID(VoxelBlock with props, Object", () => {
+		it("(VoxelBlock with props, Object", () => {
 			expect(VoxelBlockManager.createID(manager.createBlock("dirt", { type: "normal" }), { type2: "test" })).to.equal(
 				"dirt?type2=test&type=normal"
 			);
