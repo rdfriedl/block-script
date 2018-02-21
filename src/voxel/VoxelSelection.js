@@ -1,12 +1,6 @@
 import * as THREE from "three";
 import "../three-changes";
 
-/**
- * @typedef {Object} VoxelSelectionJSON
- * @property {Array<Number[]|Number>} blocks - an array of arrays of the position and block type of the block
- * @property {VoxelBlockJSON[]} types - an array of block types
- */
-
 /** a selection of blocks */
 export default class VoxelSelection extends THREE.EventDispatcher {
 	constructor(blockManager = VoxelBlockManager.inst) {
@@ -21,7 +15,6 @@ export default class VoxelSelection extends THREE.EventDispatcher {
 		/**
 		 * a Map of VoxelBlock with the keys being a string "x,y,z"
 		 * @type {Map}
-		 * @private
 		 */
 		this.blocks = new Map();
 
@@ -215,59 +208,6 @@ export default class VoxelSelection extends THREE.EventDispatcher {
 	 */
 	listBlocks() {
 		return Array.from(this.blocks).map(d => d[1]);
-	}
-
-	/**
-	 * exports chunk to json format
-	 * @return {VoxelSelectionJSON}
-	 */
-	toJSON() {
-		let json = {
-			types: [],
-			blocks: []
-		};
-
-		// build list of block types
-		let typeCache = new Map();
-
-		let tmpVec = new THREE.Vector3();
-		for (let { position, block } of this.blocks) {
-			let blockData = block.toJSON();
-			let str = JSON.stringify(blockData);
-
-			if (!typeCache.has(str)) {
-				typeCache.set(str, json.types.length);
-				json.types.push(blockData);
-			}
-
-			json.blocks.push([tmpVec.fromString(position).toArray(), typeCache.get(str)]);
-		}
-
-		return json;
-	}
-
-	/**
-	 * imports chunk from json
-	 * @param  {VoxelSelectionJSON} json
-	 * @return {VoxelSelection} this
-	 */
-	fromJSON(json = {}) {
-		let tmpVec = new THREE.Vector3();
-		if (json.blocks && json.types) {
-			json.blocks.forEach(([positionArray, blockType]) => {
-				let blockData = json.types[blockType];
-				if (blockData) {
-					let block = this.blockManager.createBlock(blockData.type);
-
-					if (block) {
-						block.fromJSON(blockData);
-						this.setBlock(block, tmpVec.fromArray(positionArray));
-					}
-				}
-			});
-		}
-
-		return this;
 	}
 
 	/**

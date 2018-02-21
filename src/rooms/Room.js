@@ -2,6 +2,7 @@ import * as THREE from "three";
 import * as ChunkUtils from "../ChunkUtils.js";
 import VoxelSelection from "../voxel/VoxelSelection.js";
 import MazeGenerator from "../maze-generators/MazeGenerator.js";
+import voxelSerializer from "../voxel/serializer";
 
 export const ROOM_ROTATION_AXIS = new THREE.Vector3(0, 1, 0);
 
@@ -19,8 +20,7 @@ export default class Room {
 		this.manager = manager;
 
 		/**
-		 * a object that is passed to {@link VoxelSelection#fromJSON} when creating the selection for this room
-		 * @type {Object}
+		 * @type {VoxelSelectionJSON}
 		 * @private
 		 */
 		this.blocks = blocks;
@@ -48,10 +48,8 @@ export default class Room {
 	 */
 	get selection() {
 		if (!this._selection) {
-			this._selection = new VoxelSelection(this.blockManager);
-
 			if (this.blocks) {
-				this._selection.fromJSON(this.blocks);
+				this._selection = voxelSerializer.VoxelSelection.fromJSON(this.blocks, this.blockManager);
 
 				// rotate the blocks
 				if (this.rotation !== 0) {
@@ -66,6 +64,8 @@ export default class Room {
 						}
 					);
 				}
+			} else {
+				this._selection = new VoxelSelection(this.blockManager);
 			}
 		}
 

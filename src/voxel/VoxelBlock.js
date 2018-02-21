@@ -1,22 +1,12 @@
 import * as THREE from "three";
 import "../three-changes";
 
-/**
- * @typedef {Object} VoxelBlockJSON
- * @property {String} type - the id of the block
- * @property {Object} properties - the blocks properties
- * */
-
 /** the directions of neighbors */
 const NEIGHBORS_DIRS = [[1, 0, 0], [0, 1, 0], [0, 0, 1], [-1, 0, 0], [0, -1, 0], [0, 0, -1]];
 
 /** the base class for all blocks */
 export default class VoxelBlock {
-	/**
-	 * @param {Object} [data] - an optional json object to pass to {@link VoxelBlock.fromJSON}
-	 * @param {Object} [data.properties] a Object to be passed to {@link VoxelBlock.setProp}
-	 */
-	constructor(data) {
+	constructor() {
 		/**
 		 * the chunk we belong to
 		 * @type {VoxelChunk|VoxelSelection}
@@ -27,8 +17,6 @@ export default class VoxelBlock {
 		if (!Object.getPrototypeOf(this).hasOwnProperty("properties")) {
 			this.constructor._setUpProperties();
 		}
-
-		if (data) this.fromJSON(data);
 	}
 
 	/**
@@ -101,32 +89,6 @@ export default class VoxelBlock {
 		}
 
 		this.UpdateProps();
-		return this;
-	}
-
-	/**
-	 * exports this block to json format
-	 * @return {Object}
-	 * @property {String} type the UID of the block
-	 * @property {Number[]} rotation the rotation of this object, in format [x,y,z]
-	 * @property {Object} parameters an object containing all the parameters of the block
-	 */
-	toJSON() {
-		return {
-			type: this.id,
-			properties: this.hasOwnProperty("properties") ? this.properties : undefined
-		};
-	}
-
-	/**
-	 * @param {Object} json
-	 * @param {Number[]} json.rotation the rotation of the block, in format [x,y,z]
-	 * @param {Object} json.properties an object to pass to {@link VoxelBlock.setProp}
-	 * @return {this}
-	 */
-	fromJSON(json) {
-		if (json.properties) this.setProp(json.properties);
-
 		return this;
 	}
 

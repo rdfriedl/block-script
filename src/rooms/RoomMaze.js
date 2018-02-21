@@ -8,7 +8,7 @@ export default class RoomMaze {
 	/**
 	 * @param {MazeGenerator} mazeGenerator
 	 * @param {RoomManager} [roomManager=RoomManager.inst]
-	 * */
+	 */
 	constructor(mazeGenerator, roomManager = RoomManager.inst) {
 		if (!(mazeGenerator instanceof MazeGenerator))
 			throw new Error("RoomMaze requires a MazeGenerator as the first argument");

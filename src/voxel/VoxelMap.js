@@ -4,11 +4,6 @@ import VoxelChunk from "./VoxelChunk.js";
 import VoxelBlock from "./VoxelBlock.js";
 import VoxelBlockManager from "./VoxelBlockManager.js";
 
-/**
- * @typedef {Object} VoxelMapJSON
- * @property {VoxelChunkJSON[]} chunks
- */
-
 /** the base class for the voxel map */
 export default class VoxelMap extends THREE.Group {
 	/**
@@ -201,15 +196,13 @@ export default class VoxelMap extends THREE.Group {
 	}
 
 	/**
-	 * @param {VoxelChunk|Object} chunk - a {@link VoxelChunk} or a Object to pass to {@link VoxelChunk#fromJSON}
+	 * @param {VoxelChunk} chunk
 	 * @param {THREE.Vector3} position
 	 * @return {VoxelMap} this
 	 *
 	 * @emits {chunk:set}
 	 */
 	setChunk(chunk, position) {
-		if (!(chunk instanceof VoxelChunk)) chunk = new VoxelChunk().fromJSON(chunk);
-
 		position = this.tmpVec.copy(position).round();
 		let str = position.toString();
 		let oldChunk = this.chunks.get(str);
@@ -422,41 +415,6 @@ export default class VoxelMap extends THREE.Group {
 					chunk.removeBlock(position, disposeBlock);
 				}
 			}
-		}
-
-		return this;
-	}
-
-	/**
-	 * exports map to json format
-	 * @return {Object}
-	 */
-	toJSON() {
-		let json = {
-			chunks: []
-		};
-
-		for (let { position, chunk } of this.chunks) {
-			json.chunks.push([position, chunk.toJSON()]);
-		}
-
-		return json;
-	}
-
-	/**
-	 * imports chunks / blocks from json format
-	 * @param  {VoxelMapJSON} json
-	 * @return {VoxelMap} this
-	 */
-	fromJSON(json = {}) {
-		if (json.chunks) {
-			json.chunks.forEach(([positionString, data]) => {
-				let position = new THREE.Vector3().fromString(positionString);
-				let chunk = this.getChunk(position) || this.createChunk(position);
-
-				// import the blocks after we add the chunk to the map, that way the chunk can access the blockManager
-				chunk.fromJSON(data);
-			});
 		}
 
 		return this;

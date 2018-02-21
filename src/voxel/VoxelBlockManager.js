@@ -20,7 +20,7 @@ export default class VoxelBlockManager {
 
 		/**
 		 * a pool of blocks to pull from
-		 * @type {Object}
+		 * @type {Object<string, VoxelBlock[]>}
 		 * @private
 		 */
 		this.blockPool = {};

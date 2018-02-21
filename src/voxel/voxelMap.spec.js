@@ -280,34 +280,4 @@ describe("VoxelMap", () => {
 			expect(map.listChunks().length).to.be.above(0);
 		});
 	});
-
-	/** @test {VoxelMap#toJSON} */
-	describe("toJSON", () => {
-		it('should return an object with a "chunks" array', () => {
-			let json = map.toJSON();
-
-			json.chunks.should.be.an("array");
-		});
-	});
-
-	/** @test {VoxelMap#fromJSON} */
-	describe("fromJSON", () => {
-		it("should create a chunk in the map", () => {
-			let json = {
-				chunks: [
-					[
-						"1,1,1",
-						{
-							blocks: [],
-							types: []
-						}
-					]
-				]
-			};
-
-			map.fromJSON(json);
-
-			expect(map.getChunk(new THREE.Vector3(1, 1, 1))).to.be.an.instanceOf(VoxelChunk);
-		});
-	});
 });

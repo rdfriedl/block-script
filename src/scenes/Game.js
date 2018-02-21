@@ -164,20 +164,20 @@ export default class GameScene extends Scene {
 			};
 
 			window.totalBlocksInCache = () => {
-				let total = {};
-				this.map.blockManager.blocks.forEach(block => {
-					if (!total[block.id]) total[block.id] = 0;
+				let table = {};
 
-					total[block.id] += 1;
+				Object.keys(this.map.blockManager.blockPool).forEach(id => {
+					table[id] = this.map.blockManager.blockPool[id].length;
 				});
-				return total;
+
+				if (Object.keys(table).length) {
+					console.table(table);
+				}
 			};
 
 			window.logBlockInfo = () => {
 				console.log("blocks in map");
 				console.log(window.totalBlocksInMap());
-
-				console.log("blocks in cache");
 				console.log(window.totalBlocksInCache());
 			};
 		}

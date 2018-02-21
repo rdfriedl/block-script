@@ -86,6 +86,6 @@ export default class Scene {
 	/**
 	 * updates the objects in the scene
 	 * @param {number} dtime - the delta time
-	 * */
+	 */
 	animate(dtime) {}
 }
