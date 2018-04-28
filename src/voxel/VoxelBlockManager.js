@@ -1,4 +1,4 @@
-import * as querystring from "query-string";
+import qs from "qs";
 import VoxelBlock from "./VoxelBlock.js";
 
 /** manages a list of voxel blocks, and provides functions for creating them */
@@ -201,7 +201,7 @@ export default class VoxelBlockManager {
 	 * "dirt?rotation=[1,0,0]"
 	 */
 	static parseProps(id) {
-		return querystring.parseUrl(id || "").query;
+		return qs.parse(id || "");
 	}
 
 	/**
