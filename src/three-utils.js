@@ -1,9 +1,9 @@
-import * as THREE from "three";
+import { BufferGeometry, BufferAttribute, Line, LineBasicMaterial, LinePieces } from "three";
 
 export function createDebugBox(size) {
-	const geometry = new THREE.BufferGeometry();
-	geometry.addAttribute("position", new THREE.BufferAttribute(new Float32Array(72), 3));
-	const mesh = new THREE.Line(geometry, new THREE.LineBasicMaterial({ color: 0x000000 }), THREE.LinePieces);
+	const geometry = new BufferGeometry();
+	geometry.addAttribute("position", new BufferAttribute(new Float32Array(72), 3));
+	const mesh = new Line(geometry, new LineBasicMaterial({ color: 0x000000 }), LinePieces);
 
 	const min = size
 		.clone()

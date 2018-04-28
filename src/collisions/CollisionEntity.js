@@ -1,18 +1,18 @@
-import * as THREE from "three";
+import { Box3, Vector3 } from "three";
 
 export default class CollisionEntity {
 	constructor() {
 		/**
 		 * the position of this CollisionEntity
-		 * @type {THREE.Vector3}
+		 * @type {Vector3}
 		 */
-		this.position = new THREE.Vector3();
+		this.position = new Vector3();
 
 		/**
 		 * the velocity of this CollisionEntity
-		 * @type {THREE.Vector3}
+		 * @type {Vector3}
 		 */
-		this.velocity = new THREE.Vector3();
+		this.velocity = new Vector3();
 
 		/**
 		 * whether this entity is static
@@ -85,21 +85,21 @@ export default class CollisionEntity {
 	/**
 	 * this is called when a collision happens
 	 * @param {CollisionEntity} entity
-	 * @param {THREE.Vector3} normal
+	 * @param {Vector3} normal
 	 */
 	onCollision(entity, normal) {}
 
 	/**
 	 * returns a bounding box for this entity
-	 * @return {THREE.Box3}
+	 * @return {Box3}
 	 */
 	getBoundingBox() {
-		return new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
+		return new Box3(new Vector3(), new Vector3());
 	}
 
 	/**
 	 * returns the bounding box of this entity relivive to its position
-	 * @return {THREE.Box3}
+	 * @return {Box3}
 	 */
 	get boundingBox() {
 		return this.getBoundingBox().translate(this.position);
@@ -108,15 +108,15 @@ export default class CollisionEntity {
 	/**
 	 * gets the time and normal of a collision
 	 * @param {CollisionEntity} entity
-	 * @param {THREE.Vector3} velocity
-	 * @param {THREE.Box3} movementBox
+	 * @param {Vector3} velocity
+	 * @param {Box3} movementBox
 	 * @return {Object}
 	 */
 	getCollisionData(entity, velocity, movementBox) {
 		return {
 			entryTime: Infinity, // it never collides with this entity
 			exitTime: Infinity,
-			normal: new THREE.Vector3()
+			normal: new Vector3()
 		};
 	}
 }

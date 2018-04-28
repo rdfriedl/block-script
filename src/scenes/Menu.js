@@ -1,6 +1,14 @@
-import * as THREE from "three";
+import {
+	PerspectiveCamera,
+	Mesh,
+	BoxGeometry,
+	MeshLambertMaterial,
+	DirectionalLight,
+	AmbientLight,
+	Vector3
+} from "three";
 import * as ChunkUtils from "../ChunkUtils";
-import Scene from "./Scene";
+import EnhancedScene from "./EnhancedScene";
 
 import VoxelMap from "../voxel/VoxelMap";
 import CollisionEntityVoxelMap from "../collisions/types/voxelMap";
@@ -9,7 +17,7 @@ import CollisionWorld from "../collisions/CollisionWorld";
 
 import * as blocks from "../blocks/defaultBlocks";
 
-export default class MenuScene extends Scene {
+export default class MenuScene extends EnhancedScene {
 	constructor() {
 		super();
 
@@ -18,7 +26,7 @@ export default class MenuScene extends Scene {
 	}
 
 	setupScene() {
-		this.camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 100000);
+		this.camera = new PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 100000);
 		this.camera.position.z = 600;
 		this.camera.position.y = 100;
 
@@ -31,8 +39,8 @@ export default class MenuScene extends Scene {
 		const blockList = Object.keys(blocks).map(key => blocks[key].UID); //.filter(UID => !UID.includes('glass'));
 		ChunkUtils.drawCube(
 			this.map,
-			new THREE.Vector3(-10, -1, -10),
-			new THREE.Vector3(10, 0, 10),
+			new Vector3(-10, -1, -10),
+			new Vector3(10, 0, 10),
 			function() {
 				return blockList[Math.floor(Math.random() * blockList.length)];
 			},
@@ -40,8 +48,8 @@ export default class MenuScene extends Scene {
 		);
 		ChunkUtils.drawCube(
 			this.map,
-			new THREE.Vector3(-10, 0, -10),
-			new THREE.Vector3(10, 1, 10),
+			new Vector3(-10, 0, -10),
+			new Vector3(10, 1, 10),
 			function() {
 				return blockList[Math.floor(Math.random() * blockList.length)];
 			},
@@ -50,19 +58,16 @@ export default class MenuScene extends Scene {
 		this.map.updateChunks();
 
 		// create box mesh
-		this.boxMesh = new THREE.Mesh(
-			new THREE.BoxGeometry(50, 50, 50),
-			new THREE.MeshLambertMaterial({ color: 0xff0000 })
-		);
+		this.boxMesh = new Mesh(new BoxGeometry(50, 50, 50), new MeshLambertMaterial({ color: 0xff0000 }));
 		this.scene.add(this.boxMesh);
 
 		// add lights
-		let light = new THREE.DirectionalLight(0xffffff);
+		let light = new DirectionalLight(0xffffff);
 		light.intensity = 0.5;
 		light.position.set(1, 1, 1);
 		this.scene.add(light);
 
-		let ambient = new THREE.AmbientLight(0x666666);
+		let ambient = new AmbientLight(0x666666);
 		ambient.intensity = 0.5;
 		this.scene.add(ambient);
 
@@ -73,7 +78,7 @@ export default class MenuScene extends Scene {
 		this.collisionWorld = new CollisionWorld();
 		this.collisionMap = new CollisionEntityVoxelMap(this.map);
 
-		this.box = new CollisionEntityBox(new THREE.Vector3(50, 50, 50));
+		this.box = new CollisionEntityBox(new Vector3(50, 50, 50));
 		this.box.onCollision = (entity, normal) => {
 			if (normal.y !== 0) {
 				this.box.velocity.y = 0;

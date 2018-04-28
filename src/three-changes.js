@@ -1,6 +1,29 @@
-import * as THREE from "three";
+import {
+	EventDispatcher,
+	AxisHelper,
+	BufferGeometry,
+	BufferAttribute,
+	LineBasicMaterial,
+	VertexColors,
+	LineSegments,
+	Vector2,
+	Vector3,
+	Vector4,
+	GridHelper,
+	Color,
+	Float32Attribute,
+	Material,
+	MaterialLoader,
+	Texture,
+	UVMapping,
+	ClampToEdgeWrapping,
+	LinearMipMapLinearFilter,
+	RGBAFormat,
+	UnsignedByteType,
+	ImageUtils
+} from "three";
 
-THREE.EventDispatcher.prototype.dispatchEvent = function(event) {
+EventDispatcher.prototype.dispatchEvent = function(event) {
 	if (this._listeners === undefined) return;
 
 	let listeners = this._listeners;
@@ -23,39 +46,39 @@ THREE.EventDispatcher.prototype.dispatchEvent = function(event) {
 	}
 };
 
-// make it so axis helper can take a THREE.Vector3 as first arg
-// THREE.AxisHelper = function(size) {
-// 	if (!(size instanceof THREE.Vector3)) size = new THREE.Vector3(size || 1, size || 1, size || 1);
+// make it so axis helper can take a Vector3 as first arg
+// AxisHelper = function(size) {
+// 	if (!(size instanceof Vector3)) size = new Vector3(size || 1, size || 1, size || 1);
 //
 // 	let vertices = new Float32Array([0, 0, 0, size.x, 0, 0, 0, 0, 0, 0, size.y, 0, 0, 0, 0, 0, 0, size.z]);
 //
 // 	let colors = new Float32Array([1, 0, 0, 1, 0.6, 0, 0, 1, 0, 0.6, 1, 0, 0, 0, 1, 0, 0.6, 1]);
 //
-// 	let geometry = new THREE.BufferGeometry();
-// 	geometry.addAttribute("position", new THREE.BufferAttribute(vertices, 3));
-// 	geometry.addAttribute("color", new THREE.BufferAttribute(colors, 3));
+// 	let geometry = new BufferGeometry();
+// 	geometry.addAttribute("position", new BufferAttribute(vertices, 3));
+// 	geometry.addAttribute("color", new BufferAttribute(colors, 3));
 //
-// 	let material = new THREE.LineBasicMaterial({
-// 		vertexColors: THREE.VertexColors,
+// 	let material = new LineBasicMaterial({
+// 		vertexColors: VertexColors,
 // 	});
 //
-// 	THREE.LineSegments.call(this, geometry, material);
+// 	LineSegments.call(this, geometry, material);
 // };
 //
-// THREE.AxisHelper.prototype = Object.create(THREE.LineSegments.prototype);
-// THREE.AxisHelper.prototype.constructor = THREE.AxisHelper;
+// AxisHelper.prototype = Object.create(LineSegments.prototype);
+// AxisHelper.prototype.constructor = AxisHelper;
 
-// make it so grid helper can take a THREE.Vector2 as the size
-// THREE.GridHelper = function(size, step, color1, color2) {
-// 	color1 = new THREE.Color(color1 !== undefined ? color1 : 0x444444);
-// 	color2 = new THREE.Color(color2 !== undefined ? color2 : 0x888888);
+// make it so grid helper can take a Vector2 as the size
+// GridHelper = function(size, step, color1, color2) {
+// 	color1 = new Color(color1 !== undefined ? color1 : 0x444444);
+// 	color2 = new Color(color2 !== undefined ? color2 : 0x888888);
 //
 // 	let vertices = [];
 // 	let colors = [];
 //
-// 	if (!(size instanceof THREE.Vector2)) size = new THREE.Vector2(size || 0, size || 0);
+// 	if (!(size instanceof Vector2)) size = new Vector2(size || 0, size || 0);
 //
-// 	if (!(step instanceof THREE.Vector2)) step = new THREE.Vector2(step || 0, step || 0);
+// 	if (!(step instanceof Vector2)) step = new Vector2(step || 0, step || 0);
 //
 // 	let offset = 0;
 // 	for (let i = -size.x; i <= size.x; i += step.x) {
@@ -79,39 +102,39 @@ THREE.EventDispatcher.prototype.dispatchEvent = function(event) {
 // 		offset += 3;
 // 	}
 //
-// 	let geometry = new THREE.BufferGeometry();
-// 	geometry.addAttribute("position", new THREE.Float32Attribute(vertices, 3));
-// 	geometry.addAttribute("color", new THREE.Float32Attribute(colors, 3));
+// 	let geometry = new BufferGeometry();
+// 	geometry.addAttribute("position", new Float32Attribute(vertices, 3));
+// 	geometry.addAttribute("color", new Float32Attribute(colors, 3));
 //
-// 	let material = new THREE.LineBasicMaterial({
-// 		vertexColors: THREE.VertexColors,
+// 	let material = new LineBasicMaterial({
+// 		vertexColors: VertexColors,
 // 	});
 //
-// 	THREE.LineSegments.call(this, geometry, material);
+// 	LineSegments.call(this, geometry, material);
 // };
 //
-// THREE.GridHelper.prototype = Object.create(THREE.LineSegments.prototype);
-// THREE.GridHelper.prototype.constructor = THREE.GridHelper;
+// GridHelper.prototype = Object.create(LineSegments.prototype);
+// GridHelper.prototype.constructor = GridHelper;
 
 // fix up vector classes
-THREE.Vector2.prototype.multiply = function(v) {
+Vector2.prototype.multiply = function(v) {
 	this.x *= v.x;
 	this.y *= v.y;
 	return this;
 };
-THREE.Vector4.prototype.multiply = function(v) {
+Vector4.prototype.multiply = function(v) {
 	this.x *= v.x;
 	this.y *= v.y;
 	this.z *= v.z;
 	this.w *= v.w;
 	return this;
 };
-THREE.Vector2.prototype.divide = function(v) {
+Vector2.prototype.divide = function(v) {
 	this.x /= v.x;
 	this.y /= v.y;
 	return this;
 };
-THREE.Vector4.prototype.divide = function(v) {
+Vector4.prototype.divide = function(v) {
 	this.x /= v.x;
 	this.y /= v.y;
 	this.z /= v.z;
@@ -120,43 +143,43 @@ THREE.Vector4.prototype.divide = function(v) {
 };
 
 // vec to / from string
-THREE.Vector2.prototype.toString = function() {
+Vector2.prototype.toString = function() {
 	return `${this.x},${this.y}`;
 };
-THREE.Vector2.prototype.fromString = function(str) {
+Vector2.prototype.fromString = function(str) {
 	return this.fromArray(str.split(",").map(v => parseFloat(v)));
 };
 
-THREE.Vector3.prototype.toString = function() {
+Vector3.prototype.toString = function() {
 	return `${this.x},${this.y},${this.z}`;
 };
-THREE.Vector3.prototype.fromString = function(str) {
+Vector3.prototype.fromString = function(str) {
 	return this.fromArray(str.split(",").map(v => parseFloat(v)));
 };
 
-THREE.Vector4.prototype.toString = function() {
+Vector4.prototype.toString = function() {
 	return `${this.x},${this.y},${this.z},${this.w}`;
 };
-THREE.Vector4.prototype.fromString = function(str) {
+Vector4.prototype.fromString = function(str) {
 	return this.fromArray(str.split(",").map(v => parseFloat(v)));
 };
 
-THREE.Vector3.prototype.map = function(fn) {
+Vector3.prototype.map = function(fn) {
 	this.x = fn(this.x, "x");
 	this.y = fn(this.y, "y");
 	this.z = fn(this.z, "z");
 	return this;
 };
-THREE.Vector3.prototype.sign = function() {
+Vector3.prototype.sign = function() {
 	this.x = Math.sign(this.x);
 	this.y = Math.sign(this.y);
 	this.z = Math.sign(this.z);
 	return this;
 };
-THREE.Vector3.prototype.empty = function() {
+Vector3.prototype.empty = function() {
 	return !this.x && !this.y && !this.z;
 };
-THREE.Vector3.prototype.abs = function() {
+Vector3.prototype.abs = function() {
 	this.x = Math.abs(this.x);
 	this.y = Math.abs(this.y);
 	this.z = Math.abs(this.z);
@@ -164,9 +187,9 @@ THREE.Vector3.prototype.abs = function() {
 };
 
 // export maps on materials
-THREE.Material.prototype._toJSON = THREE.Material.prototype.toJSON;
-THREE.Material.prototype.toJSON = function() {
-	var output = THREE.Material.prototype._toJSON.apply(this);
+Material.prototype._toJSON = Material.prototype.toJSON;
+Material.prototype.toJSON = function() {
+	var output = Material.prototype._toJSON.apply(this);
 	if (this.map) output.map = this.map.toJSON();
 	if (this.lightMap) output.lightMap = this.lightMap.toJSON();
 	if (this.specularMap) output.specularMap = this.specularMap.toJSON();
@@ -175,28 +198,28 @@ THREE.Material.prototype.toJSON = function() {
 	return output;
 };
 // import materials with maps
-THREE.MaterialLoader.prototype._parse = THREE.MaterialLoader.prototype.parse;
-THREE.MaterialLoader.prototype.parse = function(a) {
-	var b = THREE.MaterialLoader.prototype._parse.apply(this, arguments);
+MaterialLoader.prototype._parse = MaterialLoader.prototype.parse;
+MaterialLoader.prototype.parse = function(a) {
+	var b = MaterialLoader.prototype._parse.apply(this, arguments);
 	// texture
-	if (a.map) b.map = THREE.Texture.fromJSON(a.map);
-	if (a.lightMap) b.lightMap = THREE.Texture.fromJSON(a.lightMap);
-	if (a.specularMap) b.specularMap = THREE.Texture.fromJSON(a.specularMap);
-	if (a.alphaMap) b.alphaMap = THREE.Texture.fromJSON(a.alphaMap);
-	if (a.envMap) b.envMap = THREE.Texture.fromJSON(a.envMap);
+	if (a.map) b.map = Texture.fromJSON(a.map);
+	if (a.lightMap) b.lightMap = Texture.fromJSON(a.lightMap);
+	if (a.specularMap) b.specularMap = Texture.fromJSON(a.specularMap);
+	if (a.alphaMap) b.alphaMap = Texture.fromJSON(a.alphaMap);
+	if (a.envMap) b.envMap = Texture.fromJSON(a.envMap);
 	return b;
 };
-THREE.Texture.prototype.toJSON = function() {
+Texture.prototype.toJSON = function() {
 	var output = {};
 
 	output.sourceFile = this.sourceFile;
-	if (this.mapping !== THREE.UVMapping) output.mapping = this.mapping;
-	if (this.warpS !== THREE.ClampToEdgeWrapping) output.warpS = this.warpS;
-	if (this.warpT !== THREE.ClampToEdgeWrapping) output.warpT = this.warpT;
-	if (this.magFilter !== THREE.LinearMipMapLinearFilter) output.magFilter = this.magFilter;
-	if (this.minFilter !== THREE.LinearMipMapLinearFilter) output.minFilter = this.minFilter;
-	if (this.format !== THREE.RGBAFormat) output.format = this.format;
-	if (this.type !== THREE.UnsignedByteType) output.type = this.type;
+	if (this.mapping !== UVMapping) output.mapping = this.mapping;
+	if (this.warpS !== ClampToEdgeWrapping) output.warpS = this.warpS;
+	if (this.warpT !== ClampToEdgeWrapping) output.warpT = this.warpT;
+	if (this.magFilter !== LinearMipMapLinearFilter) output.magFilter = this.magFilter;
+	if (this.minFilter !== LinearMipMapLinearFilter) output.minFilter = this.minFilter;
+	if (this.format !== RGBAFormat) output.format = this.format;
+	if (this.type !== UnsignedByteType) output.type = this.type;
 	if (this.anisotropy !== 1) output.anisotropy = this.anisotropy;
 	// repeat
 	// offset
@@ -205,8 +228,8 @@ THREE.Texture.prototype.toJSON = function() {
 	if (this.flipY !== true) output.flipY = this.flipY;
 	return output;
 };
-THREE.Texture.fromJSON = function(data) {
-	var tex = THREE.ImageUtils.loadTexture(data.sourceFile);
+Texture.fromJSON = function(data) {
+	var tex = ImageUtils.loadTexture(data.sourceFile);
 	for (var i in data) {
 		tex[i] = data[i];
 	}

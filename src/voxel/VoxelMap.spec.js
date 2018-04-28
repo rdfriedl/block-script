@@ -1,4 +1,4 @@
-import * as THREE from "three";
+import { Group, Vector3 } from "three";
 import VoxelMap from "./VoxelMap.js";
 import VoxelChunk from "./VoxelChunk.js";
 import VoxelBlock from "./VoxelBlock.js";
@@ -15,18 +15,18 @@ describe("VoxelMap", () => {
 		map.blockManager.registerBlock(VoxelBlock);
 	});
 
-	it("is an instance of THREE.Group", () => {
-		expect(map).to.be.an.instanceOf(THREE.Group);
+	it("is an instance of Group", () => {
+		expect(map).to.be.an.instanceOf(Group);
 	});
 
-	it("blockSize is a THREE.Vector3", () => {
+	it("blockSize is a Vector3", () => {
 		expect(map.blockSize).not.to.be.undefined;
-		expect(map.blockSize).to.be.an.instanceOf(THREE.Vector3);
+		expect(map.blockSize).to.be.an.instanceOf(Vector3);
 	});
 
-	it("chunkSize is a THREE.Vector3", () => {
+	it("chunkSize is a Vector3", () => {
 		expect(map.chunkSize).not.to.be.undefined;
-		expect(map.chunkSize).to.be.an.instanceOf(THREE.Vector3);
+		expect(map.chunkSize).to.be.an.instanceOf(Vector3);
 	});
 
 	describe("blockManager", () => {
@@ -37,7 +37,7 @@ describe("VoxelMap", () => {
 
 	describe("createChunk", () => {
 		beforeEach(() => {
-			chunk = map.createChunk(new THREE.Vector3());
+			chunk = map.createChunk(new Vector3());
 		});
 
 		it("returns a new VoxelChunk", () => {
@@ -45,7 +45,7 @@ describe("VoxelMap", () => {
 		});
 
 		it("add the chunk to the map", () => {
-			expect(map.getChunk(new THREE.Vector3())).to.equal(chunk);
+			expect(map.getChunk(new Vector3())).to.equal(chunk);
 		});
 	});
 
@@ -55,13 +55,13 @@ describe("VoxelMap", () => {
 		});
 
 		it("add the chunk to the map", () => {
-			map.setChunk(chunk, new THREE.Vector3());
+			map.setChunk(chunk, new Vector3());
 
-			expect(map.getChunk(new THREE.Vector3())).to.equal(chunk);
+			expect(map.getChunk(new Vector3())).to.equal(chunk);
 		});
 
 		it("should set the 'map' property on the chunk", () => {
-			map.setChunk(chunk, new THREE.Vector3());
+			map.setChunk(chunk, new Vector3());
 
 			chunk.map.should.equal(map);
 		});
@@ -73,7 +73,7 @@ describe("VoxelMap", () => {
 
 			map.addEventListener("chunk:set", listener);
 
-			map.setChunk(chunk, new THREE.Vector3());
+			map.setChunk(chunk, new Vector3());
 
 			listener.should.have.been.called;
 		});
@@ -81,11 +81,11 @@ describe("VoxelMap", () => {
 
 	describe("hasChunk", () => {
 		beforeEach(() => {
-			chunk = map.createChunk(new THREE.Vector3());
+			chunk = map.createChunk(new Vector3());
 		});
 
-		it("(THREE.Vector3)", () => {
-			expect(map.hasChunk(new THREE.Vector3(0, 0, 0))).to.be.true;
+		it("(Vector3)", () => {
+			expect(map.hasChunk(new Vector3(0, 0, 0))).to.be.true;
 		});
 
 		it("(VoxelChunk)", () => {
@@ -95,21 +95,21 @@ describe("VoxelMap", () => {
 
 	describe("getChunk", () => {
 		beforeEach(() => {
-			chunk = map.createChunk(new THREE.Vector3());
+			chunk = map.createChunk(new Vector3());
 		});
 
 		it("returns chunk at that position", () => {
-			expect(map.getChunk(new THREE.Vector3(0, 0, 0))).to.equal(chunk);
+			expect(map.getChunk(new Vector3(0, 0, 0))).to.equal(chunk);
 		});
 	});
 
 	describe("removeChunk", () => {
 		beforeEach(() => {
-			chunk = map.createChunk(new THREE.Vector3());
+			chunk = map.createChunk(new Vector3());
 		});
 
-		it("(THREE.Vector3)", () => {
-			let vec = new THREE.Vector3(0, 0, 0);
+		it("(Vector3)", () => {
+			let vec = new Vector3(0, 0, 0);
 			map.removeChunk(vec);
 			expect(map.hasChunk(vec)).to.be.false;
 			expect(map.getChunk(vec)).to.be.undefined;
@@ -141,13 +141,13 @@ describe("VoxelMap", () => {
 		it("should reset the chunks position", () => {
 			map.removeChunk(chunk);
 
-			chunk.position.equals(new THREE.Vector3()).should.be.true;
+			chunk.position.equals(new Vector3()).should.be.true;
 		});
 	});
 
 	describe("clearChunks", () => {
 		it("removes all chunks in map", () => {
-			map.createChunk(new THREE.Vector3());
+			map.createChunk(new Vector3());
 			map.clearChunks();
 			expect(map.listChunks().length).to.equal(0);
 		});
@@ -166,11 +166,11 @@ describe("VoxelMap", () => {
 
 	describe("getChunkPosition", () => {
 		beforeEach(() => {
-			chunk = map.createChunk(new THREE.Vector3());
+			chunk = map.createChunk(new Vector3());
 		});
 
 		it("returns the position of the chunk", () => {
-			expect(map.getChunkPosition(chunk).equals(new THREE.Vector3(0, 0, 0))).to.be.true;
+			expect(map.getChunkPosition(chunk).equals(new Vector3(0, 0, 0))).to.be.true;
 		});
 
 		it("returns undefined if the chunk is not in the map", () => {
@@ -181,21 +181,21 @@ describe("VoxelMap", () => {
 	describe("listChunks", () => {
 		it("returns array of chunks", () => {
 			map.clearChunks();
-			map.createChunk(new THREE.Vector3());
-			map.createChunk(new THREE.Vector3(0, 1, 0));
-			map.createChunk(new THREE.Vector3(0, 2, 0));
+			map.createChunk(new Vector3());
+			map.createChunk(new Vector3(0, 1, 0));
+			map.createChunk(new Vector3(0, 2, 0));
 			expect(map.listChunks().length).to.equal(3);
 		});
 	});
 
 	describe("createBlock", () => {
 		it("returns created block", () => {
-			expect(map.createBlock("block", new THREE.Vector3(1, 1, 1))).to.be.an.instanceOf(VoxelBlock);
+			expect(map.createBlock("block", new Vector3(1, 1, 1))).to.be.an.instanceOf(VoxelBlock);
 		});
 
 		it("creates a block at position", () => {
-			let block = map.createBlock("block", new THREE.Vector3());
-			expect(map.getBlock(new THREE.Vector3())).to.equal(block);
+			let block = map.createBlock("block", new Vector3());
+			expect(map.getBlock(new Vector3())).to.equal(block);
 		});
 	});
 
@@ -203,11 +203,11 @@ describe("VoxelMap", () => {
 		let block;
 
 		beforeEach(() => {
-			block = map.createBlock("block", new THREE.Vector3());
+			block = map.createBlock("block", new Vector3());
 		});
 
-		it("(THREE.Vector3)", () => {
-			expect(map.hasBlock(new THREE.Vector3(0, 0, 0))).to.be.true;
+		it("(Vector3)", () => {
+			expect(map.hasBlock(new Vector3(0, 0, 0))).to.be.true;
 		});
 
 		it("(VoxelBlock)", () => {
@@ -219,14 +219,14 @@ describe("VoxelMap", () => {
 		let block;
 
 		beforeEach(() => {
-			block = map.createBlock("block", new THREE.Vector3());
+			block = map.createBlock("block", new Vector3());
 		});
 
-		it("(THREE.Vector3)", () => {
-			expect(map.getBlock(new THREE.Vector3(0, 0, 0))).to.equal(block);
+		it("(Vector3)", () => {
+			expect(map.getBlock(new Vector3(0, 0, 0))).to.equal(block);
 		});
 
-		it("(THREE.Vector3)", () => {
+		it("(Vector3)", () => {
 			expect(map.getBlock(block)).to.equal(block);
 			expect(map.getBlock(new VoxelBlock())).to.be.undefined;
 		});
@@ -236,11 +236,11 @@ describe("VoxelMap", () => {
 		let block;
 
 		beforeEach(() => {
-			block = map.createBlock("block", new THREE.Vector3());
+			block = map.createBlock("block", new Vector3());
 		});
 
-		it("(THREE.Vector3)", () => {
-			let vec = new THREE.Vector3(0, 0, 0);
+		it("(Vector3)", () => {
+			let vec = new Vector3(0, 0, 0);
 			map.removeBlock(vec);
 
 			expect(map.hasBlock(vec)).to.be.false;
@@ -257,12 +257,12 @@ describe("VoxelMap", () => {
 
 	describe("clearBlocks", () => {
 		beforeEach(() => {
-			map.createBlock("block", new THREE.Vector3());
+			map.createBlock("block", new Vector3());
 			map.clearBlocks();
 		});
 
 		it("removes all blocks in map", () => {
-			expect(map.getBlock(new THREE.Vector3())).to.be.undefined;
+			expect(map.getBlock(new Vector3())).to.be.undefined;
 		});
 
 		it("keeps the chunks", () => {

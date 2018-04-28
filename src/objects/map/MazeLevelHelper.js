@@ -1,14 +1,14 @@
-import * as THREE from "three";
+import { Group, Vector3, Vector4 } from "three";
 import RoomHelper from "./RoomHelper.js";
 
-export default class MazeLevelHelper extends THREE.Group {
+export default class MazeLevelHelper extends Group {
 	constructor(roomMaze) {
 		super();
 
 		this.level = 0;
 		this.time = 0;
 		this.rooms = roomMaze;
-		this.roomSize = new THREE.Vector3().copy(this.rooms.roomSize);
+		this.roomSize = new Vector3().copy(this.rooms.roomSize);
 
 		this.helpers = {};
 
@@ -19,7 +19,7 @@ export default class MazeLevelHelper extends THREE.Group {
 		let mazeSize = this.rooms.size;
 
 		// create the objects for the rooms
-		let pos = new THREE.Vector4();
+		let pos = new Vector4();
 		for (let x = 0; x < mazeSize.x; x++) {
 			for (let z = 0; z < mazeSize.z; z++) {
 				pos.set(x, this.level, z, this.time);

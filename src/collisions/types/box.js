@@ -1,20 +1,20 @@
-import * as THREE from "three";
+import { Vector3, Box3 } from "three";
 import CollisionEntity from "../CollisionEntity.js";
 
 export default class CollisionEntityBox extends CollisionEntity {
 	/**
-	 * @param {THREE.Vector3} size - the size of the box
-	 * @param {THREE.Vector3} [offset] - the offset of the box from its center, if none is provided it will default to the center of the box
+	 * @param {Vector3} size - the size of the box
+	 * @param {Vector3} [offset] - the offset of the box from its center, if none is provided it will default to the center of the box
 	 */
 	constructor(size, offset) {
 		super();
-		size = size || new THREE.Vector3();
+		size = size || new Vector3();
 
 		/**
 		 * a Box3 that is used as the size of this CollisionEntityBox
-		 * @type {THREE.Box3}
+		 * @type {Box3}
 		 */
-		this._box = new THREE.Box3(
+		this._box = new Box3(
 			size
 				.clone()
 				.divideScalar(2)
@@ -22,7 +22,7 @@ export default class CollisionEntityBox extends CollisionEntity {
 			size.clone().divideScalar(2)
 		);
 
-		if (offset instanceof THREE.Vector3) this._box.translate(offset);
+		if (offset instanceof Vector3) this._box.translate(offset);
 	}
 
 	getBoundingBox() {
@@ -48,16 +48,16 @@ export default class CollisionEntityBox extends CollisionEntity {
 	}
 
 	/**
-	 * @param {THREE.Box3} a - the box thats moving
-	 * @param {THREE.Box3} b - the static box
-	 * @param {THREE.Vector3} velocity
+	 * @param {Box3} a - the box that is moving
+	 * @param {Box3} b - the static box
+	 * @param {Vector3} velocity
 	 * @return {Object|Boolean} - returns object with info about collision, if there was no collision it will return false
 	 */
 	static SweptAABB(a, b, velocity) {
 		const axes = ["x", "y", "z"];
-		let normal = new THREE.Vector3();
-		let invEntry = new THREE.Vector3();
-		let invExit = new THREE.Vector3();
+		let normal = new Vector3();
+		let invEntry = new Vector3();
+		let invExit = new Vector3();
 
 		// find the distance between the objects on the near and far sides for all axes
 		for (let i = 0; i < axes.length; i++) {
@@ -78,8 +78,8 @@ export default class CollisionEntityBox extends CollisionEntity {
 		}
 
 		// find time of collision and time of leaving for each axis (if statement is to prevent divide by zero)
-		let entry = new THREE.Vector3();
-		let exit = new THREE.Vector3();
+		let entry = new Vector3();
+		let exit = new Vector3();
 
 		// calculate the entry and exit time
 		for (let i = 0; i < axes.length; i++) {

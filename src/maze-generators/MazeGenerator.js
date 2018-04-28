@@ -1,15 +1,15 @@
-import * as THREE from "three";
+import { Vector2, Vector3, Vector4 } from "three";
 
 /** main class for maze generators */
 export default class MazeGenerator {
 	/**
-	 * @param {THREE.Vector2|THREE.Vector3|THREE.Vector4} vecClass - the type of vector to use
+	 * @param {Vector2|Vector3|Vector4} vecClass - the type of vector to use
 	 * @param {MazeGenerator#vec} size - the size of the maze
 	 */
 	constructor(vecClass, size) {
 		/**
 		 * the type of vector to use
-		 * @type {THREE.Vector2|THREE.Vector3|THREE.Vector4}
+		 * @type {Vector2|Vector3|Vector4}
 		 */
 		this.vec = vecClass;
 

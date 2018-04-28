@@ -1,4 +1,4 @@
-import * as THREE from "three";
+import { Box3, Vector3 } from "three";
 import CollisionEntity from "../CollisionEntity.js";
 
 /** collision entity for a {@link VoxelMap} */
@@ -19,16 +19,13 @@ export default class CollisionEntityVoxelMap extends CollisionEntity {
 
 	/** @override */
 	getBoundingBox() {
-		return new THREE.Box3(
-			new THREE.Vector3(-Infinity, -Infinity, -Infinity),
-			new THREE.Vector3(Infinity, Infinity, Infinity)
-		);
+		return new Box3(new Vector3(-Infinity, -Infinity, -Infinity), new Vector3(Infinity, Infinity, Infinity));
 	}
 
 	getCollisionData(entity, velocity, movementBox) {
 		// get all the blocks in the way
 		let blocks = [],
-			vec = new THREE.Vector3();
+			vec = new Vector3();
 		let box = movementBox.clone();
 		box.min.divide(this.map.blockSize).floor();
 		box.max.divide(this.map.blockSize).floor();
@@ -43,7 +40,7 @@ export default class CollisionEntityVoxelMap extends CollisionEntity {
 		}
 
 		if (entity instanceof CollisionEntityBox) {
-			let box = new THREE.Box3();
+			let box = new Box3();
 			let collision;
 
 			// test for and find the first collision
@@ -68,7 +65,7 @@ export default class CollisionEntityVoxelMap extends CollisionEntity {
 					normal: collision.normal
 				};
 		} else if (entity instanceof CollisionEntityPoint) {
-			let box = new THREE.Box3();
+			let box = new Box3();
 			let collision;
 
 			// test for and find the first collision

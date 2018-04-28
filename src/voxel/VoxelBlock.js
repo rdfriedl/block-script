@@ -1,4 +1,4 @@
-import * as THREE from "three";
+import { Vector3, BoxGeometry, MeshNormalMaterial, Euler } from "three";
 import "../three-changes";
 
 /** the directions of neighbors */
@@ -58,7 +58,7 @@ export default class VoxelBlock {
 	 */
 	getNeighbors() {
 		let a = [];
-		let vec = new THREE.Vector3();
+		let vec = new Vector3();
 		for (let i = 0; i < NEIGHBORS_DIRS.length; i++) {
 			a.push(this.getNeighbor(vec.fromArray(NEIGHBORS_DIRS[i])));
 		}
@@ -118,7 +118,7 @@ export default class VoxelBlock {
 	 * @readOnly
 	 */
 	get position() {
-		return this.parent ? this.parent.getBlockPosition(this) : new THREE.Vector3();
+		return this.parent ? this.parent.getBlockPosition(this) : new Vector3();
 	}
 
 	/**
@@ -133,7 +133,7 @@ export default class VoxelBlock {
 					.clone()
 					.multiply(this.chunkSize)
 					.add(this.position)
-			: new THREE.Vector3();
+			: new Vector3();
 	}
 
 	/**
@@ -143,9 +143,7 @@ export default class VoxelBlock {
 	 * @readOnly
 	 */
 	get scenePosition() {
-		return this.chunk
-			? this.chunk.scenePosition.add(this.position.clone().multiply(this.blockSize))
-			: new THREE.Vector3();
+		return this.chunk ? this.chunk.scenePosition.add(this.position.clone().multiply(this.blockSize)) : new Vector3();
 	}
 
 	/**
@@ -201,7 +199,7 @@ export default class VoxelBlock {
 	 * @return {Vector3}
 	 */
 	get blockSize() {
-		return this.parent ? this.parent.blockSize : new THREE.Vector3();
+		return this.parent ? this.parent.blockSize : new Vector3();
 	}
 
 	/**
@@ -209,7 +207,7 @@ export default class VoxelBlock {
 	 * @return {Vector3}
 	 */
 	get chunkSize() {
-		return this.parent ? this.parent.chunkSize : new THREE.Vector3();
+		return this.parent ? this.parent.chunkSize : new Vector3();
 	}
 
 	/**
@@ -241,7 +239,7 @@ export default class VoxelBlock {
 	 * @return {Geometry}
 	 */
 	CreateGeometry() {
-		let geometry = new THREE.BoxGeometry(1, 1, 1);
+		let geometry = new BoxGeometry(1, 1, 1);
 		geometry.faces.forEach(f => {
 			f.materialIndex = 0;
 		});
@@ -253,7 +251,7 @@ export default class VoxelBlock {
 	 * @return {Material}
 	 */
 	CreateMaterial() {
-		return new THREE.MeshNormalMaterial();
+		return new MeshNormalMaterial();
 	}
 
 	/**
@@ -302,7 +300,7 @@ VoxelBlock.UID = "block";
  * @property {Array} removeSound an array of sound ids to play if the player destroys this block
  */
 VoxelBlock.DefalutProperties = {
-	rotation: new THREE.Euler(),
+	rotation: new Euler(),
 	transparent: false,
 	canCollide: true,
 	canRotate: true,

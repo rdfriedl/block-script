@@ -1,4 +1,4 @@
-import * as THREE from "three";
+import { Vector3 } from "three";
 import ChunkGenerator from "./ChunkGenerator.js";
 import * as ChunkUtils from "../ChunkUtils.js";
 
@@ -8,23 +8,23 @@ export default class ChunkGeneratorFlat extends ChunkGenerator {
 		if (chunk.chunkPosition.y === 0) {
 			ChunkUtils.drawCube(
 				chunk,
-				new THREE.Vector3(0, 0, 0),
-				new THREE.Vector3(1, 0, 1).multiply(chunk.map.chunkSize).setY(1),
+				new Vector3(0, 0, 0),
+				new Vector3(1, 0, 1).multiply(chunk.map.chunkSize).setY(1),
 				"top_dirt"
 			);
 		} else if (chunk.chunkPosition.y < -1) {
-			ChunkUtils.drawCube(chunk, new THREE.Vector3(0, 0, 0), chunk.map.chunkSize, "stone");
+			ChunkUtils.drawCube(chunk, new Vector3(0, 0, 0), chunk.map.chunkSize, "stone");
 		} else if (chunk.chunkPosition.y < 0) {
 			ChunkUtils.drawCube(
 				chunk,
-				new THREE.Vector3(0, 0, 0).setY(Math.floor(chunk.map.chunkSize.y / 2)),
+				new Vector3(0, 0, 0).setY(Math.floor(chunk.map.chunkSize.y / 2)),
 				chunk.map.chunkSize,
 				"dirt"
 			);
 
 			ChunkUtils.drawCube(
 				chunk,
-				new THREE.Vector3(0, 0, 0),
+				new Vector3(0, 0, 0),
 				chunk.map.chunkSize.clone().setY(Math.ceil(chunk.map.chunkSize.y / 2)),
 				"stone"
 			);

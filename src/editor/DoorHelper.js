@@ -1,11 +1,11 @@
-import * as THREE from "three";
+import { Mesh, BoxBufferGeometry, MeshLambertMaterial, Vector3, Group, Vector4 } from "three";
 import Room from "../rooms/Room.js";
 
 const DOOR_TYPES = {};
 DOOR_TYPES.x = DOOR_TYPES.z = DOOR_TYPES.y = (size, side) => {
-	let mesh = new THREE.Mesh(
-		new THREE.BoxBufferGeometry(4, 4, 1).translate(0, 0, 0.5),
-		new THREE.MeshLambertMaterial({
+	let mesh = new Mesh(
+		new BoxBufferGeometry(4, 4, 1).translate(0, 0, 0.5),
+		new MeshLambertMaterial({
 			color: 0x55ff55,
 			transparent: true,
 			opacity: 0.3
@@ -16,26 +16,26 @@ DOOR_TYPES.x = DOOR_TYPES.z = DOOR_TYPES.y = (size, side) => {
 		.copy(size)
 		.divideScalar(2)
 		.multiply(side);
-	mesh.lookAt(new THREE.Vector3());
+	mesh.lookAt(new Vector3());
 
 	return mesh;
 };
 
-export default class DoorHelper extends THREE.Group {
+export default class DoorHelper extends Group {
 	constructor(map, roomSize) {
 		super();
 
 		this.map = map;
-		this.roomSize = new THREE.Vector3();
-		this.doors = new THREE.Vector4();
+		this.roomSize = new Vector3();
+		this.doors = new Vector4();
 
-		if (roomSize instanceof THREE.Vector3) this.roomSize.copy(roomSize);
+		if (roomSize instanceof Vector3) this.roomSize.copy(roomSize);
 	}
 
 	update() {
 		this.children = [];
 
-		let side = new THREE.Vector3();
+		let side = new Vector3();
 		for (let axis in this.doors) {
 			if (!DOOR_TYPES[axis]) continue;
 

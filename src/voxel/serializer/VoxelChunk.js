@@ -1,10 +1,10 @@
-import * as THREE from "three";
+import { Vector3 } from "three";
 
 import { fromJSON as VoxelBlockFromJSON } from "./VoxelBlock";
 import VoxelChunk from "../VoxelChunk";
 import VoxelBlockManager from "../VoxelBlockManager";
 
-const tmpVec = new THREE.Vector3();
+const tmpVec = new Vector3();
 
 /**
  * @typedef {Object} VoxelChunkJSON

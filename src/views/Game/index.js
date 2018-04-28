@@ -1,5 +1,5 @@
 import React, { PureComponent } from "react";
-import * as THREE from "three";
+import { WebGLRenderer, PCFSoftShadowMap } from "three";
 import Stats from "stats.js";
 
 import GameScene from "../../scenes/Game";
@@ -86,14 +86,14 @@ export default class MenuView extends PureComponent {
 	// scene
 	createRenderer() {
 		if (!rendererCache) {
-			rendererCache = new THREE.WebGLRenderer();
+			rendererCache = new WebGLRenderer();
 		}
 
 		this.renderer = rendererCache;
 		this.renderer.setPixelRatio(window.devicePixelRatio);
 		this.renderer.setSize(window.innerWidth, window.innerHeight);
 		this.renderer.shadowMap.enabled = true;
-		this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+		this.renderer.shadowMap.type = PCFSoftShadowMap;
 	}
 	updateScene() {
 		this.stats.begin();

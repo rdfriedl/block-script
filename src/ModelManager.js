@@ -1,4 +1,4 @@
-import * as THREE from "three";
+import { Geometry, Material, MeshNormalMaterial, Mesh } from "three";
 
 /** manages and loads models */
 export default class ModelManager {
@@ -13,16 +13,16 @@ export default class ModelManager {
 		/**
 		 * the geometry to use while the model is loading
 		 * @private
-		 * @type {THREE.Geometry)
+		 * @type {Geometry}
 		 */
-		this.tmpGeometry = new THREE.Geometry();
+		this.tmpGeometry = new Geometry();
 
 		/**
 		 * the material to use while the model is loading
 		 * @private
-		 * @type {THREE.Material)
+		 * @type {Material}
 		 */
-		this.tmpMaterial = new THREE.MeshNormalMaterial();
+		this.tmpMaterial = new MeshNormalMaterial();
 	}
 
 	/**
@@ -37,7 +37,7 @@ export default class ModelManager {
 
 	/**
 	 * registers a model.
-	 * NOTE: the loader needs to have a callback that returns a THREE.Mesh
+	 * NOTE: the loader needs to have a callback that returns a Mesh
 	 * @param  {String} id - the id to be used for this model
 	 * @param  {String} url - the url to the model file
 	 * @param  {Function} loader - a function that takes (url, callback)
@@ -88,7 +88,7 @@ export default class ModelManager {
 	 * if the model is not loaded yet, it returns a empty mesh and adds the geometry and material to it when it model loads
 	 * @param {String} id - the id of the model
 	 * @param {Function} [cb] - called when the model is loaded, if the model is already loaded it will be called
-	 * @return {THREE.Mesh}
+	 * @return {Mesh}
 	 */
 	getMesh(id, cb) {
 		if (this.has(id)) {
@@ -115,7 +115,7 @@ export default class ModelManager {
 			}
 
 			// model is loading, add a callback
-			let mesh = new THREE.Mesh(this.tmpGeometry, this.tmpMaterial);
+			let mesh = new Mesh(this.tmpGeometry, this.tmpMaterial);
 			model.meshes.push(mesh);
 			if (cb) model.callbacks.push(cb);
 			return mesh;

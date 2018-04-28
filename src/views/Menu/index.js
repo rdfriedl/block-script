@@ -1,6 +1,6 @@
 import React, { PureComponent } from "react";
 import { Link } from "react-router-dom";
-import * as THREE from "three";
+import { WebGLRenderer } from "three";
 
 import Icon from "@fortawesome/react-fontawesome";
 import { faGamepad, faBars } from "@fortawesome/fontawesome-free-solid";
@@ -77,7 +77,7 @@ export default class MenuView extends PureComponent {
 	// scene
 	createRenderer() {
 		if (!rendererCache) {
-			rendererCache = new THREE.WebGLRenderer();
+			rendererCache = new WebGLRenderer();
 		}
 
 		this.renderer = rendererCache;

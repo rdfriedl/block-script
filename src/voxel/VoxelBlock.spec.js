@@ -1,4 +1,4 @@
-import {Vector3} from "three";
+import { Vector3 } from "three";
 import VoxelMap from "./VoxelMap.js";
 import VoxelBlock from "./VoxelBlock.js";
 import VoxelSelection from "./VoxelSelection.js";

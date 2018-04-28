@@ -1,9 +1,20 @@
-import * as THREE from "three";
+import {
+	PointLight,
+	PointerLockControls,
+	Raycaster,
+	BoxGeometry,
+	MeshBasicMaterial,
+	FogExp2,
+	AmbientLight,
+	Mesh,
+	Box3,
+	Vector3
+} from "three";
 
 // extensions
 import "three/examples/js/controls/PointerLockControls";
 
-import Scene from "./Scene";
+import EnhancedScene from "./EnhancedScene";
 import VoxelMap from "../voxel/VoxelMap.js";
 import * as ChunkUtils from "../ChunkUtils";
 import * as blocks from "../blocks/defaultBlocks.js";
@@ -28,15 +39,15 @@ const MOVEMENT_KEYMAP = {
 };
 
 /** the chunk load range */
-const VIEW_RANGE = new THREE.Vector3(2, 2, 2);
+const VIEW_RANGE = new Vector3(2, 2, 2);
 /** all chunks father then this are unloaded and their meshes are stored in the cache */
-const UNLOAD_RANGE = new THREE.Vector3(2, 2, 2);
+const UNLOAD_RANGE = new Vector3(2, 2, 2);
 /** all meshes in the cache that are further away then this are removed from the cache */
-const UNLOAD_CACHE_RANGE = new THREE.Vector3(4, 4, 4);
+const UNLOAD_CACHE_RANGE = new Vector3(4, 4, 4);
 /** the size of the maze */
-const MAZE_SIZE = new THREE.Vector3(1, 1, 1).multiplyScalar(5);
+const MAZE_SIZE = new Vector3(1, 1, 1).multiplyScalar(5);
 
-export default class GameScene extends Scene {
+export default class GameScene extends EnhancedScene {
 	constructor() {
 		super();
 
@@ -72,11 +83,11 @@ export default class GameScene extends Scene {
 			.multiply(this.map.blockSize);
 
 		// light
-		let light = new THREE.PointLight(0xffffff, 1, 300);
+		let light = new PointLight(0xffffff, 1, 300);
 		this.player.add(light);
 
 		// create controls
-		this.controls = new THREE.PointerLockControls(this.player.camera);
+		this.controls = new PointerLockControls(this.player.camera);
 		this.player.add(this.controls.getObject());
 		this.controls.getObject().position.set(0, 0, 0);
 
@@ -86,11 +97,11 @@ export default class GameScene extends Scene {
 		document.addEventListener("webkitpointerlockchange", this.onPointerlockchange);
 
 		// pick block
-		this.pickBlockRayCaster = new THREE.Raycaster();
-		this.pickBlockNormal = new THREE.Vector3();
-		this.pickBlockMesh = new THREE.Mesh(
-			new THREE.BoxGeometry(1, 1, 1),
-			new THREE.MeshBasicMaterial({
+		this.pickBlockRayCaster = new Raycaster();
+		this.pickBlockNormal = new Vector3();
+		this.pickBlockMesh = new Mesh(
+			new BoxGeometry(1, 1, 1),
+			new MeshBasicMaterial({
 				color: 0xffffff,
 				wireframe: true
 			})
@@ -185,20 +196,20 @@ export default class GameScene extends Scene {
 
 	setupMaze() {
 		/** the maze generator for the scene */
-		this.mazeGenerator = new RecursiveBackTracker(THREE.Vector3, MAZE_SIZE);
+		this.mazeGenerator = new RecursiveBackTracker(Vector3, MAZE_SIZE);
 		this.mazeGenerator.generate({
 			//make it so it only goes up or down if it has to
-			weights: new THREE.Vector3(1, 0, 1)
+			weights: new Vector3(1, 0, 1)
 		});
 
 		this.mazeRooms = new RoomMaze(this.mazeGenerator, DefaultRooms);
 	}
 
 	setupScene() {
-		this.scene.fog = new THREE.FogExp2(0x000000, 4 * 10 / 100000);
+		this.scene.fog = new FogExp2(0x000000, 4 * 10 / 100000);
 
 		// create light
-		this.scene.add(new THREE.AmbientLight(0xffffff, 0.03));
+		this.scene.add(new AmbientLight(0xffffff, 0.03));
 	}
 
 	setupCollisions() {
@@ -233,7 +244,7 @@ export default class GameScene extends Scene {
 		let roomSize = this.mazeRooms.roomSize.clone().map(v => (v -= 1));
 		let chunkSize = this.map.chunkSize.clone().map(v => (v -= 1));
 		let chunkPosition = chunk.worldPosition; // the position of the chunk in blocks
-		let chunkRoomBBox = new THREE.Box3();
+		let chunkRoomBBox = new Box3();
 		chunkRoomBBox.min
 			.copy(chunkPosition)
 			.divide(this.mazeRooms.roomSize)
@@ -245,7 +256,7 @@ export default class GameScene extends Scene {
 			.floor();
 
 		// find all the rooms we overlap
-		let roomPosition = new THREE.Vector3();
+		let roomPosition = new Vector3();
 		for (let x = chunkRoomBBox.min.x; x <= chunkRoomBBox.max.x; x++) {
 			for (let y = chunkRoomBBox.min.y; y <= chunkRoomBBox.max.y; y++) {
 				for (let z = chunkRoomBBox.min.z; z <= chunkRoomBBox.max.z; z++) {
@@ -257,7 +268,7 @@ export default class GameScene extends Scene {
 					roomPosition.set(x, y, z).multiply(this.mazeRooms.roomSize);
 
 					// get overlap
-					let overlap = new THREE.Box3();
+					let overlap = new Box3();
 					overlap.min
 						.set(-Infinity, -Infinity, -Infinity)
 						.max(chunkPosition)
@@ -295,7 +306,7 @@ export default class GameScene extends Scene {
 			}
 
 			// create a new mesh out of the cached geometry and material
-			chunk.mesh = new THREE.Mesh(this.geometryCache[cacheIndex], this.materialCache[cacheIndex]);
+			chunk.mesh = new Mesh(this.geometryCache[cacheIndex], this.materialCache[cacheIndex]);
 			chunk.mesh.scale.copy(chunk.blockSize);
 			chunk.add(chunk.mesh);
 		}
@@ -303,7 +314,7 @@ export default class GameScene extends Scene {
 		return chunk;
 	}
 	unloadCache() {
-		let tmpVec = new THREE.Vector3();
+		let tmpVec = new Vector3();
 		for (let pos in this.geometryCache) {
 			let vec = tmpVec.fromString(pos);
 			if (!this.vectorInRange(vec, UNLOAD_CACHE_RANGE)) {
@@ -323,7 +334,7 @@ export default class GameScene extends Scene {
 		let min = playerChunkPosition.clone().sub(VIEW_RANGE);
 		let max = playerChunkPosition.clone().add(VIEW_RANGE);
 
-		let pos = new THREE.Vector3();
+		let pos = new Vector3();
 		for (let x = min.x; x <= max.x; x++) {
 			for (let y = min.y; y <= max.y; y++) {
 				for (let z = min.z; z <= max.z; z++) {
@@ -357,12 +368,12 @@ export default class GameScene extends Scene {
 
 		// cast ray to find block data
 		this.pickBlockRayCaster.set(
-			this.player.camera.getWorldPosition(new THREE.Vector3()),
-			this.player.camera.getWorldDirection(new THREE.Vector3())
+			this.player.camera.getWorldPosition(new Vector3()),
+			this.player.camera.getWorldDirection(new Vector3())
 		);
 
 		// intersect with map
-		let tmpVec = new THREE.Vector3();
+		let tmpVec = new Vector3();
 		let intersects = this.pickBlockRayCaster.intersectObject(this.map, true);
 
 		for (let i = 0; i < intersects.length; i++) {
@@ -377,11 +388,11 @@ export default class GameScene extends Scene {
 					this.pickBlockNormal.copy(n);
 				} else {
 					// fall back to using a box
-					let box = new THREE.Box3(new THREE.Vector3(), this.map.blockSize);
+					let box = new Box3(new Vector3(), this.map.blockSize);
 					box.translate(block.scenePosition);
 
 					let n = this.pickBlockRayCaster.ray.intersectBox(box) || block.sceneCenter;
-					let normal = new THREE.Vector3();
+					let normal = new Vector3();
 
 					n.sub(block.sceneCenter);
 					if (Math.abs(n.y) > Math.abs(n.x) && Math.abs(n.y) > Math.abs(n.z)) {

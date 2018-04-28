@@ -1,13 +1,13 @@
-import * as THREE from "three";
+import { Clock, Vector3 } from "three";
 import CollisionEntity from "./CollisionEntity.js";
 
 export default class CollisionWorld {
 	constructor() {
 		/**
 		 * a clock to keep track of time
-		 * @type {THREE.Clock}
+		 * @type {Clock}
 		 */
-		this.clock = new THREE.Clock();
+		this.clock = new Clock();
 
 		/**
 		 * a Set of CollisionEntity that are in this world
@@ -16,10 +16,10 @@ export default class CollisionWorld {
 		this.entities = new Set();
 
 		/**
-		 * a THREE.Vector3 that is added to all non-static entities in this world every step
-		 * @type {THREE.Vector3}
+		 * a Vector3 that is added to all non-static entities in this world every step
+		 * @type {Vector3}
 		 */
-		this.gravity = new THREE.Vector3(0, -18, 0);
+		this.gravity = new Vector3(0, -18, 0);
 	}
 
 	/**

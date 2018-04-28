@@ -1,4 +1,4 @@
-import * as THREE from "three";
+import { Vector4, Vector3 } from "three";
 import Room from "./Room.js";
 import RoomManager from "./RoomManager.js";
 import MazeGenerator from "../maze-generators/MazeGenerator.js";
@@ -39,8 +39,8 @@ export default class RoomMaze {
 	 * @return {bool}
 	 */
 	hasRoom(positionOrRoom) {
-		if (positionOrRoom instanceof THREE.Vector4)
-			positionOrRoom = new THREE.Vector3(positionOrRoom.x, positionOrRoom.y, positionOrRoom.z);
+		if (positionOrRoom instanceof Vector4)
+			positionOrRoom = new Vector3(positionOrRoom.x, positionOrRoom.y, positionOrRoom.z);
 
 		if (positionOrRoom instanceof this.vec) {
 			return this.rooms.has(positionOrRoom.toString());
@@ -70,7 +70,7 @@ export default class RoomMaze {
 	 * @return {Room}
 	 */
 	getRoom(position) {
-		if (position instanceof THREE.Vector4) position = new THREE.Vector3(position.x, position.y, position.z);
+		if (position instanceof Vector4) position = new Vector3(position.x, position.y, position.z);
 
 		return this.rooms.get(position.toString());
 	}
@@ -90,7 +90,7 @@ export default class RoomMaze {
 	 * @return {Room} returns the new Room
 	 */
 	createRoom(position) {
-		if (position instanceof THREE.Vector4) position = new THREE.Vector3(position.x, position.y, position.z);
+		if (position instanceof Vector4) position = new Vector3(position.x, position.y, position.z);
 
 		if (this.hasRoom(position)) throw new Error("cant create a room where one already exists");
 
@@ -101,7 +101,7 @@ export default class RoomMaze {
 		}
 
 		let room = this.roomManager.createRoom({
-			doors: new THREE.Vector4(cell.x, cell.y, cell.z, 0) // cell
+			doors: new Vector4(cell.x, cell.y, cell.z, 0) // cell
 		});
 
 		if (!room) {

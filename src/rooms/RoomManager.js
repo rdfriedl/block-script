@@ -1,4 +1,4 @@
-import * as THREE from "three";
+import { Vector4 } from "three";
 import Room from "./Room.js";
 import VoxelBlockManager from "../voxel/VoxelBlockManager";
 
@@ -20,7 +20,7 @@ export default class RoomManager {
 		this.rooms[id] = {
 			id: id,
 			selection: selection,
-			doors: new THREE.Vector4().copy(doors)
+			doors: new Vector4().copy(doors)
 		};
 	}
 
@@ -47,7 +47,7 @@ export default class RoomManager {
 						if (Room.rotateDoors(room.doors, ROOM_ROTATIONS[i]).equals(search.doors))
 							rooms.push([room, ROOM_ROTATIONS[i]]);
 					}
-				} else if (new THREE.Vector4().copy(room.doors).equals(search.doors)) {
+				} else if (new Vector4().copy(room.doors).equals(search.doors)) {
 					rooms.push([room, 0]);
 				}
 			}

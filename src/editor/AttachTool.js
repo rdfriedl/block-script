@@ -1,9 +1,20 @@
-import * as THREE from "three";
+import {
+	Group,
+	Raycaster,
+	MOUSE,
+	Mesh,
+	PlaneBufferGeometry,
+	MeshBasicMaterial,
+	BoxHelper,
+	Vector3,
+	Box3,
+	Vector2
+} from "three";
 import VoxelSelection from "../voxel/VoxelSelection.js";
 import VoxelBlockManager from "../voxel/VoxelBlockManager.js";
 import * as ChunkUtils from "../ChunkUtils.js";
 
-export default class AttachTool extends THREE.Group {
+export default class AttachTool extends Group {
 	constructor(camera, map, renderer, undoManager) {
 		super();
 		this.enabled = false;
@@ -13,9 +24,9 @@ export default class AttachTool extends THREE.Group {
 		this.undoManager = undoManager;
 
 		this.intersects = [this.map];
-		this.raycaster = new THREE.Raycaster();
+		this.raycaster = new Raycaster();
 		this.useMousePosition = true;
-		this.mousePosition = new THREE.Vector2();
+		this.mousePosition = new Vector2();
 		this._mousedown = false;
 		this._mousebutton = -1;
 
@@ -30,8 +41,8 @@ export default class AttachTool extends THREE.Group {
 		this.placeBlockProps = {};
 		this.fillType = "solid";
 		this.mouseButtons = {
-			PLACE: THREE.MOUSE.LEFT,
-			REMOVE: THREE.MOUSE.RIGHT
+			PLACE: MOUSE.LEFT,
+			REMOVE: MOUSE.RIGHT
 		};
 
 		// bind events
@@ -45,7 +56,7 @@ export default class AttachTool extends THREE.Group {
 		// place blocks
 		renderer.domElement.addEventListener("mousedown", event => {
 			if ((this.enabled && event.button == this.mouseButtons.PLACE) || event.button == this.mouseButtons.REMOVE) {
-				this.start = this.getTarget(this.useMousePosition ? this.mousePosition : new THREE.Vector3());
+				this.start = this.getTarget(this.useMousePosition ? this.mousePosition : new Vector3());
 				this._mousedown = true;
 				this._mousebutton = event.button;
 			}
@@ -142,23 +153,20 @@ export default class AttachTool extends THREE.Group {
 		});
 
 		// create objects
-		this.selectionFace = new THREE.Mesh(
-			new THREE.PlaneBufferGeometry(1, 1),
-			new THREE.MeshBasicMaterial({
+		this.selectionFace = new Mesh(
+			new PlaneBufferGeometry(1, 1),
+			new MeshBasicMaterial({
 				color: 0xff5555,
 				transparent: true,
 				opacity: 0.5,
 				depthTest: false
 			})
 		);
-		this.selectionFace.up = new THREE.Vector3(0, 0, 1);
+		this.selectionFace.up = new Vector3(0, 0, 1);
 		this.selectionFace.scale.copy(this.map.blockSize);
 		this.add(this.selectionFace);
 
-		this.selectionBox = new THREE.BoxHelper(
-			new THREE.Box3(new THREE.Vector3(-0.5, -0.5, -0.5), new THREE.Vector3(0.5, 0.5, 0.5)),
-			0xff5555
-		);
+		this.selectionBox = new BoxHelper(new Box3(new Vector3(-0.5, -0.5, -0.5), new Vector3(0.5, 0.5, 0.5)), 0xff5555);
 		this.selectionBox.material.transparent = true;
 		this.selectionBox.material.opacity = 0.8;
 		this.selectionBox.material.depthTest = false;
@@ -208,7 +216,7 @@ export default class AttachTool extends THREE.Group {
 	}
 
 	getSelectionBox(start, end) {
-		let half = new THREE.Vector3(0.5, 0.5, 0.5);
+		let half = new Vector3(0.5, 0.5, 0.5);
 		let diff = end.clone().sub(start);
 		return {
 			start: start
@@ -243,7 +251,7 @@ export default class AttachTool extends THREE.Group {
 			this.selectionFace.position.copy(
 				this.end.target
 					.clone()
-					.add(new THREE.Vector3(0.5, 0.5, 0.5))
+					.add(new Vector3(0.5, 0.5, 0.5))
 					.multiply(this.map.blockSize)
 			);
 			this.selectionFace.position.add(
@@ -262,7 +270,7 @@ export default class AttachTool extends THREE.Group {
 			let box = this.getSelectionBox(this.start[type], this.end[type]);
 
 			this.selectionBox.update(
-				new THREE.Box3(
+				new Box3(
 					box.start
 						.clone()
 						.min(box.end)
@@ -280,7 +288,7 @@ export default class AttachTool extends THREE.Group {
 
 	update() {
 		if (this.enabled) {
-			let target = this.getTarget(this.useMousePosition ? this.mousePosition : new THREE.Vector2());
+			let target = this.getTarget(this.useMousePosition ? this.mousePosition : new Vector2());
 			if (target.target) this.end = target;
 			else this.end = undefined;
 		}

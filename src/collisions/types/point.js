@@ -1,10 +1,10 @@
-import * as THREE from "three";
+import { Box3, Vector3 } from "three";
 import CollisionEntity from "../CollisionEntity.js";
 
 /** a point collision shape */
 export default class CollisionEntityPoint extends CollisionEntity {
 	getBoundingBox() {
-		return new THREE.Box3(this.position, this.position);
+		return new Box3(this.position, this.position);
 	}
 
 	getCollisionData(entity, velocity, movementBox) {
@@ -23,16 +23,16 @@ export default class CollisionEntityPoint extends CollisionEntity {
 	}
 
 	/**
-	 * @param {THREE.Vector3} a - the point thats moving
-	 * @param {THREE.Box3} b - the static box
-	 * @param {THREE.Vector3} velocity
+	 * @param {Vector3} a - the point thats moving
+	 * @param {Box3} b - the static box
+	 * @param {Vector3} velocity
 	 * @return {Object|Boolean} - returns object with info about collision, if there was no collision it will return false
 	 */
 	static SweptAABB(a, b, velocity) {
 		const axes = ["x", "y", "z"];
-		var normal = new THREE.Vector3();
-		var invEntry = new THREE.Vector3();
-		var invExit = new THREE.Vector3();
+		var normal = new Vector3();
+		var invEntry = new Vector3();
+		var invExit = new Vector3();
 
 		// find the distance between the objects on the near and far sides for all axes
 		for (let i = 0; i < axes.length; i++) {
@@ -53,8 +53,8 @@ export default class CollisionEntityPoint extends CollisionEntity {
 		}
 
 		// find time of collision and time of leaving for each axis (if statement is to prevent divide by zero)
-		let entry = new THREE.Vector3();
-		let exit = new THREE.Vector3();
+		let entry = new Vector3();
+		let exit = new Vector3();
 
 		// calculate the entry and exit time
 		for (let i = 0; i < axes.length; i++) {

@@ -1,10 +1,10 @@
-import * as THREE from "three";
+import { Quaternion, Vector4, Vector3 } from "three";
 import * as ChunkUtils from "../ChunkUtils.js";
 import VoxelSelection from "../voxel/VoxelSelection.js";
 import MazeGenerator from "../maze-generators/MazeGenerator.js";
 import voxelSerializer from "../voxel/serializer";
 
-export const ROOM_ROTATION_AXIS = new THREE.Vector3(0, 1, 0);
+export const ROOM_ROTATION_AXIS = new Vector3(0, 1, 0);
 
 export default class Room {
 	/**
@@ -26,7 +26,7 @@ export default class Room {
 		this.blocks = blocks;
 
 		/** @private */
-		this.rawDoors = doors || new THREE.Vector3();
+		this.rawDoors = doors || new Vector3();
 
 		/** @type {RoomMaze} */
 		this.parent = undefined;
@@ -53,7 +53,7 @@ export default class Room {
 
 				// rotate the blocks
 				if (this.rotation !== 0) {
-					let quaternion = new THREE.Quaternion().setFromAxisAngle(ROOM_ROTATION_AXIS, Math.PI / 2 * this.rotation);
+					let quaternion = new Quaternion().setFromAxisAngle(ROOM_ROTATION_AXIS, Math.PI / 2 * this.rotation);
 					ChunkUtils.rotateBlocks(
 						this._selection,
 						this._selection.boundingBox,
@@ -74,7 +74,7 @@ export default class Room {
 
 	/**
 	 * returns the size of the room in blocks
-	 * @return {THREE.Vector3}
+	 * @return {Vector3}
 	 */
 	get size() {
 		return Room.SIZE;
@@ -82,10 +82,10 @@ export default class Room {
 
 	/**
 	 * returns the doors with the rotation applied
-	 * @return {THREE.Vector4}
+	 * @return {Vector4}
 	 */
 	get doors() {
-		return this.rawDoors ? Room.rotateDoors(this.rawDoors, this.rotation) : new THREE.Vector4();
+		return this.rawDoors ? Room.rotateDoors(this.rawDoors, this.rotation) : new Vector4();
 	}
 
 	/**
@@ -97,7 +97,7 @@ export default class Room {
 	}
 
 	static rotateDoors(vec, rotation) {
-		let vec3 = new THREE.Vector3().copy(vec);
+		let vec3 = new Vector3().copy(vec);
 		vec3
 			.applyAxisAngle(ROOM_ROTATION_AXIS, Math.PI / 2 * rotation)
 			.round()
@@ -109,11 +109,11 @@ export default class Room {
 					);
 				else return v;
 			});
-		return new THREE.Vector4(vec3.x, vec3.y, vec3.z, vec.w);
+		return new Vector4(vec3.x, vec3.y, vec3.z, vec.w);
 	}
 }
 
-Room.SIZE = new THREE.Vector3(32, 16, 32);
+Room.SIZE = new Vector3(32, 16, 32);
 Room.DOOR_NONE = MazeGenerator.DOOR_NONE;
 Room.DOOR_POSITIVE = MazeGenerator.DOOR_POSITIVE;
 Room.DOOR_NEGATIVE = MazeGenerator.DOOR_NEGATIVE;

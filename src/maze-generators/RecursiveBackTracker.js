@@ -1,5 +1,5 @@
 import MazeGenerator from "./MazeGenerator.js";
-import * as THREE from "three";
+import { Vector2 } from "three";
 
 function weightedRand(spec) {
 	let total = 0;
@@ -101,18 +101,18 @@ export default class RecursiveBackTracker extends MazeGenerator {
 if (process.env.NODE_ENV === "development") {
 	window.print2DMaze = function(maze) {
 		if (!(maze instanceof MazeGenerator)) {
-			maze = new RecursiveBackTracker(THREE.Vector2, new THREE.Vector2(arguments[0] || 10, arguments[1] || 10));
+			maze = new RecursiveBackTracker(Vector2, new Vector2(arguments[0] || 10, arguments[1] || 10));
 			maze.generate(arguments[2]);
 		}
 
 		let str = "";
-		let tmpVec = new THREE.Vector2();
+		let tmpVec = new Vector2();
 		let X = MazeGenerator.DOOR_NONE;
 		let P = MazeGenerator.DOOR_POSITIVE;
 		let N = MazeGenerator.DOOR_NEGATIVE;
 		for (let y = 0; y < maze.size.y; y++) {
 			for (let x = 0; x < maze.size.x; x++) {
-				let cell = maze.getCell(tmpVec.set(x, y)) || new THREE.Vector2();
+				let cell = maze.getCell(tmpVec.set(x, y)) || new Vector2();
 
 				// strait
 				if (cell.x === (P | N) && cell.y === X) str += "─";

@@ -1,4 +1,4 @@
-import * as THREE from "three";
+import { Box3, Vector3 } from "three";
 import CollisionEntity from "../CollisionEntity.js";
 
 /**
@@ -28,10 +28,7 @@ export default class CollisionEntityCompound extends CollisionEntity {
 	 * @override
 	 */
 	getBoundingBox() {
-		let box = new THREE.Box3(
-			new THREE.Vector3(Infinity, Infinity, Infinity),
-			new THREE.Vector3(-Infinity, -Infinity, -Infinity)
-		);
+		let box = new Box3(new Vector3(Infinity, Infinity, Infinity), new Vector3(-Infinity, -Infinity, -Infinity));
 		this.entities.forEach(entity => {
 			box.merge(entity.boundingBox);
 		});
@@ -47,12 +44,12 @@ export default class CollisionEntityCompound extends CollisionEntity {
 
 			// test for and find the first collision
 			for (let i = 0; i < this.entities.length; i++) {
-				let enty = this.entities[i],
+				let entity = this.entities[i],
 					col;
 
-				if (enty instanceof CollisionEntityBox) {
-					col = CollisionEntityBox.SweptAABB(entity.box, enty.box, velocity);
-				} else if (enty instanceof CollisionEntityPoint) {
+				if (entity instanceof CollisionEntityBox) {
+					col = CollisionEntityBox.SweptAABB(entity.box, entity.box, velocity);
+				} else if (entity instanceof CollisionEntityPoint) {
 					// TODO: make box -> point collision
 				}
 

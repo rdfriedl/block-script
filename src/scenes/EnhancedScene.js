@@ -1,4 +1,4 @@
-import * as THREE from "three";
+import {Scene, Clock} from "three";
 
 /**
  * @typedef {Object} SceneTimer
@@ -8,18 +8,18 @@ import * as THREE from "three";
  */
 
 /** the base class for a scene */
-export default class Scene {
+export default class EnhancedScene {
 	/** @type {Scene} */
 	static get inst() {
 		return this._inst || (this._inst = new this());
 	}
 
 	constructor() {
-		/** @type {THREE.Scene} */
-		this.scene = new THREE.Scene();
+		/** @type {Scene} */
+		this.scene = new Scene();
 
-		/** @type {THREE.Clock} */
-		this.clock = new THREE.Clock();
+		/** @type {Clock} */
+		this.clock = new Clock();
 
 		/** @type {bool} */
 		this.paused = false;

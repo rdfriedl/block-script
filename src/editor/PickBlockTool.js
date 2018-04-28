@@ -1,6 +1,6 @@
-import * as THREE from "three";
+import { Group, Raycaster, MOUSE, Mesh, PlaneBufferGeometry, MeshBasicMaterial, Vector3, Vector2 } from "three";
 
-export default class PickBlockTool extends THREE.Group {
+export default class PickBlockTool extends Group {
 	constructor(camera, map, renderer) {
 		super();
 		this.enabled = false;
@@ -8,9 +8,9 @@ export default class PickBlockTool extends THREE.Group {
 		this.map = map;
 		this.renderer = renderer;
 
-		this.raycaster = new THREE.Raycaster();
+		this.raycaster = new Raycaster();
 		this.useMousePosition = true;
-		this.mousePosition = new THREE.Vector2();
+		this.mousePosition = new Vector2();
 
 		this.target = undefined;
 		this.pickedBlock = undefined;
@@ -18,7 +18,7 @@ export default class PickBlockTool extends THREE.Group {
 		this.onPick = undefined;
 
 		this.mouseButtons = {
-			PICK: THREE.MOUSE.LEFT
+			PICK: MOUSE.LEFT
 		};
 
 		// bind events
@@ -48,16 +48,16 @@ export default class PickBlockTool extends THREE.Group {
 		});
 
 		// create objects
-		this.selectionFace = new THREE.Mesh(
-			new THREE.PlaneBufferGeometry(1, 1),
-			new THREE.MeshBasicMaterial({
+		this.selectionFace = new Mesh(
+			new PlaneBufferGeometry(1, 1),
+			new MeshBasicMaterial({
 				color: 0x5555ff,
 				transparent: true,
 				opacity: 0.5,
 				depthTest: false
 			})
 		);
-		this.selectionFace.up = new THREE.Vector3(0, 0, 1);
+		this.selectionFace.up = new Vector3(0, 0, 1);
 		this.selectionFace.scale.copy(this.map.blockSize);
 		this.add(this.selectionFace);
 
@@ -104,7 +104,7 @@ export default class PickBlockTool extends THREE.Group {
 			this.selectionFace.position.copy(
 				this.target.target
 					.clone()
-					.add(new THREE.Vector3(0.5, 0.5, 0.5))
+					.add(new Vector3(0.5, 0.5, 0.5))
 					.multiply(this.map.blockSize)
 			);
 			this.selectionFace.position.add(
@@ -122,7 +122,7 @@ export default class PickBlockTool extends THREE.Group {
 
 	update() {
 		if (this.enabled) {
-			let target = this.getTarget(this.useMousePosition ? this.mousePosition : new THREE.Vector2());
+			let target = this.getTarget(this.useMousePosition ? this.mousePosition : new Vector2());
 			if (target.target) this.target = target;
 			else this.target = undefined;
 		}

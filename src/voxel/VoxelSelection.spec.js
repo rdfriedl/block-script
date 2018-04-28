@@ -1,7 +1,7 @@
+import { Vector3 } from "three";
 import VoxelSelection from "./VoxelSelection.js";
 import VoxelBlock from "./VoxelBlock.js";
 import VoxelBlockManager from "./VoxelBlockManager.js";
-import * as THREE from "three";
 
 /** @test {VoxelSelection} */
 describe("VoxelSelection", () => {
@@ -14,9 +14,9 @@ describe("VoxelSelection", () => {
 		selection.blockManager.registerBlock(VoxelBlock);
 	});
 
-	it("blockSize is a THREE.Vector3", () => {
+	it("blockSize is a Vector3", () => {
 		expect(selection.blockSize).not.to.be.undefined;
-		expect(selection.blockSize).to.be.an.instanceOf(THREE.Vector3);
+		expect(selection.blockSize).to.be.an.instanceOf(Vector3);
 	});
 
 	describe("empty", () => {
@@ -29,9 +29,9 @@ describe("VoxelSelection", () => {
 	describe("size", () => {
 		it("returns the size in blocks", () => {
 			selection.clearBlocks();
-			selection.createBlock("block", new THREE.Vector3());
-			selection.createBlock("block", new THREE.Vector3(1, 1, 1));
-			expect(selection.size.equals(new THREE.Vector3(2, 2, 2))).to.equal(true);
+			selection.createBlock("block", new Vector3());
+			selection.createBlock("block", new Vector3(1, 1, 1));
+			expect(selection.size.equals(new Vector3(2, 2, 2))).to.equal(true);
 		});
 
 		it("returns an empty vector if there are not blocks", () => {
@@ -43,26 +43,26 @@ describe("VoxelSelection", () => {
 	// blocks
 	describe("createBlock", () => {
 		it("returns created block", () => {
-			expect(selection.createBlock("block", new THREE.Vector3(1, 1, 1))).to.be.an.instanceOf(VoxelBlock);
+			expect(selection.createBlock("block", new Vector3(1, 1, 1))).to.be.an.instanceOf(VoxelBlock);
 		});
 
-		it("(ID, THREE.Vector3) creates a block at position", () => {
-			let block = selection.createBlock("block", new THREE.Vector3());
-			expect(selection.getBlock(new THREE.Vector3())).to.equal(block);
+		it("(ID, Vector3) creates a block at position", () => {
+			let block = selection.createBlock("block", new Vector3());
+			expect(selection.getBlock(new Vector3())).to.equal(block);
 		});
 	});
 
 	describe("setBlock()", () => {
-		it("(VoxelBlock, THREE.Vector3)", () => {
+		it("(VoxelBlock, Vector3)", () => {
 			let block = new VoxelBlock();
 			block.setProp("type", "test");
-			selection.setBlock(block, new THREE.Vector3(3, 3, 3));
-			expect(selection.getBlock(new THREE.Vector3(3, 3, 3))).to.equal(block);
+			selection.setBlock(block, new Vector3(3, 3, 3));
+			expect(selection.getBlock(new Vector3(3, 3, 3))).to.equal(block);
 		});
 
-		it("(ID, THREE.Vector3)", () => {
-			selection.setBlock("block", new THREE.Vector3(3, 3, 3));
-			expect(selection.getBlock(new THREE.Vector3(3, 3, 3))).to.be.an.instanceOf(VoxelBlock);
+		it("(ID, Vector3)", () => {
+			selection.setBlock("block", new Vector3(3, 3, 3));
+			expect(selection.getBlock(new Vector3(3, 3, 3))).to.be.an.instanceOf(VoxelBlock);
 		});
 	});
 
@@ -70,11 +70,11 @@ describe("VoxelSelection", () => {
 		let block;
 
 		beforeEach(() => {
-			block = selection.createBlock("block", new THREE.Vector3());
+			block = selection.createBlock("block", new Vector3());
 		});
 
-		it("(THREE.Vector3)", () => {
-			expect(selection.hasBlock(new THREE.Vector3(0, 0, 0))).to.be.true;
+		it("(Vector3)", () => {
+			expect(selection.hasBlock(new Vector3(0, 0, 0))).to.be.true;
 		});
 
 		it("(VoxelBlock)", () => {
@@ -86,14 +86,14 @@ describe("VoxelSelection", () => {
 		let block;
 
 		beforeEach(() => {
-			block = selection.createBlock("block", new THREE.Vector3());
+			block = selection.createBlock("block", new Vector3());
 		});
 
-		it("(THREE.Vector3)", () => {
-			expect(selection.getBlock(new THREE.Vector3(0, 0, 0))).to.equal(block);
+		it("(Vector3)", () => {
+			expect(selection.getBlock(new Vector3(0, 0, 0))).to.equal(block);
 		});
 
-		it("(THREE.Vector3)", () => {
+		it("(Vector3)", () => {
 			expect(selection.getBlock(block)).to.equal(block);
 			expect(selection.getBlock(new VoxelBlock())).to.be.undefined;
 		});
@@ -103,11 +103,11 @@ describe("VoxelSelection", () => {
 		let block;
 
 		beforeEach(() => {
-			block = selection.createBlock("block", new THREE.Vector3());
+			block = selection.createBlock("block", new Vector3());
 		});
 
-		it("(THREE.Vector3)", () => {
-			let vec = new THREE.Vector3(0, 0, 0);
+		it("(Vector3)", () => {
+			let vec = new Vector3(0, 0, 0);
 			selection.removeBlock(vec);
 
 			expect(selection.hasBlock(vec)).to.be.false;
@@ -124,12 +124,12 @@ describe("VoxelSelection", () => {
 
 	describe("clearBlocks", () => {
 		beforeEach(() => {
-			selection.createBlock("block", new THREE.Vector3());
+			selection.createBlock("block", new Vector3());
 			selection.clearBlocks();
 		});
 
 		it("removes all blocks in selection", () => {
-			expect(selection.getBlock(new THREE.Vector3())).to.be.undefined;
+			expect(selection.getBlock(new Vector3())).to.be.undefined;
 		});
 	});
 });

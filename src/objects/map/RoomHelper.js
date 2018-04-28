@@ -1,30 +1,30 @@
-import * as THREE from "three";
+import { Group, Vector3, Color, BoxHelper, Geometry, Mesh, Box3 } from "three";
 import Room from "../../rooms/Room.js";
 import { MeshLine, MeshLineMaterial } from "three.meshline";
 
-export default class RoomHelper extends THREE.Group {
+export default class RoomHelper extends Group {
 	constructor(room) {
 		super();
 
 		this.room = room;
-		this.roomSize = new THREE.Vector3();
+		this.roomSize = new Vector3();
 
 		if (this.room) this.roomSize.copy(this.room.size);
 
-		this.RoomColor = new THREE.Color(0x222222);
+		this.RoomColor = new Color(0x222222);
 		this.DoorColors = {
-			x: new THREE.Color(0x2222ff),
-			z: new THREE.Color(0x2222ff),
-			y: new THREE.Color(0x225522),
-			w: new THREE.Color(0xdce15a)
+			x: new Color(0x2222ff),
+			z: new Color(0x2222ff),
+			y: new Color(0x225522),
+			w: new Color(0xdce15a)
 		};
 
 		// create the geometry
-		this.border = new THREE.BoxHelper(new THREE.Box3(new THREE.Vector3(), new THREE.Vector3(1, 1, 1)), this.RoomColor);
+		this.border = new BoxHelper(new Box3(new Vector3(), new Vector3(1, 1, 1)), this.RoomColor);
 		this.add(this.border);
 
 		// create doors group
-		this.doors = new THREE.Group();
+		this.doors = new Group();
 		this.add(this.doors);
 
 		// create and update the doors
@@ -38,11 +38,11 @@ export default class RoomHelper extends THREE.Group {
 
 		// update doors on x, y, z axes
 		["x", "y", "z"].forEach(axis => {
-			let geometry = new THREE.Geometry();
+			let geometry = new Geometry();
 			let material = new MeshLineMaterial({
 				lineWidth: 0.3,
 				color: this.DoorColors[axis],
-				resolution: new THREE.Vector3(window.innerWidth, window.innerHeight),
+				resolution: new Vector3(window.innerWidth, window.innerHeight),
 				sizeAttenuation: true,
 				near: 1,
 				far: 10000
@@ -72,7 +72,7 @@ export default class RoomHelper extends THREE.Group {
 
 			let line = new MeshLine();
 			line.setGeometry(geometry);
-			let mesh = new THREE.Mesh(line.geometry, material);
+			let mesh = new Mesh(line.geometry, material);
 			this.doors.add(mesh);
 		});
 
@@ -80,7 +80,7 @@ export default class RoomHelper extends THREE.Group {
 		this.border.material.color.copy(this.RoomColor);
 
 		// update bounding box
-		let roomBox = new THREE.Box3(new THREE.Vector3(), this.roomSize);
+		let roomBox = new Box3(new Vector3(), this.roomSize);
 		this.border.update(roomBox);
 	}
 }

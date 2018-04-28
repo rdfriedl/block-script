@@ -1,25 +1,32 @@
 import VoxelBlock from "../voxel/VoxelBlock.js";
-import * as THREE from "three";
+import {
+	TextureLoader,
+	NearestFilter,
+	LinearMipMapLinearFilter,
+	MeshNormalMaterial,
+	Geometry,
+	MeshPhongMaterial
+} from "three";
 
-const loader = new THREE.TextureLoader();
+const loader = new TextureLoader();
 
 function pixelate(tex) {
-	tex.magFilter = THREE.NearestFilter;
-	tex.minFilter = THREE.LinearMipMapLinearFilter;
+	tex.magFilter = NearestFilter;
+	tex.minFilter = LinearMipMapLinearFilter;
 	return tex;
 }
 
 function basicMaterial(url, props, texProps) {
 	if (!url) {
 		console.trace("tried to create block material without texture url");
-		return new THREE.MeshNormalMaterial();
+		return new MeshNormalMaterial();
 	}
 
-	let mat = new THREE.MeshPhongMaterial({
+	let mat = new MeshPhongMaterial({
 		shininess: 0,
 		map: loader.load(url, tex => {
-			tex.magFilter = THREE.NearestFilter;
-			tex.minFilter = THREE.LinearMipMapLinearFilter;
+			tex.magFilter = NearestFilter;
+			tex.minFilter = LinearMipMapLinearFilter;
 
 			if (texProps) {
 				// set the prop
@@ -72,7 +79,7 @@ export class TimeBlock extends VoxelBlock {
 		if (!time) return;
 
 		if (typeof time === "string") {
-			return new THREE.MeshPhongMaterial({
+			return new MeshPhongMaterial({
 				shininess: 0,
 				map: loader.load(time, pixelate)
 			});
@@ -90,15 +97,15 @@ export class TimeBlock extends VoxelBlock {
 			// load bump map if its a string
 			if (typeof time.bumpMap === "string") mat.bumpMap = loader.load(time.bumpMap);
 
-			return new THREE.MeshPhongMaterial(mat);
+			return new MeshPhongMaterial(mat);
 		}
 	}
 }
 
 export class Dirt extends VoxelBlock {
-	/** @return {THREE.Geometry} */
+	/** @return {Geometry} */
 	CreateMaterial() {
-		return new THREE.MeshPhongMaterial({
+		return new MeshPhongMaterial({
 			shininess: 0,
 			map: loader.load(require("../res/blocks/dirt.png"), pixelate),
 			bumpMap: loader.load(require("../res/blocks/dirt-bump.png"))
@@ -250,7 +257,7 @@ TilesDetail.TIMES = [
 // 		return this.constructor._materialCache[this.properties.type];
 // 	}
 // 	CreateGeometry(){
-// 		let geo = new THREE.BoxGeometry(1,1,1);
+// 		let geo = new BoxGeometry(1,1,1);
 // 		geo.faces.forEach(face => {
 // 			if(face.normal.y)
 // 				face.materialIndex = 1; //top / bottom
