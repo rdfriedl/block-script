@@ -234,11 +234,11 @@ export default class VoxelSelection extends Group {
 
 	/**
 	 * returns the bounding box of the selection
-	 * @return {
-	 * Box3}
+	 * @return {Box3}
 	 */
 	get boundingBox() {
-		let box = new Box3(new Vector3(Infinity, Infinity, Infinity), new Vector3(-Infinity, -Infinity, -Infinity));
+		let box = new Box3();
+		let tmp = new Vector3();
 
 		if (this.blocks.size) {
 			this.blocks.forEach(block => {
@@ -247,7 +247,7 @@ export default class VoxelSelection extends Group {
 				box.max.max(pos);
 			});
 
-			if (Number.isFinite(box.getSize().length())) {
+			if (Number.isFinite(box.getSize(tmp).length())) {
 				return box;
 			}
 		}

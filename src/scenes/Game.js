@@ -356,7 +356,10 @@ export default class GameScene extends Scene {
 		this.pickBlockNormal.set(0, 0, 0);
 
 		// cast ray to find block data
-		this.pickBlockRayCaster.set(this.player.camera.getWorldPosition(), this.player.camera.getWorldDirection());
+		this.pickBlockRayCaster.set(
+			this.player.camera.getWorldPosition(new THREE.Vector3()),
+			this.player.camera.getWorldDirection(new THREE.Vector3())
+		);
 
 		// intersect with map
 		let tmpVec = new THREE.Vector3();

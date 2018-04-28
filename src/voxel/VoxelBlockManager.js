@@ -77,13 +77,19 @@ export default class VoxelBlockManager {
 	createBlock(id, props) {
 		// if the id is a string get the props out of it
 		if (typeof id === "string") {
-			if (props) props = Object.assign({}, props, VoxelBlockManager.parseProps(id));
-			else props = Object.assign({}, VoxelBlockManager.parseProps(id));
+			if (props) {
+				props = Object.assign(VoxelBlockManager.parseProps(id), props);
+			} else {
+				props = VoxelBlockManager.parseProps(id);
+			}
 		}
 
 		id = VoxelBlockManager.resolveID(id);
-		if (this.usePool) return this.newBlock(id, props);
-		else return this._createBlock(id, props);
+		if (this.usePool) {
+			return this.newBlock(id, props);
+		} else {
+			return this._createBlock(id, props);
+		}
 	}
 
 	/**
@@ -173,20 +179,23 @@ export default class VoxelBlockManager {
 	 * @static
 	 */
 	static createID(id, props) {
-		props = props || {};
 		let blockID = VoxelBlockManager.resolveID(id);
+		let parsedProps = {};
+
 		if (typeof id === "string") {
-			Object.assign(props, VoxelBlockManager.parseProps(id));
+			Object.assign(parsedProps, VoxelBlockManager.parseProps(id));
 		} else if (id instanceof VoxelBlock && id.hasOwnProperty("properties")) {
 			Reflect.ownKeys(id.properties).forEach(key => {
-				props[key] = id.getProp(key);
+				parsedProps[key] = id.getProp(key);
 			});
 		}
-		let a = [];
-		for (let i in props) {
-			a.push(`${i}=${props[i]}`);
+
+		if (props) {
+			Object.assign(parsedProps, props);
 		}
-		return a.length ? blockID + "?" + a.join("&") : blockID;
+
+		let query = qs.stringify(parsedProps);
+		return blockID + "?" + query;
 	}
 
 	/**
@@ -200,8 +209,22 @@ export default class VoxelBlockManager {
 	 * "glass?type=green"
 	 * "dirt?rotation=[1,0,0]"
 	 */
-	static parseProps(id) {
-		return qs.parse(id || "");
+	static parseProps(id = "") {
+		let props = qs.parse(String(id).replace(/^.*\?/, ""));
+
+		for (let i in props) {
+			if (props[i] === "") {
+				delete props[i];
+			} else if (String(props[i]).toLowerCase() === "true") {
+				props[i] = true;
+			} else if (String(props[i]).toLowerCase() === "false") {
+				props[i] = false;
+			} else if (props[i] && !isNaN(props[i])) {
+				props[i] = parseFloat(props[i]);
+			}
+		}
+
+		return props;
 	}
 
 	/**

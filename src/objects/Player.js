@@ -1,7 +1,7 @@
-import * as THREE from "three";
+import { Quaternion, Vector3, PerspectiveCamera, Group, SpotLight, Vector2 } from "three";
 import CollisionEntityBox from "../collisions/types/box.js";
 
-class Player extends THREE.Group {
+class Player extends Group {
 	constructor() {
 		super();
 
@@ -9,7 +9,7 @@ class Player extends THREE.Group {
 		 * the {@link CollisionEntity} the play will use
 		 * @type {CollisionEntityBox}
 		 */
-		this.collision = new CollisionEntityBox(new THREE.Vector3(20, 58, 20), new THREE.Vector3(0, -58 / 2 + 8, 0));
+		this.collision = new CollisionEntityBox(new Vector3(20, 58, 20), new Vector3(0, -58 / 2 + 8, 0));
 		this.collision.onCollision = (entity, normal) => {
 			if (normal.y !== 0) {
 				this.collision.velocity.y = 0;
@@ -19,23 +19,23 @@ class Player extends THREE.Group {
 		};
 
 		/**
-		 * @type {THREE.PerspectiveCamera}
+		 * @type {PerspectiveCamera}
 		 */
-		this.camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 10000);
+		this.camera = new PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 10000);
 		this.add(this.camera);
 
 		// create lights
 		const flashLightRange = 800;
-		this.flashLight = new THREE.Group();
+		this.flashLight = new Group();
 		this.add(this.flashLight);
 
-		let flashLight = new THREE.SpotLight(0xffffff, 0.8, flashLightRange, 0.5, 0.3, 1);
+		let flashLight = new SpotLight(0xffffff, 0.8, flashLightRange, 0.5, 0.3, 1);
 		flashLight.position.set(16, -16, 16);
 		flashLight.target.position.set(0, 0, -flashLightRange);
 		this.flashLight.add(flashLight);
 		this.flashLight.add(flashLight.target);
 
-		let outterRing = new THREE.SpotLight(0xffffff, 0.1, flashLightRange, 0.64, 0.15, 1);
+		let outterRing = new SpotLight(0xffffff, 0.1, flashLightRange, 0.64, 0.15, 1);
 		outterRing.position.set(16, -16, 16);
 		outterRing.target.position.set(0, 0, -flashLightRange);
 		this.flashLight.add(outterRing);
@@ -74,10 +74,10 @@ class Player extends THREE.Group {
 
 		/**
 		 * a Vec2 used to store the players forward / back and left / right movements
-		 * @type {THREE.Vector2}
+		 * @type {Vector2}
 		 * @private
 		 */
-		this._movementVelocity = new THREE.Vector2();
+		this._movementVelocity = new Vector2();
 		this._viewBobbing = 0;
 		this._viewBobbingDir = 1;
 	}
@@ -147,12 +147,9 @@ class Player extends THREE.Group {
 			this._movementVelocity.x = speed * Player.STRAFE_SPEED * Math.sign(this._movementVelocity.x);
 
 		// apply movement to velocity
-		let v = this.camera.getWorldDirection();
-		let angle = Math.atan2(v.x, v.z);
-		let velocity = new THREE.Vector3(this._movementVelocity.x, 0, this._movementVelocity.y).applyAxisAngle(
-			this.up,
-			angle
-		);
+		let tmp = this.camera.getWorldDirection(new Vector3());
+		let angle = Math.atan2(tmp.x, tmp.z);
+		let velocity = new Vector3(this._movementVelocity.x, 0, this._movementVelocity.y).applyAxisAngle(this.up, angle);
 		this.velocity.x = velocity.x;
 		this.velocity.z = velocity.z;
 
@@ -177,7 +174,7 @@ class Player extends THREE.Group {
 		}
 
 		// update flashLight
-		this.flashLight.quaternion.slerp(this.camera.getWorldQuaternion(), 1 / 4);
+		this.flashLight.quaternion.slerp(this.camera.getWorldQuaternion(new Quaternion()), 1 / 4);
 
 		// reset on ground boolean
 		this._onGround = false;
