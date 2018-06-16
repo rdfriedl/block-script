@@ -23,6 +23,14 @@ const Canvas = styled.canvas`
 	z-index: -100;
 `;
 
+const PageLayout = styled.div`
+	display: flex;
+	flex-direction: column;
+	padding: 10vh 15vw;
+	justify-content: center;
+	align-items: center;
+`;
+
 let rendererCache;
 
 export default class MenuView extends PureComponent {
@@ -64,11 +72,11 @@ export default class MenuView extends PureComponent {
 			<Fragment>
 				<GithubCorner />
 				<Canvas innerRef={el => (this.canvasContainer = el)} />
-				<div className="flex-v" style={{ alignItems: "center" }}>
+				<PageLayout>
 					<h1 className="text-center title" style={{ marginTop: "10vh" }}>
 						Block-Script
 					</h1>
-					<ButtonGroup dir="vertical" className="col-xs-12 col-sm-8 col-md-6 col-lg-4" style={{ margin: "40px 0" }}>
+					<ButtonGroup dir="vertical">
 						<LinkButton block type="success" to="/play">
 							<Icon icon={faGamepad} /> Play
 						</LinkButton>
@@ -79,7 +87,7 @@ export default class MenuView extends PureComponent {
 							<Icon icon={faBars} /> Credits
 						</LinkButton>
 					</ButtonGroup>
-				</div>
+				</PageLayout>
 				<CreateBy type="primary" size="extra-small" href="http://rdfriedl.co" target="_blank">
 					Created by RDFriedl
 				</CreateBy>

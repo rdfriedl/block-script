@@ -53,7 +53,7 @@ export default class Room {
 
 				// rotate the blocks
 				if (this.rotation !== 0) {
-					let quaternion = new Quaternion().setFromAxisAngle(ROOM_ROTATION_AXIS, Math.PI / 2 * this.rotation);
+					let quaternion = new Quaternion().setFromAxisAngle(ROOM_ROTATION_AXIS, (Math.PI / 2) * this.rotation);
 					ChunkUtils.rotateBlocks(
 						this._selection,
 						this._selection.boundingBox,
@@ -99,7 +99,7 @@ export default class Room {
 	static rotateDoors(vec, rotation) {
 		let vec3 = new Vector3().copy(vec);
 		vec3
-			.applyAxisAngle(ROOM_ROTATION_AXIS, Math.PI / 2 * rotation)
+			.applyAxisAngle(ROOM_ROTATION_AXIS, (Math.PI / 2) * rotation)
 			.round()
 			.map(v => {
 				if (v < 0)

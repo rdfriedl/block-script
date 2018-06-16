@@ -157,10 +157,10 @@ class Player extends Group {
 		if (this._onGround) {
 			// this is going to need to be moved below the collisions so when we push against a wall we dont walk
 			this._viewBobbing +=
-				Math.sqrt(
+				(Math.sqrt(
 					this._movementVelocity.x * this._movementVelocity.x + this._movementVelocity.y * this._movementVelocity.y
 				) /
-				(30 * 60) *
+					(30 * 60)) *
 				this._viewBobbingDir *
 				(dtime * 60);
 

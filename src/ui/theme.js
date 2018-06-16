@@ -1,14 +1,14 @@
-import { css } from "styled-components";
+import { css, injectGlobal } from "styled-components";
 
 const dark = {
 	button: {
 		types: {
 			default: css`
-				border-color: #4e5d6c;
+				border-color: #848484;
 				color: white;
 
 				:hover {
-					border-color: #485563;
+					border-color: #aaaaaa;
 					color: white;
 				}
 			`,
@@ -49,7 +49,17 @@ const dark = {
 				padding: 0.2em 0.5em;
 			`
 		}
-	}
+	},
+	link: css`
+		color: darkseagreen;
+	`
 };
+
+injectGlobal`
+	html, body {
+		background: rgb(64, 64, 64);
+		color: white;
+	}
+`;
 
 export { dark };

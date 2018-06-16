@@ -18,8 +18,8 @@ A 3 Dimensional voxel maze game, built with [threejs](http://threejs.org).
 
 **_Images / Textures_**
 
-* All block textures are from: [Dokucraft](http://dokucraft.co.uk/)
+- All block textures are from: [Dokucraft](http://dokucraft.co.uk/)
 
 **_Fonts_**
 
-* All fonts are from: [iamcal.com](http://www.iamcal.com/misc/fonts)
+- All fonts are from: [iamcal.com](http://www.iamcal.com/misc/fonts)

@@ -48,7 +48,7 @@ export default class AttachTool extends Group {
 		// bind events
 		renderer.domElement.addEventListener("mousemove", event => {
 			this.mousePosition.set(
-				event.offsetX / renderer.domElement.clientWidth * 2 - 1,
+				(event.offsetX / renderer.domElement.clientWidth) * 2 - 1,
 				-(event.offsetY / renderer.domElement.clientHeight) * 2 + 1
 			);
 		});
@@ -63,7 +63,7 @@ export default class AttachTool extends Group {
 		});
 		renderer.domElement.addEventListener("mouseup", event => {
 			this.mousePosition.set(
-				event.offsetX / renderer.domElement.clientWidth * 2 - 1,
+				(event.offsetX / renderer.domElement.clientWidth) * 2 - 1,
 				-(event.offsetY / renderer.domElement.clientHeight) * 2 + 1
 			);
 

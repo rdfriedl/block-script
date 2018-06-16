@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Button } from "./index";
+import Button from "./Button";
 
 const LinkButton = Button.withComponent(Link);
 

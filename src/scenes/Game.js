@@ -206,7 +206,7 @@ export default class GameScene extends EnhancedScene {
 	}
 
 	setupScene() {
-		this.scene.fog = new FogExp2(0x000000, 4 * 10 / 100000);
+		this.scene.fog = new FogExp2(0x000000, (4 * 10) / 100000);
 
 		// create light
 		this.scene.add(new AmbientLight(0xffffff, 0.03));

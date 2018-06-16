@@ -11,7 +11,6 @@ const IS_PROD = process.env.NODE_ENV === "production";
 
 module.exports = {
 	resolve: {
-		extensions: [".js", ".vue"],
 		alias: {
 			"event-emitter": "wolfy87-eventemitter/EventEmitter.min.js", // event-emiiter is not part of vendor
 			keypress: "keypress.js/keypress.js",
@@ -36,7 +35,7 @@ module.exports = {
 		}),
 		new webpack.EnvironmentPlugin(["NODE_ENV"]),
 		new ExtractTextPlugin({
-			filename: "[name]-[contenthash:8].css",
+			filename: "[name]-[hash:8].css",
 			disable: IS_DEV
 		}),
 		process.env.WEBPACK_STATS && new BundleAnalyzerPlugin()
@@ -44,13 +43,6 @@ module.exports = {
 	devtool: IS_DEV ? "source-map" : undefined,
 	module: {
 		rules: [
-			{
-				test: /\.vue/,
-				loader: "vue-loader",
-				options: {
-					extractCSS: true
-				}
-			},
 			{
 				test: /\.js$/,
 				enforce: "pre",
@@ -159,10 +151,6 @@ module.exports = {
 				options: {
 					name: "res/audio/[name]-[hash:8].[ext]"
 				}
-			},
-			{
-				test: /\.json$/,
-				use: "json-loader"
 			},
 			{
 				test: /\.shader$/,
