@@ -1,4 +1,4 @@
-import {Scene, Clock} from "three";
+import { Scene, Clock } from "three";
 
 /**
  * @typedef {Object} SceneTimer

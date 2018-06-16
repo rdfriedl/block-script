@@ -1,14 +1,27 @@
-import React, { PureComponent } from "react";
-import { Link } from "react-router-dom";
+import React, { Fragment, PureComponent } from "react";
+import styled from "styled-components";
 import { WebGLRenderer } from "three";
 
+import { Button, ButtonGroup, LinkButton } from "../../ui";
 import Icon from "@fortawesome/react-fontawesome";
 import { faGamepad, faBars } from "@fortawesome/fontawesome-free-solid";
 import { faEdit } from "@fortawesome/fontawesome-free-regular";
 import GithubCorner from "./GithubCorner";
 import MenuScene from "../../scenes/Menu";
 
-import "./index.pcss";
+const CreateBy = styled(Button.withComponent("a"))`
+	position: fixed;
+	right: 10px;
+	bottom: 10px;
+`;
+
+const Canvas = styled.canvas`
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+	z-index: -100;
+`;
 
 let rendererCache;
 
@@ -48,29 +61,29 @@ export default class MenuView extends PureComponent {
 
 	render() {
 		return (
-			<div className="menu-view">
+			<Fragment>
 				<GithubCorner />
-				<div ref={el => (this.canvasContainer = el)} />
+				<Canvas innerRef={el => (this.canvasContainer = el)} />
 				<div className="flex-v" style={{ alignItems: "center" }}>
 					<h1 className="text-center title" style={{ marginTop: "10vh" }}>
 						Block-Script
 					</h1>
-					<div className="col-xs-12 col-sm-8 col-md-6 col-lg-4" style={{ margin: "40px 0" }}>
-						<Link to="/play" className="btn btn-lg btn-block btn-success">
+					<ButtonGroup dir="vertical" className="col-xs-12 col-sm-8 col-md-6 col-lg-4" style={{ margin: "40px 0" }}>
+						<LinkButton block type="success" to="/play">
 							<Icon icon={faGamepad} /> Play
-						</Link>
-						<Link to="/editor" className="btn btn-lg btn-block btn-info">
+						</LinkButton>
+						<LinkButton block type="primary" to="/editor">
 							<Icon icon={faEdit} /> Editor
-						</Link>
-						<Link to="/credits" className="btn btn-lg btn-block btn-default">
+						</LinkButton>
+						<LinkButton block to="/credits">
 							<Icon icon={faBars} /> Credits
-						</Link>
-					</div>
+						</LinkButton>
+					</ButtonGroup>
 				</div>
-				<a className="created-by btn btn-info btn-xs" href="http://rdfriedl.github.io" target="_blank">
+				<CreateBy type="primary" size="extra-small" href="http://rdfriedl.co" target="_blank">
 					Created by RDFriedl
-				</a>
-			</div>
+				</CreateBy>
+			</Fragment>
 		);
 	}
 

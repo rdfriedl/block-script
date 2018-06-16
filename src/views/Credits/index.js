@@ -1,14 +1,22 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import styled from "styled-components";
 import Icon from "@fortawesome/react-fontawesome";
 import { faChevronLeft } from "@fortawesome/fontawesome-free-solid";
+import { LinkButton } from "../../ui";
+
+const BackButton = styled(LinkButton)`
+	position: fixed;
+	top: 20px;
+	left: 20px;
+	z-index: 100;
+`;
 
 const CreditsView = () => (
 	<div>
-		<Link to="/" className="btn btn-md btn-info pull-left margin-10" style={{ position: "fixed", zIndex: 100 }}>
+		<BackButton to="/">
 			<Icon icon={faChevronLeft} />
 			<span> Back</span>
-		</Link>
+		</BackButton>
 
 		<div className="col-md-8 col-md-offset-2 text-center" style={{ marginBottom: "10vh" }}>
 			<div className="page-header">

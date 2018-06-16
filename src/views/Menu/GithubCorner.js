@@ -1,8 +1,7 @@
 import React from "react";
 
-import "./GithubCorner.pcss";
 const GithubCorner = () => (
-	<a href="https://github.com/rdfriedl/block-script" className="github-corner">
+	<a href="https://github.com/rdfriedl/block-script">
 		<svg
 			width="80"
 			height="80"

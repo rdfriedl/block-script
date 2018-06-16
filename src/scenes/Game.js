@@ -1,6 +1,5 @@
 import {
 	PointLight,
-	PointerLockControls,
 	Raycaster,
 	BoxGeometry,
 	MeshBasicMaterial,
@@ -8,7 +7,8 @@ import {
 	AmbientLight,
 	Mesh,
 	Box3,
-	Vector3
+	Vector3,
+	PointerLockControls
 } from "three";
 
 // extensions

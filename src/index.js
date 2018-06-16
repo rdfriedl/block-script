@@ -8,6 +8,6 @@ import "flex-layout-attribute";
 import "./css/style.css";
 import "./css/utils.css";
 
-window.addEventListener("load", () => {
+if (process.env.NODE_ENV === "production" || process.env.NODE_ENV === "development") {
 	import("./bootstrap");
-});
+}

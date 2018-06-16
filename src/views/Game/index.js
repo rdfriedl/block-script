@@ -1,14 +1,26 @@
-import React, { PureComponent } from "react";
+import React, { Fragment, PureComponent } from "react";
 import { WebGLRenderer, PCFSoftShadowMap } from "three";
+import styled from "styled-components";
 import Stats from "stats.js";
 
 import GameScene from "../../scenes/Game";
 
-import "./index.pcss";
+const PointerLockOverlay = styled.div`
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 0;
+	bottom: 0;
+	background: rgba(0, 0, 0, 0.5);
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+`;
 
 let rendererCache;
 
-export default class MenuView extends PureComponent {
+class GameView extends PureComponent {
 	constructor(...args) {
 		super(...args);
 
@@ -71,15 +83,15 @@ export default class MenuView extends PureComponent {
 
 	render() {
 		return (
-			<div className="game-view">
+			<Fragment>
 				<div ref={el => (this.canvasContainer = el)} />
 
 				{!this.state.hasPointerLock && (
-					<div className="pointer-lock-overlay" onClick={this.handleRequestPointerLock}>
+					<PointerLockOverlay onClick={this.handleRequestPointerLock}>
 						<h1>Click to enable Pointer Lock</h1>
-					</div>
+					</PointerLockOverlay>
 				)}
-			</div>
+			</Fragment>
 		);
 	}
 
@@ -108,3 +120,5 @@ export default class MenuView extends PureComponent {
 		}
 	}
 }
+
+export default GameView;
