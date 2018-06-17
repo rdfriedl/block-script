@@ -56,7 +56,7 @@ const dark = {
 };
 
 injectGlobal`
-	html, body {
+	html {
 		background: rgb(64, 64, 64);
 		color: white;
 	}

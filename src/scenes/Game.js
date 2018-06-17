@@ -7,9 +7,9 @@ import {
 	AmbientLight,
 	Mesh,
 	Box3,
-	Vector3,
-	PointerLockControls
+	Vector3
 } from "three";
+import { PointerLockControls } from "three/examples/js/controls/PointerLockControls";
 
 // extensions
 import "three/examples/js/controls/PointerLockControls";
@@ -234,6 +234,12 @@ export default class GameScene extends EnhancedScene {
 		}
 
 		// this.updatePickBlock();
+	}
+
+	resize(renderer) {
+		let rect = renderer.domElement.getClientRects()[0] || { width: 10, height: 10 };
+		this.camera.aspect = rect.width / rect.height;
+		this.camera.updateProjectionMatrix();
 	}
 
 	loadChunk(pos) {

@@ -16,8 +16,8 @@ const Button = styled.button`
 		text-decoration: none;
 	}
 
-	${props =>
-		props.block
+	${({ block }) =>
+		block
 			? css`
 					width: 100%;
 			  `
@@ -32,13 +32,11 @@ const Button = styled.button`
 
 Button.propTypes = {
 	type: PropTypes.oneOf(["default", "primary", "success"]),
-	size: PropTypes.oneOf(["large", "normal", "small", "extra-small"]),
-	block: PropTypes.bool
+	size: PropTypes.oneOf(["large", "normal", "small", "extra-small"])
 };
 
 Button.defaultProps = {
-	type: "default",
-	block: false
+	type: "default"
 };
 
 export default Button;

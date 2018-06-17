@@ -64,6 +64,8 @@ export default class EnhancedScene {
 		this.updateChildren(this.scene, dtime);
 	}
 
+	resize() {}
+
 	updateChildren(object = this.scene, dtime) {
 		object.children.forEach(obj => {
 			if (obj.update) obj.update(dtime);

@@ -12,7 +12,6 @@ const IS_PROD = process.env.NODE_ENV === "production";
 module.exports = {
 	resolve: {
 		alias: {
-			"event-emitter": "wolfy87-eventemitter/EventEmitter.min.js", // event-emiiter is not part of vendor
 			keypress: "keypress.js/keypress.js",
 			stats: "stats.js/build/stats.min.js"
 		},

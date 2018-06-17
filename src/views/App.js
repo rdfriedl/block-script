@@ -1,4 +1,5 @@
 import React, { Fragment } from "react";
+import { hot } from "react-hot-loader";
 import { BrowserRouter as Router, Route } from "react-router-dom";
 import { injectGlobal, ThemeProvider } from "styled-components";
 
@@ -29,4 +30,4 @@ const App = () => (
 	</ThemeProvider>
 );
 
-export default App;
+export default hot(module)(App);

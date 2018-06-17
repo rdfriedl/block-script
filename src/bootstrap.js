@@ -1,16 +1,10 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { AppContainer } from "react-hot-loader";
 
 import App from "./views/App";
 
 const render = Component => {
-	ReactDOM.render(
-		<AppContainer>
-			<Component />
-		</AppContainer>,
-		document.getElementById("app")
-	);
+	ReactDOM.render(<Component />, document.getElementById("app"));
 };
 
 // register the service worker
@@ -21,13 +15,6 @@ if (process.env.NODE_ENV === "production") {
 fixHtml();
 
 render(App);
-
-// Webpack Hot Module Replacement API
-if (module.hot) {
-	module.hot.accept("./views/App.js", () => {
-		render(App);
-	});
-}
 
 function registerServiceWorker() {
 	if ("serviceWorker" in navigator) {

@@ -107,6 +107,11 @@ export default class MenuScene extends EnhancedScene {
 			this.reset();
 		}
 	}
+	resize(renderer) {
+		let rect = renderer.domElement.getClientRects()[0] || { width: 10, height: 10 };
+		this.camera.aspect = rect.width / rect.height;
+		this.camera.updateProjectionMatrix();
+	}
 	reset() {
 		this.box.position.set(0, 100, 0);
 		this.box.velocity.set((Math.random() * 2 - 1) * 100, 50, (Math.random() * 2 - 1) * 100);
