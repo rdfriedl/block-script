@@ -122,14 +122,16 @@ export default class VoxelBlock {
 	}
 
 	/**
-	 * the position of this block, in blocks, reletive to the VoxelMap
+	 * the position of this block, in blocks, relative to the VoxelMap
 	 * this will only work if the block is in a {@link VoxelChunk} that has a {@link VoxelMap}
 	 * @type {Vector3}
 	 * @readOnly
 	 */
 	get worldPosition() {
-		return this.chunk
-			? this.chunk.chunkPosition
+		let parentChunkPosition = this.parent && this.parent.chunkPosition;
+
+		return parentChunkPosition
+			? parentChunkPosition
 					.clone()
 					.multiply(this.chunkSize)
 					.add(this.position)
@@ -137,17 +139,21 @@ export default class VoxelBlock {
 	}
 
 	/**
-	 * the position of this block reletive to the scene
+	 * the position of this block relative to the scene
 	 * this will only work if the block is in a {@link VoxelChunk} that has a {@link VoxelMap}
 	 * @type {Vector3}
 	 * @readOnly
 	 */
 	get scenePosition() {
-		return this.chunk ? this.chunk.scenePosition.add(this.position.clone().multiply(this.blockSize)) : new Vector3();
+		let parentScenePosition = this.parent && this.parent.scenePosition;
+
+		return parentScenePosition
+			? parentScenePosition.add(this.position.clone().multiply(this.blockSize))
+			: new Vector3();
 	}
 
 	/**
-	 * the center of this block reletive to the scene
+	 * the center of this block relative to the scene
 	 * @type {Vector3}
 	 * @readOnly
 	 */

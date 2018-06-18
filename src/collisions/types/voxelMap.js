@@ -24,8 +24,8 @@ export default class CollisionEntityVoxelMap extends CollisionEntity {
 
 	getCollisionData(entity, velocity, movementBox) {
 		// get all the blocks in the way
-		let blocks = [],
-			vec = new Vector3();
+		let blocks = [];
+		let vec = new Vector3();
 		let box = movementBox.clone();
 		box.min.divide(this.map.blockSize).floor();
 		box.max.divide(this.map.blockSize).floor();
@@ -45,8 +45,8 @@ export default class CollisionEntityVoxelMap extends CollisionEntity {
 
 			// test for and find the first collision
 			for (let i = 0; i < blocks.length; i++) {
-				let block = blocks[i],
-					scenePosition = block.scenePosition;
+				let block = blocks[i];
+				let scenePosition = block.scenePosition;
 				box.min.copy(scenePosition);
 				box.max.copy(scenePosition).add(this.map.blockSize);
 
@@ -58,20 +58,21 @@ export default class CollisionEntityVoxelMap extends CollisionEntity {
 				}
 			}
 
-			if (collision)
+			if (collision) {
 				return {
-					entryTime: collision.entryTime == 1 ? Infinity : collision.entryTime,
+					entryTime: collision.entryTime === 1 ? Infinity : collision.entryTime,
 					exitTime: collision.exitTime,
 					normal: collision.normal
 				};
+			}
 		} else if (entity instanceof CollisionEntityPoint) {
 			let box = new Box3();
 			let collision;
 
 			// test for and find the first collision
 			for (let i = 0; i < blocks.length; i++) {
-				let block = blocks[i],
-					scenePosition = block.scenePosition;
+				let block = blocks[i];
+				let scenePosition = block.scenePosition;
 				box.min.copy(scenePosition);
 				box.max.copy(scenePosition).add(this.map.blockSize);
 
@@ -85,12 +86,12 @@ export default class CollisionEntityVoxelMap extends CollisionEntity {
 
 			if (collision)
 				return {
-					entryTime: collision.entryTime == 1 ? Infinity : collision.entryTime,
+					entryTime: collision.entryTime === 1 ? Infinity : collision.entryTime,
 					exitTime: collision.exitTime,
 					normal: collision.normal
 				};
 		} else if (entity instanceof CollisionEntityVoxelMap) {
-			// NOTE: no point in this, since two maps will never collide
+			// TODO: write map to map collision
 		}
 
 		return super.getCollisionData(entity, velocity, movementBox);
