@@ -2,9 +2,9 @@ import React, { Fragment } from "react";
 import styled from "styled-components";
 
 import { Button, ButtonGroup, LinkButton, ThreeRenderer } from "../../ui";
-import Icon from "@fortawesome/react-fontawesome";
-import { faGamepad, faBars } from "@fortawesome/fontawesome-free-solid";
-import { faEdit } from "@fortawesome/fontawesome-free-regular";
+import { FontAwesomeIcon as Icon } from "@fortawesome/react-fontawesome";
+import { faGamepad, faBars } from "@fortawesome/free-solid-svg-icons";
+import { faEdit } from "@fortawesome/free-regular-svg-icons";
 import GithubCorner from "./GithubCorner";
 import MenuScene from "../../scenes/Menu";
 

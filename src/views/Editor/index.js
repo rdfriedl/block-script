@@ -1,8 +1,8 @@
 import React, { Fragment, PureComponent } from "react";
 import styled from "styled-components";
 
-import Icon from "@fortawesome/react-fontawesome";
-import { faChevronLeft } from "@fortawesome/fontawesome-free-solid";
+import { FontAwesomeIcon as Icon } from "@fortawesome/react-fontawesome";
+import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
 import { LinkButton } from "../../ui";
 
 const BackButton = styled(LinkButton)`
