@@ -65,6 +65,8 @@ export default class VoxelMap extends Group {
 		this.useNeighborCache = true;
 	}
 
+	name = 'VoxelMap';
+
 	/**
 	 * creates or gets the chunk at position and returns it
 	 * @param  {(Vector3)} position

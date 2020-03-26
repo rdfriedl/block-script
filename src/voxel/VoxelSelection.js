@@ -44,6 +44,8 @@ export default class VoxelSelection extends Group {
 		this.tmpVec = new Vector3();
 	}
 
+	name = 'VoxelSelection';
+
 	/**
 	 * checks to see if there is a block at position, or if the block is in this selection
 	 * @param  {Vector3|VoxelBlock} position - the position to check, or the block to check for

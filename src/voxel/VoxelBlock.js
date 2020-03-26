@@ -6,7 +6,7 @@ const NEIGHBORS_DIRS = [[1, 0, 0], [0, 1, 0], [0, 0, 1], [-1, 0, 0], [0, -1, 0],
 
 /** the base class for all blocks */
 export default class VoxelBlock {
-	constructor() {
+		constructor() {
 		/**
 		 * the chunk we belong to
 		 * @type {VoxelChunk|VoxelSelection}
