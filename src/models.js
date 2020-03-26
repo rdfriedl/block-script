@@ -1,5 +1,5 @@
 import { PLYLoader, Mesh, MeshStandardMaterial, VertexColors } from "three";
-import "three/examples/js/loaders/PLYLoader.js";
+import "three/examples/jsm/loaders/PLYLoader.js";
 import ModelManager from "./ModelManager.js";
 
 // import all the tests

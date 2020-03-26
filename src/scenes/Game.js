@@ -9,10 +9,10 @@ import {
 	Box3,
 	Vector3,
 } from "three";
-import { PointerLockControls } from "three/examples/js/controls/PointerLockControls";
+import { PointerLockControls } from "three/examples/jsm/controls/PointerLockControls";
 
 // extensions
-import "three/examples/js/controls/PointerLockControls";
+import "three/examples/jsm/controls/PointerLockControls";
 
 import EnhancedScene from "./EnhancedScene";
 import VoxelMap from "../voxel/VoxelMap.js";

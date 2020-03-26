@@ -239,13 +239,13 @@ import UndoManager from 'undo-manager';
 import MeshPreviewComponent from './editor/MeshPreview.vue';
 
 // three plugins
-import 'imports-loader?THREE=three!three/examples/js/controls/OrbitControls.js';
-import 'imports-loader?THREE=three!three/examples/js/controls/PointerLockControls.js';
-import 'imports-loader?THREE=three!three/examples/js/postprocessing/EffectComposer.js';
-import 'imports-loader?THREE=three!three/examples/js/postprocessing/RenderPass.js';
-import 'imports-loader?THREE=three!three/examples/js/postprocessing/ShaderPass.js';
-import 'imports-loader?THREE=three!three/examples/js/shaders/CopyShader.js';
-import 'imports-loader?THREE=three!three/examples/js/shaders/SSAOShader.js';
+import 'three/examples/jsm/controls/OrbitControls.js';
+import 'three/examples/jsm/controls/PointerLockControls.js';
+import 'three/examples/jsm/postprocessing/EffectComposer.js';
+import 'three/examples/jsm/postprocessing/RenderPass.js';
+import 'three/examples/jsm/postprocessing/ShaderPass.js';
+import 'three/examples/jsm/shaders/CopyShader.js';
+import 'three/examples/jsm/shaders/SSAOShader.js';
 
 import Room from '../rooms/Room.js';
 import GridCube from '../objects/GridCube.js';

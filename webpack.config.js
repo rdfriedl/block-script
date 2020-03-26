@@ -42,16 +42,6 @@ module.exports = (env) => {
 			rules: [
 				{
 					test: /\.js$/,
-					enforce: "pre",
-					include: path.resolve(__dirname, "../node_modules/three/examples/js"),
-					loader: "text-transform-loader",
-					options: {
-						prependText: `var THREE = require("three");\n\n`,
-						appendText: `\n\nmodule.exports = THREE;`,
-					},
-				},
-				{
-					test: /\.js$/,
 					exclude: /(node_modules|web_modules)/,
 					loader: "babel-loader",
 					options: {

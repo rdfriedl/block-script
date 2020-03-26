@@ -151,7 +151,7 @@ export default {
 
 import THREE from 'three';
 // extensions
-import 'imports-loader?THREE=three!three/examples/js/controls/PointerLockControls.js';
+import 'three/examples/jsm/controls/PointerLockControls.js';
 import Stats from 'stats';
 
 import VoxelMap from '../voxel/VoxelMap.js';
