@@ -41,18 +41,14 @@ export default class MenuScene extends EnhancedScene {
 			this.map,
 			new Vector3(-10, -1, -10),
 			new Vector3(10, 0, 10),
-			function() {
-				return blockList[Math.floor(Math.random() * blockList.length)];
-			},
+			() => blockList[Math.floor(Math.random() * blockList.length)],
 			"solid"
 		);
 		ChunkUtils.drawCube(
 			this.map,
 			new Vector3(-10, 0, -10),
 			new Vector3(10, 1, 10),
-			function() {
-				return blockList[Math.floor(Math.random() * blockList.length)];
-			},
+			() => blockList[Math.floor(Math.random() * blockList.length)],
 			"frame"
 		);
 		this.map.updateChunks();

@@ -117,21 +117,11 @@ EventDispatcher.prototype.dispatchEvent = function(event) {
 // GridHelper.prototype.constructor = GridHelper;
 
 // fix up vector classes
-Vector2.prototype.multiply = function(v) {
-	this.x *= v.x;
-	this.y *= v.y;
-	return this;
-};
 Vector4.prototype.multiply = function(v) {
 	this.x *= v.x;
 	this.y *= v.y;
 	this.z *= v.z;
 	this.w *= v.w;
-	return this;
-};
-Vector2.prototype.divide = function(v) {
-	this.x /= v.x;
-	this.y /= v.y;
 	return this;
 };
 Vector4.prototype.divide = function(v) {

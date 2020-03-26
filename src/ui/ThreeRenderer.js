@@ -9,17 +9,6 @@ let rendererCache = new Map();
 let statsCache = new Map();
 
 class ThreeRenderer extends Component {
-	constructor(...args) {
-		super(...args);
-
-		this.updateScene = this.updateScene.bind(this);
-		this.getRenderer = this.getRenderer.bind(this);
-		this.refContainer = this.refContainer.bind(this);
-		this.resizeRenderer = this.resizeRenderer.bind(this);
-		this.onWindowResize = this.onWindowResize.bind(this);
-		this.onWindowResizeDebounce = _debounce(this.onWindowResize, 250);
-	}
-
 	componentDidMount() {
 		let { scene } = this.props;
 
@@ -40,16 +29,17 @@ class ThreeRenderer extends Component {
 		window.removeEventListener("resize", this.onWindowResizeDebounce);
 	}
 
-	onWindowResize() {
+	onWindowResize = () => {
 		let { scene } = this.props;
 		let renderer = this.getRenderer();
 
 		renderer.setSize(window.innerWidth, window.innerHeight);
 
 		if (scene && scene.resize) scene.resize(renderer);
-	}
+	};
+	onWindowResizeDebounce = _debounce(this.onWindowResize, 250);
 
-	getRenderer() {
+	getRenderer = () => {
 		let { rendererId, rendererRef } = this.props;
 
 		if (!rendererCache.has(rendererId)) {
@@ -61,8 +51,8 @@ class ThreeRenderer extends Component {
 		}
 
 		return rendererCache.get(rendererId);
-	}
-	getStats() {
+	};
+	getStats = () => {
 		let { rendererId } = this.props;
 
 		if (!statsCache.has(rendererId)) {
@@ -72,16 +62,16 @@ class ThreeRenderer extends Component {
 		}
 
 		return statsCache.get(rendererId);
-	}
+	};
 
-	resizeRenderer() {
+	resizeRenderer = () => {
 		let renderer = this.getRenderer();
 
 		renderer.setPixelRatio(window.devicePixelRatio);
 		renderer.setSize(window.innerWidth, window.innerHeight);
-	}
+	};
 
-	refContainer(el) {
+	refContainer = (el) => {
 		let { showStats } = this.props;
 		let renderer = this.getRenderer();
 		let stats = this.getStats();
@@ -92,7 +82,7 @@ class ThreeRenderer extends Component {
 			this.container.appendChild(renderer.domElement);
 			if (showStats) this.container.appendChild(stats.dom);
 		}
-	}
+	};
 
 	render() {
 		let { rendererId, rendererRef, showStats, scene, ...props } = this.props;
@@ -100,7 +90,7 @@ class ThreeRenderer extends Component {
 		return <div ref={this.refContainer} {...props} />;
 	}
 
-	updateScene() {
+	updateScene = () => {
 		let { scene } = this.props;
 		let renderer = this.getRenderer();
 		let stats = this.getStats();

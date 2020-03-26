@@ -1,4 +1,4 @@
-import { css, injectGlobal } from "styled-components";
+import { css } from "styled-components";
 
 const dark = {
 	button: {
@@ -54,12 +54,5 @@ const dark = {
 		color: darkseagreen;
 	`
 };
-
-injectGlobal`
-	html {
-		background: rgb(64, 64, 64);
-		color: white;
-	}
-`;
 
 export { dark };

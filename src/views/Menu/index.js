@@ -42,7 +42,7 @@ const rendererRef = renderer => {
 const MenuView = () => (
 	<Fragment>
 		<GithubCorner />
-		<Canvas rendererId="full-screen" showStats rendererRef={rendererRef} scene={MenuScene.inst} />
+		{/*<Canvas rendererId="full-screen" showStats rendererRef={rendererRef} scene={MenuScene.inst} />*/}
 		<PageLayout>
 			<h1 className="text-center title" style={{ marginTop: "10vh" }}>
 				Block-Script
@@ -59,7 +59,7 @@ const MenuView = () => (
 				</LinkButton>
 			</MenuButtons>
 		</PageLayout>
-		<CreateBy type="primary" size="extra-small" href="http://rdfriedl.co" target="_blank">
+		<CreateBy type="primary" size="extra-small" href="http://rdfriedl.com" target="_blank">
 			Created by RDFriedl
 		</CreateBy>
 	</Fragment>

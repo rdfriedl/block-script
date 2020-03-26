@@ -1,23 +1,28 @@
 import React, { Fragment } from "react";
 import { hot } from "react-hot-loader";
 import { BrowserRouter as Router, Route } from "react-router-dom";
-import { injectGlobal, ThemeProvider } from "styled-components";
+import { createGlobalStyle, ThemeProvider } from "styled-components";
 
 import { dark } from "../ui/theme";
 
-import MenuView from "./Menu/loadable";
-import GameView from "./Game/loadable";
-import EditorView from "./Editor/loadable";
-import CreditsView from "./Credits/loadable";
+import MenuView from "./Menu";
+import GameView from "./Game";
+import EditorView from "./Editor";
+import CreditsView from "./Credits";
 
-injectGlobal`
+const GlobalStyles = createGlobalStyle`
 	#app {
 		height: 100%;
+	}
+	html {
+		background: rgb(64, 64, 64);
+		color: white;
 	}
 `;
 
 const App = () => (
 	<ThemeProvider theme={dark}>
+		<GlobalStyles/>
 		<Router>
 			<Fragment>
 				<Route exact path="/" component={MenuView} />
