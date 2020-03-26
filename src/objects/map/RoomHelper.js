@@ -16,7 +16,7 @@ export default class RoomHelper extends Group {
 			x: new Color(0x2222ff),
 			z: new Color(0x2222ff),
 			y: new Color(0x225522),
-			w: new Color(0xdce15a)
+			w: new Color(0xdce15a),
 		};
 
 		// create the geometry
@@ -37,7 +37,7 @@ export default class RoomHelper extends Group {
 		let halfRoom = this.roomSize.clone().divideScalar(2);
 
 		// update doors on x, y, z axes
-		["x", "y", "z"].forEach(axis => {
+		["x", "y", "z"].forEach((axis) => {
 			let geometry = new Geometry();
 			let material = new MeshLineMaterial({
 				lineWidth: 0.3,
@@ -45,7 +45,7 @@ export default class RoomHelper extends Group {
 				resolution: new Vector3(window.innerWidth, window.innerHeight),
 				sizeAttenuation: true,
 				near: 1,
-				far: 10000
+				far: 10000,
 			});
 
 			if (this.room.doors[axis] & Room.DOOR_POSITIVE && this.room.doors[axis] & Room.DOOR_NEGATIVE) {

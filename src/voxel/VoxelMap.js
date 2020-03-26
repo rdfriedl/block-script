@@ -65,7 +65,7 @@ export default class VoxelMap extends Group {
 		this.useNeighborCache = true;
 	}
 
-	name = 'VoxelMap';
+	name = "VoxelMap";
 
 	/**
 	 * creates or gets the chunk at position and returns it
@@ -150,17 +150,14 @@ export default class VoxelMap extends Group {
 		this.chunksPositions.set(chunk, position.clone());
 
 		this.add(chunk);
-		chunk.position
-			.copy(position)
-			.multiply(this.chunkSize)
-			.multiply(this.blockSize);
+		chunk.position.copy(position).multiply(this.chunkSize).multiply(this.blockSize);
 		chunk.map = this;
 
 		// fire event
 		this.dispatchEvent({
 			type: "chunk:set",
 			chunk: chunk,
-			oldChunk: oldChunk
+			oldChunk: oldChunk,
 		});
 
 		return this;
@@ -176,7 +173,7 @@ export default class VoxelMap extends Group {
 	clearChunks(disposeBlocks = true) {
 		let chunks = this.listChunks();
 
-		chunks.forEach(chunk => {
+		chunks.forEach((chunk) => {
 			chunk.clearBlocks(disposeBlocks);
 			chunk.parent = undefined;
 		});
@@ -185,7 +182,7 @@ export default class VoxelMap extends Group {
 		// fire event
 		this.dispatchEvent({
 			type: "chunks:cleared",
-			chunks
+			chunks,
 		});
 
 		return this;
@@ -221,7 +218,7 @@ export default class VoxelMap extends Group {
 		// fire event
 		this.dispatchEvent({
 			type: "chunk:removed",
-			chunk: chunk
+			chunk: chunk,
 		});
 
 		return this;
@@ -232,7 +229,7 @@ export default class VoxelMap extends Group {
 	 * @return {VoxelChunk[]}
 	 */
 	listChunks() {
-		return Array.from(this.chunks).map(d => d[1]);
+		return Array.from(this.chunks).map((d) => d[1]);
 	}
 
 	/**
@@ -258,10 +255,7 @@ export default class VoxelMap extends Group {
 	 */
 	hasBlock(position) {
 		if (position instanceof Vector3) {
-			let chunkPos = this.tmpVec
-				.copy(position)
-				.divide(this.chunkSize)
-				.floor();
+			let chunkPos = this.tmpVec.copy(position).divide(this.chunkSize).floor();
 
 			let chunk = this.getChunk(chunkPos);
 
@@ -287,10 +281,7 @@ export default class VoxelMap extends Group {
 			return this.hasBlock(position) ? position : undefined;
 		}
 
-		let chunkPos = this.tmpVec
-			.copy(position)
-			.divide(this.chunkSize)
-			.floor();
+		let chunkPos = this.tmpVec.copy(position).divide(this.chunkSize).floor();
 
 		let chunk = this.getChunk(chunkPos);
 
@@ -303,10 +294,7 @@ export default class VoxelMap extends Group {
 	 * @return {VoxelMap} this
 	 */
 	setBlock(block, position) {
-		let chunkPos = this.tmpVec
-			.copy(position)
-			.divide(this.chunkSize)
-			.floor();
+		let chunkPos = this.tmpVec.copy(position).divide(this.chunkSize).floor();
 
 		let chunk = this.getChunk(chunkPos);
 
@@ -327,7 +315,7 @@ export default class VoxelMap extends Group {
 	 * @return {VoxelMap} this
 	 */
 	clearBlocks(disposeBlocks = true) {
-		this.listChunks().forEach(chunk => {
+		this.listChunks().forEach((chunk) => {
 			chunk.clearBlocks(disposeBlocks);
 		});
 
@@ -342,10 +330,7 @@ export default class VoxelMap extends Group {
 	 */
 	removeBlock(position, disposeBlock = true) {
 		if (position instanceof Vector3) {
-			let chunkPos = this.tmpVec
-				.copy(position)
-				.divide(this.chunkSize)
-				.floor();
+			let chunkPos = this.tmpVec.copy(position).divide(this.chunkSize).floor();
 
 			let chunk = this.getChunk(chunkPos);
 
@@ -371,7 +356,7 @@ export default class VoxelMap extends Group {
 	 * @return {VoxelMap} this
 	 */
 	updateChunks() {
-		this.listChunks().forEach(chunk => {
+		this.listChunks().forEach((chunk) => {
 			if (chunk.needsBuild) chunk.build();
 		});
 		return this;

@@ -18,11 +18,11 @@ export default class PickBlockTool extends Group {
 		this.onPick = undefined;
 
 		this.mouseButtons = {
-			PICK: MOUSE.LEFT
+			PICK: MOUSE.LEFT,
 		};
 
 		// bind events
-		renderer.domElement.addEventListener("mousemove", event => {
+		renderer.domElement.addEventListener("mousemove", (event) => {
 			this.mousePosition.set(
 				(event.offsetX / renderer.domElement.clientWidth) * 2 - 1,
 				-(event.offsetY / renderer.domElement.clientHeight) * 2 + 1
@@ -32,7 +32,7 @@ export default class PickBlockTool extends Group {
 		});
 
 		// pick block
-		renderer.domElement.addEventListener("mouseup", event => {
+		renderer.domElement.addEventListener("mouseup", (event) => {
 			this.mousePosition.set(
 				(event.offsetX / renderer.domElement.clientWidth) * 2 - 1,
 				-(event.offsetY / renderer.domElement.clientHeight) * 2 + 1
@@ -54,7 +54,7 @@ export default class PickBlockTool extends Group {
 				color: 0x5555ff,
 				transparent: true,
 				opacity: 0.5,
-				depthTest: false
+				depthTest: false,
 			})
 		);
 		this.selectionFace.up = new Vector3(0, 0, 1);
@@ -79,16 +79,9 @@ export default class PickBlockTool extends Group {
 					info.point = intersection.point.clone();
 					info.normal = intersection.face.normal.clone();
 					// make the normal 1/4 the size of the blocks
-					let n = intersection.face.normal
-						.clone()
-						.multiply(this.map.blockSize)
-						.divideScalar(4);
+					let n = intersection.face.normal.clone().multiply(this.map.blockSize).divideScalar(4);
 					// get target
-					info.target = intersection.point
-						.clone()
-						.sub(n)
-						.divide(this.map.blockSize)
-						.floor();
+					info.target = intersection.point.clone().sub(n).divide(this.map.blockSize).floor();
 
 					break;
 				}
@@ -102,17 +95,10 @@ export default class PickBlockTool extends Group {
 		if (this.enabled && this.target) {
 			this.selectionFace.visible = true;
 			this.selectionFace.position.copy(
-				this.target.target
-					.clone()
-					.add(new Vector3(0.5, 0.5, 0.5))
-					.multiply(this.map.blockSize)
+				this.target.target.clone().add(new Vector3(0.5, 0.5, 0.5)).multiply(this.map.blockSize)
 			);
 			this.selectionFace.position.add(
-				this.map.blockSize
-					.clone()
-					.divideScalar(2)
-					.multiply(this.target.normal)
-					.multiplyScalar(1.05)
+				this.map.blockSize.clone().divideScalar(2).multiply(this.target.normal).multiplyScalar(1.05)
 			);
 			this.selectionFace.quaternion.setFromUnitVectors(this.selectionFace.up, this.target.normal);
 		} else this.selectionFace.visible = false;

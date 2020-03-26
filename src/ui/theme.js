@@ -29,7 +29,7 @@ const dark = {
 					border-color: #449d44;
 					color: white;
 				}
-			`
+			`,
 		},
 		sizes: {
 			large: css`
@@ -47,12 +47,12 @@ const dark = {
 			"extra-small": css`
 				font-size: 0.8em;
 				padding: 0.2em 0.5em;
-			`
-		}
+			`,
+		},
 	},
 	link: css`
 		color: darkseagreen;
-	`
+	`,
 };
 
 export { dark };

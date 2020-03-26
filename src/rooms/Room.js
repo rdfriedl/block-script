@@ -60,7 +60,7 @@ export default class Room {
 						Room.SIZE.clone().divideScalar(2),
 						quaternion,
 						{
-							ignoreEmpty: true
+							ignoreEmpty: true,
 						}
 					);
 				}
@@ -101,7 +101,7 @@ export default class Room {
 		vec3
 			.applyAxisAngle(ROOM_ROTATION_AXIS, (Math.PI / 2) * rotation)
 			.round()
-			.map(v => {
+			.map((v) => {
 				if (v < 0)
 					return (
 						(Math.abs(v) & Room.DOOR_POSITIVE ? Room.DOOR_NEGATIVE : Room.DOOR_NONE) |

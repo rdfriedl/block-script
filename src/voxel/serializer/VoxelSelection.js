@@ -20,7 +20,7 @@ const tmpVec = new Vector3();
 export function toJSON(selection) {
 	let json = {
 		types: [],
-		blocks: []
+		blocks: [],
 	};
 
 	// build list of block types

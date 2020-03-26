@@ -22,7 +22,7 @@ class GameView extends PureComponent {
 		super(...args);
 
 		this.state = {
-			hasPointerLock: false
+			hasPointerLock: false,
 		};
 
 		this.handleRequestPointerLock = this.handleRequestPointerLock.bind(this);
@@ -49,7 +49,7 @@ class GameView extends PureComponent {
 	}
 	handlePointerLockChange() {
 		this.setState({
-			hasPointerLock: !!document.pointerLockElement
+			hasPointerLock: !!document.pointerLockElement,
 		});
 	}
 

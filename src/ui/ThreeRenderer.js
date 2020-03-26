@@ -103,14 +103,14 @@ class ThreeRenderer extends Component {
 		if (this.mounted) {
 			requestAnimationFrame(this.updateScene);
 		}
-	}
+	};
 }
 
 ThreeRenderer.propTypes = {
 	rendererId: PropTypes.string.isRequired,
 	rendererRef: PropTypes.func,
 	showStats: PropTypes.bool,
-	scene: PropTypes.instanceOf(EnhancedScene).isRequired
+	scene: PropTypes.instanceOf(EnhancedScene).isRequired,
 };
 
 export default ThreeRenderer;

@@ -3,7 +3,7 @@ import ReactDOM from "react-dom";
 
 import App from "./views/App";
 
-const render = Component => {
+const render = (Component) => {
 	ReactDOM.render(<Component />, document.getElementById("app"));
 };
 
@@ -20,10 +20,10 @@ function registerServiceWorker() {
 	if ("serviceWorker" in navigator) {
 		navigator.serviceWorker
 			.register("/sw.js")
-			.then(registration => {
+			.then((registration) => {
 				console.log("SW registered: ", registration);
 			})
-			.catch(registrationError => {
+			.catch((registrationError) => {
 				console.log("SW registration failed: ", registrationError);
 			});
 	}
@@ -31,12 +31,12 @@ function registerServiceWorker() {
 
 function fixHtml() {
 	// fix middle click
-	document.body.addEventListener("mousedown", event => {
+	document.body.addEventListener("mousedown", (event) => {
 		if (event.button === 1) event.preventDefault();
 	});
 
 	// dont allow the user to drag images
-	document.body.addEventListener("dragstart", event => {
+	document.body.addEventListener("dragstart", (event) => {
 		if (event.target.nodeName === "IMG") {
 			event.preventDefault();
 			return false;
@@ -44,7 +44,7 @@ function fixHtml() {
 	});
 
 	// stop blank links
-	document.body.addEventListener("click", event => {
+	document.body.addEventListener("click", (event) => {
 		if (event.target.nodeName === "A" && event.target.getAttribute("href") === "#") {
 			event.preventDefault();
 			return false;

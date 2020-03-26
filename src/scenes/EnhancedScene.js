@@ -40,7 +40,7 @@ export default class EnhancedScene {
 		this.timers.push({
 			callback,
 			fireEvery,
-			currentTime: 0
+			currentTime: 0,
 		});
 	}
 
@@ -67,7 +67,7 @@ export default class EnhancedScene {
 	resize() {}
 
 	updateChildren(object = this.scene, dtime) {
-		object.children.forEach(obj => {
+		object.children.forEach((obj) => {
 			if (obj.update) obj.update(dtime);
 
 			if (obj.children) this.updateChildren(obj, dtime);
@@ -75,7 +75,7 @@ export default class EnhancedScene {
 	}
 
 	updateTimers(dtime = 0) {
-		this.timers.forEach(timer => {
+		this.timers.forEach((timer) => {
 			timer.currentTime += dtime;
 
 			if (timer.currentTime > timer.fireEvery) {

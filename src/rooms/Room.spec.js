@@ -8,7 +8,7 @@ describe("Room", () => {
 	before(() => {
 		room = DefaultRooms.createRoom({
 			doors: new Vector4(1, 0, 1, 0),
-			rotate: false
+			rotate: false,
 		});
 	});
 

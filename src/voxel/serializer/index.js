@@ -7,7 +7,7 @@ const voxelSerializer = {
 	VoxelBlock,
 	VoxelChunk,
 	VoxelSelection,
-	VoxelMap
+	VoxelMap,
 };
 
 export default voxelSerializer;

@@ -62,7 +62,7 @@ export default class CollisionEntityVoxelMap extends CollisionEntity {
 				return {
 					entryTime: collision.entryTime === 1 ? Infinity : collision.entryTime,
 					exitTime: collision.exitTime,
-					normal: collision.normal
+					normal: collision.normal,
 				};
 			}
 		} else if (entity instanceof CollisionEntityPoint) {
@@ -88,7 +88,7 @@ export default class CollisionEntityVoxelMap extends CollisionEntity {
 				return {
 					entryTime: collision.entryTime === 1 ? Infinity : collision.entryTime,
 					exitTime: collision.exitTime,
-					normal: collision.normal
+					normal: collision.normal,
 				};
 		} else if (entity instanceof CollisionEntityVoxelMap) {
 			// TODO: write map to map collision

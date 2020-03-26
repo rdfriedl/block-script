@@ -35,7 +35,7 @@ const MenuButtons = styled(ButtonGroup)`
 	margin: 2em 0;
 `;
 
-const rendererRef = renderer => {
+const rendererRef = (renderer) => {
 	renderer.setClearColor(0x404040, 1);
 };
 

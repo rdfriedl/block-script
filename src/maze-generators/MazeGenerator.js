@@ -46,7 +46,7 @@ export default class MazeGenerator {
 		 * @type {MazeGenerator#vec}
 		 */
 		this.start = new this.vec();
-		this.axes.forEach(axis => {
+		this.axes.forEach((axis) => {
 			this.start[axis] = Math.random();
 		});
 		this.start.multiply(this.size).floor();
@@ -57,7 +57,7 @@ export default class MazeGenerator {
 		 */
 		this.end = this.start.clone();
 		while (this.end.equals(this.start)) {
-			this.axes.forEach(axis => {
+			this.axes.forEach((axis) => {
 				this.end[axis] = Math.random();
 			});
 			this.end.multiply(this.size).floor();

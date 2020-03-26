@@ -37,10 +37,7 @@ export default class MazeLevelHelper extends Group {
 
 				helper.room = room;
 				helper.roomSize.copy(this.roomSize);
-				helper.position
-					.copy(room.position)
-					.multiply(this.roomSize)
-					.setY(0);
+				helper.position.copy(room.position).multiply(this.roomSize).setY(0);
 				helper.update();
 			}
 		}

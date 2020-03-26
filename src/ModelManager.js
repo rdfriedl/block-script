@@ -52,7 +52,7 @@ export default class ModelManager {
 			url: url,
 			mesh: undefined,
 			callbacks: [],
-			meshes: []
+			meshes: [],
 		};
 
 		return this;
@@ -68,9 +68,11 @@ export default class ModelManager {
 	 */
 	registerMany(models) {
 		if (Array.isArray(models)) {
-			models.filter(m => !this.has(m.id)).forEach(data => {
-				this.register(data.id, data.url, data.loader);
-			});
+			models
+				.filter((m) => !this.has(m.id))
+				.forEach((data) => {
+					this.register(data.id, data.url, data.loader);
+				});
 		}
 		return this;
 	}
@@ -98,7 +100,7 @@ export default class ModelManager {
 
 			// load model
 			if (!model.loading) {
-				model.loader(model.url, mesh => {
+				model.loader(model.url, (mesh) => {
 					model.mesh = mesh;
 					model.loading = false;
 
@@ -109,7 +111,7 @@ export default class ModelManager {
 					}
 					delete model.meshes;
 
-					model.callbacks.forEach(cb => cb());
+					model.callbacks.forEach((cb) => cb());
 					delete model.callbacks;
 				});
 			}

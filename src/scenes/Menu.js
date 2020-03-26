@@ -5,7 +5,7 @@ import {
 	MeshLambertMaterial,
 	DirectionalLight,
 	AmbientLight,
-	Vector3
+	Vector3,
 } from "three";
 import * as ChunkUtils from "../ChunkUtils";
 import EnhancedScene from "./EnhancedScene";
@@ -36,7 +36,7 @@ export default class MenuScene extends EnhancedScene {
 		this.scene.add(this.map);
 
 		// build the map
-		const blockList = Object.keys(blocks).map(key => blocks[key].UID); //.filter(UID => !UID.includes('glass'));
+		const blockList = Object.keys(blocks).map((key) => blocks[key].UID); //.filter(UID => !UID.includes('glass'));
 		ChunkUtils.drawCube(
 			this.map,
 			new Vector3(-10, -1, -10),

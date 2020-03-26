@@ -63,7 +63,7 @@ class Player extends Group {
 			right: false,
 			jump: false,
 			crouch: false,
-			sprint: false
+			sprint: false,
 		};
 
 		/**

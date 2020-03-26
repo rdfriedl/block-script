@@ -5,10 +5,7 @@ export function createDebugBox(size) {
 	geometry.addAttribute("position", new BufferAttribute(new Float32Array(72), 3));
 	const mesh = new Line(geometry, new LineBasicMaterial({ color: 0x000000 }), LinePieces);
 
-	const min = size
-		.clone()
-		.divideScalar(2)
-		.multiplyScalar(-1);
+	const min = size.clone().divideScalar(2).multiplyScalar(-1);
 	const max = size.clone().divideScalar(2);
 
 	/*

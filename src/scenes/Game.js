@@ -7,7 +7,7 @@ import {
 	AmbientLight,
 	Mesh,
 	Box3,
-	Vector3
+	Vector3,
 } from "three";
 import { PointerLockControls } from "three/examples/js/controls/PointerLockControls";
 
@@ -35,7 +35,7 @@ const MOVEMENT_KEYMAP = {
 	right: ["d", "right"],
 	back: ["s", "down"],
 	jump: ["space", "num_0"],
-	sprint: ["shift"]
+	sprint: ["shift"],
 };
 
 /** the chunk load range */
@@ -103,7 +103,7 @@ export default class GameScene extends EnhancedScene {
 			new BoxGeometry(1, 1, 1),
 			new MeshBasicMaterial({
 				color: 0xffffff,
-				wireframe: true
+				wireframe: true,
 			})
 		);
 
@@ -117,15 +117,15 @@ export default class GameScene extends EnhancedScene {
 		// bind keybindings for player
 		this.keyboard.register_many(
 			Object.keys(MOVEMENT_KEYMAP)
-				.map(movement =>
-					MOVEMENT_KEYMAP[movement].map(keys => ({
+				.map((movement) =>
+					MOVEMENT_KEYMAP[movement].map((keys) => ({
 						keys,
 						on_keydown: () => {
 							this.player.movement[movement] = true;
 						},
 						on_keyup: () => {
 							this.player.movement[movement] = false;
-						}
+						},
 					}))
 				)
 				.reduce((a, b) => a.concat(b), [])
@@ -140,7 +140,7 @@ export default class GameScene extends EnhancedScene {
 		this.map.useNeighborCache = false;
 		this.scene.add(this.map);
 
-		this.map.addEventListener("chunk:built", event => {
+		this.map.addEventListener("chunk:built", (event) => {
 			event.chunk.mesh.castShadow = true;
 			event.chunk.mesh.receiveShadow = true;
 		});
@@ -164,8 +164,8 @@ export default class GameScene extends EnhancedScene {
 
 			window.totalBlocksInMap = () => {
 				let total = {};
-				this.map.chunks.forEach(chunk => {
-					chunk.blocks.forEach(block => {
+				this.map.chunks.forEach((chunk) => {
+					chunk.blocks.forEach((block) => {
 						if (!total[block.id]) total[block.id] = 0;
 
 						total[block.id] += 1;
@@ -177,7 +177,7 @@ export default class GameScene extends EnhancedScene {
 			window.totalBlocksInCache = () => {
 				let table = {};
 
-				Object.keys(this.map.blockManager.blockPool).forEach(id => {
+				Object.keys(this.map.blockManager.blockPool).forEach((id) => {
 					table[id] = this.map.blockManager.blockPool[id].length;
 				});
 
@@ -199,7 +199,7 @@ export default class GameScene extends EnhancedScene {
 		this.mazeGenerator = new RecursiveBackTracker(Vector3, MAZE_SIZE);
 		this.mazeGenerator.generate({
 			//make it so it only goes up or down if it has to
-			weights: new Vector3(1, 0, 1)
+			weights: new Vector3(1, 0, 1),
 		});
 
 		this.mazeRooms = new RoomMaze(this.mazeGenerator, DefaultRooms);
@@ -247,19 +247,12 @@ export default class GameScene extends EnhancedScene {
 		let cacheIndex = chunk.chunkPosition.toString();
 
 		// load the blocks into the chunk
-		let roomSize = this.mazeRooms.roomSize.clone().map(v => (v -= 1));
-		let chunkSize = this.map.chunkSize.clone().map(v => (v -= 1));
+		let roomSize = this.mazeRooms.roomSize.clone().map((v) => (v -= 1));
+		let chunkSize = this.map.chunkSize.clone().map((v) => (v -= 1));
 		let chunkPosition = chunk.worldPosition; // the position of the chunk in blocks
 		let chunkRoomBBox = new Box3();
-		chunkRoomBBox.min
-			.copy(chunkPosition)
-			.divide(this.mazeRooms.roomSize)
-			.floor();
-		chunkRoomBBox.max
-			.copy(chunkPosition)
-			.add(chunkSize)
-			.divide(this.mazeRooms.roomSize)
-			.floor();
+		chunkRoomBBox.min.copy(chunkPosition).divide(this.mazeRooms.roomSize).floor();
+		chunkRoomBBox.max.copy(chunkPosition).add(chunkSize).divide(this.mazeRooms.roomSize).floor();
 
 		// find all the rooms we overlap
 		let roomPosition = new Vector3();
@@ -275,10 +268,7 @@ export default class GameScene extends EnhancedScene {
 
 					// get overlap
 					let overlap = new Box3();
-					overlap.min
-						.set(-Infinity, -Infinity, -Infinity)
-						.max(chunkPosition)
-						.max(roomPosition);
+					overlap.min.set(-Infinity, -Infinity, -Infinity).max(chunkPosition).max(roomPosition);
 					overlap.max
 						.set(Infinity, Infinity, Infinity)
 						.min(chunkPosition.clone().add(this.map.chunkSize))
@@ -291,7 +281,7 @@ export default class GameScene extends EnhancedScene {
 						overlap.max.clone().sub(roomPosition),
 						{
 							offset: overlap.min.clone().sub(chunkPosition),
-							keepOffset: false
+							keepOffset: false,
 						}
 					);
 				}
@@ -355,7 +345,7 @@ export default class GameScene extends EnhancedScene {
 		}
 	}
 	unloadChunks() {
-		this.map.listChunks().forEach(chunk => {
+		this.map.listChunks().forEach((chunk) => {
 			if (!this.vectorInRange(chunk.chunkPosition, UNLOAD_RANGE)) {
 				// chunk is outside the unload range, unload it
 

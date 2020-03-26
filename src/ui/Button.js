@@ -32,11 +32,11 @@ const Button = styled.button`
 
 Button.propTypes = {
 	type: PropTypes.oneOf(["default", "primary", "success"]),
-	size: PropTypes.oneOf(["large", "normal", "small", "extra-small"])
+	size: PropTypes.oneOf(["large", "normal", "small", "extra-small"]),
 };
 
 Button.defaultProps = {
-	type: "default"
+	type: "default",
 };
 
 export default Button;

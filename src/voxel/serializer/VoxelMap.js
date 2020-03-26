@@ -15,7 +15,7 @@ import VoxelBlockManager from "../VoxelBlockManager";
  */
 export function toJSON(map) {
 	return {
-		chunks: map.listChunks().forEach(chunk => [chunk.chunkPosition.toArray(), VoxelChunkToJSON(chunk)])
+		chunks: map.listChunks().forEach((chunk) => [chunk.chunkPosition.toArray(), VoxelChunkToJSON(chunk)]),
 	};
 }
 

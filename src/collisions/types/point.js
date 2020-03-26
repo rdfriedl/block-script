@@ -115,7 +115,7 @@ export default class CollisionEntityPoint extends CollisionEntity {
 			return {
 				entryTime: entryTime,
 				exitTime: exitTime,
-				normal: normal
+				normal: normal,
 			};
 		}
 	}

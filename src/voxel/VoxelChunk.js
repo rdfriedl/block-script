@@ -4,7 +4,14 @@ import VoxelBlock from "./VoxelBlock.js";
 import VoxelSelection from "./VoxelSelection";
 
 /** the directions of neighbors */
-const NEIGHBORS_DIRS = [[1, 0, 0], [0, 1, 0], [0, 0, 1], [-1, 0, 0], [0, -1, 0], [0, 0, -1]];
+const NEIGHBORS_DIRS = [
+	[1, 0, 0],
+	[0, 1, 0],
+	[0, 0, 1],
+	[-1, 0, 0],
+	[0, -1, 0],
+	[0, 0, -1],
+];
 
 /** an extension of the VoxelSelection class to make a chunk */
 export default class VoxelChunk extends VoxelSelection {
@@ -57,15 +64,15 @@ export default class VoxelChunk extends VoxelSelection {
 
 		// filter all the blocks
 		let blocks = Array.from(this.blocks)
-			.map(b => b[1])
-			.filter(block => {
+			.map((b) => b[1])
+			.filter((block) => {
 				if (!this.map) return true;
 
 				// recalculate the cache if we have to
 				let neighbors = VoxelChunk.BlockNeighborCache.get(block);
 				if (!neighbors) {
 					neighbors = {};
-					NEIGHBORS_DIRS.forEach(dir => {
+					NEIGHBORS_DIRS.forEach((dir) => {
 						this.tmpVec.fromArray(dir);
 						neighbors[this.tmpVec.toString()] = block.getNeighbor(this.tmpVec);
 					});
@@ -87,7 +94,7 @@ export default class VoxelChunk extends VoxelSelection {
 		// merge the geometries
 		let blockPositionOffset = new Vector3(0.5, 0.5, 0.5);
 		let matrix = new Matrix4();
-		blocks.forEach(block => {
+		blocks.forEach((block) => {
 			matrix.identity();
 
 			// add the material
@@ -182,14 +189,14 @@ export default class VoxelChunk extends VoxelSelection {
 
 		// fire event
 		this.dispatchEvent({
-			type: "built"
+			type: "built",
 		});
 
 		// fire event on parent
 		if (this.map && this.map.dispatchEvent)
 			this.map.dispatchEvent({
 				type: "chunk:built",
-				chunk: this
+				chunk: this,
 			});
 	}
 
@@ -201,11 +208,11 @@ export default class VoxelChunk extends VoxelSelection {
 		if (this.mesh) {
 			this.mesh.geometry.dispose();
 
-			this.mesh.geometry.vertices.forEach(v => VoxelChunk.VertexPool.push(v));
-			this.mesh.geometry.faceVertexUvs[0].forEach(a => {
-				a.forEach(uv => VoxelChunk.UVPool.push(uv));
+			this.mesh.geometry.vertices.forEach((v) => VoxelChunk.VertexPool.push(v));
+			this.mesh.geometry.faceVertexUvs[0].forEach((a) => {
+				a.forEach((uv) => VoxelChunk.UVPool.push(uv));
 			});
-			this.mesh.geometry.faces.forEach(face => VoxelChunk.FacePool.push(face));
+			this.mesh.geometry.faces.forEach((face) => VoxelChunk.FacePool.push(face));
 		}
 
 		return this;
@@ -251,7 +258,7 @@ export default class VoxelChunk extends VoxelSelection {
 				type: "block:set",
 				chunk: this,
 				block: block,
-				oldBlock: oldBlock
+				oldBlock: oldBlock,
 			});
 		}
 
@@ -272,7 +279,7 @@ export default class VoxelChunk extends VoxelSelection {
 		let blocks = this.listBlocks();
 
 		if (this.useNeighborCache) {
-			blocks.forEach(b => {
+			blocks.forEach((b) => {
 				VoxelChunk.removeBlockFromNeighborCache(b, false);
 			});
 		}
@@ -283,7 +290,7 @@ export default class VoxelChunk extends VoxelSelection {
 		if (this.map) {
 			this.map.dispatchEvent({
 				type: "chunk:blocks:cleared",
-				chunk: this
+				chunk: this,
 			});
 		}
 
@@ -318,7 +325,7 @@ export default class VoxelChunk extends VoxelSelection {
 			this.map.dispatchEvent({
 				type: "block:removed",
 				chunk: this,
-				block: block
+				block: block,
 			});
 		}
 
@@ -344,7 +351,7 @@ export default class VoxelChunk extends VoxelSelection {
 						if (setBuild && neighbors[i] && neighbors[i].chunk) neighbors[i].chunk.needsBuild = true;
 					}
 				} else {
-					block.getNeighbors().forEach(b => {
+					block.getNeighbors().forEach((b) => {
 						VoxelChunk.BlockNeighborCache.delete(block);
 						if (setBuild && block && block.chunk) block.chunk.needsBuild = true;
 					});
@@ -389,10 +396,7 @@ export default class VoxelChunk extends VoxelSelection {
 	 * @return {Vector3}
 	 */
 	get scenePosition() {
-		return this.chunkPosition
-			.clone()
-			.multiply(this.chunkSize)
-			.multiply(this.blockSize);
+		return this.chunkPosition.clone().multiply(this.chunkSize).multiply(this.blockSize);
 	}
 
 	/** @return {Vector3} */

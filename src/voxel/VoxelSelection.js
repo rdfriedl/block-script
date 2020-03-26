@@ -44,7 +44,7 @@ export default class VoxelSelection extends Group {
 		this.tmpVec = new Vector3();
 	}
 
-	name = 'VoxelSelection';
+	name = "VoxelSelection";
 
 	/**
 	 * checks to see if there is a block at position, or if the block is in this selection
@@ -74,12 +74,7 @@ export default class VoxelSelection extends Group {
 			return this.hasBlock(position) ? position : undefined;
 		}
 
-		return this.blocks.get(
-			this.tmpVec
-				.copy(position)
-				.round()
-				.toString()
-		);
+		return this.blocks.get(this.tmpVec.copy(position).round().toString());
 	}
 
 	/**
@@ -134,7 +129,7 @@ export default class VoxelSelection extends Group {
 		this.dispatchEvent({
 			type: "block:set",
 			block: block,
-			oldBlock: oldBlock
+			oldBlock: oldBlock,
 		});
 
 		return this;
@@ -149,7 +144,7 @@ export default class VoxelSelection extends Group {
 	 */
 	clearBlocks(disposeBlocks = true) {
 		let blocks = this.listBlocks();
-		blocks.forEach(block => {
+		blocks.forEach((block) => {
 			block.parent = undefined;
 		});
 		this.blocks.clear();
@@ -157,12 +152,12 @@ export default class VoxelSelection extends Group {
 		// dispose of the blocks
 		// NOTE: we have to call this AFTER we remove the block from this selection, otherwise we get an infinite loop because the blockManager tries to remove the block
 		if (disposeBlocks) {
-			blocks.forEach(block => this.blockManager.disposeBlock(block));
+			blocks.forEach((block) => this.blockManager.disposeBlock(block));
 		}
 
 		// fire event
 		this.dispatchEvent({
-			type: "blocks:cleared"
+			type: "blocks:cleared",
 		});
 
 		return this;
@@ -196,7 +191,7 @@ export default class VoxelSelection extends Group {
 
 		this.dispatchEvent({
 			type: "block:removed",
-			block: block
+			block: block,
 		});
 
 		return this;
@@ -207,7 +202,7 @@ export default class VoxelSelection extends Group {
 	 * @return {VoxelBlock[]}
 	 */
 	listBlocks() {
-		return Array.from(this.blocks).map(d => d[1]);
+		return Array.from(this.blocks).map((d) => d[1]);
 	}
 
 	/** @return {Boolean} */
@@ -223,7 +218,7 @@ export default class VoxelSelection extends Group {
 		if (this.blocks.size) {
 			let min = new Vector3().addScalar(Infinity),
 				max = new Vector3().addScalar(-Infinity);
-			this.blocks.forEach(block => {
+			this.blocks.forEach((block) => {
 				let pos = this.getBlockPosition(block);
 				min.min(pos);
 				max.max(pos);
@@ -243,7 +238,7 @@ export default class VoxelSelection extends Group {
 		let tmp = new Vector3();
 
 		if (this.blocks.size) {
-			this.blocks.forEach(block => {
+			this.blocks.forEach((block) => {
 				let pos = this.getBlockPosition(block);
 				box.min.min(pos);
 				box.max.max(pos);

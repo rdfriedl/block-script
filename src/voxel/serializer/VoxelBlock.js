@@ -15,7 +15,7 @@ import VoxelBlockManager from "../VoxelBlockManager";
 export function toJSON(block) {
 	return {
 		type: block.id,
-		properties: block.hasOwnProperty("properties") ? block.properties : undefined
+		properties: block.hasOwnProperty("properties") ? block.properties : undefined,
 	};
 }
 

@@ -67,7 +67,7 @@ describe("VoxelMap", () => {
 		});
 
 		it('should emit the "chunk:set" event', () => {
-			let listener = sinon.stub().callsFake(event => {
+			let listener = sinon.stub().callsFake((event) => {
 				event.chunk.should.equal(chunk);
 			});
 
@@ -122,7 +122,7 @@ describe("VoxelMap", () => {
 		});
 
 		it('should emit the "chunk:removed" event', () => {
-			let listener = sinon.stub().callsFake(event => {
+			let listener = sinon.stub().callsFake((event) => {
 				event.chunk.should.equal(chunk);
 			});
 
@@ -153,7 +153,7 @@ describe("VoxelMap", () => {
 		});
 
 		it("should emit the chunks:cleared event", () => {
-			let listener = sinon.stub().callsFake(event => {
+			let listener = sinon.stub().callsFake((event) => {
 				event.chunks.should.be.an("array");
 			});
 

@@ -33,8 +33,8 @@ export default class CollisionWorld {
 
 		// update all entities
 		this.listEntities()
-			.filter(e => !e.isStatic)
-			.forEach(entity => {
+			.filter((e) => !e.isStatic)
+			.forEach((entity) => {
 				// add gravity
 				// NOTE: multiply gravity by dtime since its a type of acceleration and is effected by time
 				entity.velocity.add(this.gravity.clone().multiplyScalar(dtime * 60));

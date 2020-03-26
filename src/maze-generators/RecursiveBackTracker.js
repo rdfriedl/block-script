@@ -29,7 +29,7 @@ export default class RecursiveBackTracker extends MazeGenerator {
 			let checked = new this.vec();
 
 			// get the weights
-			this.axes.forEach(axis => {
+			this.axes.forEach((axis) => {
 				weights[axis] = opts.weights ? opts.weights[axis] || 1 : 1;
 			});
 
@@ -99,7 +99,7 @@ export default class RecursiveBackTracker extends MazeGenerator {
 
 // debug functions
 if (process.env.NODE_ENV === "development") {
-	window.print2DMaze = function(maze) {
+	window.print2DMaze = function (maze) {
 		if (!(maze instanceof MazeGenerator)) {
 			maze = new RecursiveBackTracker(Vector2, new Vector2(arguments[0] || 10, arguments[1] || 10));
 			maze.generate(arguments[2]);

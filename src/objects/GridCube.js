@@ -15,15 +15,15 @@ export default class GridCube extends Group {
 
 	buildGrid() {
 		// remove old grids
-		this.children.forEach(child => {
+		this.children.forEach((child) => {
 			this.remove(child);
 		});
 
 		// create new grids
-		this.sides.forEach(side => {
+		this.sides.forEach((side) => {
 			this.walls[side] = this.walls[side] || {};
 
-			[1, -1].forEach(s => {
+			[1, -1].forEach((s) => {
 				let gridSize = new Vector2();
 				let cellSize = new Vector2();
 				switch (side) {
@@ -55,7 +55,7 @@ export default class GridCube extends Group {
 	}
 
 	updateViewingDirection(viewingDirection) {
-		this.sides.forEach(side => {
+		this.sides.forEach((side) => {
 			this.walls[side] = this.walls[side] || {};
 			let s = viewingDirection ? Math.sign(viewingDirection[side]) : 0;
 			for (let i in this.walls[side]) {

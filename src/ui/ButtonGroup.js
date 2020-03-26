@@ -32,10 +32,10 @@ const ButtonGroup = styled.div`
 `;
 
 ButtonGroup.propTypes = {
-	dir: PropTypes.oneOf(["vertical", "horizontal"])
+	dir: PropTypes.oneOf(["vertical", "horizontal"]),
 };
 ButtonGroup.defaultProps = {
-	dir: "horizontal"
+	dir: "horizontal",
 };
 
 export default ButtonGroup;

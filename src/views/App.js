@@ -22,7 +22,7 @@ const GlobalStyles = createGlobalStyle`
 
 const App = () => (
 	<ThemeProvider theme={dark}>
-		<GlobalStyles/>
+		<GlobalStyles />
 		<Router>
 			<Fragment>
 				<Route exact path="/" component={MenuView} />

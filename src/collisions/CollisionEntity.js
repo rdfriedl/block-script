@@ -41,7 +41,7 @@ export default class CollisionEntity {
 		movementBox.union(this.boundingBox.translate(velocity));
 
 		// get all entities that are in the way
-		let entities = this.world.listEntities().filter(entity => {
+		let entities = this.world.listEntities().filter((entity) => {
 			// make sure its not us, and also that its static (since we cant handle non-static collisions)
 			return entity !== this && entity.isStatic && movementBox.intersectsBox(entity.boundingBox);
 		});
@@ -116,7 +116,7 @@ export default class CollisionEntity {
 		return {
 			entryTime: Infinity, // it never collides with this entity
 			exitTime: Infinity,
-			normal: new Vector3()
+			normal: new Vector3(),
 		};
 	}
 }

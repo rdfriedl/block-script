@@ -2,11 +2,18 @@ import { Vector3, BoxGeometry, MeshNormalMaterial, Euler } from "three";
 import "../three-changes";
 
 /** the directions of neighbors */
-const NEIGHBORS_DIRS = [[1, 0, 0], [0, 1, 0], [0, 0, 1], [-1, 0, 0], [0, -1, 0], [0, 0, -1]];
+const NEIGHBORS_DIRS = [
+	[1, 0, 0],
+	[0, 1, 0],
+	[0, 0, 1],
+	[-1, 0, 0],
+	[0, -1, 0],
+	[0, 0, -1],
+];
 
 /** the base class for all blocks */
 export default class VoxelBlock {
-		constructor() {
+	constructor() {
 		/**
 		 * the chunk we belong to
 		 * @type {VoxelChunk|VoxelSelection}
@@ -131,10 +138,7 @@ export default class VoxelBlock {
 		let parentChunkPosition = this.parent && this.parent.chunkPosition;
 
 		return parentChunkPosition
-			? parentChunkPosition
-					.clone()
-					.multiply(this.chunkSize)
-					.add(this.position)
+			? parentChunkPosition.clone().multiply(this.chunkSize).add(this.position)
 			: new Vector3();
 	}
 
@@ -246,7 +250,7 @@ export default class VoxelBlock {
 	 */
 	CreateGeometry() {
 		let geometry = new BoxGeometry(1, 1, 1);
-		geometry.faces.forEach(f => {
+		geometry.faces.forEach((f) => {
 			f.materialIndex = 0;
 		});
 		return geometry;
@@ -313,5 +317,5 @@ VoxelBlock.DefalutProperties = {
 	canRotateOnY: true,
 	stepSound: [],
 	placeSound: [],
-	removeSound: []
+	removeSound: [],
 };

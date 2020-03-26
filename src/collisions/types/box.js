@@ -14,13 +14,7 @@ export default class CollisionEntityBox extends CollisionEntity {
 		 * a Box3 that is used as the size of this CollisionEntityBox
 		 * @type {Box3}
 		 */
-		this._box = new Box3(
-			size
-				.clone()
-				.divideScalar(2)
-				.negate(),
-			size.clone().divideScalar(2)
-		);
+		this._box = new Box3(size.clone().divideScalar(2).negate(), size.clone().divideScalar(2));
 
 		if (offset instanceof Vector3) this._box.translate(offset);
 	}
@@ -140,7 +134,7 @@ export default class CollisionEntityBox extends CollisionEntity {
 			return {
 				entryTime: entryTime,
 				exitTime: exitTime,
-				normal: normal
+				normal: normal,
 			};
 		}
 	}

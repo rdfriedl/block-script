@@ -101,7 +101,7 @@ export default class RoomMaze {
 		}
 
 		let room = this.roomManager.createRoom({
-			doors: new Vector4(cell.x, cell.y, cell.z, 0) // cell
+			doors: new Vector4(cell.x, cell.y, cell.z, 0), // cell
 		});
 
 		if (!room) {
@@ -122,7 +122,7 @@ export default class RoomMaze {
 	 * @return {Room[]}
 	 */
 	listRooms() {
-		return Array.from(this.rooms).map(d => d[1]);
+		return Array.from(this.rooms).map((d) => d[1]);
 	}
 
 	get size() {

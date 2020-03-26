@@ -101,7 +101,7 @@ export default class VoxelBlockManager {
 		let newBlock = this.createBlock(block);
 		if (block.hasOwnProperty("properties")) {
 			let props = {};
-			Reflect.ownKeys(block.properties).forEach(key => {
+			Reflect.ownKeys(block.properties).forEach((key) => {
 				props[key] = block.properties[key];
 			});
 
@@ -138,7 +138,7 @@ export default class VoxelBlockManager {
 		if (typeof block === "function" && block.UID) {
 			this.blocks.set(block.UID, block);
 		} else if (Array.isArray(block)) {
-			block.forEach(block => this.blocks.set(block.UID, block));
+			block.forEach((block) => this.blocks.set(block.UID, block));
 		} else if (typeof block === "object") {
 			for (let i in block) {
 				this.blocks.set(block[i].UID, block[i]);
@@ -154,7 +154,7 @@ export default class VoxelBlockManager {
 	 */
 	listBlocks() {
 		let arr = [];
-		this.blocks.forEach(b => arr.push(b));
+		this.blocks.forEach((b) => arr.push(b));
 		return arr;
 	}
 
@@ -185,7 +185,7 @@ export default class VoxelBlockManager {
 		if (typeof id === "string") {
 			Object.assign(parsedProps, VoxelBlockManager.parseProps(id));
 		} else if (id instanceof VoxelBlock && id.hasOwnProperty("properties")) {
-			Reflect.ownKeys(id.properties).forEach(key => {
+			Reflect.ownKeys(id.properties).forEach((key) => {
 				parsedProps[key] = id.getProp(key);
 			});
 		}

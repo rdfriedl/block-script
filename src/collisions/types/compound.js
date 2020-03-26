@@ -29,7 +29,7 @@ export default class CollisionEntityCompound extends CollisionEntity {
 	 */
 	getBoundingBox() {
 		let box = new Box3(new Vector3(Infinity, Infinity, Infinity), new Vector3(-Infinity, -Infinity, -Infinity));
-		this.entities.forEach(entity => {
+		this.entities.forEach((entity) => {
 			box.merge(entity.boundingBox);
 		});
 		return box;
@@ -63,7 +63,7 @@ export default class CollisionEntityCompound extends CollisionEntity {
 				return {
 					entryTime: collision.entryTime == 1 ? Infinity : collision.entryTime,
 					exitTime: collision.exitTime,
-					normal: collision.normal
+					normal: collision.normal,
 				};
 		} else if (entity instanceof CollisionEntityPoint) {
 			let collision;
@@ -89,7 +89,7 @@ export default class CollisionEntityCompound extends CollisionEntity {
 				return {
 					entryTime: collision.entryTime == 1 ? Infinity : collision.entryTime,
 					exitTime: collision.exitTime,
-					normal: collision.normal
+					normal: collision.normal,
 				};
 		} else if (entity instanceof CollisionEntityCompound) {
 			// TODO: make comound -> compound collisions

@@ -20,7 +20,7 @@ export default class RoomManager {
 		this.rooms[id] = {
 			id: id,
 			selection: selection,
-			doors: new Vector4().copy(doors)
+			doors: new Vector4().copy(doors),
 		};
 	}
 
@@ -32,7 +32,7 @@ export default class RoomManager {
 	searchRooms(search) {
 		search = Object.assign(
 			{
-				rotate: true
+				rotate: true,
 			},
 			search || {}
 		);

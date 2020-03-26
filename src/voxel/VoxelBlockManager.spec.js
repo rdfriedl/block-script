@@ -118,7 +118,7 @@ describe("VoxelBlockManager", () => {
 			expect(
 				VoxelBlockManager.createID(new blocks.Dirt(), {
 					type: "test",
-					another: 9
+					another: 9,
 				})
 			).to.equal("dirt?type=test&another=9");
 		});

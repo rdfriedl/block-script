@@ -20,10 +20,10 @@ import {
 	LinearMipMapLinearFilter,
 	RGBAFormat,
 	UnsignedByteType,
-	ImageUtils
+	ImageUtils,
 } from "three";
 
-EventDispatcher.prototype.dispatchEvent = function(event) {
+EventDispatcher.prototype.dispatchEvent = function (event) {
 	if (this._listeners === undefined) return;
 
 	let listeners = this._listeners;
@@ -117,14 +117,14 @@ EventDispatcher.prototype.dispatchEvent = function(event) {
 // GridHelper.prototype.constructor = GridHelper;
 
 // fix up vector classes
-Vector4.prototype.multiply = function(v) {
+Vector4.prototype.multiply = function (v) {
 	this.x *= v.x;
 	this.y *= v.y;
 	this.z *= v.z;
 	this.w *= v.w;
 	return this;
 };
-Vector4.prototype.divide = function(v) {
+Vector4.prototype.divide = function (v) {
 	this.x /= v.x;
 	this.y /= v.y;
 	this.z /= v.z;
@@ -133,43 +133,43 @@ Vector4.prototype.divide = function(v) {
 };
 
 // vec to / from string
-Vector2.prototype.toString = function() {
+Vector2.prototype.toString = function () {
 	return `${this.x},${this.y}`;
 };
-Vector2.prototype.fromString = function(str) {
-	return this.fromArray(str.split(",").map(v => parseFloat(v)));
+Vector2.prototype.fromString = function (str) {
+	return this.fromArray(str.split(",").map((v) => parseFloat(v)));
 };
 
-Vector3.prototype.toString = function() {
+Vector3.prototype.toString = function () {
 	return `${this.x},${this.y},${this.z}`;
 };
-Vector3.prototype.fromString = function(str) {
-	return this.fromArray(str.split(",").map(v => parseFloat(v)));
+Vector3.prototype.fromString = function (str) {
+	return this.fromArray(str.split(",").map((v) => parseFloat(v)));
 };
 
-Vector4.prototype.toString = function() {
+Vector4.prototype.toString = function () {
 	return `${this.x},${this.y},${this.z},${this.w}`;
 };
-Vector4.prototype.fromString = function(str) {
-	return this.fromArray(str.split(",").map(v => parseFloat(v)));
+Vector4.prototype.fromString = function (str) {
+	return this.fromArray(str.split(",").map((v) => parseFloat(v)));
 };
 
-Vector3.prototype.map = function(fn) {
+Vector3.prototype.map = function (fn) {
 	this.x = fn(this.x, "x");
 	this.y = fn(this.y, "y");
 	this.z = fn(this.z, "z");
 	return this;
 };
-Vector3.prototype.sign = function() {
+Vector3.prototype.sign = function () {
 	this.x = Math.sign(this.x);
 	this.y = Math.sign(this.y);
 	this.z = Math.sign(this.z);
 	return this;
 };
-Vector3.prototype.empty = function() {
+Vector3.prototype.empty = function () {
 	return !this.x && !this.y && !this.z;
 };
-Vector3.prototype.abs = function() {
+Vector3.prototype.abs = function () {
 	this.x = Math.abs(this.x);
 	this.y = Math.abs(this.y);
 	this.z = Math.abs(this.z);
@@ -178,7 +178,7 @@ Vector3.prototype.abs = function() {
 
 // export maps on materials
 Material.prototype._toJSON = Material.prototype.toJSON;
-Material.prototype.toJSON = function() {
+Material.prototype.toJSON = function () {
 	var output = Material.prototype._toJSON.apply(this);
 	if (this.map) output.map = this.map.toJSON();
 	if (this.lightMap) output.lightMap = this.lightMap.toJSON();
@@ -189,7 +189,7 @@ Material.prototype.toJSON = function() {
 };
 // import materials with maps
 MaterialLoader.prototype._parse = MaterialLoader.prototype.parse;
-MaterialLoader.prototype.parse = function(a) {
+MaterialLoader.prototype.parse = function (a) {
 	var b = MaterialLoader.prototype._parse.apply(this, arguments);
 	// texture
 	if (a.map) b.map = Texture.fromJSON(a.map);
@@ -199,7 +199,7 @@ MaterialLoader.prototype.parse = function(a) {
 	if (a.envMap) b.envMap = Texture.fromJSON(a.envMap);
 	return b;
 };
-Texture.prototype.toJSON = function() {
+Texture.prototype.toJSON = function () {
 	var output = {};
 
 	output.sourceFile = this.sourceFile;
@@ -218,7 +218,7 @@ Texture.prototype.toJSON = function() {
 	if (this.flipY !== true) output.flipY = this.flipY;
 	return output;
 };
-Texture.fromJSON = function(data) {
+Texture.fromJSON = function (data) {
 	var tex = ImageUtils.loadTexture(data.sourceFile);
 	for (var i in data) {
 		tex[i] = data[i];

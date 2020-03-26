@@ -56,8 +56,10 @@ export function drawCube(chunk, fromV, toV, block, type = "solid") {
 						if (
 							pos.x == min.x ||
 							pos.x == max.x ||
-							(pos.y == min.y || pos.y == max.y) ||
-							(pos.z == min.z || pos.z == max.z)
+							pos.y == min.y ||
+							pos.y == max.y ||
+							pos.z == min.z ||
+							pos.z == max.z
 						) {
 							setBlock(pos);
 						}
@@ -123,7 +125,7 @@ export function copyBlocks(fromChunk, toChunk, fromV, toV, opts) {
 			cloneBlocks: true,
 			copyEmpty: false,
 			keepOffset: true,
-			offset: new Vector3()
+			offset: new Vector3(),
 		},
 		opts || {}
 	);
@@ -174,7 +176,7 @@ export function rotateBlocks(chunk, box, around, quaternion, opts) {
 		{
 			cloneBlocks: false,
 			ignoreEmpty: false,
-			offset: new Vector3()
+			offset: new Vector3(),
 		},
 		opts || {}
 	);
@@ -198,19 +200,12 @@ export function rotateBlocks(chunk, box, around, quaternion, opts) {
 	}
 
 	let half = new Vector3(0.5, 0.5, 0.5);
-	blocks.forEach(data => {
+	blocks.forEach((data) => {
 		let block = data[0];
 		pos.fromString(data[1]);
 
 		// apply transform
-		pos
-			.add(half)
-			.sub(around)
-			.applyQuaternion(quaternion)
-			.add(around)
-			.sub(half)
-			.add(opts.offset)
-			.round();
+		pos.add(half).sub(around).applyQuaternion(quaternion).add(around).sub(half).add(opts.offset).round();
 
 		// set the block
 		if (block) chunk.setBlock(block, pos);
