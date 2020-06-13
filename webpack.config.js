@@ -135,7 +135,7 @@ module.exports = (env) => {
 			],
 		},
 		devServer: {
-			port: 8000,
+			port: 8080,
 			overlay: true,
 			historyApiFallback: true,
 			stats: {
