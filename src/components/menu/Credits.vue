@@ -6,7 +6,7 @@
 	    <div class="page-header">
 		  	<center><h1>Block Script</h1></center>
 		</div>
-		<center><h4>Created by: <a href="https://rdfriedl.github.io/" target="_blank">rdfriedl</a></h4></center>
+		<center><h4>Created by: <a href="https://rdfriedl.com" target="_blank">rdfriedl</a></h4></center>
 		<div class="page-header">
 		  	<center><h1>Sound</h1></center>
 		</div>

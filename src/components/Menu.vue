@@ -20,7 +20,7 @@
 		</div>
 	</div>
 
-	<a class="created-by btn btn-info btn-xs" href="http://rdfriedl.github.io" target="_blank">Created by RDFriedl</a>
+	<a class="created-by btn btn-info btn-xs" href="https://rdfriedl.com" target="_blank">Created by RDFriedl</a>
 </div>
 
 </template>

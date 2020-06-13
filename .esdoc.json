@@ -9,7 +9,7 @@
 				"brand": {
 					"title": "Block-Script",
 					"repository": "https://github.com/rdfriedl/block-script",
-					"site": "https://block-script.rdfriedl.com",
+					"site": "https://block-script.netlify.app/",
 					"author": "https://rdfriedl.com"
 				},
 				"test": {
