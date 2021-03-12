@@ -84,7 +84,7 @@
 		"raw-loader": "^0.5.1",
 		"rimraf": "^2.6.2",
 		"script-loader": "^0.7.2",
-		"serve": "^6.4.9",
+		"serve": "^10.1.2",
 		"sinon": "^4.2.2",
 		"sinon-chai": "^2.14.0",
 		"style-loader": "^0.20.1",
