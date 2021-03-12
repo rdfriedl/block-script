@@ -110,7 +110,7 @@
 		"keypress.js": "2.1.0",
 		"minivents": "^2.0.2",
 		"stats.js": "^0.17.0",
-		"three": "0.78.0",
+		"three": "0.125.0",
 		"undo-manager": "^1.0.5",
 		"vue": "^2.5.13",
 		"vue-router": "^3.0.1",
